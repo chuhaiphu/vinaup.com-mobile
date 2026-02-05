@@ -9,3 +9,10 @@ export const registerApi = async (payload: RegisterRequest) => {
   });
   return response;
 };
+
+export const getCurrentUserApi = async () => {
+  const response = await api<UserResponse>('/user/me', {
+    method: 'GET',
+  });
+  return response;
+};

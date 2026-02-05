@@ -1,6 +1,6 @@
 import { registerApi } from '@/apis/user-apis';
 import { VinaupLogoSecondary } from '@/components/icons/vinaup-logo-secondary.native';
-import { colors } from '@/constants/style-constant';
+import { COLORS } from '@/constants/style-constant';
 import { ApiError } from '@/utils/classes';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
@@ -66,7 +66,7 @@ const RegisterForm = () => {
               value={fullName}
               onChangeText={setFullName}
               autoCapitalize="words"
-              placeholderTextColor={colors.vinaupMediumGray}
+              placeholderTextColor={COLORS.vinaupMediumGray}
             />
 
             <TextInput
@@ -76,7 +76,7 @@ const RegisterForm = () => {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              placeholderTextColor={colors.vinaupMediumGray}
+              placeholderTextColor={COLORS.vinaupMediumGray}
             />
 
             <View style={styles.passwordInput}>
@@ -86,7 +86,7 @@ const RegisterForm = () => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                placeholderTextColor={colors.vinaupMediumGray}
+                placeholderTextColor={COLORS.vinaupMediumGray}
               />
               <TouchableOpacity
                 style={styles.eyeIcon}
@@ -95,7 +95,7 @@ const RegisterForm = () => {
                 <Ionicons
                   name={showPassword ? "eye-off" : "eye"}
                   size={20}
-                  color={colors.vinaupMediumGray}
+                  color={COLORS.vinaupMediumGray}
                 />
               </TouchableOpacity>
             </View>
@@ -110,7 +110,7 @@ const RegisterForm = () => {
           </TouchableOpacity>
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Bạn đã có tài khoản?</Text>
-            <FontAwesome6 name="arrow-right-long" size={12} color={colors.vinaupWhite} />
+            <FontAwesome6 name="arrow-right-long" size={12} color={COLORS.vinaupWhite} />
             <Link href="/login" style={styles.footerLink}>Đăng nhập</Link>
           </View>
         </View>

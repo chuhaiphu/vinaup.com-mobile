@@ -1,4 +1,4 @@
-export const colors = {
+export const COLORS = {
   // Neutrals
   vinaupBlack: '#1f1f1f',
   vinaupBlackLaminated: '#2a2a2a',
@@ -13,10 +13,10 @@ export const colors = {
   // Accent
   vinaupOrange: '#ff7629',
   vinaupRed: '#da401e',
-  vinaupYellow: '#fdbe11',
+  vinaupYellow: '#fcbe11',
   vinaupSoftYellow: 'rgba(252, 190, 17, 0.5)',
   vinaupLightGreen: 'rgba(206, 244, 218, 0.5)',
-  vinaupSoftGreen: 'rgba(206, 244, 218, 0.75)',
+  vinaupSoftGreen: '#aff4c6',
   vinaupTeal: '#005c62',
 
   // Blue
@@ -24,3 +24,5 @@ export const colors = {
   vinaupBlueDark: '#013437',
   vinaupNavyDark: '#01233a',
 };
+
+export const HEADER_HEIGHT = 60;

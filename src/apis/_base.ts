@@ -1,5 +1,7 @@
+import { STORAGE_KEYS } from "@/constants/app-constant";
 import { HttpResponse } from "@/interfaces/_base-interfaces";
 import { ApiError } from "@/utils/classes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -9,10 +11,12 @@ export async function api<T>(
   options: RequestInit = {}
 ): Promise<HttpResponse<T>> {
   const url = `${BASE_URL}${endpoint}`;
+  const accessToken = await AsyncStorage.getItem(STORAGE_KEYS.accessToken);
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'x-request-platform': 'mobile',
+    'Authorization': `Bearer ${accessToken}`,
     ...options.headers,
   };
   const config: RequestInit = {
@@ -37,6 +41,10 @@ export async function api<T>(
 
     // Handle successful responses
     const httpResponse: HttpResponse<T> = await response.json();
+
+    console.log('url', url);
+    console.log('httpResponse', httpResponse);
+
     return httpResponse;
 
   } catch (error) {

@@ -1,11 +1,11 @@
-import { colors } from "@/constants/style-constant";
+import { COLORS } from "@/constants/style-constant";
 import { StyleSheet } from "react-native";
 
 
 export const styles = StyleSheet.create({
   formRoot: {
     flex: 1,
-    backgroundColor: colors.vinaupBlueDark,
+    backgroundColor: COLORS.vinaupBlueDark,
   },
   formContainer: {
     padding: 24,
@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     marginBottom: 36,
   },
   formTitle: {
-    color: colors.vinaupWhite,
+    color: COLORS.vinaupWhite,
     fontSize: 24,
     marginTop: 24,
   },
@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     position: 'relative',
   },
   input: {
-    color: colors.vinaupWhite,
+    color: COLORS.vinaupWhite,
     height: 56,
     backgroundColor: 'transparent',
     borderRadius: 12,
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: colors.vinaupYellow,
+    borderColor: COLORS.vinaupYellow,
   },
   eyeIcon: {
     position: 'absolute',
@@ -44,14 +44,14 @@ export const styles = StyleSheet.create({
     top: '25%',
   },
   button: {
-    backgroundColor: colors.vinaupYellow,
+    backgroundColor: COLORS.vinaupYellow,
     height: 56,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
-    color: colors.vinaupBlueDark,
+    color: COLORS.vinaupBlueDark,
     fontSize: 18,
     fontWeight: '600',
   },
@@ -67,11 +67,11 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
-    color: colors.vinaupWhite,
+    color: COLORS.vinaupWhite,
     fontSize: 16,
   },
   footerLink: {
-    color: colors.vinaupYellow,
+    color: COLORS.vinaupYellow,
     fontSize: 16,
     fontWeight: '600',
   },

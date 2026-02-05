@@ -1,4 +1,4 @@
-import { storageKeys } from "@/constants/app-constant";
+import { STORAGE_KEYS } from "@/constants/app-constant";
 import { UserResponse } from "@/interfaces/user-interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SplashScreen } from "expo-router";
@@ -6,7 +6,7 @@ import { createContext, useEffect, useState } from "react";
 
 interface AuthContextType {
   currentUser: UserResponse | null;
-  performLogin: (user: UserResponse) => void;
+  performLogin: (user: UserResponse, accessToken: string) => void;
   performLogout: () => void;
 }
 
@@ -22,11 +22,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserResponse | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  const performLogin = async (user: UserResponse) => {
+  const performLogin = async (user: UserResponse, accessToken: string) => {
     try {
       setCurrentUser(user);
       const jsonValue = JSON.stringify(user);
-      await AsyncStorage.setItem(storageKeys.currentUser, jsonValue);
+      await AsyncStorage.setItem(STORAGE_KEYS.currentUser, jsonValue);
+      await AsyncStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
     } catch (error) {
       console.error("Error saving user", error);
     }
@@ -35,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const performLogout = async () => {
     try {
       setCurrentUser(null);
-      await AsyncStorage.removeItem(storageKeys.currentUser);
+      await AsyncStorage.removeItem(STORAGE_KEYS.currentUser);
     } catch (error) {
       console.error("Error removing user", error);
     }
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadStorageData = async () => {
       try {
-        const savedUser = await AsyncStorage.getItem(storageKeys.currentUser);
+        const savedUser = await AsyncStorage.getItem(STORAGE_KEYS.currentUser);
         if (savedUser) {
           setCurrentUser(JSON.parse(savedUser));
         }

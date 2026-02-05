@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { useContext } from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 
-export default function ProfileScreen() {
+export default function OrganizationProfileScreen() {
   const { currentUser, performLogout } = useContext(AuthContext);
   const router = useRouter();
 
@@ -12,14 +12,9 @@ export default function ProfileScreen() {
     router.replace("/login");
   };
 
-  if (!currentUser) {
-    router.replace("/login");
-    return null;
-  }
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.title}>Organization Profile</Text>
       <Button
         title="Đăng xuất"
         onPress={handleLogout}
@@ -40,3 +35,4 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
+
