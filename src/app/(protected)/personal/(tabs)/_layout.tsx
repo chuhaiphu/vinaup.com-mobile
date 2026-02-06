@@ -1,8 +1,9 @@
-import { HomeHeader } from "@/components/headers/home-header";
-import VinaupHome from "@/components/icons/vinaup-home.native";
-import { COLORS } from "@/constants/style-constant";
-import { Octicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { HomeHeader } from '@/components/headers/home-header';
+import VinaupHome from '@/components/icons/vinaup-home.native';
+import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
+import { COLORS } from '@/constants/style-constant';
+import { Octicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 
 export default function PersonalTabsLayout() {
   return (
@@ -17,8 +18,8 @@ export default function PersonalTabsLayout() {
         tabBarShowLabel: false,
         tabBarIconStyle: {
           margin: 0,
-          width: "100%",
-          height: "100%",
+          width: '100%',
+          height: '100%',
         },
       }}
     >
@@ -31,7 +32,19 @@ export default function PersonalTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="personal-profile"
+        name="receipt-payment-self"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <VinaupPlusMinusMultiplyEqual
+              width={size}
+              height={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
         options={{
           tabBarIcon: ({ color, size }) => (
             <Octicons name="person" size={size} color={color} />
@@ -41,4 +54,3 @@ export default function PersonalTabsLayout() {
     </Tabs>
   );
 }
-

@@ -1,6 +1,13 @@
 import React, { useContext } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View, TouchableWithoutFeedback } from 'react-native';
-import { COLORS, HEADER_HEIGHT } from "@/constants/style-constant";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import { COLORS, HEADER_HEIGHT } from '@/constants/style-constant';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthContext } from '@/providers/auth-provider';
@@ -23,7 +30,7 @@ export const ProfileMenu = ({ isVisible, onClose }: ProfileMenuProps) => {
   const { organizations } = useContext(OrganizationContext);
   const { ownerMode, setOwnerMode } = useContext(OwnerModeContext);
 
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets();
 
   // Determine current owner from pathname
   const getCurrentOwner = () => {
@@ -31,10 +38,20 @@ export const ProfileMenu = ({ isVisible, onClose }: ProfileMenuProps) => {
     const isPersonal = pathname.startsWith('/personal');
     const isOrganization = pathname.startsWith('/organization');
     if (isPersonal) {
-      return { type: 'USER', id: currentUser.id, name: currentUser.name, avatarUrl: currentUser.avatarUrl };
+      return {
+        type: 'USER',
+        id: currentUser.id,
+        name: currentUser.name,
+        avatarUrl: currentUser.avatarUrl,
+      };
     }
     if (isOrganization) {
-      return { type: 'ORGANIZATION', id: organizations[0].id, name: organizations[0].name, avatarUrl: organizations[0].avatarUrl };
+      return {
+        type: 'ORGANIZATION',
+        id: organizations[0].id,
+        name: organizations[0].name,
+        avatarUrl: organizations[0].avatarUrl,
+      };
     }
     return null;
   };
@@ -55,26 +72,25 @@ export const ProfileMenu = ({ isVisible, onClose }: ProfileMenuProps) => {
       return [organizations[0], currentUser];
     }
     return [];
-  }
+  };
 
-  const handleSelectOwner = (ownerType: 'personal' | 'organization', ownerId: string) => {
+  const handleSelectOwner = (
+    ownerType: 'personal' | 'organization',
+    ownerId: string
+  ) => {
     setOwnerMode(ownerType);
     onClose();
     router.replace(`/${ownerType}`);
-  }
+  };
   return (
-    <Modal
-      transparent={true}
-      visible={isVisible}
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal transparent={true} visible={isVisible} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         {/* Overlay acts as a transparent background that covers the entire screen */
-          /* Prevent user from accidentally interacting with the button outside the menu */
-          /* Helps to close the menu when the user taps outside */
-        }
-        <View style={[styles.overlay, { paddingTop: insets.top + HEADER_HEIGHT + 2 }]}>
+        /* Prevent user from accidentally interacting with the button outside the menu */
+        /* Helps to close the menu when the user taps outside */}
+        <View
+          style={[styles.overlay, { paddingTop: insets.top + HEADER_HEIGHT + 2 }]}
+        >
           <View style={styles.menuContainer}>
             <View style={styles.menuHeader}>
               <Text style={styles.menuHeaderText}>Profiles</Text>
@@ -84,29 +100,43 @@ export const ProfileMenu = ({ isVisible, onClose }: ProfileMenuProps) => {
               const isSelected = isSelectedOwner(owner.id);
               return (
                 <TouchableOpacity
-                  style={[styles.menuItem, isSelectedOwner(owner.id) && styles.selectedMenuItem]}
+                  style={[
+                    styles.menuItem,
+                    isSelectedOwner(owner.id) && styles.selectedMenuItem,
+                  ]}
                   key={owner.id}
-                  onPress={() => handleSelectOwner(isMainUser ? 'personal' : 'organization', owner.id)}
+                  onPress={() =>
+                    handleSelectOwner(
+                      isMainUser ? 'personal' : 'organization',
+                      owner.id
+                    )
+                  }
                 >
                   <View style={styles.left}>
                     <Avatar
                       imgSrc={owner.avatarUrl}
                       size={32}
                       icon={
-                        isMainUser ? (
-                          undefined
-                        ) : (
-                          <MaterialIcons name="groups" size={24} color={COLORS.vinaupTeal} />
+                        isMainUser ? undefined : (
+                          <MaterialIcons
+                            name="groups"
+                            size={24}
+                            color={COLORS.vinaupTeal}
+                          />
                         )
                       }
                     />
                     <Text style={styles.menuText}>{owner.name}</Text>
                   </View>
                   {isSelected && (
-                    <Ionicons name="checkmark-done-sharp" size={20} color={COLORS.vinaupYellow} />
+                    <Ionicons
+                      name="checkmark-done-sharp"
+                      size={20}
+                      color={COLORS.vinaupYellow}
+                    />
                   )}
                 </TouchableOpacity>
-              )
+              );
             })}
           </View>
         </View>
@@ -161,5 +191,5 @@ const styles = StyleSheet.create({
   },
   logoutItem: {
     marginTop: 4,
-  }
+  },
 });

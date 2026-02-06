@@ -15,8 +15,8 @@ export const OwnerModeContext = createContext<OwnerModeContextType>({
 export const OwnerModeProvider = ({ children }: { children: React.ReactNode }) => {
   const [ownerMode, setOwnerMode] = useState<OwnerMode>('personal');
   return (
-    <OwnerModeContext.Provider value={{ ownerMode, setOwnerMode }}>
+    <OwnerModeContext value={{ ownerMode, setOwnerMode }}>
       {children}
-    </OwnerModeContext.Provider>
+    </OwnerModeContext>
   );
 };

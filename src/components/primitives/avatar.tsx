@@ -9,18 +9,28 @@ interface AvatarProps {
   icon?: React.ReactNode;
   style?: {
     container?: StyleProp<ViewStyle>;
-  }
+  };
 }
 
-export const Avatar: React.FC<AvatarProps> = ({ imgSrc, size = 32, icon, style }) => {
+export function Avatar({ imgSrc, size = 32, icon, style }: AvatarProps) {
   const borderRadius = size / 2;
 
   return (
-    <View style={[styles.container, { width: size, height: size, borderRadius }, style?.container]}>
+    <View
+      style={[
+        styles.container,
+        { width: size, height: size, borderRadius },
+        style?.container,
+      ]}
+    >
       {imgSrc ? (
         <Image
           source={{ uri: imgSrc }}
-          style={{ width: size - 4, height: size - 4, borderRadius: borderRadius - 2 }}
+          style={{
+            width: size - 4,
+            height: size - 4,
+            borderRadius: borderRadius - 2,
+          }}
           resizeMode="cover"
         />
       ) : icon ? (
@@ -30,7 +40,7 @@ export const Avatar: React.FC<AvatarProps> = ({ imgSrc, size = 32, icon, style }
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -41,4 +51,3 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.vinaupSoftGray,
   },
 });
-

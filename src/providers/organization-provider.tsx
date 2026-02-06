@@ -43,8 +43,8 @@ export const OrganizationProvider = ({ children }: { children: React.ReactNode }
   };
 
   return (
-    <OrganizationContext.Provider value={{ organizations, loading, refresh: getOrganizationsOfCurrentUser }}>
+    <OrganizationContext value={{ organizations, loading, refresh: getOrganizationsOfCurrentUser }}>
       {children}
-    </OrganizationContext.Provider>
+    </OrganizationContext>
   );
 };
