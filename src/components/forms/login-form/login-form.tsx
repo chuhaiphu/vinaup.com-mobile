@@ -16,25 +16,21 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from 'react-native';
 import { styles } from './login-form.styles';
 
 const LoginForm = () => {
-  const { performLogin } = useContext(AuthContext);
+  const { isLoading, performLogin } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    setIsLoading(true);
     try {
       const response = await loginApi(email, password);
-      if (response.statusCode === 200) {
-        if (response.data?.user) {
-          performLogin(response.data.user, response.data.accessToken);
-        }
+      if (response.statusCode === 200 && response.data?.user) {
+        await performLogin(response.data.user, response.data.accessToken);
         router.replace('/');
       }
     } catch (error) {
@@ -42,10 +38,11 @@ const LoginForm = () => {
         if (error.statusCode === 401) {
           Alert.alert('Đăng nhập thất bại', 'Email hoặc mật khẩu không chính xác');
         }
-      }
-      else Alert.alert('Đăng nhập thất bại', error instanceof ApiError ? error.message : 'Lỗi không xác định');
-    } finally {
-      setIsLoading(false);
+      } else
+        Alert.alert(
+          'Đăng nhập thất bại',
+          error instanceof ApiError ? error.message : 'Lỗi không xác định'
+        );
     }
   };
 
@@ -86,7 +83,7 @@ const LoginForm = () => {
                 onPress={() => setShowPassword(!showPassword)}
               >
                 <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
+                  name={showPassword ? 'eye-off' : 'eye'}
                   size={20}
                   color={COLORS.vinaupMediumGray}
                 />
@@ -94,17 +91,30 @@ const LoginForm = () => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
             {isLoading ? (
-              <Image source={require('@/components/icons/vinaup-loader.gif')} style={styles.buttonLoader} />
+              <Image
+                source={require('@/components/icons/vinaup-loader.gif')}
+                style={styles.buttonLoader}
+              />
             ) : (
               <Text style={styles.buttonText}>Đăng nhập</Text>
             )}
           </TouchableOpacity>
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Bạn chưa có tài khoản?</Text>
-            <FontAwesome6 name="arrow-right-long" size={12} color={COLORS.vinaupWhite} />
-            <Link href="/register" style={styles.footerLink}>Đăng ký</Link>
+            <FontAwesome6
+              name="arrow-right-long"
+              size={12}
+              color={COLORS.vinaupWhite}
+            />
+            <Link href="/register" style={styles.footerLink}>
+              Đăng ký
+            </Link>
           </View>
         </View>
       </TouchableWithoutFeedback>

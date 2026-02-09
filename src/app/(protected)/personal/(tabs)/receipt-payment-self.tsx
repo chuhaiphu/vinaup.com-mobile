@@ -1,48 +1,63 @@
 import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
-import ReceiptPaymentModal from '@/components/modals/receipt-payment-modal';
 import Loader from '@/components/primitives/loader';
 import { ReceiptPaymentCard } from '@/components/primitives/receipt-payment-card';
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
-import { useReceiptPaymentModalStore } from '@/hooks/use-modal-store';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect } from 'react';
 import {
   FlatList,
+  Image,
   Pressable,
   RefreshControl,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import VinaupAddNewIcon from '@/assets/images/vinaup-add-new-icon.png';
+import { Button } from '@/components/primitives/button';
 
 export default function ReceiptPaymentSelf() {
+  const router = useRouter();
+
   const {
     data: receiptPayments,
     isLoading,
-    executeFetchFn,
+    executeFetchFn: fetchReceiptPayments,
     isRefreshing,
     refreshFetchFn,
   } = useFetchFn<ReceiptPaymentResponse[]>();
-  const setCreateMode = useReceiptPaymentModalStore((s) => s.setCreateMode);
-  console.log('receiptPayments', receiptPayments);
 
   useEffect(() => {
-    executeFetchFn(() => getReceiptPaymentsByCurrentUserApi());
-  }, [executeFetchFn]);
+    fetchReceiptPayments(() => getReceiptPaymentsByCurrentUserApi());
+  }, [fetchReceiptPayments]);
+
+  // Navigate to receipt payment form
+  const navigateToForm = (id?: string) => {
+    router.push({
+      pathname: '/(protected)/receipt-payment-form',
+      params: {
+        id: id,
+        mode: id ? 'update' : 'create',
+        lockDatePicker: 'false',
+        allowEditCategory: 'true',
+        receiptPaymentType: 'PAYMENT',
+      },
+    });
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.toolbar}>
-        <Pressable style={styles.createButton} onPress={setCreateMode}>
-          <Text style={styles.createButtonText}>Tao Thu / Chi</Text>
-        </Pressable>
-      </View>
       {isLoading && <Loader size={64} />}
       <FlatList
         data={receiptPayments}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ReceiptPaymentCard receiptPayment={item} />}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => navigateToForm(item.id)}>
+            <ReceiptPaymentCard receiptPayment={item} />
+          </Pressable>
+        )}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -51,11 +66,19 @@ export default function ReceiptPaymentSelf() {
           />
         }
       />
-      <ReceiptPaymentModal
-        receiptPaymentsData={receiptPayments || []}
-        receiptPaymentType="RECEIPT"
-        categoryOptionsData={[]}
-      />
+      <View style={styles.innerFooter}>
+        <Button
+          style={styles.createButtonContainer}
+          onPress={() => navigateToForm()}
+        >
+          <Text style={styles.createButtonText}>Tạo mới</Text>
+          <Image
+            source={VinaupAddNewIcon}
+            style={{ width: 36, height: 36 }}
+            resizeMode="contain"
+          />
+        </Button>
+      </View>
     </View>
   );
 }
@@ -64,21 +87,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  toolbar: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-  },
-  createButton: {
-    alignSelf: 'flex-start',
-    backgroundColor: COLORS.vinaupTeal,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
   createButtonText: {
-    color: COLORS.vinaupWhite,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 18,
+  },
+  innerFooter: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    padding: 12,
+  },
+  createButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
 });

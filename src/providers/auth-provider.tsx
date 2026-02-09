@@ -6,15 +6,15 @@ import { createContext, useEffect, useState } from 'react';
 interface AuthContextType {
   isLoading: boolean;
   currentUser: UserResponse | null;
-  performLogin: (user: UserResponse, accessToken: string) => void;
-  performLogout: () => void;
+  performLogin: (user: UserResponse, accessToken: string) => Promise<void>;
+  performLogout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isLoading: false,
   currentUser: null,
-  performLogin: () => {},
-  performLogout: () => {},
+  performLogin: async () => {},
+  performLogout: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -22,22 +22,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const performLogin = async (user: UserResponse, accessToken: string) => {
+    setIsLoading(true);
     try {
-      setCurrentUser(user);
       const jsonValue = JSON.stringify(user);
       await AsyncStorage.setItem(STORAGE_KEYS.currentUser, jsonValue);
       await AsyncStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
+      // wait for storage to complete before updating state to avoid race conditions
+      // in organization provider which depends on currentUser to fetch organizations using token
+      setCurrentUser(user);
     } catch (error) {
       console.error('Error saving user', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const performLogout = async () => {
+    setIsLoading(true);
     try {
       setCurrentUser(null);
       await AsyncStorage.removeItem(STORAGE_KEYS.currentUser);
+      await AsyncStorage.removeItem(STORAGE_KEYS.accessToken);
     } catch (error) {
       console.error('Error removing user', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

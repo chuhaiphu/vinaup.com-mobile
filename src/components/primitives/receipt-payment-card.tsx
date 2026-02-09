@@ -16,7 +16,7 @@ export function ReceiptPaymentCard({ receiptPayment }: ReceiptPaymentCardProps) 
             <Text style={styles.descriptionText}>{receiptPayment.description}</Text>
           </View>
           <View style={styles.action}>
-            <VinaupPenLine width={20} height={20} />
+            {/* <VinaupPenLine width={20} height={20} /> */}
           </View>
         </View>
         <View style={styles.bottomRow}>

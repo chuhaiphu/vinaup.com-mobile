@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 
 export default function OrganizationProfileScreen() {
-  const { currentUser, performLogout } = useContext(AuthContext);
+  const { performLogout } = useContext(AuthContext);
   const router = useRouter();
 
   const handleLogout = () => {
