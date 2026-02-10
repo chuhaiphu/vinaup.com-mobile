@@ -18,7 +18,10 @@ import {
   ReceiptPaymentTransactionType,
   ReceiptPaymentType,
 } from '@/constants/receipt-payment-constants';
-import { CreateReceiptPaymentRequest } from '@/interfaces/receipt-payment-interfaces';
+import {
+  CreateReceiptPaymentRequest,
+  ReceiptPaymentResponse,
+} from '@/interfaces/receipt-payment-interfaces';
 import { COLORS } from '@/constants/style-constant';
 import Select from '@/components/primitives/select';
 import VinaupSaveAndExitIcon from '@/components/icons/vinaup-save-and-exit-icon.native';
@@ -32,6 +35,14 @@ import DateTimePicker, {
 import VinaupLeftArrowWithFill from '@/components/icons/vinaup-left-arrow-with-fill.native';
 import VinaupRightArrowWithFill from '@/components/icons/vinaup-right-arrow-with-fill.native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useMutationFn } from '@/hooks/use-mutation-fn';
+import {
+  createReceiptPaymentApi,
+  deleteReceiptPaymentApi,
+  getReceiptPaymentByIdApi,
+  updateReceiptPaymentApi,
+} from '@/apis/receipt-payment-apis';
+import { Button } from '@/components/primitives/button';
 
 export default function ReceiptPaymentFormScreen() {
   const router = useRouter();
@@ -51,6 +62,32 @@ export default function ReceiptPaymentFormScreen() {
     lockDatePicker?: string;
     allowEditCategory?: string;
   }>();
+  const {
+    data: existingReceiptPayment,
+    isLoading: isFetchingReceiptPayment,
+    executeFetchFn: fetchReceiptPayment,
+  } = useFetchFn<ReceiptPaymentResponse>();
+
+  useEffect(() => {
+    if (existingReceiptPayment) {
+      setDescription(existingReceiptPayment.description || '');
+      setUnitPrice(existingReceiptPayment.unitPrice);
+      setQuantity(existingReceiptPayment.quantity);
+      setType(existingReceiptPayment.type);
+      setVatRate(existingReceiptPayment.vatRate || 0);
+      setTransactionType(existingReceiptPayment.transactionType);
+      setNote(existingReceiptPayment.note || '');
+      setTransactionDate(dayjs(existingReceiptPayment.transactionDate));
+      setSelectedCategory(existingReceiptPayment.category.id);
+    }
+  }, [existingReceiptPayment]);
+
+  useEffect(() => {
+    const receiptPaymentId = params.id;
+    if (receiptPaymentId && params.mode === 'update') {
+      fetchReceiptPayment(() => getReceiptPaymentByIdApi(receiptPaymentId));
+    }
+  }, [params.id, params.mode, fetchReceiptPayment]);
 
   const { data: categories, executeFetchFn: fetchCategories } =
     useFetchFn<CategoryResponse[]>();
@@ -59,12 +96,26 @@ export default function ReceiptPaymentFormScreen() {
     fetchCategories(() => getCategoriesOfCurrentUserApi());
   }, [fetchCategories]);
 
+  const {
+    executeMutationFn: createReceiptPayment,
+    isMutating: isCreatingReceiptPayment,
+  } = useMutationFn<ReceiptPaymentResponse>();
+  const {
+    executeMutationFn: deleteReceiptPayment,
+    isMutating: isDeletingReceiptPayment,
+  } = useMutationFn();
+
   const categoryOptionsData =
     categories?.map((c) => ({
       label: c.description,
       value: c.id,
-      isDefault: c.isDefault,
     })) || [];
+  const defaultCategoryOption = categories?.find((opt) => opt.isDefault);
+  useEffect(() => {
+    if (defaultCategoryOption) {
+      setSelectedCategory(defaultCategoryOption.id);
+    }
+  }, [defaultCategoryOption]);
 
   const [description, setDescription] = useState('');
   const [unitPrice, setUnitPrice] = useState<number>(1);
@@ -77,7 +128,9 @@ export default function ReceiptPaymentFormScreen() {
     useState<ReceiptPaymentTransactionType>('CASH');
   const [note, setNote] = useState('');
   const [transactionDate, setTransactionDate] = useState<Dayjs>(dayjs());
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(
+    defaultCategoryOption?.id || ''
+  );
   const [isDescriptionSelectMode, setIsDescriptionSelectMode] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const onDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -124,7 +177,7 @@ export default function ReceiptPaymentFormScreen() {
     }
   };
 
-  const handleSave = (exit: boolean) => {
+  const handleSaveAndExit = () => {
     if (!description.trim() || unitPrice <= 0) {
       setInputErrors({
         description: !description.trim(),
@@ -153,15 +206,40 @@ export default function ReceiptPaymentFormScreen() {
       groupCode: params.groupCode,
       organizationId: params.organizationId,
     };
+    const mutationApi =
+      params.mode === 'update'
+        ? () => updateReceiptPaymentApi(params.id!, submitData)
+        : () => createReceiptPaymentApi(submitData);
 
-    if (exit) router.back();
-    else Alert.alert('Thành công', 'Đã lưu dữ liệu');
+    createReceiptPayment(mutationApi, {
+      onSuccess: () => {
+        router.replace('/(protected)/personal/(tabs)/receipt-payment-self');
+      },
+      onError: (error) => {
+        Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi tạo thu/chi.');
+      },
+    });
   };
 
   const handleDelete = () => {
+    const receiptPaymentId = params.id;
+    if (!receiptPaymentId) return;
     Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
       { text: 'Huỷ', style: 'cancel' },
-      { text: 'OK', onPress: () => router.back() },
+      {
+        text: 'OK',
+        style: 'destructive', // Red text color on IOS
+        onPress: () => {
+          deleteReceiptPayment(() => deleteReceiptPaymentApi(receiptPaymentId), {
+            onSuccess: () => {
+              router.replace('/(protected)/personal/(tabs)/receipt-payment-self');
+            },
+            onError: (error) => {
+              Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
+            },
+          });
+        },
+      },
     ]);
   };
 
@@ -197,23 +275,25 @@ export default function ReceiptPaymentFormScreen() {
               }}
             >
               {params.mode === 'update' && (
-                <Pressable onPress={handleDelete}>
+                <Button onPress={handleDelete} isLoading={isDeletingReceiptPayment}>
                   <FontAwesome
                     name="trash-o"
                     size={24}
                     color={COLORS.vinaupWhite}
                   />
-                </Pressable>
+                </Button>
               )}
 
-              {/* Nút Lưu và Thoát */}
-              <Pressable onPress={() => handleSave(true)}>
+              <Button
+                onPress={handleSaveAndExit}
+                isLoading={isCreatingReceiptPayment}
+              >
                 <VinaupSaveAndExitIcon
                   width={32}
                   height={24}
                   color={COLORS.vinaupYellow}
                 />
-              </Pressable>
+              </Button>
             </View>
           ),
           headerTitleStyle: {
@@ -544,8 +624,8 @@ const styles = StyleSheet.create({
   inputNative: {
     backgroundColor: '#FBFBFB',
     paddingHorizontal: 8,
-    paddingVertical: 10,
-    fontSize: 20,
+    paddingVertical: 12,
+    fontSize: 18,
   },
   currencyBadge: {
     width: 50,

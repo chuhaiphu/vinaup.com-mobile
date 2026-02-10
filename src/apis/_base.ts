@@ -1,8 +1,7 @@
-import { STORAGE_KEYS } from "@/constants/app-constant";
-import { HttpResponse } from "@/interfaces/_base-interfaces";
-import { ApiError } from "@/utils/classes";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { STORAGE_KEYS } from '@/constants/app-constant';
+import { HttpResponse } from '@/interfaces/_base-interfaces';
+import { ApiError } from '@/utils/classes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -16,7 +15,7 @@ export async function api<T>(
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     'x-request-platform': 'mobile',
-    'Authorization': `Bearer ${accessToken}`,
+    Authorization: `Bearer ${accessToken}`,
     ...options.headers,
   };
   const config: RequestInit = {
@@ -26,13 +25,13 @@ export async function api<T>(
 
   try {
     const response = await fetch(url, config);
+    console.log('url', url);
 
     // Handle errors from Backend responses
     if (!response.ok) {
       let errorData;
       try {
         errorData = await response.json();
-        // console.log(errorData);
       } catch {
         errorData = { message: 'Unknown server error', error: 'UNKNOWN' };
       }
@@ -42,18 +41,20 @@ export async function api<T>(
     // Handle successful responses
     const httpResponse: HttpResponse<T> = await response.json();
 
-    console.log('url', url);
-    console.log('httpResponse', httpResponse);
+    console.log('success response', httpResponse);
 
     return httpResponse;
-
   } catch (error) {
-    // Then throw it for the caller to handle
+    console.log('error response', error);
     if (error instanceof ApiError) {
       throw error;
     }
 
     // Else it's a network error
-    throw new ApiError(error instanceof Error ? error.message : "Unknown network error", "NETWORK_ERROR", 520);
+    throw new ApiError(
+      error instanceof Error ? error.message : 'Unknown network error',
+      'NETWORK_ERROR',
+      520
+    );
   }
 }
