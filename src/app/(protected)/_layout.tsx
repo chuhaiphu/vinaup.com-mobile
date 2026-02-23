@@ -23,11 +23,9 @@ export default function ProtectedLayout() {
   }
   return (
     <Stack>
-      {/* 2 nhóm Tabs chính */}
       <Stack.Screen name="personal/(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="organization/(tabs)" options={{ headerShown: false }} />
 
-      {/* Màn hình Form tách biệt - Chiếm toàn màn hình */}
       <Stack.Screen
         name="receipt-payment-form"
         options={{

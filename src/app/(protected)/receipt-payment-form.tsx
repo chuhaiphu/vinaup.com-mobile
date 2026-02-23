@@ -9,7 +9,7 @@ import {
   Pressable,
   Alert,
   KeyboardAvoidingView,
-  Platform,
+  Platform
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import dayjs, { Dayjs } from 'dayjs';
@@ -43,6 +43,7 @@ import {
   updateReceiptPaymentApi,
 } from '@/apis/receipt-payment-apis';
 import { Button } from '@/components/primitives/button';
+import Loader from '@/components/primitives/loader';
 
 export default function ReceiptPaymentFormScreen() {
   const router = useRouter();
@@ -97,8 +98,8 @@ export default function ReceiptPaymentFormScreen() {
   }, [fetchCategories]);
 
   const {
-    executeMutationFn: createReceiptPayment,
-    isMutating: isCreatingReceiptPayment,
+    executeMutationFn: createOrUpdateReceiptPayment,
+    isMutating: isMutatingReceiptPayment,
   } = useMutationFn<ReceiptPaymentResponse>();
   const {
     executeMutationFn: deleteReceiptPayment,
@@ -211,7 +212,7 @@ export default function ReceiptPaymentFormScreen() {
         ? () => updateReceiptPaymentApi(params.id!, submitData)
         : () => createReceiptPaymentApi(submitData);
 
-    createReceiptPayment(mutationApi, {
+    createOrUpdateReceiptPayment(mutationApi, {
       onSuccess: () => {
         router.replace('/(protected)/personal/(tabs)/receipt-payment-self');
       },
@@ -286,7 +287,7 @@ export default function ReceiptPaymentFormScreen() {
 
               <Button
                 onPress={handleSaveAndExit}
-                isLoading={isCreatingReceiptPayment}
+                isLoading={isMutatingReceiptPayment}
               >
                 <VinaupSaveAndExitIcon
                   width={32}
@@ -301,219 +302,136 @@ export default function ReceiptPaymentFormScreen() {
           },
         }}
       />
+      {isFetchingReceiptPayment ? (
+        <View style={styles.loadingContainer}>
+          <Loader size={64} />
+        </View>
+      ) : (
+        <ScrollView style={styles.modalBody} bounces={false}>
+          <View style={styles.modalBodyContainer}>
+            {/* Row: Date & Category/Toggle */}
+            <View style={styles.dateAndCategoryRow}>
+              <Pressable
+                onPress={handleShowDatePicker}
+                style={[params.lockDatePicker === 'true' && styles.disabled]}
+                disabled={params.lockDatePicker === 'true'}
+              >
+                <Text
+                  style={[
+                    styles.dateText,
+                    params.lockDatePicker === 'true' && {
+                      color: COLORS.vinaupMediumGray,
+                    },
+                  ]}
+                >
+                  {transactionDate.format('DD/MM/YYYY')}
+                </Text>
+              </Pressable>
+              {Platform.OS === 'ios' && showDatePicker && (
+                <DateTimePicker
+                  value={transactionDate.toDate()}
+                  mode="date"
+                  display="spinner"
+                  onChange={onDateChange}
+                />
+              )}
 
-      <ScrollView style={styles.modalBody} bounces={false}>
-        <View style={styles.modalBodyContainer}>
-          {/* Row: Date & Category/Toggle */}
-          <View style={styles.dateAndCategoryRow}>
-            <Pressable
-              onPress={handleShowDatePicker}
-              style={[params.lockDatePicker === 'true' && styles.disabled]}
-              disabled={params.lockDatePicker === 'true'}
-            >
-              <Text
+              {params.invoiceId ? (
+                <View style={styles.rowAlign}>
+                  <Text>
+                    {isDescriptionSelectMode ? 'Kho sản phẩm' : 'Nhập nội dung'}
+                  </Text>
+                  <Switch
+                    value={isDescriptionSelectMode}
+                    onValueChange={setIsDescriptionSelectMode}
+                    trackColor={{ false: '#ccc', true: COLORS.vinaupTeal }}
+                    thumbColor={COLORS.vinaupYellow}
+                  />
+                </View>
+              ) : (
+                <Select
+                  options={categoryOptionsData}
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                  disabled={params.allowEditCategory === 'false'}
+                  placeholder="Chọn danh mục"
+                />
+              )}
+            </View>
+
+            <View style={styles.inputItem}>
+              <View
                 style={[
-                  styles.dateText,
-                  params.lockDatePicker === 'true' && {
-                    color: COLORS.vinaupMediumGray,
-                  },
+                  styles.inputWrapper,
+                  inputErrors.description && { borderColor: COLORS.vinaupRed },
                 ]}
               >
-                {transactionDate.format('DD/MM/YYYY')}
-              </Text>
-            </Pressable>
-            {Platform.OS === 'ios' && showDatePicker && (
-              <DateTimePicker
-                value={transactionDate.toDate()}
-                mode="date"
-                display="spinner"
-                onChange={onDateChange}
-              />
-            )}
-
-            {params.invoiceId ? (
-              <View style={styles.rowAlign}>
-                <Text>
-                  {isDescriptionSelectMode ? 'Kho sản phẩm' : 'Nhập nội dung'}
-                </Text>
-                <Switch
-                  value={isDescriptionSelectMode}
-                  onValueChange={setIsDescriptionSelectMode}
-                  trackColor={{ false: '#ccc', true: COLORS.vinaupTeal }}
-                  thumbColor={COLORS.vinaupYellow}
+                <View style={styles.labelSection}>
+                  <Text
+                    style={[
+                      styles.insideLabel,
+                      inputErrors.description && { color: COLORS.vinaupRed },
+                    ]}
+                  >
+                    Nội dung
+                  </Text>
+                </View>
+                <View style={styles.separator} />
+                <TextInput
+                  style={styles.inputNative}
+                  value={description}
+                  onChangeText={(val) => {
+                    setDescription(val);
+                    setInputErrors((prev) => ({
+                      ...prev,
+                      description: validateByInputField('description', val),
+                    }));
+                  }}
+                  placeholder="..."
+                  maxLength={40}
                 />
               </View>
-            ) : (
-              <Select
-                options={categoryOptionsData}
-                value={selectedCategory}
-                onChange={setSelectedCategory}
-                disabled={params.allowEditCategory === 'false'}
-                placeholder="Chọn danh mục"
-              />
-            )}
-          </View>
-
-          <View style={styles.inputItem}>
-            <View
-              style={[
-                styles.inputWrapper,
-                inputErrors.description && { borderColor: COLORS.vinaupRed },
-              ]}
-            >
-              <View style={styles.labelSection}>
-                <Text
-                  style={[
-                    styles.insideLabel,
-                    inputErrors.description && { color: COLORS.vinaupRed },
-                  ]}
-                >
-                  Nội dung
-                </Text>
-              </View>
-              <View style={styles.separator} />
-              <TextInput
-                style={styles.inputNative}
-                value={description}
-                onChangeText={(val) => {
-                  setDescription(val);
-                  setInputErrors((prev) => ({
-                    ...prev,
-                    description: validateByInputField('description', val),
-                  }));
-                }}
-                placeholder="..."
-                maxLength={40}
-              />
             </View>
-          </View>
 
-          {/* Đơn giá */}
-          <View style={styles.inputItem}>
-            <View
-              style={[
-                styles.inputWrapper,
-                inputErrors.unitPrice && { borderColor: COLORS.vinaupRed },
-              ]}
-            >
-              <View style={styles.labelSection}>
-                <Text
-                  style={[
-                    styles.insideLabel,
-                    inputErrors.unitPrice && { color: COLORS.vinaupRed },
-                  ]}
-                >
-                  Đơn giá
-                </Text>
-              </View>
-              <View style={styles.separator} />
-              <TextInput
-                style={[styles.inputNative, { flex: 1 }]}
-                value={String(unitPrice)}
-                keyboardType="numeric"
-                onChangeText={(val) => {
-                  setUnitPrice(Number(val));
-                  setInputErrors((prev) => ({
-                    ...prev,
-                    unitPrice: validateByInputField('unitPrice', val),
-                  }));
-                }}
-              />
-              <View style={styles.currencyBadge}>
-                <Text style={styles.currencyText}>VND</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* SL & Segment (BANK/CASH) */}
-          <View style={styles.inputItem}>
-            <View style={styles.inputWrapper}>
-              <View style={styles.labelSection}>
-                <Text style={styles.insideLabel}>Số lượng</Text>
-              </View>
-              <View style={styles.separator} />
-              <TextInput
-                style={[styles.inputNative, { flex: 1 }]}
-                value={String(quantity)}
-                keyboardType="numeric"
-                onChangeText={(val) => setQuantity(Number(val))}
-              />
-              <View style={styles.segmentMini}>
-                <Pressable
-                  style={[styles.segmentMiniItem]}
-                  onPress={() => setTransactionType('BANK')}
-                >
-                  <MaterialCommunityIcons
-                    name="bank"
-                    size={28}
-                    color={
-                      transactionType === 'BANK'
-                        ? COLORS.vinaupTeal
-                        : COLORS.vinaupLightGray
-                    }
-                  />
-                </Pressable>
-                <Pressable
-                  style={[styles.segmentMiniItem]}
-                  onPress={() => setTransactionType('CASH')}
-                >
-                  <FontAwesome5
-                    name="money-bill-wave"
-                    size={24}
-                    color={
-                      transactionType === 'CASH'
-                        ? COLORS.vinaupTeal
-                        : COLORS.vinaupLightGray
-                    }
-                  />
-                </Pressable>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.inputCombinedItem}>
-            <View style={styles.typeSwitcher}>
-              <Pressable
-                style={[styles.typeBtn, { justifyContent: 'flex-end' }]}
-                onPress={() => setType('RECEIPT')}
+            {/* Đơn giá */}
+            <View style={styles.inputItem}>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  inputErrors.unitPrice && { borderColor: COLORS.vinaupRed },
+                ]}
               >
-                <Text
-                  style={[
-                    styles.typeBtnText,
-                    type === 'RECEIPT' && { color: COLORS.vinaupTeal },
-                  ]}
-                >
-                  + Thu
-                </Text>
-                <VinaupLeftArrowWithFill
-                  height={33}
-                  width={22}
-                  color={type === 'RECEIPT' ? COLORS.vinaupTeal : undefined}
+                <View style={styles.labelSection}>
+                  <Text
+                    style={[
+                      styles.insideLabel,
+                      inputErrors.unitPrice && { color: COLORS.vinaupRed },
+                    ]}
+                  >
+                    Đơn giá
+                  </Text>
+                </View>
+                <View style={styles.separator} />
+                <TextInput
+                  style={[styles.inputNative, { flex: 1 }]}
+                  value={String(unitPrice)}
+                  keyboardType="numeric"
+                  onChangeText={(val) => {
+                    setUnitPrice(Number(val));
+                    setInputErrors((prev) => ({
+                      ...prev,
+                      unitPrice: validateByInputField('unitPrice', val),
+                    }));
+                  }}
                 />
-              </Pressable>
-              <Pressable
-                style={[styles.typeBtn, { justifyContent: 'flex-start' }]}
-                onPress={() => setType('PAYMENT')}
-              >
-                <VinaupRightArrowWithFill
-                  height={33}
-                  width={22}
-                  color={type === 'PAYMENT' ? COLORS.vinaupTeal : undefined}
-                />
-                <Text
-                  style={[
-                    styles.typeBtnText,
-                    type === 'PAYMENT' && { color: COLORS.vinaupTeal },
-                  ]}
-                >
-                  - Chi
-                </Text>
-              </Pressable>
+                <View style={styles.currencyBadge}>
+                  <Text style={styles.currencyText}>VND</Text>
+                </View>
+              </View>
             </View>
-          </View>
 
-          <View style={[styles.inputItem, { flexDirection: 'row', gap: 8 }]}>
-            <View style={{ flex: 0.66 }}>
+            {/* SL & Segment (BANK/CASH) */}
+            <View style={styles.inputItem}>
               <View style={styles.inputWrapper}>
                 <View style={styles.labelSection}>
                   <Text style={styles.insideLabel}>Số lượng</Text>
@@ -521,46 +439,134 @@ export default function ReceiptPaymentFormScreen() {
                 <View style={styles.separator} />
                 <TextInput
                   style={[styles.inputNative, { flex: 1 }]}
-                  placeholder="0"
+                  value={String(quantity)}
                   keyboardType="numeric"
+                  onChangeText={(val) => setQuantity(Number(val))}
                 />
+                <View style={styles.segmentMini}>
+                  <Pressable
+                    style={[styles.segmentMiniItem]}
+                    onPress={() => setTransactionType('BANK')}
+                  >
+                    <MaterialCommunityIcons
+                      name="bank"
+                      size={28}
+                      color={
+                        transactionType === 'BANK'
+                          ? COLORS.vinaupTeal
+                          : COLORS.vinaupLightGray
+                      }
+                    />
+                  </Pressable>
+                  <Pressable
+                    style={[styles.segmentMiniItem]}
+                    onPress={() => setTransactionType('CASH')}
+                  >
+                    <FontAwesome5
+                      name="money-bill-wave"
+                      size={24}
+                      color={
+                        transactionType === 'CASH'
+                          ? COLORS.vinaupTeal
+                          : COLORS.vinaupLightGray
+                      }
+                    />
+                  </Pressable>
+                </View>
               </View>
             </View>
 
-            <View style={{ flex: 0.34 }}>
+            <View style={styles.inputCombinedItem}>
+              <View style={styles.typeSwitcher}>
+                <Pressable
+                  style={[styles.typeBtn, { justifyContent: 'flex-end' }]}
+                  onPress={() => setType('RECEIPT')}
+                >
+                  <Text
+                    style={[
+                      styles.typeBtnText,
+                      type === 'RECEIPT' && { color: COLORS.vinaupTeal },
+                    ]}
+                  >
+                    + Thu
+                  </Text>
+                  <VinaupLeftArrowWithFill
+                    height={33}
+                    width={22}
+                    color={type === 'RECEIPT' ? COLORS.vinaupTeal : undefined}
+                  />
+                </Pressable>
+                <Pressable
+                  style={[styles.typeBtn, { justifyContent: 'flex-start' }]}
+                  onPress={() => setType('PAYMENT')}
+                >
+                  <VinaupRightArrowWithFill
+                    height={33}
+                    width={22}
+                    color={type === 'PAYMENT' ? COLORS.vinaupTeal : undefined}
+                  />
+                  <Text
+                    style={[
+                      styles.typeBtnText,
+                      type === 'PAYMENT' && { color: COLORS.vinaupTeal },
+                    ]}
+                  >
+                    - Chi
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
+            <View style={[styles.inputItem, { flexDirection: 'row', gap: 8 }]}>
+              <View style={{ flex: 0.66 }}>
+                <View style={styles.inputWrapper}>
+                  <View style={styles.labelSection}>
+                    <Text style={styles.insideLabel}>Số lượng</Text>
+                  </View>
+                  <View style={styles.separator} />
+                  <TextInput
+                    style={[styles.inputNative, { flex: 1 }]}
+                    placeholder="0"
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+
+              <View style={{ flex: 0.34 }}>
+                <View style={styles.inputWrapper}>
+                  <View style={[styles.labelSection, { width: 45 }]}>
+                    <Text style={styles.insideLabel}>Vat</Text>
+                  </View>
+                  <View style={styles.separator} />
+                  <TextInput
+                    style={styles.inputNative}
+                    value={String(vatRate)}
+                    keyboardType="numeric"
+                    onChangeText={(val) => setVatRate(Number(val))}
+                  />
+                  <Text style={styles.unitText}>%</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.inputItem}>
               <View style={styles.inputWrapper}>
-                <View style={[styles.labelSection, { width: 45 }]}>
-                  <Text style={styles.insideLabel}>Vat</Text>
+                <View style={styles.labelSection}>
+                  <Text style={styles.insideLabel}>Ghi chú</Text>
                 </View>
                 <View style={styles.separator} />
                 <TextInput
-                  style={styles.inputNative}
-                  value={String(vatRate)}
-                  keyboardType="numeric"
-                  onChangeText={(val) => setVatRate(Number(val))}
+                  style={[styles.inputNative, { flex: 1 }]}
+                  value={note}
+                  onChangeText={setNote}
+                  placeholder="..."
+                  maxLength={40}
                 />
-                <Text style={styles.unitText}>%</Text>
               </View>
             </View>
           </View>
-
-          <View style={styles.inputItem}>
-            <View style={styles.inputWrapper}>
-              <View style={styles.labelSection}>
-                <Text style={styles.insideLabel}>Ghi chú</Text>
-              </View>
-              <View style={styles.separator} />
-              <TextInput
-                style={[styles.inputNative, { flex: 1 }]}
-                value={note}
-                onChangeText={setNote}
-                placeholder="..."
-                maxLength={40}
-              />
-            </View>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -678,5 +684,9 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
 });

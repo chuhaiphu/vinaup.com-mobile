@@ -8,95 +8,124 @@ import {
   StyleSheet,
   useWindowDimensions,
   Animated,
-  PanResponder,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-interface Option {
-  label: string;
-  value: string;
+export interface SelectOption {
+  label: string | null;
+  value: string | null;
+  leftSection?: React.ReactNode;
 }
 
 interface SelectProps {
-  options: Option[];
+  enableAnimation?: boolean;
+  options: SelectOption[];
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  heightPercentage?: number;
+  renderTrigger?: React.ReactNode;
 }
 
 export default function Select({
+  enableAnimation = true,
   options,
   value,
   onChange,
   placeholder = 'Chọn...',
   disabled = false,
+  heightPercentage = 0.8,
+  renderTrigger,
 }: SelectProps) {
   const [visible, setVisible] = useState(false);
   const { height: screenHeight } = useWindowDimensions();
-  const MIN_SHEET_HEIGHT = screenHeight * 0.4;
+  const MODAL_HEIGHT = screenHeight * heightPercentage;
+  const translateY = useRef(new Animated.Value(MODAL_HEIGHT)).current;
 
-  const sheetHeight = useRef(new Animated.Value(MIN_SHEET_HEIGHT)).current;
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        // Offset is the anchor point for movement
-        // Value is the current changing height from the offset
-        sheetHeight.extractOffset();
-      },
-      onPanResponderMove: (_, gestureState) => {
-        // Pull up means negative dy
-        // So we subtract dy to increase height
-        sheetHeight.setValue(-gestureState.dy);
-      },
-      onPanResponderRelease: () => {
-        sheetHeight.flattenOffset();
-      },
-    })
-  ).current;
+  const handleOpen = () => {
+    setVisible(true);
+    if (!enableAnimation) {
+      translateY.setValue(0);
+      return;
+    }
+    translateY.setValue(MODAL_HEIGHT);
+    Animated.timing(translateY, {
+      toValue: 0,
+      duration: 350,
+      useNativeDriver: true,
+    }).start();
+  };
 
-  const selectedLabel =
-    options.find((opt) => opt.value === value)?.label || placeholder;
+  const handleClose = (callback?: () => void) => {
+    if (!enableAnimation) {
+      callback?.();
+      setVisible(false);
+      return;
+    }
+
+    Animated.timing(translateY, {
+      toValue: MODAL_HEIGHT,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      callback?.();
+      setVisible(false);
+    });
+  };
+
+  const selectedOption = options.find((opt) => opt.value === value);
+  const selectedLabel = selectedOption?.label || placeholder;
 
   const handleSelect = (val: string) => {
-    onChange(val);
-    setVisible(false);
+    handleClose(() => {
+      onChange(val);
+    });
   };
 
   return (
     <>
       <Pressable
         style={[styles.trigger, disabled && styles.disabled]}
-        onPress={() => !disabled && setVisible(true)}
+        onPress={() => !disabled && handleOpen()}
       >
-        <Text style={styles.triggerText} numberOfLines={1}>
-          {selectedLabel}
-        </Text>
-        <FontAwesome name="caret-down" size={24} color={COLORS.vinaupTeal} />
+        {renderTrigger ? (
+          renderTrigger
+        ) : (
+          <>
+            <Text style={styles.triggerText} numberOfLines={1}>
+              {selectedLabel}
+            </Text>
+            <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />
+          </>
+        )}
       </Pressable>
 
-      {/* Bottom Sheet */}
       <Modal
         visible={visible}
         transparent
-        animationType="slide"
-        onRequestClose={() => setVisible(false)}
+        animationType="fade"
+        onRequestClose={() => handleClose()}
       >
         <View style={styles.overlay}>
-          <Pressable style={{ flex: 1 }} onPress={() => setVisible(false)} />
+          <Pressable style={styles.backdrop} onPress={() => handleClose()} />
 
-          <Animated.View style={[styles.sheetContent, { height: sheetHeight }]}>
-            <View {...panResponder.panHandlers}>
-              <View style={styles.handle} />
-              <View style={styles.header}>
-                <Text style={styles.headerTitle}>{placeholder}</Text>
-              </View>
+          <Animated.View
+            style={[
+              styles.sheetContent,
+              {
+                height: MODAL_HEIGHT,
+                transform: [{ translateY: translateY }],
+              },
+            ]}
+          >
+            <View style={styles.header}>
+              {/* <View style={styles.handle} /> */}
+              <Text style={styles.headerTitle}>{placeholder}</Text>
             </View>
+
             <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
               {options.map((item) => {
                 const isSelected = item.value === value;
@@ -104,16 +133,19 @@ export default function Select({
                   <Pressable
                     key={item.value}
                     style={[styles.optionItem, isSelected && styles.optionSelected]}
-                    onPress={() => handleSelect(item.value)}
+                    onPress={() => handleSelect(item.value || '')}
                   >
-                    <Text
-                      style={[
-                        styles.optionText,
-                        isSelected && styles.optionTextActive,
-                      ]}
-                    >
-                      {item.label}
-                    </Text>
+                    <View style={styles.optionLeftContent}>
+                      {item.leftSection}
+                      <Text
+                        style={[
+                          styles.optionText,
+                          isSelected && styles.optionTextActive,
+                        ]}
+                      >
+                        {item.label}
+                      </Text>
+                    </View>
                     {isSelected && (
                       <Ionicons
                         name="checkmark-circle"
@@ -125,7 +157,7 @@ export default function Select({
                 );
               })}
             </ScrollView>
-            <SafeAreaView />
+            <SafeAreaView edges={['bottom']} />
           </Animated.View>
         </View>
       </Modal>
@@ -137,7 +169,6 @@ const styles = StyleSheet.create({
   trigger: {
     flexDirection: 'row',
     alignItems: 'center',
-    // backgroundColor: COLORS.vinaupTeal,
     paddingHorizontal: 4,
     paddingVertical: 6,
     gap: 6,
@@ -151,13 +182,17 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
   },
   sheetContent: {
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    minHeight: '30%',
-    maxHeight: '80%',
+    width: '100%',
+    overflow: 'hidden',
   },
   handle: {
     width: 40,
@@ -165,10 +200,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#E0E0E0',
     borderRadius: 3,
     alignSelf: 'center',
-    marginTop: 10,
+    marginBottom: 10,
   },
   header: {
-    padding: 8,
+    paddingTop: 12,
+    paddingBottom: 12,
     borderBottomWidth: 0.5,
     borderBottomColor: '#EEE',
     alignItems: 'center',
@@ -187,6 +223,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
+  },
+  optionLeftContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   optionSelected: {
     backgroundColor: '#F5F5F5',

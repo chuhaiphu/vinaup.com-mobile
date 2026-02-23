@@ -11,10 +11,20 @@ export default function PersonalTabsLayout() {
       screenOptions={{
         header: () => <HomeHeader />,
         tabBarStyle: {
-          backgroundColor: COLORS.vinaupBlueDark,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          // Shadow (iOS)
+          shadowColor: '#000',
+          shadowOpacity: 0.25,
+          shadowOffset: { width: 0, height: -1 },
+          shadowRadius: 1,
+
+          // Shadow (Android)
+          elevation: 6,
+          borderTopWidth: 0,
         },
         tabBarActiveTintColor: COLORS.vinaupYellow,
-        tabBarInactiveTintColor: COLORS.vinaupWhite,
+        tabBarInactiveTintColor: COLORS.vinaupTeal,
         tabBarShowLabel: false,
         tabBarIconStyle: {
           margin: 0,
