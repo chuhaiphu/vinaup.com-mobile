@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { VinaupPenLine } from '../icons/vinaup-pen-line.native';
 import { COLORS } from '@/constants/style-constant';
 
 interface ReceiptPaymentCardProps {

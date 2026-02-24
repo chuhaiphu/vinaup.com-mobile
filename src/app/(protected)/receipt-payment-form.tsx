@@ -9,7 +9,7 @@ import {
   Pressable,
   Alert,
   KeyboardAvoidingView,
-  Platform
+  Platform,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import dayjs, { Dayjs } from 'dayjs';
@@ -24,14 +24,11 @@ import {
 } from '@/interfaces/receipt-payment-interfaces';
 import { COLORS } from '@/constants/style-constant';
 import Select from '@/components/primitives/select';
-import VinaupSaveAndExitIcon from '@/components/icons/vinaup-save-and-exit-icon.native';
+import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { getCategoriesOfCurrentUserApi } from '@/apis/category-apis';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
 import { CategoryResponse } from '@/interfaces/category-interfaces';
-import DateTimePicker, {
-  DateTimePickerAndroid,
-  DateTimePickerEvent,
-} from '@react-native-community/datetimepicker';
+import DateTimePicker from '@/components/primitives/date-time-picker';
 import VinaupLeftArrowWithFill from '@/components/icons/vinaup-left-arrow-with-fill.native';
 import VinaupRightArrowWithFill from '@/components/icons/vinaup-right-arrow-with-fill.native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -133,30 +130,6 @@ export default function ReceiptPaymentFormScreen() {
     defaultCategoryOption?.id || ''
   );
   const [isDescriptionSelectMode, setIsDescriptionSelectMode] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const onDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    if (selectedDate) {
-      setTransactionDate(dayjs(selectedDate));
-    }
-    if (Platform.OS === 'ios') {
-      setShowDatePicker(false);
-    }
-  };
-
-  const handleShowDatePicker = () => {
-    if (Platform.OS === 'android') {
-      DateTimePickerAndroid.open({
-        value: transactionDate.toDate(),
-        onChange: onDateChange,
-        mode: 'date',
-        is24Hour: true,
-        positiveButtonLabel: 'Xác nhận',
-        negativeButtonLabel: 'Hủy bỏ',
-      });
-    } else {
-      setShowDatePicker(true);
-    }
-  };
 
   // Validation state
   const [inputErrors, setInputErrors] = useState<{
@@ -289,7 +262,7 @@ export default function ReceiptPaymentFormScreen() {
                 onPress={handleSaveAndExit}
                 isLoading={isMutatingReceiptPayment}
               >
-                <VinaupSaveAndExitIcon
+                <VinaupSaveAndExit
                   width={32}
                   height={24}
                   color={COLORS.vinaupYellow}
@@ -311,30 +284,11 @@ export default function ReceiptPaymentFormScreen() {
           <View style={styles.modalBodyContainer}>
             {/* Row: Date & Category/Toggle */}
             <View style={styles.dateAndCategoryRow}>
-              <Pressable
-                onPress={handleShowDatePicker}
-                style={[params.lockDatePicker === 'true' && styles.disabled]}
-                disabled={params.lockDatePicker === 'true'}
-              >
-                <Text
-                  style={[
-                    styles.dateText,
-                    params.lockDatePicker === 'true' && {
-                      color: COLORS.vinaupMediumGray,
-                    },
-                  ]}
-                >
-                  {transactionDate.format('DD/MM/YYYY')}
-                </Text>
-              </Pressable>
-              {Platform.OS === 'ios' && showDatePicker && (
-                <DateTimePicker
-                  value={transactionDate.toDate()}
-                  mode="date"
-                  display="spinner"
-                  onChange={onDateChange}
-                />
-              )}
+              <DateTimePicker
+                value={transactionDate}
+                onChange={setTransactionDate}
+                isLocked={params.lockDatePicker === 'true'}
+              />
 
               {params.invoiceId ? (
                 <View style={styles.rowAlign}>
@@ -584,10 +538,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 12,
   },
-  dateText: {
-    color: COLORS.vinaupBlueLink,
-    fontSize: 18,
-  },
   rowAlign: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -681,9 +631,6 @@ const styles = StyleSheet.create({
   },
   iconBtn: {
     marginLeft: 25,
-  },
-  disabled: {
-    opacity: 0.5,
   },
   loadingContainer: {
     flex: 1,

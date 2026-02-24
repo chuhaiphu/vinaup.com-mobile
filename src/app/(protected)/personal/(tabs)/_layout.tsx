@@ -1,8 +1,9 @@
 import { HomeHeader } from '@/components/headers/home-header';
 import VinaupHome from '@/components/icons/vinaup-home.native';
+import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import { COLORS } from '@/constants/style-constant';
-import { Octicons } from '@expo/vector-icons';
+import { FontAwesome5, Octicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 export default function PersonalTabsLayout() {
@@ -43,6 +44,22 @@ export default function PersonalTabsLayout() {
       />
       <Tabs.Screen
         name="receipt-payment-self"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <VinaupPlusMinus width={size} height={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="receipt-payment-project-self"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="calendar-alt" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="receipt-payment-project-company"
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupPlusMinusMultiplyEqual

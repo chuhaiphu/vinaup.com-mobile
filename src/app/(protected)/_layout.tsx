@@ -25,7 +25,6 @@ export default function ProtectedLayout() {
     <Stack>
       <Stack.Screen name="personal/(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="organization/(tabs)" options={{ headerShown: false }} />
-
       <Stack.Screen
         name="receipt-payment-form"
         options={{

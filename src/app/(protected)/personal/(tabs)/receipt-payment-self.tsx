@@ -4,22 +4,25 @@ import { ReceiptPaymentCard } from '@/components/primitives/receipt-payment-card
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FlatList,
-  Image,
   Pressable,
   RefreshControl,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import VinaupAddNewIcon from '@/assets/images/vinaup-add-new-icon.png';
 import { Button } from '@/components/primitives/button';
+import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
+import { useSafeRouter } from '@/hooks/use-safe-router';
+import DateTimePicker from '@/components/primitives/date-time-picker';
+import dayjs from 'dayjs';
 
 export default function ReceiptPaymentSelf() {
-  const router = useRouter();
+  const safeRouter = useSafeRouter();
+
+  const [selectedDate, setSelectedDate] = useState(dayjs());
 
   const {
     data: receiptPayments,
@@ -30,12 +33,17 @@ export default function ReceiptPaymentSelf() {
   } = useFetchFn<ReceiptPaymentResponse[]>();
 
   useEffect(() => {
-    fetchReceiptPayments(() => getReceiptPaymentsByCurrentUserApi());
-  }, [fetchReceiptPayments]);
+    fetchReceiptPayments(() =>
+      getReceiptPaymentsByCurrentUserApi({
+        date: selectedDate.toDate(),
+      })
+    );
+  }, [fetchReceiptPayments, selectedDate]);
 
   // Navigate to receipt payment form
-  const navigateToForm = (id?: string) => {
-    router.push({
+  const navigateToForm = async (id?: string) => {
+    if (safeRouter.isNavigating) return;
+    safeRouter.safePush({
       pathname: '/(protected)/receipt-payment-form',
       params: {
         id: id,
@@ -49,7 +57,26 @@ export default function ReceiptPaymentSelf() {
 
   return (
     <View style={styles.container}>
-      {isLoading && <Loader size={64} />}
+      <View style={styles.innerHeader}>
+        <Text style={styles.screenTitle}>Thu chi cá nhân</Text>
+        <Button
+          style={styles.createButtonContainer}
+          onPress={() => navigateToForm()}
+          isLoading={safeRouter.isNavigating}
+        >
+          <VinaupAddNew width={28} height={28} />
+        </Button>
+      </View>
+      <View style={styles.dateTimePickerContainer}>
+        <DateTimePicker
+          value={selectedDate}
+          onChange={setSelectedDate}
+          displayFormat="DD/MM"
+          style={{
+            dateText: styles.dateText,
+          }}
+        />
+      </View>
       <FlatList
         data={receiptPayments}
         keyExtractor={(item) => item.id.toString()}
@@ -66,19 +93,7 @@ export default function ReceiptPaymentSelf() {
           />
         }
       />
-      <View style={styles.innerFooter}>
-        <Button
-          style={styles.createButtonContainer}
-          onPress={() => navigateToForm()}
-        >
-          <Text style={styles.createButtonText}>Tạo mới</Text>
-          <Image
-            source={VinaupAddNewIcon}
-            style={{ width: 36, height: 36 }}
-            resizeMode="contain"
-          />
-        </Button>
-      </View>
+      {isLoading && <Loader size={64} />}
     </View>
   );
 }
@@ -87,18 +102,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  createButtonText: {
-    fontSize: 18,
+  screenTitle: {
+    fontSize: 20,
   },
-  innerFooter: {
+  innerHeader: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
+    paddingVertical: 16,
+    marginHorizontal: 12,
+    borderBottomColor: COLORS.vinaupLightGray,
+    borderBottomWidth: 1,
   },
   createButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  dateTimePickerContainer: {
+    marginVertical: 12,
+    paddingHorizontal: 12,
+  },
+  dateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.vinaupTeal,
   },
 });
