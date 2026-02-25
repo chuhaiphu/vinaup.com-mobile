@@ -6,7 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Avatar } from '@/components/primitives/avatar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { COLORS } from '@/constants/style-constant';
-import Select, { SelectOption } from '@/components/primitives/select';
+import { Select, SelectOption } from '@/components/primitives/select';
 
 export const OwnerSelector = () => {
   const router = useRouter();

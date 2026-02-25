@@ -30,7 +30,7 @@ interface SelectProps {
   renderTrigger?: React.ReactNode;
 }
 
-export default function Select({
+export function Select({
   enableAnimation = true,
   options,
   value,

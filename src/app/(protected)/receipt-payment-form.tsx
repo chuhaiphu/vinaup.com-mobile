@@ -23,7 +23,7 @@ import {
   ReceiptPaymentResponse,
 } from '@/interfaces/receipt-payment-interfaces';
 import { COLORS } from '@/constants/style-constant';
-import Select from '@/components/primitives/select';
+import { Select } from '@/components/primitives/select';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { getCategoriesOfCurrentUserApi } from '@/apis/category-apis';
 import { useFetchFn } from '@/hooks/use-fetch-fn';

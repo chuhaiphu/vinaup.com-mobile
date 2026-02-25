@@ -3,10 +3,19 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { COLORS } from '@/constants/style-constant';
 
 interface ReceiptPaymentCardProps {
-  receiptPayment: ReceiptPaymentResponse;
+  receiptPayment?: ReceiptPaymentResponse;
 }
 
 export function ReceiptPaymentCard({ receiptPayment }: ReceiptPaymentCardProps) {
+  if (!receiptPayment) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <Text>Không có dữ liệu</Text>
+        </View>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -43,14 +52,22 @@ export function ReceiptPaymentCard({ receiptPayment }: ReceiptPaymentCardProps) 
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   content: {
-    padding: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
     gap: 4,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    // iOS Shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    // Android Shadow
+    elevation: 2,
   },
   topRow: {
     flexDirection: 'row',

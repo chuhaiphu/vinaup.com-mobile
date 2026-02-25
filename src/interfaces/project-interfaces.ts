@@ -1,7 +1,7 @@
-import { ProjectStatus, ProjectType } from '@/constants/project-constants';
 import { OrganizationResponse } from './organization-interfaces';
 import { UserResponse } from './user-interfaces';
 import { OrganizationCustomerResponse } from './organization-customer-interfaces';
+import { ProjectStatus, ProjectType } from '@/constants/project-constants';
 
 export interface ProjectResponse {
   id: string;

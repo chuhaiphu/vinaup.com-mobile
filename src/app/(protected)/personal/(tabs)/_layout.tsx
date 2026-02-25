@@ -1,9 +1,9 @@
 import { HomeHeader } from '@/components/headers/home-header';
+import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
-import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import { COLORS } from '@/constants/style-constant';
-import { FontAwesome5, Octicons } from '@expo/vector-icons';
+import { Octicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 export default function PersonalTabsLayout() {
@@ -11,19 +11,6 @@ export default function PersonalTabsLayout() {
     <Tabs
       screenOptions={{
         header: () => <HomeHeader />,
-        tabBarStyle: {
-          borderTopLeftRadius: 16,
-          borderTopRightRadius: 16,
-          // Shadow (iOS)
-          shadowColor: '#000',
-          shadowOpacity: 0.25,
-          shadowOffset: { width: 0, height: -1 },
-          shadowRadius: 1,
-
-          // Shadow (Android)
-          elevation: 6,
-          borderTopWidth: 0,
-        },
         tabBarActiveTintColor: COLORS.vinaupYellow,
         tabBarInactiveTintColor: COLORS.vinaupTeal,
         tabBarShowLabel: false,
@@ -51,22 +38,10 @@ export default function PersonalTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="receipt-payment-project-self"
+        name="receipt-payment-project"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="calendar-alt" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="receipt-payment-project-company"
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <VinaupPlusMinusMultiplyEqual
-              width={size}
-              height={size}
-              color={color}
-            />
+            <VinaupCalendarIcon width={size} height={size} color={color} />
           ),
         }}
       />

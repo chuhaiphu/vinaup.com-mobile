@@ -7,6 +7,7 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
+  View,
 } from 'react-native';
 import dayjs, { Dayjs } from 'dayjs';
 import NativeDatetimePicker, {
@@ -16,6 +17,8 @@ import NativeDatetimePicker, {
 import { COLORS } from '@/constants/style-constant';
 
 interface DateTimePickerProps {
+  leftSection?: React.ReactNode;
+  rightSection?: React.ReactNode;
   value: Dayjs;
   onChange?: (date: Dayjs) => void;
   isLocked?: boolean;
@@ -27,14 +30,16 @@ interface DateTimePickerProps {
   };
 }
 
-const DateTimePicker: React.FC<DateTimePickerProps> = ({
+export function DateTimePicker({
+  leftSection,
+  rightSection,
   value,
   onChange,
   isLocked = false,
   disabled = false,
   displayFormat = 'DD/MM/YYYY',
   style,
-}) => {
+}: DateTimePickerProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
@@ -67,9 +72,10 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     <>
       <Pressable
         onPress={handleShowDatePicker}
-        style={[isDisabled && styles.disabled, style?.disabled]}
+        style={[isDisabled && styles.disabled, style?.disabled, styles.container]}
         disabled={isDisabled}
       >
+        {leftSection && <View style={styles.leftSection}>{leftSection}</View>}
         <Text
           style={[
             styles.dateText,
@@ -81,6 +87,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         >
           {value.format(displayFormat)}
         </Text>
+        {rightSection && <View style={styles.rightSection}>{rightSection}</View>}
       </Pressable>
 
       {Platform.OS === 'ios' && showDatePicker && (
@@ -93,15 +100,25 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
       )}
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   dateText: {
     color: COLORS.vinaupBlueLink,
     fontSize: 18,
   },
   disabled: {
     opacity: 0.5,
+  },
+  leftSection: {
+    marginRight: 8,
+  },
+  rightSection: {
+    marginLeft: 8,
   },
 });
 

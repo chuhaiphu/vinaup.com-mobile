@@ -14,8 +14,8 @@ export const COLORS = {
   vinaupOrange: '#ff7629',
   vinaupRed: '#da401e',
   vinaupYellow: '#fcbe11',
-  vinaupSoftYellow: 'rgba(252, 190, 17, 0.5)',
-  vinaupLightGreen: 'rgba(206, 244, 218, 0.5)',
+  vinaupSoftYellow: 'rgba(252, 190, 17, 1)',
+  vinaupLightGreen: 'rgba(206, 244, 218, 1)',
   vinaupSoftGreen: '#aff4c6',
   vinaupTeal: '#005c62',
 

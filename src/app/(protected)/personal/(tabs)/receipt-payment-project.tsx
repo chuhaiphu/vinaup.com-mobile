@@ -1,9 +1,6 @@
-import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
 import Loader from '@/components/primitives/loader';
-import { ReceiptPaymentCard } from '@/components/primitives/receipt-payment-card';
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect, useState } from 'react';
 import {
   FlatList,
@@ -16,30 +13,36 @@ import {
 import { Button } from '@/components/primitives/button';
 import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { useSafeRouter } from '@/hooks/use-safe-router';
-import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
+import { TextSwitcher } from '@/components/primitives/text-switcher';
+import { ProjectResponse } from '@/interfaces/project-interfaces';
+import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
+import { ProjectCard } from '@/components/primitives/project-card';
+import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 
-export default function ReceiptPaymentSelf() {
+export default function ReceiptPaymentProject() {
   const safeRouter = useSafeRouter();
-
   const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [textIndex, setTextIndex] = useState(0);
 
   const {
-    data: receiptPayments,
+    data: projects,
     isLoading,
-    executeFetchFn: fetchReceiptPayments,
-    isRefreshing,
-    refreshFetchFn,
-  } = useFetchFn<ReceiptPaymentResponse[]>();
+    executeFetchFn: fetchProjects,
+    isRefreshing: isRefreshingProjects,
+    refreshFetchFn: refreshProjects,
+  } = useFetchFn<ProjectResponse[]>();
 
   useEffect(() => {
-    fetchReceiptPayments(() =>
-      getReceiptPaymentsByCurrentUserApi({
-        date: selectedDate.toDate(),
+    fetchProjects(() =>
+      getProjectsOfCurrentUserApi({
+        type: textIndex === 0 ? 'SELF' : 'COMPANY',
+        month: selectedDate.month() + 1,
+        year: selectedDate.year(),
       })
     );
-  }, [fetchReceiptPayments, selectedDate]);
+  }, [fetchProjects, selectedDate, textIndex]);
 
   // Navigate to receipt payment form
   const navigateToForm = async (id?: string) => {
@@ -60,7 +63,7 @@ export default function ReceiptPaymentSelf() {
     <View style={styles.container}>
       <View>
         <View style={styles.dateTimePickerContainer}>
-          <DateTimePicker
+          <MonthYearPicker
             leftSection={
               <FontAwesome5
                 name="calendar-alt"
@@ -70,7 +73,7 @@ export default function ReceiptPaymentSelf() {
             }
             value={selectedDate}
             onChange={setSelectedDate}
-            displayFormat="DD/MM"
+            displayFormat="MM/YYYY"
             style={{
               dateText: styles.dateText,
             }}
@@ -79,7 +82,18 @@ export default function ReceiptPaymentSelf() {
         <View style={styles.titleRow}>
           <View style={styles.screenTitleContainer}>
             <Text style={styles.left}>Thu chi </Text>
-            <Text style={styles.right}>cá nhân</Text>
+            <TextSwitcher
+              textPair={['Tiền công', 'Dự án']}
+              currentIndex={textIndex}
+              onToggle={() => setTextIndex(textIndex === 0 ? 1 : 0)}
+              rightSection={
+                <FontAwesome6
+                  name="caret-down"
+                  size={20}
+                  color={COLORS.vinaupTeal}
+                />
+              }
+            />
           </View>
           <Button
             style={styles.createButtonContainer}
@@ -91,19 +105,19 @@ export default function ReceiptPaymentSelf() {
         </View>
       </View>
       <FlatList
-        data={receiptPayments}
+        data={projects}
         contentContainerStyle={{ paddingVertical: 8 }}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Pressable onPress={() => navigateToForm(item.id)}>
-            <ReceiptPaymentCard receiptPayment={item} />
+            <ProjectCard project={item} />
           </Pressable>
         )}
         refreshControl={
           <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refreshFetchFn}
+            refreshing={isRefreshingProjects}
+            onRefresh={refreshProjects}
             colors={[COLORS.vinaupTeal]}
           />
         }
