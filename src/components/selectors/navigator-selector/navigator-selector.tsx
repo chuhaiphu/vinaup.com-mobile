@@ -21,7 +21,7 @@ export default function NavigatorSelector() {
     },
     {
       value: '/personal/receipt-payment-self',
-      label: 'Thu chi cá nhân',
+      label: 'Thu chi ngày',
       leftSection: (
         <VinaupPlusMinus width={24} height={24} color={COLORS.vinaupYellow} />
       ),

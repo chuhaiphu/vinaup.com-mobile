@@ -1,6 +1,6 @@
 import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
 import Loader from '@/components/primitives/loader';
-import { ReceiptPaymentCard } from '@/components/primitives/receipt-payment-card';
+import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
@@ -41,8 +41,7 @@ export default function ReceiptPaymentSelf() {
     );
   }, [fetchReceiptPayments, selectedDate]);
 
-  // Navigate to receipt payment form
-  const navigateToForm = async (id?: string) => {
+  const navigateToFormScreen = async (id?: string) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
       pathname: '/(protected)/receipt-payment-form',
@@ -79,14 +78,14 @@ export default function ReceiptPaymentSelf() {
         <View style={styles.titleRow}>
           <View style={styles.screenTitleContainer}>
             <Text style={styles.left}>Thu chi </Text>
-            <Text style={styles.right}>cá nhân</Text>
+            <Text style={styles.right}>ngày</Text>
           </View>
           <Button
             style={styles.createButtonContainer}
-            onPress={() => navigateToForm()}
+            onPress={() => navigateToFormScreen()}
             isLoading={safeRouter.isNavigating}
           >
-            <VinaupAddNew width={28} height={28} />
+            <VinaupAddNew width={32} height={32} />
           </Button>
         </View>
       </View>
@@ -96,7 +95,7 @@ export default function ReceiptPaymentSelf() {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Pressable onPress={() => navigateToForm(item.id)}>
+          <Pressable onPress={() => navigateToFormScreen(item.id)}>
             <ReceiptPaymentCard receiptPayment={item} />
           </Pressable>
         )}
@@ -150,7 +149,6 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 18,
-    fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
   separator: {

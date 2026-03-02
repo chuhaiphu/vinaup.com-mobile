@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
-import { ProjectStatusDisplayMap } from '@/constants/project-constants';
+import { ProjectStatusDisplay } from '@/constants/project-constants';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect } from 'react';
@@ -65,7 +65,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </View>
         <View style={styles.right}>
           <Text style={styles.projectStatusText}>
-            {ProjectStatusDisplayMap[project.status]}
+            {ProjectStatusDisplay[project.status]}
           </Text>
         </View>
       </View>

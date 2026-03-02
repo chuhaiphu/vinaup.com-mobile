@@ -124,7 +124,7 @@ export default function PersonalIndexScreen() {
           style={[styles.cardRow, styles.cardRowDivider]}
           onPress={() => handlePress('personal-cashflow')}
         >
-          <Text style={styles.cardLabel}>Thu chi cá nhân</Text>
+          <Text style={styles.cardLabel}>Thu chi ngày</Text>
           <Text style={styles.cardValue}>
             {calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining}
           </Text>

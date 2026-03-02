@@ -26,7 +26,7 @@ export default function ProtectedLayout() {
       <Stack.Screen name="personal/(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="organization/(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="receipt-payment-form"
+        name="receipt-payment-detail"
         options={{
           title: 'Chi tiết Thu / Chi',
           headerStyle: { backgroundColor: COLORS.vinaupTeal },

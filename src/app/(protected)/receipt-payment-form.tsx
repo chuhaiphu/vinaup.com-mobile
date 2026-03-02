@@ -11,9 +11,10 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StackWithHeader } from '@/components/headers/stack-with-header';
 import dayjs, { Dayjs } from 'dayjs';
-import { MaterialCommunityIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import {
   ReceiptPaymentTransactionType,
   ReceiptPaymentType,
@@ -24,14 +25,12 @@ import {
 } from '@/interfaces/receipt-payment-interfaces';
 import { COLORS } from '@/constants/style-constant';
 import { Select } from '@/components/primitives/select';
-import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { getCategoriesOfCurrentUserApi } from '@/apis/category-apis';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
 import { CategoryResponse } from '@/interfaces/category-interfaces';
-import DateTimePicker from '@/components/primitives/date-time-picker';
+import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import VinaupLeftArrowWithFill from '@/components/icons/vinaup-left-arrow-with-fill.native';
 import VinaupRightArrowWithFill from '@/components/icons/vinaup-right-arrow-with-fill.native';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import {
   createReceiptPaymentApi,
@@ -39,7 +38,6 @@ import {
   getReceiptPaymentByIdApi,
   updateReceiptPaymentApi,
 } from '@/apis/receipt-payment-apis';
-import { Button } from '@/components/primitives/button';
 import Loader from '@/components/primitives/loader';
 
 export default function ReceiptPaymentFormScreen() {
@@ -222,58 +220,12 @@ export default function ReceiptPaymentFormScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.screenContainer}
     >
-      <Stack.Screen
-        options={{
-          title: params.id ? 'Sửa Thu / Chi' : 'Tạo Thu / Chi',
-          headerStyle: { backgroundColor: COLORS.vinaupBlueDark },
-          headerTintColor: '#fff',
-          headerLeft: () => (
-            <Pressable
-              onPress={() => router.back()}
-              style={{
-                alignItems: 'center',
-                marginLeft: -10,
-                marginRight: 4,
-                flexDirection: 'row',
-              }}
-            >
-              <Ionicons name="chevron-back" size={32} color="#fff" />
-            </Pressable>
-          ),
-          headerRight: () => (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 16,
-              }}
-            >
-              {params.mode === 'update' && (
-                <Button onPress={handleDelete} isLoading={isDeletingReceiptPayment}>
-                  <FontAwesome
-                    name="trash-o"
-                    size={24}
-                    color={COLORS.vinaupWhite}
-                  />
-                </Button>
-              )}
-
-              <Button
-                onPress={handleSaveAndExit}
-                isLoading={isMutatingReceiptPayment}
-              >
-                <VinaupSaveAndExit
-                  width={32}
-                  height={24}
-                  color={COLORS.vinaupYellow}
-                />
-              </Button>
-            </View>
-          ),
-          headerTitleStyle: {
-            fontSize: 18,
-          },
-        }}
+      <StackWithHeader
+        title={params.id ? 'Sửa Thu / Chi' : 'Tạo Thu / Chi'}
+        onDelete={params.mode === 'update' ? handleDelete : undefined}
+        isDeleting={isDeletingReceiptPayment}
+        onSave={handleSaveAndExit}
+        isSaving={isMutatingReceiptPayment}
       />
       {isFetchingReceiptPayment ? (
         <View style={styles.loadingContainer}>

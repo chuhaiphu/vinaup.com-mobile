@@ -18,13 +18,16 @@ import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { TextSwitcher } from '@/components/primitives/text-switcher';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
-import { ProjectCard } from '@/components/primitives/project-card';
+import { ProjectCard } from '@/components/cards/project-card';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
+import { Select } from '@/components/primitives/select';
+import { ProjectStatusOptions } from '@/constants/project-constants';
 
 export default function ReceiptPaymentProject() {
   const safeRouter = useSafeRouter();
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [textIndex, setTextIndex] = useState(0);
+  const [projectTypeIndex, setProjectTypeIndex] = useState(0);
+  const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
   const {
     data: projects,
@@ -32,37 +35,35 @@ export default function ReceiptPaymentProject() {
     executeFetchFn: fetchProjects,
     isRefreshing: isRefreshingProjects,
     refreshFetchFn: refreshProjects,
-  } = useFetchFn<ProjectResponse[]>();
+  } = useFetchFn<ProjectResponse[]>({
+    invalidateTags: ['personal-receipt-payment-project'],
+  });
 
   useEffect(() => {
     fetchProjects(() =>
       getProjectsOfCurrentUserApi({
-        type: textIndex === 0 ? 'SELF' : 'COMPANY',
+        type: projectTypeIndex === 0 ? 'SELF' : 'COMPANY',
+        status: projectStatusFilter,
         month: selectedDate.month() + 1,
         year: selectedDate.year(),
       })
     );
-  }, [fetchProjects, selectedDate, textIndex]);
+  }, [fetchProjects, selectedDate, projectTypeIndex, projectStatusFilter]);
 
-  // Navigate to receipt payment form
-  const navigateToForm = async (id?: string) => {
+  const navigateToFormScreen = async (id?: string) => {
     if (safeRouter.isNavigating) return;
-    safeRouter.safePush({
-      pathname: '/(protected)/receipt-payment-form',
-      params: {
-        id: id,
-        mode: id ? 'update' : 'create',
-        lockDatePicker: 'false',
-        allowEditCategory: 'true',
-        receiptPaymentType: 'PAYMENT',
-      },
-    });
+    if (id) {
+      safeRouter.safePush({
+        pathname: '/(protected)/personal/project/[id]/project-detail',
+        params: { id },
+      });
+    }
   };
 
   return (
     <View style={styles.container}>
       <View>
-        <View style={styles.dateTimePickerContainer}>
+        <View style={styles.projectFilterContainer}>
           <MonthYearPicker
             leftSection={
               <FontAwesome5
@@ -78,14 +79,22 @@ export default function ReceiptPaymentProject() {
               dateText: styles.dateText,
             }}
           />
+          <View style={styles.statusFilter}>
+            <Select
+              options={ProjectStatusOptions}
+              value={projectStatusFilter}
+              onChange={(value) => setProjectStatusFilter(value)}
+              placeholder="Trạng thái"
+            />
+          </View>
         </View>
         <View style={styles.titleRow}>
           <View style={styles.screenTitleContainer}>
             <Text style={styles.left}>Thu chi </Text>
             <TextSwitcher
               textPair={['Tiền công', 'Dự án']}
-              currentIndex={textIndex}
-              onToggle={() => setTextIndex(textIndex === 0 ? 1 : 0)}
+              currentIndex={projectTypeIndex}
+              onToggle={() => setProjectTypeIndex(projectTypeIndex === 0 ? 1 : 0)}
               rightSection={
                 <FontAwesome6
                   name="caret-down"
@@ -97,10 +106,10 @@ export default function ReceiptPaymentProject() {
           </View>
           <Button
             style={styles.createButtonContainer}
-            onPress={() => navigateToForm()}
+            onPress={() => navigateToFormScreen()}
             isLoading={safeRouter.isNavigating}
           >
-            <VinaupAddNew width={28} height={28} />
+            <VinaupAddNew width={32} height={32} />
           </Button>
         </View>
       </View>
@@ -110,7 +119,7 @@ export default function ReceiptPaymentProject() {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Pressable onPress={() => navigateToForm(item.id)}>
+          <Pressable onPress={() => navigateToFormScreen(item.id)}>
             <ProjectCard project={item} />
           </Pressable>
         )}
@@ -158,13 +167,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  dateTimePickerContainer: {
+  projectFilterContainer: {
     marginVertical: 12,
     paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  statusFilter: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   dateText: {
     fontSize: 18,
-    fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
   separator: {

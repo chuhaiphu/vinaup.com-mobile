@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,14 @@ import {
   ScrollView,
   StyleSheet,
   useWindowDimensions,
-  Animated,
+  ActivityIndicator,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
+
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +26,7 @@ export interface SelectOption {
 }
 
 interface SelectProps {
+  isLoading?: boolean;
   enableAnimation?: boolean;
   options: SelectOption[];
   value: string;
@@ -32,6 +39,7 @@ interface SelectProps {
 
 export function Select({
   enableAnimation = true,
+  isLoading = false,
   options,
   value,
   onChange,
@@ -43,36 +51,31 @@ export function Select({
   const [visible, setVisible] = useState(false);
   const { height: screenHeight } = useWindowDimensions();
   const MODAL_HEIGHT = screenHeight * heightPercentage;
-  const translateY = useRef(new Animated.Value(MODAL_HEIGHT)).current;
-
+  const translateY = useSharedValue(MODAL_HEIGHT);
+  const finalizeClose = (callback?: () => void) => {
+    callback?.();
+    setVisible(false);
+  };
   const handleOpen = () => {
     setVisible(true);
     if (!enableAnimation) {
-      translateY.setValue(0);
+      translateY.value = 0;
       return;
     }
-    translateY.setValue(MODAL_HEIGHT);
-    Animated.timing(translateY, {
-      toValue: 0,
-      duration: 350,
-      useNativeDriver: true,
-    }).start();
+    translateY.value = MODAL_HEIGHT;
+    translateY.value = withTiming(0, { duration: 350 });
   };
 
   const handleClose = (callback?: () => void) => {
     if (!enableAnimation) {
-      callback?.();
-      setVisible(false);
+      finalizeClose(callback);
       return;
     }
 
-    Animated.timing(translateY, {
-      toValue: MODAL_HEIGHT,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      callback?.();
-      setVisible(false);
+    translateY.value = withTiming(MODAL_HEIGHT, { duration: 200 }, (finished) => {
+      if (finished) {
+        scheduleOnRN(finalizeClose, callback);
+      }
     });
   };
 
@@ -87,22 +90,27 @@ export function Select({
 
   return (
     <>
-      <Pressable
-        style={[styles.trigger, disabled && styles.disabled]}
-        onPress={() => !disabled && handleOpen()}
-      >
-        {renderTrigger ? (
-          renderTrigger
-        ) : (
-          <>
-            <Text style={styles.triggerText} numberOfLines={1}>
-              {selectedLabel}
-            </Text>
-            <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />
-          </>
-        )}
-      </Pressable>
-
+      {isLoading ? (
+        <View style={[styles.trigger]}>
+          <ActivityIndicator size="small" color={COLORS.vinaupTeal} />
+        </View>
+      ) : (
+        <Pressable
+          style={[styles.trigger, disabled && styles.disabled]}
+          onPress={() => !disabled && handleOpen()}
+        >
+          {renderTrigger ? (
+            renderTrigger
+          ) : (
+            <>
+              <Text style={styles.triggerText} numberOfLines={1}>
+                {selectedLabel}
+              </Text>
+              <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />
+            </>
+          )}
+        </Pressable>
+      )}
       <Modal
         visible={visible}
         transparent
@@ -169,8 +177,6 @@ const styles = StyleSheet.create({
   trigger: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 4,
-    paddingVertical: 6,
     gap: 6,
   },
   triggerText: {

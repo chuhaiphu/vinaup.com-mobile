@@ -26,6 +26,7 @@ export async function api<T>(
   try {
     const response = await fetch(url, config);
     console.log('url', url);
+    console.log('method', config.method);
 
     // Handle errors from Backend responses
     if (!response.ok) {

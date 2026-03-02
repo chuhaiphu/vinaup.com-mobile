@@ -2,18 +2,23 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ApiError } from '@/utils/classes';
 import { HttpResponse } from '@/interfaces/_base-interfaces';
+import { DeviceEventEmitter } from 'react-native';
 
 interface MutationState<T> {
   data: T | null;
   isMutating: boolean;
 }
 
-interface MutationOptions<T> {
+interface MutationOptions {
+  invalidatesTags?: string[];
+}
+
+interface ExecuteMutationOptions<T> {
   onSuccess?: (data: T) => void;
   onError?: (error: ApiError) => void;
 }
 
-export function useMutationFn<T>() {
+export function useMutationFn<T>(options?: MutationOptions) {
   const [state, setState] = useState<MutationState<T>>({
     data: null,
     isMutating: false,
@@ -29,7 +34,7 @@ export function useMutationFn<T>() {
   const executeMutationFn = useCallback(
     async (
       mutationFn: () => Promise<HttpResponse<T>>,
-      options?: MutationOptions<T>
+      executeMutationOptions?: ExecuteMutationOptions<T>
     ): Promise<HttpResponse<T> | null> => {
       setState((prev) => ({
         ...prev,
@@ -38,15 +43,19 @@ export function useMutationFn<T>() {
 
       try {
         const response = await mutationFn();
-
+        // demo timout delay
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         if (isMounted.current) {
           setState({
             data: response.data || null,
             isMutating: false,
           });
-          if (response.data) options?.onSuccess?.(response.data);
+          options?.invalidatesTags?.forEach((tag) => {
+            DeviceEventEmitter.emit(tag);
+          });
+          if (response.data) executeMutationOptions?.onSuccess?.(response.data);
           // for operations that return no data (e.g., delete)
-          else options?.onSuccess?.(null as unknown as T);
+          else executeMutationOptions?.onSuccess?.(null as unknown as T);
         }
         return response;
       } catch (error) {
@@ -56,12 +65,12 @@ export function useMutationFn<T>() {
             data: null,
             isMutating: false,
           });
-          if (apiError) options?.onError?.(apiError);
+          if (apiError) executeMutationOptions?.onError?.(apiError);
         }
         return null;
       }
     },
-    []
+    [options?.invalidatesTags]
   );
 
   const reset = useCallback(() => {

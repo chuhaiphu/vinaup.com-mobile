@@ -1,7 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ApiError } from '@/utils/classes';
 import { HttpResponse } from '@/interfaces/_base-interfaces';
+import { DeviceEventEmitter } from 'react-native';
 
+interface FetchOptions {
+  invalidateTags?: string[];
+}
 interface FetchState<T> {
   data: T | null;
   isLoading: boolean;
@@ -9,7 +13,7 @@ interface FetchState<T> {
   error: ApiError | null;
 }
 
-export function useFetchFn<T>() {
+export function useFetchFn<T>(options?: FetchOptions) {
   const [state, setState] = useState<FetchState<T>>({
     data: null,
     isLoading: false,
@@ -20,13 +24,14 @@ export function useFetchFn<T>() {
   // Incase user navigates away from the curernt component (screen)
   // This will prevent error of setting state on unmounted component
   const isMounted = useRef<boolean>(true);
+  const lastFetchFn = useRef<() => Promise<HttpResponse<T>>>(null);
+
   useEffect(() => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
     };
   }, []);
-  const lastFetchFn = useRef<() => Promise<HttpResponse<T>>>(null);
 
   const execute = useCallback(
     async (
@@ -83,6 +88,17 @@ export function useFetchFn<T>() {
     }
     return null;
   }, [execute]);
+
+  useEffect(() => {
+    if (!options?.invalidateTags || options.invalidateTags.length === 0) return;
+
+    const subscriptions = options.invalidateTags.map((tag) =>
+      DeviceEventEmitter.addListener(tag, () => {
+        refreshFetchFn();
+      })
+    );
+    return () => subscriptions.forEach((sub) => sub.remove());
+  }, [options?.invalidateTags, refreshFetchFn]);
 
   return { ...state, executeFetchFn, refreshFetchFn };
 }
