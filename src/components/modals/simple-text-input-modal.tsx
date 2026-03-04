@@ -8,7 +8,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '../primitives/button';
 import { KeyboardSafeAvoidingView } from '../primitives/keyboard-safe-avoiding-view';
 
@@ -31,10 +31,6 @@ export function SimpleTextInputModal({
 }: SimpleTextInputModalProps) {
   const [tempValue, setTempValue] = useState(value || '');
   const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    if (visible) setTempValue(value || '');
-  }, [visible, value]);
 
   const handleConfirm = () => {
     Keyboard.dismiss();

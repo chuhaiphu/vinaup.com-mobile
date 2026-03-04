@@ -57,12 +57,22 @@ export function StackWithHeader({
           headerRight: () => (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
               {onDelete && (
-                <Button onPress={onDelete} isLoading={isDeleting}>
+                <Button
+                  onPress={onDelete}
+                  isLoading={isDeleting}
+                  loaderStyle={{
+                    color: COLORS.vinaupWhite,
+                  }}
+                >
                   <FontAwesome name="trash-o" size={24} color="#fff" />
                 </Button>
               )}
               {onSave && (
-                <Button onPress={onSave} isLoading={isSaving}>
+                <Button
+                  onPress={onSave}
+                  isLoading={isSaving}
+                  loaderStyle={{ color: COLORS.vinaupWhite }}
+                >
                   <VinaupSaveAndExit
                     width={32}
                     height={24}

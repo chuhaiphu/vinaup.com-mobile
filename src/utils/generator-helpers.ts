@@ -10,3 +10,7 @@ export function generateDateRange(start: Date, end: Date): dayjs.Dayjs[] {
   }
   return result;
 }
+
+export const generateLocalePriceFormat = (price: number, locale: Intl.LocalesArgument): string => {
+  return price.toLocaleString(locale);
+};

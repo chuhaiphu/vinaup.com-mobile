@@ -14,6 +14,8 @@ interface TextSwitcherProps {
   leftSection?: React.ReactNode;
   rightSection?: React.ReactNode;
   textPair: [string, string];
+  iconPair?: [React.ReactNode, React.ReactNode];
+  iconPosition?: 'left' | 'right';
   currentIndex: number;
   onToggle: () => void;
   style?: {
@@ -26,14 +28,19 @@ export function TextSwitcher({
   leftSection,
   rightSection,
   textPair,
+  iconPair,
   currentIndex,
+  iconPosition = 'left',
   onToggle,
   style,
 }: TextSwitcherProps) {
+  const currentIcon = iconPair ? iconPair[currentIndex] : null;
   return (
     <Pressable onPress={onToggle} style={[styles.container, style?.container]}>
       {leftSection && <View>{leftSection}</View>}
+      {iconPosition === 'left' && <View>{currentIcon}</View>}
       <Text style={[styles.text, style?.text]}>{textPair[currentIndex]}</Text>
+      {iconPosition === 'right' && <View>{currentIcon}</View>}
       {rightSection && <View>{rightSection}</View>}
     </Pressable>
   );
@@ -47,7 +54,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 18,
-    fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
 });

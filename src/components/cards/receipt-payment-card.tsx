@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
   descriptionContainer: {},
   descriptionText: {
     fontSize: 18,
+    fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
   action: {},

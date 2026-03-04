@@ -7,26 +7,24 @@ import {
   Pressable,
   RefreshControl,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
-import { Button } from '@/components/primitives/button';
-import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import dayjs from 'dayjs';
-import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
-import { TextSwitcher } from '@/components/primitives/text-switcher';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
 import { ProjectCard } from '@/components/cards/project-card';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function ReceiptPaymentProject() {
   const safeRouter = useSafeRouter();
+  const params = useLocalSearchParams<{ type?: 'SELF' | 'COMPANY' }>();
+  console.log('ReceiptPaymentProject rendered with params:', params);
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [projectTypeIndex, setProjectTypeIndex] = useState(0);
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
   const {
@@ -36,19 +34,19 @@ export default function ReceiptPaymentProject() {
     isRefreshing: isRefreshingProjects,
     refreshFetchFn: refreshProjects,
   } = useFetchFn<ProjectResponse[]>({
-    invalidateTags: ['personal-receipt-payment-project'],
+    tags: ['personal-receipt-payment-project'],
   });
 
   useEffect(() => {
     fetchProjects(() =>
       getProjectsOfCurrentUserApi({
-        type: projectTypeIndex === 0 ? 'SELF' : 'COMPANY',
+        type: params.type || 'SELF',
         status: projectStatusFilter,
         month: selectedDate.month() + 1,
         year: selectedDate.year(),
       })
     );
-  }, [fetchProjects, selectedDate, projectTypeIndex, projectStatusFilter]);
+  }, [fetchProjects, selectedDate, params.type, projectStatusFilter]);
 
   const navigateToFormScreen = async (id?: string) => {
     if (safeRouter.isNavigating) return;
@@ -85,32 +83,14 @@ export default function ReceiptPaymentProject() {
               value={projectStatusFilter}
               onChange={(value) => setProjectStatusFilter(value)}
               placeholder="Trạng thái"
+              style={{
+                triggerText: {
+                  fontSize: 16,
+                  color: COLORS.vinaupBlack,
+                },
+              }}
             />
           </View>
-        </View>
-        <View style={styles.titleRow}>
-          <View style={styles.screenTitleContainer}>
-            <Text style={styles.left}>Thu chi </Text>
-            <TextSwitcher
-              textPair={['Tiền công', 'Dự án']}
-              currentIndex={projectTypeIndex}
-              onToggle={() => setProjectTypeIndex(projectTypeIndex === 0 ? 1 : 0)}
-              rightSection={
-                <FontAwesome6
-                  name="caret-down"
-                  size={20}
-                  color={COLORS.vinaupTeal}
-                />
-              }
-            />
-          </View>
-          <Button
-            style={styles.createButtonContainer}
-            onPress={() => navigateToFormScreen()}
-            isLoading={safeRouter.isNavigating}
-          >
-            <VinaupAddNew width={32} height={32} />
-          </Button>
         </View>
       </View>
       <FlatList
@@ -147,20 +127,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
-  },
-  screenTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    backgroundColor: COLORS.vinaupLightGreen,
-    borderRadius: 10,
   },
   createButtonContainer: {
     flexDirection: 'row',

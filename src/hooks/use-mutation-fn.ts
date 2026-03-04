@@ -43,7 +43,6 @@ export function useMutationFn<T>(options?: MutationOptions) {
 
       try {
         const response = await mutationFn();
-        // demo timout delay
         await new Promise((resolve) => setTimeout(resolve, 2000));
         if (isMounted.current) {
           setState({

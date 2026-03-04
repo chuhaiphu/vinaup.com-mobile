@@ -14,13 +14,14 @@ import {
 } from '@/apis/project-apis';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { ProjectInfoCard } from '@/components/cards/project-info-card';
+import { ProjectHeaderCard } from '@/components/cards/project-header-card';
 import { ReceiptPaymentProjectList } from '@/components/cards/receipt-payment-project-list';
 import Loader from '@/components/primitives/loader';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
 import { ProjectFooterCard } from '@/components/cards/project-footer-card';
+import { COLORS } from '@/constants/style-constant';
 
 export default function ProjectDetailScreen() {
   const router = useRouter();
@@ -124,10 +125,22 @@ export default function ProjectDetailScreen() {
                 handleUpdateProject({ status: value as ProjectStatus })
               }
               placeholder="Trạng thái"
+              style={{
+                triggerText: {
+                  fontSize: 16,
+                  color: COLORS.vinaupBlack,
+                },
+              }}
             />
           </View>
         </View>
-        <ProjectInfoCard project={project ?? undefined} />
+        <ProjectHeaderCard
+          project={project ?? undefined}
+          isLoading={isUpdatingProject}
+          onConfirm={(data, onSuccessCallback) =>
+            handleUpdateProject(data, onSuccessCallback)
+          }
+        />
         {project && (
           <ReceiptPaymentProjectList
             onRefresh={() => {
@@ -141,10 +154,16 @@ export default function ProjectDetailScreen() {
           />
         )}
         <ProjectFooterCard
-          note={project?.note}
+          project={project ?? undefined}
           onNoteConfirm={(note, onSuccessCallback) =>
             handleUpdateProject({ note }, onSuccessCallback)
           }
+          onOrgCusConfirm={(orgName, cusName, onSuccessCallback) => {
+            handleUpdateProject(
+              { externalOrganizationName: orgName, externalCustomerName: cusName },
+              onSuccessCallback
+            );
+          }}
           isLoading={isUpdatingProject}
         />
       </View>

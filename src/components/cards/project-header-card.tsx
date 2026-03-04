@@ -2,14 +2,25 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
-import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
+import { useState } from 'react';
+import { ProjectInfoModal } from '@/components/modals/project-info-modal';
 
-interface ProjectInfoCardProps {
+interface ProjectHeaderCardProps {
   project?: ProjectResponse;
-  onEdit?: (project: ProjectResponse) => void;
+  isLoading?: boolean;
+  onConfirm?: (
+    data: { description: string; startDate: Date; endDate: Date },
+    onSuccessCallback?: () => void
+  ) => void;
 }
 
-export function ProjectInfoCard({ project, onEdit }: ProjectInfoCardProps) {
+export function ProjectHeaderCard({
+  project,
+  isLoading,
+  onConfirm,
+}: ProjectHeaderCardProps) {
+  const [modalVisible, setModalVisible] = useState(false);
+
   if (!project) {
     return (
       <View style={styles.container}>
@@ -40,20 +51,36 @@ export function ProjectInfoCard({ project, onEdit }: ProjectInfoCardProps) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.mainInfo}>
-        <View style={styles.leftInfo}>
-          <Text style={styles.entityName}>Tên: {project.description}</Text>
-          <View style={styles.dateRow}>{getDateRangeText()}</View>
+    <>
+      <Pressable style={styles.container} onPress={() => setModalVisible(true)}>
+        <View style={styles.mainInfo}>
+          <View style={styles.leftInfo}>
+            <Text style={styles.entityName}>Tên: {project.description}</Text>
+            <View style={styles.dateRow}>{getDateRangeText()}</View>
+          </View>
+          <View style={styles.rightInfo}>
+            {/* <View style={styles.editButton}>
+              <VinaupPenLineVariant width={18} height={18} />
+            </View> */}
+            <Text style={styles.entityCode}>No. {project.code.slice(0, 8)}</Text>
+          </View>
         </View>
-        <View style={styles.rightInfo}>
-          <Pressable style={styles.editButton} onPress={() => onEdit?.(project)}>
-            <VinaupPenLineVariant width={18} height={18} />
-          </Pressable>
-          <Text style={styles.entityCode}>No. {project.code.slice(0, 8)}</Text>
-        </View>
-      </View>
-    </View>
+      </Pressable>
+
+      <ProjectInfoModal
+        key={project.id}
+        visible={modalVisible}
+        prjCode={project.code}
+        prjDescription={project.description}
+        prjStartDate={project.startDate}
+        prjEndDate={project.endDate}
+        isLoading={isLoading}
+        onConfirm={(data) => {
+          onConfirm?.(data, () => setModalVisible(false));
+        }}
+        onClose={() => setModalVisible(false)}
+      />
+    </>
   );
 }
 
@@ -97,10 +124,10 @@ const styles = StyleSheet.create({
     color: COLORS.vinaupMediumGray,
     fontSize: 16,
   },
-  editButton: {
-    padding: 4,
-    borderRadius: 4,
-  },
+  // editButton: {
+  //   padding: 4,
+  //   borderRadius: 4,
+  // },
   entityCode: {
     fontSize: 14,
     color: COLORS.vinaupMediumDarkGray,

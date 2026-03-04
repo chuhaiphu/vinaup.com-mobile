@@ -44,8 +44,7 @@ export default function ReceiptPaymentFormScreen() {
   const router = useRouter();
 
   const params = useLocalSearchParams<{
-    id?: string;
-    mode?: 'create' | 'update';
+    id: string;
     groupCode?: 'FOR_DIRECTOR' | 'FOR_TOUR_GUIDE';
     organizationId?: string;
     receiptPaymentType?: ReceiptPaymentType;
@@ -58,6 +57,10 @@ export default function ReceiptPaymentFormScreen() {
     lockDatePicker?: string;
     allowEditCategory?: string;
   }>();
+
+  const { id } = params;
+  const isUpdateMode = id !== 'new';
+
   const {
     data: existingReceiptPayment,
     isLoading: isFetchingReceiptPayment,
@@ -79,11 +82,10 @@ export default function ReceiptPaymentFormScreen() {
   }, [existingReceiptPayment]);
 
   useEffect(() => {
-    const receiptPaymentId = params.id;
-    if (receiptPaymentId && params.mode === 'update') {
-      fetchReceiptPayment(() => getReceiptPaymentByIdApi(receiptPaymentId));
+    if (isUpdateMode) {
+      fetchReceiptPayment(() => getReceiptPaymentByIdApi(id));
     }
-  }, [params.id, params.mode, fetchReceiptPayment]);
+  }, [id, isUpdateMode, fetchReceiptPayment]);
 
   const { data: categories, executeFetchFn: fetchCategories } =
     useFetchFn<CategoryResponse[]>();
@@ -178,10 +180,10 @@ export default function ReceiptPaymentFormScreen() {
       groupCode: params.groupCode,
       organizationId: params.organizationId,
     };
-    const mutationApi =
-      params.mode === 'update'
-        ? () => updateReceiptPaymentApi(params.id!, submitData)
-        : () => createReceiptPaymentApi(submitData);
+
+    const mutationApi = isUpdateMode
+      ? () => updateReceiptPaymentApi(id, submitData)
+      : () => createReceiptPaymentApi(submitData);
 
     createOrUpdateReceiptPayment(mutationApi, {
       onSuccess: () => {
@@ -194,15 +196,14 @@ export default function ReceiptPaymentFormScreen() {
   };
 
   const handleDelete = () => {
-    const receiptPaymentId = params.id;
-    if (!receiptPaymentId) return;
+    if (!isUpdateMode) return;
     Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
       { text: 'Huỷ', style: 'cancel' },
       {
         text: 'OK',
-        style: 'destructive', // Red text color on IOS
+        style: 'destructive',
         onPress: () => {
-          deleteReceiptPayment(() => deleteReceiptPaymentApi(receiptPaymentId), {
+          deleteReceiptPayment(() => deleteReceiptPaymentApi(id), {
             onSuccess: () => {
               router.replace('/(protected)/personal/(tabs)/receipt-payment-self');
             },
@@ -221,8 +222,8 @@ export default function ReceiptPaymentFormScreen() {
       style={styles.screenContainer}
     >
       <StackWithHeader
-        title={params.id ? 'Sửa Thu / Chi' : 'Tạo Thu / Chi'}
-        onDelete={params.mode === 'update' ? handleDelete : undefined}
+        title={isUpdateMode ? 'Sửa Thu / Chi' : 'Tạo Thu / Chi'}
+        onDelete={isUpdateMode ? handleDelete : undefined}
         isDeleting={isDeletingReceiptPayment}
         onSave={handleSaveAndExit}
         isSaving={isMutatingReceiptPayment}
@@ -531,7 +532,7 @@ const styles = StyleSheet.create({
   },
   inputNative: {
     backgroundColor: '#FBFBFB',
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 18,
   },

@@ -1,8 +1,8 @@
-import { HomeHeader } from "@/components/headers/home-header";
-import VinaupHome from "@/components/icons/vinaup-home.native";
-import { COLORS } from "@/constants/style-constant";
-import { Octicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { HomeHeader } from '@/components/headers/home-header/home-header';
+import VinaupHome from '@/components/icons/vinaup-home.native';
+import { COLORS } from '@/constants/style-constant';
+import { Octicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 
 export default function OrganizationTabsLayout() {
   return (
@@ -17,8 +17,8 @@ export default function OrganizationTabsLayout() {
         tabBarShowLabel: false,
         tabBarIconStyle: {
           margin: 0,
-          width: "100%",
-          height: "100%",
+          width: '100%',
+          height: '100%',
         },
       }}
     >
@@ -41,4 +41,3 @@ export default function OrganizationTabsLayout() {
     </Tabs>
   );
 }
-

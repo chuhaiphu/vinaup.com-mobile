@@ -1,4 +1,4 @@
-import { HomeHeader } from '@/components/headers/home-header';
+import { HomeHeader } from '@/components/headers/home-header/home-header';
 import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';

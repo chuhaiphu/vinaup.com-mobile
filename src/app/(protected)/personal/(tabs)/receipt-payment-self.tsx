@@ -10,11 +10,8 @@ import {
   Pressable,
   RefreshControl,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
-import { Button } from '@/components/primitives/button';
-import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
@@ -44,10 +41,9 @@ export default function ReceiptPaymentSelf() {
   const navigateToFormScreen = async (id?: string) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
-      pathname: '/(protected)/receipt-payment-form',
+      pathname: '/(protected)/personal/receipt-payment/[id]/receipt-payment-form',
       params: {
-        id: id,
-        mode: id ? 'update' : 'create',
+        id: id || 'new',
         lockDatePicker: 'false',
         allowEditCategory: 'true',
         receiptPaymentType: 'PAYMENT',
@@ -74,19 +70,6 @@ export default function ReceiptPaymentSelf() {
               dateText: styles.dateText,
             }}
           />
-        </View>
-        <View style={styles.titleRow}>
-          <View style={styles.screenTitleContainer}>
-            <Text style={styles.left}>Thu chi </Text>
-            <Text style={styles.right}>ngày</Text>
-          </View>
-          <Button
-            style={styles.createButtonContainer}
-            onPress={() => navigateToFormScreen()}
-            isLoading={safeRouter.isNavigating}
-          >
-            <VinaupAddNew width={32} height={32} />
-          </Button>
         </View>
       </View>
       <FlatList
@@ -123,20 +106,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
-  },
-  screenTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    backgroundColor: COLORS.vinaupLightGreen,
-    borderRadius: 10,
   },
   createButtonContainer: {
     flexDirection: 'row',

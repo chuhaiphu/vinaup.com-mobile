@@ -8,11 +8,10 @@ import {
   StyleSheet,
   useWindowDimensions,
   ActivityIndicator,
+  StyleProp,
+  TextStyle,
 } from 'react-native';
-import Animated, {
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -35,6 +34,9 @@ interface SelectProps {
   disabled?: boolean;
   heightPercentage?: number;
   renderTrigger?: React.ReactNode;
+  style?: {
+    triggerText?: StyleProp<TextStyle>;
+  }
 }
 
 export function Select({
@@ -47,6 +49,7 @@ export function Select({
   disabled = false,
   heightPercentage = 0.8,
   renderTrigger,
+  style,
 }: SelectProps) {
   const [visible, setVisible] = useState(false);
   const { height: screenHeight } = useWindowDimensions();
@@ -103,7 +106,7 @@ export function Select({
             renderTrigger
           ) : (
             <>
-              <Text style={styles.triggerText} numberOfLines={1}>
+              <Text style={[styles.triggerText, style?.triggerText]} numberOfLines={1}>
                 {selectedLabel}
               </Text>
               <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />

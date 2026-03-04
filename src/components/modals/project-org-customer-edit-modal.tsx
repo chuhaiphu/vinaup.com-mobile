@@ -4,14 +4,13 @@ import {
   View,
   Modal,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
   Pressable,
 } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/primitives/button';
+import { KeyboardSafeAvoidingView } from '../primitives/keyboard-safe-avoiding-view';
 
 interface ProjectOrgCustomerEditModalProps {
   visible: boolean;
@@ -36,20 +35,12 @@ export function ProjectOrgCustomerEditModal({
   const orgInputRef = useRef<TextInput>(null);
   const customerInputRef = useRef<TextInput>(null);
 
-  useEffect(() => {
-    if (visible) {
-      setTempOrgName(organizationName || '');
-      setTempCustomerName(customerName || '');
-    }
-  }, [visible, organizationName, customerName]);
-
   const handleConfirm = () => {
     if (!tempOrgName.trim() || !tempCustomerName.trim()) {
       Alert.alert('Lỗi', 'Vui lòng điền đầy đủ thông tin');
       return;
     }
     onConfirm?.(tempOrgName, tempCustomerName);
-    onClose?.();
   };
 
   const handleOrgInputSubmit = () => {
@@ -67,10 +58,7 @@ export function ProjectOrgCustomerEditModal({
       onRequestClose={onClose}
       animationType="fade"
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.modalContainer}
-      >
+      <KeyboardSafeAvoidingView style={styles.modalContainer}>
         <Pressable style={styles.modalOverlay} onPress={onClose} />
         <View style={styles.modalContent}>
           <View style={styles.inputGroup}>
@@ -121,7 +109,7 @@ export function ProjectOrgCustomerEditModal({
             </Button>
           </View>
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardSafeAvoidingView>
     </Modal>
   );
 }

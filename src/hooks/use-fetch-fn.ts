@@ -4,7 +4,7 @@ import { HttpResponse } from '@/interfaces/_base-interfaces';
 import { DeviceEventEmitter } from 'react-native';
 
 interface FetchOptions {
-  invalidateTags?: string[];
+  tags?: string[];
 }
 interface FetchState<T> {
   data: T | null;
@@ -90,15 +90,15 @@ export function useFetchFn<T>(options?: FetchOptions) {
   }, [execute]);
 
   useEffect(() => {
-    if (!options?.invalidateTags || options.invalidateTags.length === 0) return;
+    if (!options?.tags || options.tags.length === 0) return;
 
-    const subscriptions = options.invalidateTags.map((tag) =>
+    const subscriptions = options.tags.map((tag) =>
       DeviceEventEmitter.addListener(tag, () => {
         refreshFetchFn();
       })
     );
     return () => subscriptions.forEach((sub) => sub.remove());
-  }, [options?.invalidateTags, refreshFetchFn]);
+  }, [options?.tags, refreshFetchFn]);
 
   return { ...state, executeFetchFn, refreshFetchFn };
 }

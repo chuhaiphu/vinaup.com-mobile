@@ -8,6 +8,7 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { useEffect } from 'react';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
+import { generateLocalePriceFormat } from '@/utils/generator-helpers';
 
 interface ProjectCardProps {
   project?: ProjectResponse;
@@ -58,9 +59,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <Text style={styles.projectDateRangeText}>
             {getProjectDateRangeText()}
           </Text>
-          <Text>=</Text>
+          <Text style={styles.equalLabel}>=</Text>
           <Text style={styles.projectTotalAmountText}>
-            {calculateReceiptPaymentsSummary(receiptPayments || []).totalRemaining}
+            {generateLocalePriceFormat(
+              calculateReceiptPaymentsSummary(receiptPayments || []).totalRemaining,
+              'vi-VN'
+            )}
           </Text>
         </View>
         <View style={styles.right}>
@@ -111,6 +115,14 @@ const styles = StyleSheet.create({
   },
   projectStatusText: {
     fontSize: 14,
+    color: COLORS.vinaupBlack,
+  },
+  equalLabel: {
+    fontSize: 16,
+    lineHeight: 16,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    backgroundColor: COLORS.vinaupWhite,
     color: COLORS.vinaupTeal,
   },
   content: {
@@ -142,6 +154,7 @@ const styles = StyleSheet.create({
   descriptionContainer: {},
   descriptionText: {
     fontSize: 18,
+    fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
   action: {},

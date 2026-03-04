@@ -5,24 +5,28 @@ import { ProjectOrgCustomerEditModal } from '@/components/modals/project-org-cus
 import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal';
 import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.native';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
+import { ProjectResponse } from '@/interfaces/project-interfaces';
 
 interface ProjectFooterCardProps {
-  organizationName?: string | null;
-  customerName?: string | null;
-  note?: string | null;
-  onOrgCusConfirm?: (organizationName: string, customerName: string) => void;
+  project?: ProjectResponse;
+  onOrgCusConfirm?: (
+    organizationName: string,
+    customerName: string,
+    onSuccessCallback?: () => void
+  ) => void;
   onNoteConfirm?: (note: string, onSuccessCallback?: () => void) => void;
   isLoading?: boolean;
 }
 
 export function ProjectFooterCard({
-  organizationName = '',
-  customerName = '',
-  note = '',
+  project,
   onOrgCusConfirm,
   onNoteConfirm,
   isLoading = false,
 }: ProjectFooterCardProps) {
+  const organizationName = project?.externalOrganizationName ?? '';
+  const customerName = project?.externalCustomerName ?? '';
+  const note = project?.note ?? '';
   const [modalVisible, setModalVisible] = useState(false);
   const [noteModalVisible, setNoteModalVisible] = useState(false);
   return (
@@ -44,36 +48,40 @@ export function ProjectFooterCard({
         disabled={isLoading}
       >
         <View style={styles.card}>
-          <View style={styles.rows}>
-            <View style={styles.row}>
+          <View style={styles.rowsNew}>
+            <View style={styles.orgCol}>
               <Text style={styles.label}>Tổ chức:</Text>
               <Text style={styles.value}>{organizationName || ''}</Text>
             </View>
-            <View style={styles.row}>
+            <View style={styles.customerCol}>
               <Text style={styles.label}>Tên khách:</Text>
               <Text style={styles.value}>{customerName || ''}</Text>
             </View>
-          </View>
-          <View style={styles.editButton}>
-            <VinaupPenLineVariant
-              width={18}
-              height={18}
-              color={COLORS.vinaupTeal}
-            />
+            {/* <View style={styles.editButton}>
+              <VinaupPenLineVariant
+                width={12}
+                height={12}
+                color={COLORS.vinaupTeal}
+              />
+            </View> */}
           </View>
         </View>
       </Pressable>
 
       <ProjectOrgCustomerEditModal
+        key={`project-org-customer-modal-${project?.id}`}
         visible={modalVisible}
         organizationName={organizationName}
         customerName={customerName}
         isLoading={isLoading}
-        onConfirm={onOrgCusConfirm}
+        onConfirm={(orgName, customerName) =>
+          onOrgCusConfirm?.(orgName, customerName, () => setModalVisible(false))
+        }
         onClose={() => setModalVisible(false)}
       />
 
       <SimpleTextInputModal
+        key={`project-note-modal-${project?.id}`}
         visible={noteModalVisible}
         value={note}
         isLoading={isLoading}
@@ -101,13 +109,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.vinaupMediumGray,
   },
-  rows: {
+  rowsNew: {
     flex: 1,
-  },
-  row: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  orgCol: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingVertical: 6,
+  },
+  customerCol: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
     paddingVertical: 6,
   },
   label: {
@@ -116,11 +135,8 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
-    fontWeight: '500',
     color: COLORS.vinaupBlack,
-    flex: 1,
-    textAlign: 'right',
-    marginLeft: 8,
+    marginTop: 2,
   },
   noteContainer: {
     flexDirection: 'row',
@@ -135,10 +151,10 @@ const styles = StyleSheet.create({
   },
   noteValue: {
     fontSize: 16,
-    fontWeight: '500',
     color: COLORS.vinaupBlack,
   },
-  editButton: {
-    padding: 6,
-  },
+  // editButton: {
+  //   padding: 4,
+  //   alignSelf: 'flex-start',
+  // },
 });

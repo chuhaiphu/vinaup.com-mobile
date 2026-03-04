@@ -17,6 +17,7 @@ import NativeDatetimePicker, {
 import { COLORS } from '@/constants/style-constant';
 
 interface DateTimePickerProps {
+  mode?: 'date' | 'time';
   leftSection?: React.ReactNode;
   rightSection?: React.ReactNode;
   value: Dayjs;
@@ -31,6 +32,7 @@ interface DateTimePickerProps {
 }
 
 export function DateTimePicker({
+  mode = 'date',
   leftSection,
   rightSection,
   value,
@@ -56,7 +58,7 @@ export function DateTimePicker({
       DateTimePickerAndroid.open({
         value: value.toDate(),
         onChange: handleDateChange,
-        mode: 'date',
+        mode: mode,
         is24Hour: true,
         positiveButtonLabel: 'Xác nhận',
         negativeButtonLabel: 'Hủy bỏ',
@@ -93,7 +95,7 @@ export function DateTimePicker({
       {Platform.OS === 'ios' && showDatePicker && (
         <NativeDatetimePicker
           value={value.toDate()}
-          mode="date"
+          mode={mode}
           display="spinner"
           onChange={handleDateChange}
         />
