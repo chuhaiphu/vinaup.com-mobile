@@ -1,6 +1,6 @@
 // src/hooks/useMutationFn.ts
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { ApiError } from '@/utils/classes';
+import { ApiError } from '@/utils/api-error';
 import { HttpResponse } from '@/interfaces/_base-interfaces';
 import { DeviceEventEmitter } from 'react-native';
 
@@ -43,7 +43,7 @@ export function useMutationFn<T>(options?: MutationOptions) {
 
       try {
         const response = await mutationFn();
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         if (isMounted.current) {
           setState({
             data: response.data || null,

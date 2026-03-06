@@ -28,6 +28,7 @@ interface ProjectInfoModalProps {
     description: string;
     startDate: Date;
     endDate: Date;
+    code?: string;
   }) => void;
   onClose?: () => void;
 }
@@ -43,9 +44,13 @@ export function ProjectInfoModal({
   onClose,
 }: ProjectInfoModalProps) {
   const [description, setDescription] = useState(prjDescription);
+  const [code, setCode] = useState(prjCode);
   const [startDate, setStartDate] = useState<Dayjs>(dayjs(prjStartDate));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs(prjEndDate));
-  const [inputErrors, setInputErrors] = useState<{ description?: boolean }>({});
+  const [inputErrors, setInputErrors] = useState<{
+    description?: boolean;
+    code?: boolean;
+  }>({});
 
   useEffect(() => {
     if (visible) {
@@ -59,6 +64,7 @@ export function ProjectInfoModal({
   const handleConfirm = () => {
     const errors: typeof inputErrors = {};
     if (!description.trim()) errors.description = true;
+    if (code.trim() === '') errors.code = true;
     setInputErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
@@ -66,6 +72,7 @@ export function ProjectInfoModal({
       description,
       startDate: startDate.toDate(),
       endDate: endDate.toDate(),
+      code: code.trim() || undefined,
     });
   };
 
@@ -122,22 +129,40 @@ export function ProjectInfoModal({
               </View>
             </View>
 
-            {prjCode && (
-              <View style={styles.inputItem}>
-                <View style={[styles.inputWrapper, styles.disabledInputWrapper]}>
-                  <View style={styles.labelSection}>
-                    <Text style={styles.insideLabel}>No.</Text>
-                  </View>
-                  <View style={[styles.separator, styles.disabledSeparator]} />
-                  <TextInput
-                    style={[styles.inputNative, styles.disabledInput]}
-                    value={prjCode.slice(0, 8)}
-                    placeholder="..."
-                    editable={false}
-                  />
+            <View style={styles.inputItem}>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  inputErrors.code && styles.inputError,
+                ]}
+              >
+                <View style={styles.labelSection}>
+                  <Text
+                    style={[
+                      styles.insideLabel,
+                      inputErrors.code && styles.labelError,
+                    ]}
+                  >
+                    No.
+                  </Text>
                 </View>
+                <View style={styles.separator} />
+                <TextInput
+                  style={styles.inputNative}
+                  value={code}
+                  placeholder="Mã số"
+                  onChangeText={(value) => {
+                    setCode(value);
+                    setInputErrors((prev) => ({
+                      ...prev,
+                      code: value.trim() === '' ? true : undefined,
+                    }));
+                  }}
+                  placeholderTextColor={COLORS.vinaupMediumGray}
+                  editable={!isLoading}
+                />
               </View>
-            )}
+            </View>
 
             <View style={styles.inputGroup}>
               <View style={styles.dateRow}>

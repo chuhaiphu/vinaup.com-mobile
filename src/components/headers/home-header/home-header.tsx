@@ -6,7 +6,8 @@ import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { usePathname } from 'expo-router';
 import NavigatorSelector from '../../selectors/navigator-selector/navigator-selector';
 import ReceiptPaymentSelfHeaderBottom from './receipt-payment-self-header-bottom';
-import ProjectHeaderBottom from './project-header-bottom';
+import ReceiptPaymentProjectHeaderBottom from './receipt-payment-project-header-bottom';
+import HomeIndexHeaderBottom from './home-header-index-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
@@ -17,7 +18,9 @@ export const HomeHeader = () => {
       case pathname.includes('/receipt-payment-self'):
         return <ReceiptPaymentSelfHeaderBottom />;
       case pathname.includes('/receipt-payment-project'):
-        return <ProjectHeaderBottom />;
+        return <ReceiptPaymentProjectHeaderBottom />;
+      case pathname === '/personal':
+        return <HomeIndexHeaderBottom />;
       default:
         return null;
     }

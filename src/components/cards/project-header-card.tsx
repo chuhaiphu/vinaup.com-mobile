@@ -9,7 +9,12 @@ interface ProjectHeaderCardProps {
   project?: ProjectResponse;
   isLoading?: boolean;
   onConfirm?: (
-    data: { description: string; startDate: Date; endDate: Date },
+    data: {
+      description: string;
+      startDate: Date;
+      endDate: Date;
+      code?: string;
+    },
     onSuccessCallback?: () => void
   ) => void;
 }

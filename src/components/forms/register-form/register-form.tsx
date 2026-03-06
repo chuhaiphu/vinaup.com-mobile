@@ -1,7 +1,7 @@
 import { registerApi } from '@/apis/user-apis';
 import { VinaupLogoSecondary } from '@/components/icons/vinaup-logo-secondary.native';
 import { COLORS } from '@/constants/style-constant';
-import { ApiError } from '@/utils/classes';
+import { ApiError } from '@/utils/api-error';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
@@ -15,7 +15,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from 'react-native';
 import { styles } from './register-form.styles';
 
@@ -38,10 +38,16 @@ const RegisterForm = () => {
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.statusCode === 400) {
-          Alert.alert('Đăng ký thất bại', 'Email đã tồn tại hoặc dữ liệu không hợp lệ');
+          Alert.alert(
+            'Đăng ký thất bại',
+            'Email đã tồn tại hoặc dữ liệu không hợp lệ'
+          );
         }
-      }
-      else Alert.alert('Đăng ký thất bại', error instanceof ApiError ? error.message : 'Lỗi không xác định');
+      } else
+        Alert.alert(
+          'Đăng ký thất bại',
+          error instanceof ApiError ? error.message : 'Lỗi không xác định'
+        );
     } finally {
       setIsLoading(false);
     }
@@ -93,7 +99,7 @@ const RegisterForm = () => {
                 onPress={() => setShowPassword(!showPassword)}
               >
                 <Ionicons
-                  name={showPassword ? "eye-off" : "eye"}
+                  name={showPassword ? 'eye-off' : 'eye'}
                   size={20}
                   color={COLORS.vinaupMediumGray}
                 />
@@ -103,15 +109,24 @@ const RegisterForm = () => {
 
           <TouchableOpacity style={styles.button} onPress={handleRegister}>
             {isLoading ? (
-              <Image source={require('@/components/icons/vinaup-loader.gif')} style={styles.buttonLoader} />
+              <Image
+                source={require('@/components/icons/vinaup-loader.gif')}
+                style={styles.buttonLoader}
+              />
             ) : (
               <Text style={styles.buttonText}>Đăng ký</Text>
             )}
           </TouchableOpacity>
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Bạn đã có tài khoản?</Text>
-            <FontAwesome6 name="arrow-right-long" size={12} color={COLORS.vinaupWhite} />
-            <Link href="/login" style={styles.footerLink}>Đăng nhập</Link>
+            <FontAwesome6
+              name="arrow-right-long"
+              size={12}
+              color={COLORS.vinaupWhite}
+            />
+            <Link href="/login" style={styles.footerLink}>
+              Đăng nhập
+            </Link>
           </View>
         </View>
       </TouchableWithoutFeedback>

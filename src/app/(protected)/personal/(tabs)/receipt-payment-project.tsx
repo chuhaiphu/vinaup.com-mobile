@@ -60,57 +60,53 @@ export default function ReceiptPaymentProject() {
 
   return (
     <View style={styles.container}>
-      <View>
-        <View style={styles.projectFilterContainer}>
-          <MonthYearPicker
-            leftSection={
-              <FontAwesome5
-                name="calendar-alt"
-                size={18}
-                color={COLORS.vinaupTeal}
-              />
-            }
-            value={selectedDate}
-            onChange={setSelectedDate}
-            displayFormat="MM/YYYY"
+      <View style={styles.projectFilterContainer}>
+        <MonthYearPicker
+          leftSection={
+            <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
+          }
+          value={selectedDate}
+          onChange={setSelectedDate}
+          displayFormat="MM/YYYY"
+          style={{
+            dateText: styles.dateText,
+          }}
+        />
+        <View style={styles.statusFilter}>
+          <Select
+            options={ProjectStatusOptions}
+            value={projectStatusFilter}
+            onChange={(value) => setProjectStatusFilter(value)}
+            placeholder="Trạng thái"
             style={{
-              dateText: styles.dateText,
+              triggerText: {
+                fontSize: 16,
+                color: COLORS.vinaupBlack,
+              },
             }}
           />
-          <View style={styles.statusFilter}>
-            <Select
-              options={ProjectStatusOptions}
-              value={projectStatusFilter}
-              onChange={(value) => setProjectStatusFilter(value)}
-              placeholder="Trạng thái"
-              style={{
-                triggerText: {
-                  fontSize: 16,
-                  color: COLORS.vinaupBlack,
-                },
-              }}
-            />
-          </View>
         </View>
       </View>
-      <FlatList
-        data={projects}
-        contentContainerStyle={{ paddingVertical: 8 }}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => navigateToFormScreen(item.id)}>
-            <ProjectCard project={item} />
-          </Pressable>
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshingProjects}
-            onRefresh={refreshProjects}
-            colors={[COLORS.vinaupTeal]}
-          />
-        }
-      />
+      {!isLoading && (
+        <FlatList
+          data={projects}
+          contentContainerStyle={{ paddingVertical: 8 }}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => navigateToFormScreen(item.id)}>
+              <ProjectCard project={item} />
+            </Pressable>
+          )}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshingProjects}
+              onRefresh={refreshProjects}
+              colors={[COLORS.vinaupTeal]}
+            />
+          }
+        />
+      )}
       {isLoading && <Loader size={64} />}
     </View>
   );

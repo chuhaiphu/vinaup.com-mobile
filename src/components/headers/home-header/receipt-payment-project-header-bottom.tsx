@@ -10,18 +10,20 @@ import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { createProjectApi } from '@/apis/project-apis';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 
-const ProjectHeaderBottom = () => {
+const ReceiptPaymentProjectHeaderBottom = () => {
   const router = useRouter();
   const params = useGlobalSearchParams<{ type?: 'SELF' | 'COMPANY' }>();
   const { executeMutationFn: createProject, isMutating } =
-    useMutationFn<ProjectResponse>();
+    useMutationFn<ProjectResponse>({
+      invalidatesTags: ['personal-receipt-payment-project'],
+    });
 
   const handleAddNew = async () => {
     await createProject(
       () =>
         createProjectApi({
-          description: 'Tiền công',
-          type: 'SELF',
+          description: params.type === 'COMPANY' ? 'Dự án' : 'Tiền công',
+          type: params.type === 'COMPANY' ? 'COMPANY' : 'SELF',
           endDate: new Date(),
           startDate: new Date(),
         }),
@@ -89,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProjectHeaderBottom;
+export default ReceiptPaymentProjectHeaderBottom;

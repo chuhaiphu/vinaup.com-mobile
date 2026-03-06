@@ -33,4 +33,5 @@ export interface CreateProjectRequest {
 
 export type UpdateProjectRequest = Partial<CreateProjectRequest> & {
   status?: ProjectStatus;
+  code?: string;
 };

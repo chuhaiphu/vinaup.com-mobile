@@ -8,6 +8,7 @@ interface AuthContextType {
   currentUser: UserResponse | null;
   performLogin: (user: UserResponse, accessToken: string) => Promise<void>;
   performLogout: () => Promise<void>;
+  performSync: (user: UserResponse) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -15,6 +16,7 @@ export const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   performLogin: async () => {},
   performLogout: async () => {},
+  performSync: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -50,6 +52,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const performSync = async (user: UserResponse) => {
+    try {
+      const jsonValue = JSON.stringify(user);
+      await AsyncStorage.setItem(STORAGE_KEYS.currentUser, jsonValue);
+      setCurrentUser(user);
+    } catch (error) {
+      console.error('Error updating user data', error);
+    }
+  };
+
   const loadStorageData = async () => {
     try {
       const savedUser = await AsyncStorage.getItem(STORAGE_KEYS.currentUser);
@@ -69,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     // from React 19, AuthContext is enough, no need to AuthContext.Provider
-    <AuthContext value={{ isLoading, currentUser, performLogin, performLogout }}>
+    <AuthContext value={{ isLoading, currentUser, performLogin, performLogout, performSync }}>
       {children}
     </AuthContext>
   );

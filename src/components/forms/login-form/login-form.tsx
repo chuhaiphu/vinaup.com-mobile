@@ -2,7 +2,7 @@ import { loginApi } from '@/apis/auth-apis';
 import { VinaupLogoSecondary } from '@/components/icons/vinaup-logo-secondary.native';
 import { COLORS } from '@/constants/style-constant';
 import { AuthContext } from '@/providers/auth-provider';
-import { ApiError } from '@/utils/classes';
+import { ApiError } from '@/utils/api-error';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import React, { useContext, useState } from 'react';

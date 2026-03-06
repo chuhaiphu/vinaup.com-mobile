@@ -53,43 +53,40 @@ export default function ReceiptPaymentSelf() {
 
   return (
     <View style={styles.container}>
-      <View>
-        <View style={styles.dateTimePickerContainer}>
-          <DateTimePicker
-            leftSection={
-              <FontAwesome5
-                name="calendar-alt"
-                size={18}
-                color={COLORS.vinaupTeal}
-              />
-            }
-            value={selectedDate}
-            onChange={setSelectedDate}
-            displayFormat="DD/MM"
-            style={{
-              dateText: styles.dateText,
-            }}
-          />
-        </View>
+      <View style={styles.dateTimePickerContainer}>
+        <DateTimePicker
+          leftSection={
+            <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
+          }
+          value={selectedDate}
+          onChange={setSelectedDate}
+          displayFormat="DD/MM"
+          style={{
+            dateText: styles.dateText,
+          }}
+        />
       </View>
-      <FlatList
-        data={receiptPayments}
-        contentContainerStyle={{ paddingVertical: 8 }}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => navigateToFormScreen(item.id)}>
-            <ReceiptPaymentCard receiptPayment={item} />
-          </Pressable>
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refreshFetchFn}
-            colors={[COLORS.vinaupTeal]}
-          />
-        }
-      />
+      {!isLoading && (
+        <FlatList
+          data={receiptPayments}
+          contentContainerStyle={{ paddingVertical: 8 }}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => navigateToFormScreen(item.id)}>
+              <ReceiptPaymentCard receiptPayment={item} />
+            </Pressable>
+          )}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={refreshFetchFn}
+              colors={[COLORS.vinaupTeal]}
+            />
+          }
+        />
+      )}
+
       {isLoading && <Loader size={64} />}
     </View>
   );

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ApiError } from '@/utils/classes';
+import { ApiError } from '@/utils/api-error';
 import { HttpResponse } from '@/interfaces/_base-interfaces';
 import { DeviceEventEmitter } from 'react-native';
 
@@ -49,6 +49,7 @@ export function useFetchFn<T>(options?: FetchOptions) {
 
       try {
         const response = await fetchFn();
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         if (isMounted.current) {
           setState({

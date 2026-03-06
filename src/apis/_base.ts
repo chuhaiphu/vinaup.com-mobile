@@ -1,10 +1,10 @@
 import { STORAGE_KEYS } from '@/constants/app-constant';
 import { HttpResponse } from '@/interfaces/_base-interfaces';
-import { ApiError } from '@/utils/classes';
+import { ApiError } from '@/utils/api-error';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-
+console.log('BASE_URL', BASE_URL);
 export async function api<T>(
   endpoint: string,
   options: RequestInit = {}
