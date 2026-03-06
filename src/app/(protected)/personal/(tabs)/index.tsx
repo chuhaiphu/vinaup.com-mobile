@@ -17,8 +17,25 @@ import { useFetchFn } from '@/hooks/use-fetch-fn';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
+import { MultiSelect } from '@/components/primitives/multiple-select';
+import { useHomeUtilitiesStore } from '@/hooks/use-home-utility-store';
+import { HOME_UTILITY_KEYS, type HomeUtilityKey } from '@/constants/app-constant';
+
+const UTILITY_OPTIONS = [
+  { label: 'Thu chi ngày', value: HOME_UTILITY_KEYS.receiptPaymentSelf },
+  {
+    label: 'Thu chi Tiền công',
+    value: HOME_UTILITY_KEYS.receiptPaymentProjectSelf,
+  },
+  {
+    label: 'Thu chi Dự án',
+    value: HOME_UTILITY_KEYS.receiptPaymentProjectCompany,
+  },
+];
 
 export default function PersonalIndexScreen() {
+  const { selectedUtilities, setUtilities } = useHomeUtilitiesStore();
+
   const today = new Date();
   const day = String(today.getDate()).padStart(2, '0');
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -83,6 +100,28 @@ export default function PersonalIndexScreen() {
     isRefreshingProjectsSelf ||
     isRefreshingProjectsCompany;
 
+  const allUtilities = [
+    {
+      key: HOME_UTILITY_KEYS.receiptPaymentSelf,
+      label: 'Thu chi ngày',
+      value: calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining,
+    },
+    {
+      key: HOME_UTILITY_KEYS.receiptPaymentProjectSelf,
+      label: 'Thu chi Tiền công',
+      value: `(${projectsSelf?.length || 0})`,
+    },
+    {
+      key: HOME_UTILITY_KEYS.receiptPaymentProjectCompany,
+      label: 'Thu chi Dự án',
+      value: `(${projectsCompany?.length || 0})`,
+    },
+  ];
+
+  const visibleUtilities = allUtilities.filter((item) =>
+    selectedUtilities.includes(item.key)
+  );
+
   return (
     <ScrollView
       style={styles.container}
@@ -90,7 +129,6 @@ export default function PersonalIndexScreen() {
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          // Tùy chỉnh màu sắc (iOS & Android)
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />
@@ -111,40 +149,32 @@ export default function PersonalIndexScreen() {
           <VinaupUtilityIcon width={22} height={22} />
           <Text style={styles.utilitiesText}>Tiện ích</Text>
         </View>
-        <Pressable
-          style={styles.iconButton}
-          onPress={() => handlePress('edit-utilities')}
-        >
-          <Feather name="edit" size={24} color={COLORS.vinaupTeal} />
-        </Pressable>
+        <MultiSelect
+          options={UTILITY_OPTIONS}
+          values={selectedUtilities}
+          onChange={(vals) => setUtilities(vals as HomeUtilityKey[])}
+          placeholder="Tiện ích"
+          heightPercentage={0.3}
+          renderTrigger={
+            <Feather name="edit" size={24} color={COLORS.vinaupTeal} />
+          }
+        />
       </View>
 
       <View style={styles.card}>
-        <Pressable
-          style={[styles.cardRow, styles.cardRowDivider]}
-          onPress={() => handlePress('personal-cashflow')}
-        >
-          <Text style={styles.cardLabel}>Thu chi ngày</Text>
-          <Text style={styles.cardValue}>
-            {calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining}
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={[styles.cardRow, styles.cardRowDivider]}
-          onPress={() => handlePress('tour-schedule')}
-        >
-          <Text style={styles.cardLabel}>Lịch tour & Tiền công</Text>
-          <Text style={styles.cardValue}>({projectsSelf?.length || 0})</Text>
-        </Pressable>
-
-        <Pressable
-          style={[styles.cardRow]}
-          onPress={() => handlePress('tour-cashflow')}
-        >
-          <Text style={styles.cardLabel}>Thu chi dự án</Text>
-          <Text style={styles.cardValue}>({projectsCompany?.length || 0})</Text>
-        </Pressable>
+        {visibleUtilities.map((item, index) => (
+          <Pressable
+            key={item.key}
+            style={[
+              styles.cardRow,
+              index < visibleUtilities.length - 1 && styles.cardRowDivider,
+            ]}
+            onPress={() => handlePress(item.key)}
+          >
+            <Text style={styles.cardLabel}>{item.label}</Text>
+            <Text style={styles.cardValue}>{item.value}</Text>
+          </Pressable>
+        ))}
       </View>
     </ScrollView>
   );
@@ -206,7 +236,6 @@ const styles = StyleSheet.create({
   },
   cardLabel: {
     fontSize: 18,
-    fontWeight: '700',
     color: COLORS.vinaupTeal,
   },
   cardValue: {

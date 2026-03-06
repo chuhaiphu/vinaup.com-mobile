@@ -10,7 +10,7 @@ import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { createProjectApi } from '@/apis/project-apis';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 
-const ReceiptPaymentProjectHeaderBottom = () => {
+const PersonalReceiptPaymentProjectHeaderBottom = () => {
   const router = useRouter();
   const params = useGlobalSearchParams<{ type?: 'SELF' | 'COMPANY' }>();
   const { executeMutationFn: createProject, isMutating } =
@@ -62,7 +62,7 @@ const ReceiptPaymentProjectHeaderBottom = () => {
         isLoading={isMutating}
         loaderStyle={{ size: 32 }}
       >
-        <VinaupAddNew width={32} height={32} />
+        <VinaupAddNew width={30} height={30} />
       </Button>
     </View>
   );
@@ -91,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReceiptPaymentProjectHeaderBottom;
+export default PersonalReceiptPaymentProjectHeaderBottom;

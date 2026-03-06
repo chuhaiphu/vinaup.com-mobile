@@ -34,4 +34,6 @@ export interface OrganizationResponse {
   createdByUserId: string;
   organizationType: OrganizationTypeResponse;
   organizationIndustry: OrganizationIndustryResponse;
+  memberCount?: number;
+  memberLinkedCount?: number;
 }

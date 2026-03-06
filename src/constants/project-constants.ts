@@ -1,4 +1,4 @@
-export const ProjectStatus = {
+export const PROJECT_STATUS = {
   PROCESSING: 'PROCESSING',
   DONE: 'DONE',
   PAID: 'PAID',
@@ -7,31 +7,31 @@ export const ProjectStatus = {
   RECEIVED: 'RECEIVED',
   CANCELLED: 'CANCELLED',
 } as const;
-export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus];
+export type ProjectStatus = (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS];
 
-export const ProjectType = {
+export const PROJECT_TYPE = {
   COMPANY: 'COMPANY',
   SELF: 'SELF',
   ORGANIZATION: 'ORGANIZATION',
 } as const;
-export type ProjectType = (typeof ProjectType)[keyof typeof ProjectType];
+export type ProjectType = (typeof PROJECT_TYPE)[keyof typeof PROJECT_TYPE];
 
 export const ProjectStatusDisplay: Record<ProjectStatus, string> = {
-  [ProjectStatus.PROCESSING]: 'Đang xử lý',
-  [ProjectStatus.DONE]: 'Hoàn tất',
-  [ProjectStatus.PAID]: 'Đã thanh toán',
-  [ProjectStatus.PENDING]: 'Chờ duyệt',
-  [ProjectStatus.SHIPPING]: 'Đang giao',
-  [ProjectStatus.RECEIVED]: 'Đã nhận',
-  [ProjectStatus.CANCELLED]: 'Đã hủy',
+  [PROJECT_STATUS.PROCESSING]: 'Đang xử lý',
+  [PROJECT_STATUS.DONE]: 'Hoàn tất',
+  [PROJECT_STATUS.PAID]: 'Đã thanh toán',
+  [PROJECT_STATUS.PENDING]: 'Chờ duyệt',
+  [PROJECT_STATUS.SHIPPING]: 'Đang giao',
+  [PROJECT_STATUS.RECEIVED]: 'Đã nhận',
+  [PROJECT_STATUS.CANCELLED]: 'Đã hủy',
 };
 
 export const ProjectStatusOptions: { value: ProjectStatus; label: string }[] = [
-  { value: ProjectStatus.PROCESSING, label: ProjectStatusDisplay.PROCESSING },
-  { value: ProjectStatus.DONE, label: ProjectStatusDisplay.DONE },
-  { value: ProjectStatus.PAID, label: ProjectStatusDisplay.PAID },
-  { value: ProjectStatus.PENDING, label: ProjectStatusDisplay.PENDING },
-  { value: ProjectStatus.SHIPPING, label: ProjectStatusDisplay.SHIPPING },
-  { value: ProjectStatus.RECEIVED, label: ProjectStatusDisplay.RECEIVED },
-  { value: ProjectStatus.CANCELLED, label: ProjectStatusDisplay.CANCELLED },
+  { value: PROJECT_STATUS.PROCESSING, label: ProjectStatusDisplay.PROCESSING },
+  { value: PROJECT_STATUS.DONE, label: ProjectStatusDisplay.DONE },
+  { value: PROJECT_STATUS.PAID, label: ProjectStatusDisplay.PAID },
+  { value: PROJECT_STATUS.PENDING, label: ProjectStatusDisplay.PENDING },
+  { value: PROJECT_STATUS.SHIPPING, label: ProjectStatusDisplay.SHIPPING },
+  { value: PROJECT_STATUS.RECEIVED, label: ProjectStatusDisplay.RECEIVED },
+  { value: PROJECT_STATUS.CANCELLED, label: ProjectStatusDisplay.CANCELLED },
 ];

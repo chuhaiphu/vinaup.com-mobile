@@ -14,22 +14,23 @@ import {
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { FontAwesome6, Ionicons } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import VinaupDoubleCheck from '../icons/vinaup-double-check.native';
 
-export interface SelectOption {
-  label: string | null;
-  value: string | null;
+export interface MultiSelectOption {
+  label: string;
+  value: string;
   leftSection?: React.ReactNode;
 }
 
-interface SelectProps {
+interface MultiSelectProps {
   isLoading?: boolean;
   enableAnimation?: boolean;
-  options: SelectOption[];
-  value: string;
-  onChange: (value: string) => void;
+  options: MultiSelectOption[];
+  values: string[];
+  onChange: (value: string[]) => void;
   placeholder?: string;
   disabled?: boolean;
   heightPercentage?: number;
@@ -39,22 +40,23 @@ interface SelectProps {
   };
 }
 
-export function Select({
+export function MultiSelect({
   enableAnimation = true,
   isLoading = false,
   options,
-  value,
+  values,
   onChange,
   placeholder = 'Chọn...',
   disabled = false,
   heightPercentage = 0.8,
   renderTrigger,
   style,
-}: SelectProps) {
+}: MultiSelectProps) {
   const [visible, setVisible] = useState(false);
   const { height: screenHeight } = useWindowDimensions();
   const MODAL_HEIGHT = screenHeight * heightPercentage;
   const translateY = useSharedValue(MODAL_HEIGHT);
+
   const handleOpen = () => {
     setVisible(true);
     if (!enableAnimation) {
@@ -65,9 +67,8 @@ export function Select({
     translateY.value = withTiming(0, { duration: 350 });
   };
 
-  const handleClose = (callback?: () => void) => {
+  const handleClose = () => {
     if (!enableAnimation) {
-      callback?.();
       setVisible(false);
       return;
     }
@@ -75,21 +76,25 @@ export function Select({
     translateY.value = withTiming(MODAL_HEIGHT, { duration: 200 }, (finished) => {
       if (finished) {
         scheduleOnRN(setVisible, false);
-        if (callback) {
-          scheduleOnRN(callback);
-        }
       }
     });
   };
 
-  const selectedOption = options.find((opt) => opt.value === value);
-  const selectedLabel = selectedOption?.label || placeholder;
-
-  const handleSelect = (val: string) => {
-    handleClose(() => {
-      onChange(val);
-    });
+  const handleToggle = (val: string) => {
+    const isSelected = values.includes(val);
+    if (isSelected) {
+      onChange(values.filter((v) => v !== val));
+    } else {
+      onChange([...values, val]);
+    }
   };
+
+  const selectedLabels = options
+    .filter((opt) => values.includes(opt.value))
+    .map((opt) => opt.label);
+
+  const triggerLabel =
+    selectedLabels.length > 0 ? selectedLabels.join(', ') : placeholder;
 
   return (
     <>
@@ -110,21 +115,22 @@ export function Select({
                 style={[styles.triggerText, style?.triggerText]}
                 numberOfLines={1}
               >
-                {selectedLabel}
+                {triggerLabel}
               </Text>
               <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />
             </>
           )}
         </Pressable>
       )}
+
       <Modal
         visible={visible}
         transparent
         animationType="fade"
-        onRequestClose={() => handleClose()}
+        onRequestClose={handleClose}
       >
         <View style={styles.overlay}>
-          <Pressable style={styles.backdrop} onPress={() => handleClose()} />
+          <Pressable style={styles.backdrop} onPress={handleClose} />
 
           <Animated.View
             style={[
@@ -136,40 +142,34 @@ export function Select({
             ]}
           >
             <View style={styles.header}>
-              {/* <View style={styles.handle} /> */}
               <Text style={styles.headerTitle}>{placeholder}</Text>
+              <Text style={styles.headerSubtitle}>Nổi bật</Text>
             </View>
 
             <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
-              {options.map((item) => {
-                const isSelected = item.value === value;
-                return (
-                  <Pressable
-                    key={item.value}
-                    style={[styles.optionItem, isSelected && styles.optionSelected]}
-                    onPress={() => handleSelect(item.value || '')}
-                  >
-                    <View style={styles.optionLeftContent}>
-                      {item.leftSection}
-                      <Text
-                        style={[
-                          styles.optionText,
-                          isSelected && styles.optionTextActive,
-                        ]}
-                      >
-                        {item.label}
-                      </Text>
-                    </View>
-                    {isSelected && (
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={22}
-                        color={COLORS.vinaupTeal}
-                      />
-                    )}
-                  </Pressable>
-                );
-              })}
+              <View style={styles.card}>
+                {options.map((item, index) => {
+                  const isSelected = values.includes(item.value);
+                  return (
+                    <Pressable
+                      key={item.value}
+                      style={[
+                        styles.optionItem,
+                        index < options.length - 1 && styles.optionDivider,
+                      ]}
+                      onPress={() => handleToggle(item.value)}
+                    >
+                      <View style={styles.optionLeftContent}>
+                        {item.leftSection}
+                        <Text style={styles.optionText}>{item.label}</Text>
+                      </View>
+                      <View style={[styles.checkbox]}>
+                        {isSelected && <VinaupDoubleCheck />}
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
             </ScrollView>
             <SafeAreaView edges={['bottom']} />
           </Animated.View>
@@ -200,56 +200,61 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   sheetContent: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.vinaupSoftGray,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     width: '100%',
     overflow: 'hidden',
   },
-  handle: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 3,
-    alignSelf: 'center',
-    marginBottom: 10,
-  },
   header: {
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#EEE',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: COLORS.vinaupTeal,
+  },
+  headerSubtitle: {
+    fontSize: 14,
   },
   listPadding: {
-    paddingBottom: 20,
+    paddingHorizontal: 12,
+  },
+  card: {
+    backgroundColor: COLORS.vinaupWhite,
+    borderRadius: 14,
+    paddingHorizontal: 12,
   },
   optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  optionDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.vinaupLightGray,
   },
   optionLeftContent: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-  },
-  optionSelected: {
-    backgroundColor: '#F5F5F5',
+    flex: 1,
   },
   optionText: {
     fontSize: 18,
-    color: '#444',
-  },
-  optionTextActive: {
     color: COLORS.vinaupTeal,
-    fontWeight: '600',
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: COLORS.vinaupLightGray,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

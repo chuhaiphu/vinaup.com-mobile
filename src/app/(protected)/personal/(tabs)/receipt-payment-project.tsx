@@ -23,7 +23,6 @@ import { useLocalSearchParams } from 'expo-router';
 export default function ReceiptPaymentProject() {
   const safeRouter = useSafeRouter();
   const params = useLocalSearchParams<{ type?: 'SELF' | 'COMPANY' }>();
-  console.log('ReceiptPaymentProject rendered with params:', params);
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 

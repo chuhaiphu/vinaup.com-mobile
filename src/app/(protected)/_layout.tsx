@@ -23,7 +23,7 @@ export default function ProtectedLayout() {
   return (
     <Stack>
       <Stack.Screen name="personal/(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="organization/(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="organization/[id]/(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
 }

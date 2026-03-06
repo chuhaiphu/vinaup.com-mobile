@@ -63,7 +63,8 @@ export const OwnerSelector = () => {
       setOwnerMode('personal');
       router.replace('/personal');
     } else if (selectedValue.startsWith('organization')) {
-      const orgId = selectedValue.split('-')[1];
+      // remove the 'organization-' prefix and join the rest with '-'
+      const orgId = selectedValue.split('-').slice(1).join('-');
 
       setOwnerMode('organization');
       router.replace(`/organization/${orgId}`);

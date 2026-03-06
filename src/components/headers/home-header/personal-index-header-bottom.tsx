@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { AuthContext } from '@/providers/auth-provider';
 import { COLORS } from '@/constants/style-constant';
 
-const HomeIndexHeaderBottom = () => {
+const PersonalIndexHeaderBottom = () => {
   const { currentUser } = useContext(AuthContext);
 
   return (
@@ -30,6 +30,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 14,
     paddingBottom: 14,
+    // equal to 42px to align with the bottom of the header
+    minHeight: 42,
   },
   text: {
     fontSize: 16,
@@ -41,4 +43,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeIndexHeaderBottom;
+export default PersonalIndexHeaderBottom;

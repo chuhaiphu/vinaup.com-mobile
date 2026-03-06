@@ -5,7 +5,7 @@ import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 
-const ReceiptPaymentSelfHeaderBottom = () => {
+const PersonalReceiptPaymentSelfHeaderBottom = () => {
   const router = useRouter();
 
   const handleAddNew = () => {
@@ -27,7 +27,7 @@ const ReceiptPaymentSelfHeaderBottom = () => {
         <Text style={styles.titleRight}> ngày</Text>
       </View>
       <Button onPress={handleAddNew}>
-        <VinaupAddNew width={32} height={32} />
+        <VinaupAddNew width={30} height={30} />
       </Button>
     </View>
   );
@@ -56,4 +56,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReceiptPaymentSelfHeaderBottom;
+export default PersonalReceiptPaymentSelfHeaderBottom;

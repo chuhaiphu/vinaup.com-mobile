@@ -5,22 +5,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { usePathname } from 'expo-router';
 import NavigatorSelector from '../../selectors/navigator-selector/navigator-selector';
-import ReceiptPaymentSelfHeaderBottom from './receipt-payment-self-header-bottom';
-import ReceiptPaymentProjectHeaderBottom from './receipt-payment-project-header-bottom';
-import HomeIndexHeaderBottom from './home-header-index-bottom';
+import PersonalReceiptPaymentSelfHeaderBottom from './receipt-payment-self-header-bottom';
+import PersonalReceiptPaymentProjectHeaderBottom from './personal-receipt-payment-project-header-bottom';
+import PersonalIndexHeaderBottom from './personal-index-header-bottom';
+import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
-
+  console.log('HomeHeader rendered with pathname:', pathname);
   const renderHeaderBottom = () => {
-    // use switch (true) because we want to check if pathname includes certain string, not exact match
     switch (true) {
-      case pathname.includes('/receipt-payment-self'):
-        return <ReceiptPaymentSelfHeaderBottom />;
-      case pathname.includes('/receipt-payment-project'):
-        return <ReceiptPaymentProjectHeaderBottom />;
+      case pathname.includes('/personal/receipt-payment-self'):
+        return <PersonalReceiptPaymentSelfHeaderBottom />;
+      case pathname.includes('/personal/receipt-payment-project'):
+        return <PersonalReceiptPaymentProjectHeaderBottom />;
       case pathname === '/personal':
-        return <HomeIndexHeaderBottom />;
+        return <PersonalIndexHeaderBottom />;
+      case pathname.startsWith('/organization'):
+        return <OrganizationIndexHeaderBottom />;
       default:
         return null;
     }
