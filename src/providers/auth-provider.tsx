@@ -1,4 +1,6 @@
 import { STORAGE_KEYS } from '@/constants/app-constant';
+import { usePersonalUtilitiesStore } from '@/hooks/use-personal-utility-store';
+import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
 import { UserResponse } from '@/interfaces/user-interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useEffect, useState } from 'react';
@@ -45,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCurrentUser(null);
       await AsyncStorage.removeItem(STORAGE_KEYS.currentUser);
       await AsyncStorage.removeItem(STORAGE_KEYS.accessToken);
+      usePersonalUtilitiesStore.persist.clearStorage();
+      useOrganizationUtilitiesStore.persist.clearStorage();
     } catch (error) {
       console.error('Error removing user', error);
     } finally {
@@ -81,7 +85,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     // from React 19, AuthContext is enough, no need to AuthContext.Provider
-    <AuthContext value={{ isLoading, currentUser, performLogin, performLogout, performSync }}>
+    <AuthContext
+      value={{ isLoading, currentUser, performLogin, performLogout, performSync }}
+    >
       {children}
     </AuthContext>
   );

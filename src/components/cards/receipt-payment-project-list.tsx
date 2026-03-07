@@ -1,11 +1,20 @@
 import React from 'react';
-import { RefreshControl, SectionList, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  RefreshControl,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import dayjs from 'dayjs';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { generateDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
 import Loader from '@/components/primitives/loader';
+import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 
 interface ReceiptPaymentProjectListProps {
   receiptPayments: ReceiptPaymentResponse[];
@@ -13,10 +22,12 @@ interface ReceiptPaymentProjectListProps {
   endDate: Date;
   loading?: boolean;
   onRefresh: () => void;
+  projectId: string;
 }
 
 interface ReceiptPaymentsSection {
   title: string;
+  dateKey: string;
   data: ReceiptPaymentResponse[];
 }
 
@@ -26,7 +37,10 @@ export function ReceiptPaymentProjectList({
   endDate,
   loading,
   onRefresh,
+  projectId,
 }: ReceiptPaymentProjectListProps) {
+  const safeRouter = useSafeRouter();
+
   const dateRange = generateDateRange(startDate, endDate);
 
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
@@ -36,8 +50,10 @@ export function ReceiptPaymentProjectList({
     const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
     // Fill the map with date range
     dateRange.forEach((d) => {
-      receiptPaymentsByDateMap[d.format('YYYY-MM-DD')] = {
+      const key = d.format('YYYY-MM-DD');
+      receiptPaymentsByDateMap[key] = {
         title: d.format('DD/MM'),
+        dateKey: key,
         data: [],
       };
     });
@@ -59,6 +75,27 @@ export function ReceiptPaymentProjectList({
     };
   })();
 
+  const navigateToFormScreen = async ({
+    id,
+    dateKey,
+  }: {
+    id?: string;
+    dateKey?: string;
+  }) => {
+    if (safeRouter.isNavigating) return;
+    safeRouter.safePush({
+      pathname: '/(protected)/personal/receipt-payment/[id]/receipt-payment-form',
+      params: {
+        id: id || 'new',
+        projectId,
+        lockDatePicker: 'false',
+        allowEditCategory: 'true',
+        receiptPaymentType: 'PAYMENT',
+        transactionDate: dateKey || undefined,
+      },
+    });
+  };
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -77,7 +114,12 @@ export function ReceiptPaymentProjectList({
           </Text>
         </View>
         {outOfRangeReceiptPayments.map((item) => (
-          <ReceiptPaymentCard key={item.id} receiptPayment={item} />
+          <Pressable
+            key={item.id}
+            onPress={() => navigateToFormScreen({ id: item.id })}
+          >
+            <ReceiptPaymentCard key={item.id} receiptPayment={item} />
+          </Pressable>
         ))}
       </View>
     );
@@ -91,16 +133,33 @@ export function ReceiptPaymentProjectList({
         <RefreshControl
           refreshing={loading ?? false}
           onRefresh={onRefresh}
-          // Tùy chỉnh màu sắc (iOS & Android)
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />
       }
-      renderItem={({ item }) => <ReceiptPaymentCard receiptPayment={item} />}
-      renderSectionHeader={({ section: { title, data } }) => (
-        <View style={styles.dateHeader}>
-          <Text style={styles.dateHeaderText}>{title}</Text>
-          <Text style={styles.dateHeaderCount}>({data.length})</Text>
+      renderItem={({ item }) => (
+        <Pressable
+          key={item.id}
+          onPress={() => navigateToFormScreen({ id: item.id })}
+        >
+          <ReceiptPaymentCard key={item.id} receiptPayment={item} />
+        </Pressable>
+      )}
+      renderSectionHeader={({ section: { title, data, dateKey } }) => (
+        <View style={styles.sectionHeader}>
+          <View style={styles.dateHeader}>
+            <Text style={styles.dateHeaderText}>{title}</Text>
+            <Text style={styles.receiptPaymentCount}>({data.length})</Text>
+          </View>
+          <Pressable
+            onPress={() =>
+              navigateToFormScreen({
+                dateKey,
+              })
+            }
+          >
+            <VinaupAddNew width={24} height={24} iconColor={COLORS.vinaupWhite} />
+          </Pressable>
         </View>
       )}
       renderSectionFooter={({ section }) =>
@@ -129,25 +188,29 @@ const styles = StyleSheet.create({
   dateGroupContainer: {
     marginBottom: 4,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginTop: 12,
+    marginBottom: 4,
+  },
   dateHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 12,
-    marginTop: 12,
-    marginBottom: 4,
   },
   dateHeaderText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-    color: COLORS.vinaupTeal,
   },
-  dateHeaderCount: {
-    fontSize: 14,
+  receiptPaymentCount: {
+    fontSize: 16,
     color: COLORS.vinaupMediumDarkGray,
   },
   emptyGroup: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
   },
   emptyGroupText: {
     fontSize: 14,
@@ -158,7 +221,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   outOfRangeHeader: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 4,
   },
   outOfRangeHeaderText: {

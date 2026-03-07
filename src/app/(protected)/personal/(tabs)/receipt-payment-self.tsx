@@ -19,7 +19,6 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function ReceiptPaymentSelf() {
   const safeRouter = useSafeRouter();
-
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
   const {
@@ -69,7 +68,6 @@ export default function ReceiptPaymentSelf() {
       {!isLoading && (
         <FlatList
           data={receiptPayments}
-          contentContainerStyle={{ paddingVertical: 8 }}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
@@ -111,13 +109,13 @@ const styles = StyleSheet.create({
   },
   dateTimePickerContainer: {
     marginVertical: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   dateText: {
     fontSize: 18,
     color: COLORS.vinaupTeal,
   },
   separator: {
-    height: 10,
+    height: 2,
   },
 });

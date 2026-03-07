@@ -12,7 +12,6 @@ import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
-  console.log('HomeHeader rendered with pathname:', pathname);
   const renderHeaderBottom = () => {
     switch (true) {
       case pathname.includes('/personal/receipt-payment-self'):
@@ -28,6 +27,8 @@ export const HomeHeader = () => {
     }
   };
 
+  const headerBottom = renderHeaderBottom();
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeAreaView}>
       <View style={styles.headerContainer}>
@@ -41,7 +42,7 @@ export const HomeHeader = () => {
           </TouchableOpacity>
         </View>
       </View>
-      {renderHeaderBottom()}
+      {headerBottom && <View style={styles.bottomRow}>{headerBottom}</View>}
     </SafeAreaView>
   );
 };
@@ -67,13 +68,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
   },
   bottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingBottom: 12,
   },
   titleWrapper: {

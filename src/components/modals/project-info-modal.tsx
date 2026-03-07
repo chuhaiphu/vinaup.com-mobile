@@ -129,7 +129,7 @@ export function ProjectInfoModal({
               </View>
             </View>
 
-            <View style={styles.inputItem}>
+            {/* <View style={styles.inputItem}>
               <View
                 style={[
                   styles.inputWrapper,
@@ -162,7 +162,7 @@ export function ProjectInfoModal({
                   editable={!isLoading}
                 />
               </View>
-            </View>
+            </View> */}
 
             <View style={styles.inputGroup}>
               <View style={styles.dateRow}>

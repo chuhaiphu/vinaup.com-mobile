@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import dayjs, { Dayjs } from 'dayjs';
 import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -39,10 +39,10 @@ import {
   updateReceiptPaymentApi,
 } from '@/apis/receipt-payment-apis';
 import Loader from '@/components/primitives/loader';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 
 export default function ReceiptPaymentFormScreen() {
-  const router = useRouter();
-
+  const safeRouter = useSafeRouter();
   const params = useLocalSearchParams<{
     id: string;
     groupCode?: 'FOR_DIRECTOR' | 'FOR_TOUR_GUIDE';
@@ -56,9 +56,11 @@ export default function ReceiptPaymentFormScreen() {
     tourSettlementId?: string;
     lockDatePicker?: string;
     allowEditCategory?: string;
+    transactionDate?: string;
   }>();
 
   const { id } = params;
+  console.log("params", params);
   const isUpdateMode = id !== 'new';
 
   const {
@@ -125,7 +127,9 @@ export default function ReceiptPaymentFormScreen() {
   const [transactionType, setTransactionType] =
     useState<ReceiptPaymentTransactionType>('CASH');
   const [note, setNote] = useState('');
-  const [transactionDate, setTransactionDate] = useState<Dayjs>(dayjs());
+  const [transactionDate, setTransactionDate] = useState<Dayjs>(
+    params.transactionDate ? dayjs(params.transactionDate) : dayjs()
+  );
   const [selectedCategory, setSelectedCategory] = useState(
     defaultCategoryOption?.id || ''
   );
@@ -187,7 +191,16 @@ export default function ReceiptPaymentFormScreen() {
 
     createOrUpdateReceiptPayment(mutationApi, {
       onSuccess: () => {
-        router.replace('/(protected)/personal/(tabs)/receipt-payment-self');
+        if (params.projectId) {
+          safeRouter.safeReplace({
+            pathname: '/(protected)/personal/project/[id]/project-detail',
+            params: { id: params.projectId },
+          });
+        } else {
+          safeRouter.safeReplace(
+            '/(protected)/personal/(tabs)/receipt-payment-self'
+          );
+        }
       },
       onError: (error) => {
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi tạo thu/chi.');
@@ -205,7 +218,16 @@ export default function ReceiptPaymentFormScreen() {
         onPress: () => {
           deleteReceiptPayment(() => deleteReceiptPaymentApi(id), {
             onSuccess: () => {
-              router.replace('/(protected)/personal/(tabs)/receipt-payment-self');
+              if (params.projectId) {
+                safeRouter.safeReplace({
+                  pathname: '/(protected)/personal/project/[id]/project-detail',
+                  params: { id: params.projectId },
+                });
+              } else {
+                safeRouter.safeReplace(
+                  '/(protected)/personal/(tabs)/receipt-payment-self'
+                );
+              }
             },
             onError: (error) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
@@ -531,6 +553,7 @@ const styles = StyleSheet.create({
     minHeight: 50,
   },
   inputNative: {
+    flex: 1,
     backgroundColor: '#FBFBFB',
     paddingHorizontal: 12,
     paddingVertical: 12,

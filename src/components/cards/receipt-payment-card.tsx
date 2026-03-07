@@ -52,14 +52,13 @@ export function ReceiptPaymentCard({ receiptPayment }: ReceiptPaymentCardProps) 
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   content: {
     gap: 4,
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 8,
     // iOS Shadow
     shadowColor: '#000',

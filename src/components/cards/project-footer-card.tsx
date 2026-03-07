@@ -36,9 +36,10 @@ export function ProjectFooterCard({
         onPress={() => setNoteModalVisible(true)}
         disabled={isLoading}
       >
-        <VinaupInfoNote width={18} height={18} color={COLORS.vinaupMediumGray} />
-        <Text style={styles.noteLabel}>Ghi chú:</Text>
-        <Text style={styles.noteValue}>{note || '—'}</Text>
+        <VinaupInfoNote width={20} height={20} color={COLORS.vinaupTeal} />
+        <Text style={styles.noteValue} numberOfLines={2} ellipsizeMode="tail">
+          {note || '—'}
+        </Text>
         <VinaupPenLineVariant width={16} height={16} color={COLORS.vinaupTeal} />
       </Pressable>
 
@@ -51,11 +52,19 @@ export function ProjectFooterCard({
           <View style={styles.rowsNew}>
             <View style={styles.orgCol}>
               <Text style={styles.label}>Tổ chức:</Text>
-              <Text style={styles.value}>{organizationName || ''}</Text>
+              <Text style={[styles.value, styles.valueLeft]}>
+                {organizationName || ''}
+              </Text>
             </View>
             <View style={styles.customerCol}>
               <Text style={styles.label}>Tên khách:</Text>
-              <Text style={styles.value}>{customerName || ''}</Text>
+              <Text
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                style={[styles.value, styles.valueRight]}
+              >
+                {customerName || ''}
+              </Text>
             </View>
             {/* <View style={styles.editButton}>
               <VinaupPenLineVariant
@@ -96,13 +105,13 @@ export function ProjectFooterCard({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     marginBottom: 20,
   },
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 4,
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
@@ -132,6 +141,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '500',
+    color: COLORS.vinaupTeal,
+  },
+  valueLeft: {
+    textAlign: 'left',
+  },
+  valueRight: {
+    textAlign: 'right',
   },
   value: {
     fontSize: 16,
@@ -141,15 +157,16 @@ const styles = StyleSheet.create({
   noteContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 12,
-    gap: 8,
+    gap: 4,
   },
   noteLabel: {
     fontSize: 16,
     fontWeight: '500',
   },
   noteValue: {
+    flex: 1,
     fontSize: 16,
     color: COLORS.vinaupBlack,
   },

@@ -97,6 +97,13 @@ export default function ProjectDetailScreen() {
     ]);
   };
 
+  const getHeaderTitle = () => {
+    if (isLoading || !project) {
+      return '';
+    }
+    return project.type === 'SELF' ? 'Chi tiết tiền công' : 'Chi tiết dự án';
+  };
+
   if (isLoading) {
     return (
       <View>
@@ -108,7 +115,7 @@ export default function ProjectDetailScreen() {
   return (
     <>
       <StackWithHeader
-        title={project?.type === 'SELF' ? 'Chi tiết tiền công' : 'Chi tiết dự án'}
+        title={getHeaderTitle()}
         backTitle="Quay lại"
         onDelete={handleDelete}
         isDeleting={isDeletingProject}
@@ -151,6 +158,7 @@ export default function ProjectDetailScreen() {
             startDate={project.startDate}
             endDate={project.endDate}
             loading={isLoadingReceiptPayments}
+            projectId={projectId}
           />
         )}
         <ProjectFooterCard
@@ -177,7 +185,7 @@ const styles = StyleSheet.create({
   },
   projectFilterContainer: {
     marginVertical: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

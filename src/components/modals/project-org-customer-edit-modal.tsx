@@ -42,6 +42,12 @@ export function ProjectOrgCustomerEditModal({
     }
     onConfirm?.(tempOrgName, tempCustomerName);
   };
+  
+  const handleClose = () => {
+    setTempOrgName(organizationName || '');
+    setTempCustomerName(customerName || '');
+    onClose?.();
+  };
 
   const handleOrgInputSubmit = () => {
     customerInputRef.current?.focus();
@@ -55,11 +61,11 @@ export function ProjectOrgCustomerEditModal({
     <Modal
       visible={visible}
       transparent
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
       animationType="fade"
     >
       <KeyboardSafeAvoidingView style={styles.modalContainer}>
-        <Pressable style={styles.modalOverlay} onPress={onClose} />
+        <Pressable style={styles.modalOverlay} onPress={handleClose} />
         <View style={styles.modalContent}>
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Tổ chức</Text>

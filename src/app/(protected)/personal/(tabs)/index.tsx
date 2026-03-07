@@ -18,23 +18,26 @@ import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { MultiSelect } from '@/components/primitives/multiple-select';
-import { useHomeUtilitiesStore } from '@/hooks/use-home-utility-store';
-import { HOME_UTILITY_KEYS, type HomeUtilityKey } from '@/constants/app-constant';
+import { usePersonalUtilitiesStore } from '@/hooks/use-personal-utility-store';
+import {
+  PERSONAL_UTILITY_KEYS,
+  type PersonalUtilityKey,
+} from '@/constants/app-constant';
 
 const UTILITY_OPTIONS = [
-  { label: 'Thu chi ngày', value: HOME_UTILITY_KEYS.receiptPaymentSelf },
+  { label: 'Thu chi ngày', value: PERSONAL_UTILITY_KEYS.receiptPaymentSelf },
   {
     label: 'Thu chi Tiền công',
-    value: HOME_UTILITY_KEYS.receiptPaymentProjectSelf,
+    value: PERSONAL_UTILITY_KEYS.receiptPaymentProjectSelf,
   },
   {
     label: 'Thu chi Dự án',
-    value: HOME_UTILITY_KEYS.receiptPaymentProjectCompany,
+    value: PERSONAL_UTILITY_KEYS.receiptPaymentProjectCompany,
   },
 ];
 
 export default function PersonalIndexScreen() {
-  const { selectedUtilities, setUtilities } = useHomeUtilitiesStore();
+  const { selectedUtilities, setUtilities } = usePersonalUtilitiesStore();
 
   const today = new Date();
   const day = String(today.getDate()).padStart(2, '0');
@@ -102,17 +105,17 @@ export default function PersonalIndexScreen() {
 
   const allUtilities = [
     {
-      key: HOME_UTILITY_KEYS.receiptPaymentSelf,
+      key: PERSONAL_UTILITY_KEYS.receiptPaymentSelf,
       label: 'Thu chi ngày',
       value: calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining,
     },
     {
-      key: HOME_UTILITY_KEYS.receiptPaymentProjectSelf,
+      key: PERSONAL_UTILITY_KEYS.receiptPaymentProjectSelf,
       label: 'Thu chi Tiền công',
       value: `(${projectsSelf?.length || 0})`,
     },
     {
-      key: HOME_UTILITY_KEYS.receiptPaymentProjectCompany,
+      key: PERSONAL_UTILITY_KEYS.receiptPaymentProjectCompany,
       label: 'Thu chi Dự án',
       value: `(${projectsCompany?.length || 0})`,
     },
@@ -152,7 +155,7 @@ export default function PersonalIndexScreen() {
         <MultiSelect
           options={UTILITY_OPTIONS}
           values={selectedUtilities}
-          onChange={(vals) => setUtilities(vals as HomeUtilityKey[])}
+          onChange={(vals) => setUtilities(vals as PersonalUtilityKey[])}
           placeholder="Tiện ích"
           heightPercentage={0.3}
           renderTrigger={
@@ -185,21 +188,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.vinaupSoftGray,
     paddingTop: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 6,
   },
   dateText: {
     fontSize: 20,
-    fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
   iconButton: {
-    width: 36,
-    height: 36,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: COLORS.vinaupWhite,
     borderRadius: 14,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   cardRow: {
     paddingVertical: 12,

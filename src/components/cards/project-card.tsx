@@ -25,9 +25,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const getProjectInfoText = () => {
     if (!project) return '';
     if (project.type === 'SELF' || project.type === 'COMPANY') {
-      return `${project.externalCustomerName || ''} - ${project.externalOrganizationName || ''}`;
+      return `${project.externalOrganizationName || ''}`;
     }
-    return `${project.organization?.name || ''} - ${project.organizationCustomer?.name || ''}`;
+    return `${project.organization?.name || ''}`;
   };
 
   const getProjectDateRangeText = () => {
@@ -59,13 +59,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <Text style={styles.projectDateRangeText}>
             {getProjectDateRangeText()}
           </Text>
-          <Text style={styles.equalLabel}>=</Text>
-          <Text style={styles.projectTotalAmountText}>
-            {generateLocalePriceFormat(
-              calculateReceiptPaymentsSummary(receiptPayments || []).totalRemaining,
-              'vi-VN'
-            )}
-          </Text>
         </View>
         <View style={styles.right}>
           <Text style={styles.projectStatusText}>
@@ -82,8 +75,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {/* <VinaupPenLine width={20} height={20} /> */}
           </View>
         </View>
-        <View style={styles.projectInfoRow}>
-          <Text style={styles.infoText}>{getProjectInfoText()}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
+            {getProjectInfoText()}
+          </Text>
+          <Text style={styles.projectTotalAmountText}>
+            {generateLocalePriceFormat(
+              calculateReceiptPaymentsSummary(receiptPayments || []).totalRemaining,
+              'vi-VN'
+            )}
+          </Text>
         </View>
       </View>
     </View>
@@ -92,11 +93,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   innerHeader: {
-    marginBottom: 8,
+    marginVertical: 4,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
@@ -112,6 +112,8 @@ const styles = StyleSheet.create({
   },
   projectTotalAmountText: {
     fontSize: 16,
+    flexShrink: 0,
+    marginLeft: 8,
   },
   projectStatusText: {
     fontSize: 14,
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 8,
     // iOS Shadow
     shadowColor: '#000',
@@ -143,11 +145,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  projectInfoRow: {
+  bottomRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   infoText: {
+    flex: 1,
     fontSize: 14,
     color: COLORS.vinaupDarkGray,
   },

@@ -13,6 +13,7 @@ import { Button } from '../primitives/button';
 import { KeyboardSafeAvoidingView } from '../primitives/keyboard-safe-avoiding-view';
 
 interface SimpleTextInputModalProps {
+  maxLength?: number;
   visible: boolean;
   value?: string | null;
   placeholder?: string;
@@ -22,6 +23,7 @@ interface SimpleTextInputModalProps {
 }
 
 export function SimpleTextInputModal({
+  maxLength = 100,
   visible,
   value = '',
   placeholder,
@@ -37,19 +39,25 @@ export function SimpleTextInputModal({
     onConfirm?.(tempValue);
   };
 
+  const handleClose = () => {
+    setTempValue(value || '');
+    onClose?.();
+  };
+  
   return (
     <Modal
       visible={visible}
       transparent
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
       animationType="fade"
     >
       <View style={styles.modalContainer}>
-        <Pressable style={styles.modalOverlay} onPress={onClose} />
+        <Pressable style={styles.modalOverlay} onPress={handleClose} />
         <KeyboardSafeAvoidingView style={styles.modalContent}>
           <TextInput
             ref={inputRef}
             style={styles.input}
+            maxLength={maxLength}
             value={tempValue}
             onChangeText={setTempValue}
             placeholder={placeholder}

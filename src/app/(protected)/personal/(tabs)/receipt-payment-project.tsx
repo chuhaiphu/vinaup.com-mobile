@@ -89,7 +89,6 @@ export default function ReceiptPaymentProject() {
       {!isLoading && (
         <FlatList
           data={projects}
-          contentContainerStyle={{ paddingVertical: 8 }}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
@@ -130,7 +129,7 @@ const styles = StyleSheet.create({
   },
   projectFilterContainer: {
     marginVertical: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -144,6 +143,6 @@ const styles = StyleSheet.create({
     color: COLORS.vinaupTeal,
   },
   separator: {
-    height: 10,
+    height: 2,
   },
 });

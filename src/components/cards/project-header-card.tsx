@@ -4,6 +4,7 @@ import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { ProjectInfoModal } from '@/components/modals/project-info-modal';
+import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
 
 interface ProjectHeaderCardProps {
   project?: ProjectResponse;
@@ -64,10 +65,10 @@ export function ProjectHeaderCard({
             <View style={styles.dateRow}>{getDateRangeText()}</View>
           </View>
           <View style={styles.rightInfo}>
-            {/* <View style={styles.editButton}>
+            <View style={styles.editButton}>
               <VinaupPenLineVariant width={18} height={18} />
-            </View> */}
-            <Text style={styles.entityCode}>No. {project.code.slice(0, 8)}</Text>
+            </View>
+            {/* <Text style={styles.entityCode}>No. {project.code.slice(0, 8)}</Text> */}
           </View>
         </View>
       </Pressable>
@@ -91,12 +92,12 @@ export function ProjectHeaderCard({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   mainInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 10,
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
@@ -129,10 +130,10 @@ const styles = StyleSheet.create({
     color: COLORS.vinaupMediumGray,
     fontSize: 16,
   },
-  // editButton: {
-  //   padding: 4,
-  //   borderRadius: 4,
-  // },
+  editButton: {
+    padding: 2,
+    borderRadius: 4,
+  },
   entityCode: {
     fontSize: 14,
     color: COLORS.vinaupMediumDarkGray,

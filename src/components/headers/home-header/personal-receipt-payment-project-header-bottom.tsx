@@ -45,7 +45,7 @@ const PersonalReceiptPaymentProjectHeaderBottom = () => {
   };
 
   return (
-    <View style={styles.bottomRow}>
+    <>
       <View style={styles.titleWrapper}>
         <Text style={styles.titleLeft}>Thu chi</Text>
         <TextSwitcher
@@ -64,18 +64,11 @@ const PersonalReceiptPaymentProjectHeaderBottom = () => {
       >
         <VinaupAddNew width={30} height={30} />
       </Button>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 14,
-    paddingBottom: 12,
-  },
   titleWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
