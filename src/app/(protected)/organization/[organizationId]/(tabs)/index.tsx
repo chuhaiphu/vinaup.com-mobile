@@ -11,115 +11,63 @@ import { COLORS } from '@/constants/style-constant';
 import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
 import { useEffect, useState } from 'react';
-import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
+import { getReceiptPaymentsByOrganizationIdApi } from '@/apis/receipt-payment-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
-import { ProjectResponse } from '@/interfaces/project-interfaces';
-import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { MultiSelect } from '@/components/primitives/multiple-select';
-import { usePersonalUtilitiesStore } from '@/hooks/use-personal-utility-store';
-import {
-  PERSONAL_UTILITY_KEYS,
-  type PersonalUtilityKey,
-} from '@/constants/app-constant';
-import { DateTimePicker } from '@/components/primitives/date-time-picker';
+import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
+import { ORG_UTILITY_KEYS } from '@/constants/app-constant';
+import { useLocalSearchParams } from 'expo-router';
 import dayjs from 'dayjs';
+import { DateTimePicker } from '@/components/primitives/date-time-picker';
 
 const UTILITY_OPTIONS = [
-  { label: 'Thu chi ngày', value: PERSONAL_UTILITY_KEYS.receiptPaymentSelf },
-  {
-    label: 'Thu chi Tiền công',
-    value: PERSONAL_UTILITY_KEYS.receiptPaymentProjectSelf,
-  },
-  {
-    label: 'Thu chi Dự án',
-    value: PERSONAL_UTILITY_KEYS.receiptPaymentProjectCompany,
-  },
+  { label: 'Thu bán hàng', value: ORG_UTILITY_KEYS.receiptPaymentReceipt },
+  { label: 'Chi mua hàng', value: ORG_UTILITY_KEYS.receiptPaymentPayment },
 ];
 
-export default function PersonalIndexScreen() {
-  const { selectedUtilities, setUtilities } = usePersonalUtilitiesStore();
+export default function OrganizationIndexScreen() {
+  const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
+  const { getSelectedUtilities, setUtilities } = useOrganizationUtilitiesStore();
+  const selectedUtilities = getSelectedUtilities(organizationId);
+
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
   const {
-    data: receiptPaymentsSelf,
-    executeFetchFn: fetchReceiptPaymentsSelf,
-    isRefreshing: isRefreshingReceiptPaymentsSelf,
-    refreshFetchFn: refreshReceiptPaymentsSelf,
-  } = useFetchFn<ReceiptPaymentResponse[]>();
-
-  const {
-    data: projectsSelf,
-    executeFetchFn: fetchProjectsSelf,
-    isRefreshing: isRefreshingProjectsSelf,
-    refreshFetchFn: refreshProjectsSelf,
-  } = useFetchFn<ProjectResponse[]>();
-
-  const {
-    data: projectsCompany,
-    executeFetchFn: fetchProjectsCompany,
-    isRefreshing: isRefreshingProjectsCompany,
-    refreshFetchFn: refreshProjectsCompany,
-  } = useFetchFn<ProjectResponse[]>();
+    data: receiptPayments,
+    executeFetchFn: fetchReceiptPayments,
+    isRefreshing,
+    refreshFetchFn: refreshReceiptPayments,
+  } = useFetchFn<ReceiptPaymentResponse[]>({
+    tags: ['organization-receipt-payment-list'],
+  });
 
   useEffect(() => {
-    fetchReceiptPaymentsSelf(() =>
-      getReceiptPaymentsByCurrentUserApi({
+    if (!organizationId) return;
+    fetchReceiptPayments(() =>
+      getReceiptPaymentsByOrganizationIdApi(organizationId, {
         date: selectedDate.toDate(),
       })
     );
-  }, [fetchReceiptPaymentsSelf, selectedDate]);
+  }, [fetchReceiptPayments, organizationId, selectedDate]);
 
-  useEffect(() => {
-    fetchProjectsSelf(() =>
-      getProjectsOfCurrentUserApi({
-        type: 'SELF',
-        date: selectedDate.toDate(),
-      })
-    );
-  }, [fetchProjectsSelf, selectedDate]);
-
-  useEffect(() => {
-    fetchProjectsCompany(() =>
-      getProjectsOfCurrentUserApi({
-        type: 'COMPANY',
-        date: selectedDate.toDate(),
-      })
-    );
-  }, [fetchProjectsCompany, selectedDate]);
-
-  const handlePress = (id: string) => {
-    console.log('Pressed:', id);
-  };
-  const onRefresh = async () => {
-    await Promise.all([
-      refreshReceiptPaymentsSelf(),
-      refreshProjectsSelf(),
-      refreshProjectsCompany(),
-    ]);
+  const handlePress = (key: string) => {
+    console.log('Pressed:', key);
   };
 
-  const isRefreshing =
-    isRefreshingReceiptPaymentsSelf ||
-    isRefreshingProjectsSelf ||
-    isRefreshingProjectsCompany;
+  const summary = calculateReceiptPaymentsSummary(receiptPayments);
 
   const allUtilities = [
     {
-      key: PERSONAL_UTILITY_KEYS.receiptPaymentSelf,
-      label: 'Thu chi ngày',
-      value: calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining,
+      key: ORG_UTILITY_KEYS.receiptPaymentReceipt,
+      label: 'Thu bán hàng',
+      value: summary.totalReceipt,
     },
     {
-      key: PERSONAL_UTILITY_KEYS.receiptPaymentProjectSelf,
-      label: 'Thu chi Tiền công',
-      value: `(${projectsSelf?.length || 0})`,
-    },
-    {
-      key: PERSONAL_UTILITY_KEYS.receiptPaymentProjectCompany,
-      label: 'Thu chi Dự án',
-      value: `(${projectsCompany?.length || 0})`,
+      key: ORG_UTILITY_KEYS.receiptPaymentPayment,
+      label: 'Chi mua hàng',
+      value: summary.totalPayment,
     },
   ];
 
@@ -133,7 +81,7 @@ export default function PersonalIndexScreen() {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={onRefresh}
+          onRefresh={refreshReceiptPayments}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />
@@ -167,7 +115,7 @@ export default function PersonalIndexScreen() {
         <MultiSelect
           options={UTILITY_OPTIONS}
           values={selectedUtilities}
-          onChange={(vals) => setUtilities(vals as PersonalUtilityKey[])}
+          onChange={(vals) => setUtilities(organizationId, vals)}
           placeholder="Tiện ích"
           heightPercentage={0.3}
           renderTrigger={
@@ -228,7 +176,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   utilitiesText: {
-    fontSize: 18
+    fontSize: 18,
   },
   card: {
     marginTop: 8,

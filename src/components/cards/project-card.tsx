@@ -16,7 +16,9 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
-    useFetchFn<ReceiptPaymentResponse[]>();
+    useFetchFn<ReceiptPaymentResponse[]>({
+      tags: ['personal-receipt-payment-list-in-project'],
+    });
 
   useEffect(() => {
     fetchReceiptPayments(() => getReceiptPaymentsByProjectIdApi(project?.id || ''));

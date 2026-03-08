@@ -1,4 +1,4 @@
-import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
+import { getReceiptPaymentsByOrganizationIdApi } from '@/apis/receipt-payment-apis';
 import Loader from '@/components/primitives/loader';
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { COLORS } from '@/constants/style-constant';
@@ -17,11 +17,18 @@ import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
+import { useLocalSearchParams } from 'expo-router';
+import { ReceiptPaymentType } from '@/constants/receipt-payment-constants';
 
-export default function PersonalReceiptPaymentSelf() {
+export default function OrganizationReceiptPayment() {
   const safeRouter = useSafeRouter();
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const params = useLocalSearchParams<{
+    organizationId: string;
+    receiptPaymentType: ReceiptPaymentType;
+  }>();
+  const { organizationId, receiptPaymentType } = params;
 
+  const [selectedDate, setSelectedDate] = useState(dayjs());
   const {
     data: receiptPayments,
     isLoading,
@@ -29,26 +36,30 @@ export default function PersonalReceiptPaymentSelf() {
     isRefreshing,
     refreshFetchFn,
   } = useFetchFn<ReceiptPaymentResponse[]>({
-    tags: ['personal-receipt-payment-list-self'],
+    tags: ['organization-receipt-payment-list'],
   });
+  console.log(receiptPayments);
 
   useEffect(() => {
+    if (!organizationId) return;
     fetchReceiptPayments(() =>
-      getReceiptPaymentsByCurrentUserApi({
+      getReceiptPaymentsByOrganizationIdApi(organizationId, {
         date: selectedDate.toDate(),
+        type: receiptPaymentType,
       })
     );
-  }, [fetchReceiptPayments, selectedDate]);
+  }, [fetchReceiptPayments, selectedDate, organizationId, receiptPaymentType]);
 
-  const navigateToFormScreen = async (id?: string) => {
+  const navigateToFormScreen = (receiptPaymentId?: string) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
       pathname: '/(protected)/personal/receipt-payment-form/[receiptPaymentId]',
       params: {
-        receiptPaymentId: id || 'new',
+        receiptPaymentId: receiptPaymentId || 'new',
         lockDatePicker: 'false',
         allowEditCategory: 'true',
-        receiptPaymentType: 'PAYMENT',
+        receiptPaymentType,
+        organizationId,
       },
     });
   };
@@ -90,9 +101,7 @@ export default function PersonalReceiptPaymentSelf() {
 
       {isLoading && <Loader size={64} />}
 
-      {!isLoading && (
-        <ReceiptPaymentsSummary receiptPayments={receiptPayments} />
-      )}
+      {!isLoading && <ReceiptPaymentsSummary receiptPayments={receiptPayments} />}
     </View>
   );
 }
@@ -100,19 +109,6 @@ export default function PersonalReceiptPaymentSelf() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  left: {
-    fontSize: 18,
-  },
-  right: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.vinaupTeal,
-  },
-  createButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
   },
   dateTimePickerContainer: {
     marginVertical: 12,

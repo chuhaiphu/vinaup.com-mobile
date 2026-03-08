@@ -42,7 +42,7 @@ export async function api<T>(
     // Handle successful responses
     const httpResponse: HttpResponse<T> = await response.json();
 
-    console.log('success response', httpResponse);
+    // console.log('success response', httpResponse);
 
     return httpResponse;
   } catch (error) {

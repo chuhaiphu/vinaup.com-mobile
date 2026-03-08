@@ -10,9 +10,9 @@ const PersonalReceiptPaymentSelfHeaderBottom = () => {
 
   const handleAddNew = () => {
     router.push({
-      pathname: '/(protected)/personal/receipt-payment/[id]/receipt-payment-form',
+      pathname: '/(protected)/personal/receipt-payment-form/[receiptPaymentId]',
       params: {
-        id: 'new',
+        receiptPaymentId: 'new',
         lockDatePicker: 'false',
         allowEditCategory: 'true',
         receiptPaymentType: 'PAYMENT',

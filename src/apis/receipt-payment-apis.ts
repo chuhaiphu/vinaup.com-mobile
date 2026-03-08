@@ -45,6 +45,13 @@ export async function getReceiptPaymentByIdApi(id: string) {
   });
 }
 
+export async function getReceiptPaymentsByProjectIdsApi(projectIds: string[]) {
+  return api<ReceiptPaymentResponse[]>('/receipt-payment/projects', {
+    method: 'POST',
+    body: JSON.stringify({ projectIds }),
+  });
+}
+
 export async function getReceiptPaymentsByProjectIdApi(projectId: string) {
   return api<ReceiptPaymentResponse[]>(`/receipt-payment/project/${projectId}`, {
     method: 'GET',

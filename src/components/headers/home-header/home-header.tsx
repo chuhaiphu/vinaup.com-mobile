@@ -5,10 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { usePathname } from 'expo-router';
 import NavigatorSelector from '../../selectors/navigator-selector/navigator-selector';
-import PersonalReceiptPaymentSelfHeaderBottom from './receipt-payment-self-header-bottom';
+import PersonalReceiptPaymentSelfHeaderBottom from './personal-receipt-payment-self-header-bottom';
 import PersonalReceiptPaymentProjectHeaderBottom from './personal-receipt-payment-project-header-bottom';
 import PersonalIndexHeaderBottom from './personal-index-header-bottom';
 import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
+import OrganizationReceiptPaymentHeaderBottom from './organization-receipt-payment-header-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
@@ -20,6 +21,8 @@ export const HomeHeader = () => {
         return <PersonalReceiptPaymentProjectHeaderBottom />;
       case pathname === '/personal':
         return <PersonalIndexHeaderBottom />;
+      case pathname.includes('/organization-receipt-payment'):
+        return <OrganizationReceiptPaymentHeaderBottom />;
       case pathname.startsWith('/organization'):
         return <OrganizationIndexHeaderBottom />;
       default:

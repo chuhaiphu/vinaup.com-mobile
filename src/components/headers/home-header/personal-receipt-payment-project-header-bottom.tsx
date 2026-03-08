@@ -12,7 +12,9 @@ import { ProjectResponse } from '@/interfaces/project-interfaces';
 
 const PersonalReceiptPaymentProjectHeaderBottom = () => {
   const router = useRouter();
-  const params = useGlobalSearchParams<{ type?: 'SELF' | 'COMPANY' }>();
+  const params = useGlobalSearchParams<{ projectType: 'SELF' | 'COMPANY' }>();
+  const currentProjectType = params.projectType || 'SELF';
+
   const { executeMutationFn: createProject, isMutating } =
     useMutationFn<ProjectResponse>({
       invalidatesTags: ['personal-receipt-payment-project'],
@@ -22,16 +24,16 @@ const PersonalReceiptPaymentProjectHeaderBottom = () => {
     await createProject(
       () =>
         createProjectApi({
-          description: params.type === 'COMPANY' ? 'Dự án' : 'Tiền công',
-          type: params.type === 'COMPANY' ? 'COMPANY' : 'SELF',
+          description: currentProjectType === 'COMPANY' ? 'Dự án' : 'Tiền công',
+          type: currentProjectType === 'COMPANY' ? 'COMPANY' : 'SELF',
           endDate: new Date(),
           startDate: new Date(),
         }),
       {
         onSuccess: (data) => {
           router.push({
-            pathname: '/(protected)/personal/project/[id]/project-detail',
-            params: { id: data.id },
+            pathname: '/(protected)/personal/project-detail/[projectId]',
+            params: { projectId: data.id },
           });
         },
         onError: (error) =>
@@ -41,7 +43,7 @@ const PersonalReceiptPaymentProjectHeaderBottom = () => {
   };
 
   const handleToggle = () => {
-    router.setParams({ type: params.type === 'SELF' ? 'COMPANY' : 'SELF' });
+    router.setParams({ projectType: currentProjectType === 'SELF' ? 'COMPANY' : 'SELF' });
   };
 
   return (
@@ -50,7 +52,7 @@ const PersonalReceiptPaymentProjectHeaderBottom = () => {
         <Text style={styles.titleLeft}>Thu chi</Text>
         <TextSwitcher
           textPair={['Tiền công', 'Dự án']}
-          currentIndex={params.type === 'COMPANY' ? 1 : 0}
+          currentIndex={currentProjectType === 'COMPANY' ? 1 : 0}
           onToggle={handleToggle}
           rightSection={
             <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />

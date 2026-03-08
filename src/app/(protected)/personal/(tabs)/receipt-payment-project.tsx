@@ -14,15 +14,18 @@ import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
+import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment-apis';
 import { ProjectCard } from '@/components/cards/project-card';
+import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useLocalSearchParams } from 'expo-router';
 
-export default function ReceiptPaymentProject() {
+export default function PersonalReceiptPaymentProject() {
   const safeRouter = useSafeRouter();
-  const params = useLocalSearchParams<{ type?: 'SELF' | 'COMPANY' }>();
+  const params = useLocalSearchParams<{ projectType: 'SELF' | 'COMPANY' }>();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
@@ -33,26 +36,39 @@ export default function ReceiptPaymentProject() {
     isRefreshing: isRefreshingProjects,
     refreshFetchFn: refreshProjects,
   } = useFetchFn<ProjectResponse[]>({
-    tags: ['personal-receipt-payment-project'],
+    tags: ['personal-project-list'],
+  });
+
+  const {
+    data: allReceiptPayments,
+    executeFetchFn: fetchAllReceiptPayments,
+  } = useFetchFn<ReceiptPaymentResponse[]>({
+    tags: ['personal-receipt-payment-list-all-projects'],
   });
 
   useEffect(() => {
     fetchProjects(() =>
       getProjectsOfCurrentUserApi({
-        type: params.type || 'SELF',
+        type: params.projectType || 'SELF',
         status: projectStatusFilter,
         month: selectedDate.month() + 1,
         year: selectedDate.year(),
       })
     );
-  }, [fetchProjects, selectedDate, params.type, projectStatusFilter]);
+  }, [fetchProjects, selectedDate, params.projectType, projectStatusFilter]);
+
+  useEffect(() => {
+    if (!projects || projects.length === 0) return;
+    const projectIds = projects.map((p) => p.id);
+    fetchAllReceiptPayments(() => getReceiptPaymentsByProjectIdsApi(projectIds));
+  }, [projects, fetchAllReceiptPayments]);
 
   const navigateToFormScreen = async (id?: string) => {
     if (safeRouter.isNavigating) return;
     if (id) {
       safeRouter.safePush({
-        pathname: '/(protected)/personal/project/[id]/project-detail',
-        params: { id },
+        pathname: '/(protected)/personal/project-detail/[projectId]',
+        params: { projectId: id },
       });
     }
   };
@@ -106,6 +122,10 @@ export default function ReceiptPaymentProject() {
         />
       )}
       {isLoading && <Loader size={64} />}
+
+      {!isLoading && (
+        <ReceiptPaymentsSummary receiptPayments={allReceiptPayments} />
+      )}
     </View>
   );
 }

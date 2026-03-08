@@ -44,7 +44,7 @@ import { useSafeRouter } from '@/hooks/use-safe-router';
 export default function ReceiptPaymentFormScreen() {
   const safeRouter = useSafeRouter();
   const params = useLocalSearchParams<{
-    id: string;
+    receiptPaymentId: string;
     groupCode?: 'FOR_DIRECTOR' | 'FOR_TOUR_GUIDE';
     organizationId?: string;
     receiptPaymentType?: ReceiptPaymentType;
@@ -59,9 +59,8 @@ export default function ReceiptPaymentFormScreen() {
     transactionDate?: string;
   }>();
 
-  const { id } = params;
-  console.log("params", params);
-  const isUpdateMode = id !== 'new';
+  const { receiptPaymentId } = params;
+  const isUpdateMode = receiptPaymentId !== 'new';
 
   const {
     data: existingReceiptPayment,
@@ -85,9 +84,9 @@ export default function ReceiptPaymentFormScreen() {
 
   useEffect(() => {
     if (isUpdateMode) {
-      fetchReceiptPayment(() => getReceiptPaymentByIdApi(id));
+      fetchReceiptPayment(() => getReceiptPaymentByIdApi(receiptPaymentId));
     }
-  }, [id, isUpdateMode, fetchReceiptPayment]);
+  }, [receiptPaymentId, isUpdateMode, fetchReceiptPayment]);
 
   const { data: categories, executeFetchFn: fetchCategories } =
     useFetchFn<CategoryResponse[]>();
@@ -96,14 +95,22 @@ export default function ReceiptPaymentFormScreen() {
     fetchCategories(() => getCategoriesOfCurrentUserApi());
   }, [fetchCategories]);
 
+  const formInvalidatesTags = params.projectId
+    ? ['personal-receipt-payment-list-in-project']
+    : ['personal-receipt-payment-list-self'];
+
   const {
     executeMutationFn: createOrUpdateReceiptPayment,
     isMutating: isMutatingReceiptPayment,
-  } = useMutationFn<ReceiptPaymentResponse>();
+  } = useMutationFn<ReceiptPaymentResponse>({
+    invalidatesTags: formInvalidatesTags,
+  });
   const {
     executeMutationFn: deleteReceiptPayment,
     isMutating: isDeletingReceiptPayment,
-  } = useMutationFn();
+  } = useMutationFn({
+    invalidatesTags: formInvalidatesTags,
+  });
 
   const categoryOptionsData =
     categories?.map((c) => ({
@@ -186,21 +193,12 @@ export default function ReceiptPaymentFormScreen() {
     };
 
     const mutationApi = isUpdateMode
-      ? () => updateReceiptPaymentApi(id, submitData)
+      ? () => updateReceiptPaymentApi(receiptPaymentId, submitData)
       : () => createReceiptPaymentApi(submitData);
 
     createOrUpdateReceiptPayment(mutationApi, {
       onSuccess: () => {
-        if (params.projectId) {
-          safeRouter.safeReplace({
-            pathname: '/(protected)/personal/project/[id]/project-detail',
-            params: { id: params.projectId },
-          });
-        } else {
-          safeRouter.safeReplace(
-            '/(protected)/personal/(tabs)/receipt-payment-self'
-          );
-        }
+        safeRouter.safeBack();
       },
       onError: (error) => {
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi tạo thu/chi.');
@@ -216,18 +214,9 @@ export default function ReceiptPaymentFormScreen() {
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          deleteReceiptPayment(() => deleteReceiptPaymentApi(id), {
+          deleteReceiptPayment(() => deleteReceiptPaymentApi(receiptPaymentId), {
             onSuccess: () => {
-              if (params.projectId) {
-                safeRouter.safeReplace({
-                  pathname: '/(protected)/personal/project/[id]/project-detail',
-                  params: { id: params.projectId },
-                });
-              } else {
-                safeRouter.safeReplace(
-                  '/(protected)/personal/(tabs)/receipt-payment-self'
-                );
-              }
+              safeRouter.safeBack();
             },
             onError: (error) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');

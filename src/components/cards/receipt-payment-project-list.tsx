@@ -76,17 +76,17 @@ export function ReceiptPaymentProjectList({
   })();
 
   const navigateToFormScreen = async ({
-    id,
+    receiptPaymentId,
     dateKey,
   }: {
-    id?: string;
+    receiptPaymentId?: string;
     dateKey?: string;
   }) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
-      pathname: '/(protected)/personal/receipt-payment/[id]/receipt-payment-form',
+      pathname: '/(protected)/personal/receipt-payment-form/[receiptPaymentId]',
       params: {
-        id: id || 'new',
+        receiptPaymentId: receiptPaymentId || 'new',
         projectId,
         lockDatePicker: 'false',
         allowEditCategory: 'true',
@@ -116,7 +116,7 @@ export function ReceiptPaymentProjectList({
         {outOfRangeReceiptPayments.map((item) => (
           <Pressable
             key={item.id}
-            onPress={() => navigateToFormScreen({ id: item.id })}
+            onPress={() => navigateToFormScreen({ receiptPaymentId: item.id })}
           >
             <ReceiptPaymentCard key={item.id} receiptPayment={item} />
           </Pressable>
@@ -140,7 +140,7 @@ export function ReceiptPaymentProjectList({
       renderItem={({ item }) => (
         <Pressable
           key={item.id}
-          onPress={() => navigateToFormScreen({ id: item.id })}
+          onPress={() => navigateToFormScreen({ receiptPaymentId: item.id })}
         >
           <ReceiptPaymentCard key={item.id} receiptPayment={item} />
         </Pressable>

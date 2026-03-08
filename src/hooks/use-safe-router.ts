@@ -13,17 +13,33 @@ export const useSafeRouter = () => {
     }, [])
   );
 
+  // create new screen instance with fresh state and push it to the screen stack
   const safePush = (href: Href) => {
     if (isNavigating) return;
     setIsNavigating(true);
     router.push(href);
   };
 
+  // create new screen instance with fresh state and replace it with the current screen
   const safeReplace = (href: Href) => {
     if (isNavigating) return;
     setIsNavigating(true);
     router.replace(href);
   };
 
-  return { safePush, safeReplace, isNavigating };
+  // pop the current screen from the screen stack and go back to the previous screen
+  const safeBack = () => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    router.back();
+  };
+
+  // navigating to a new route pushes a screen onto a stack, and backing out of that route pops it off the stack
+  const safeNavigate = (href: Href) => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    router.navigate(href);
+  };
+
+  return { safePush, safeReplace, safeBack, safeNavigate, isNavigating };
 };

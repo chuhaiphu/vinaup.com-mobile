@@ -10,7 +10,7 @@ import { Select, SelectOption } from '@/components/primitives/select';
 
 export const OwnerSelector = () => {
   const router = useRouter();
-  const { id: currentOrgId } = useLocalSearchParams<{ id: string }>();
+  const { organizationId: currentOrgId } = useLocalSearchParams<{ organizationId: string }>();
   const { currentUser } = useContext(AuthContext);
   const { organizations } = useContext(OrganizationContext);
   const { ownerMode, setOwnerMode } = useContext(OwnerModeContext);

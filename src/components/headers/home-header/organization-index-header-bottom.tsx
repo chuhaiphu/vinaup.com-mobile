@@ -5,9 +5,9 @@ import { useLocalSearchParams } from 'expo-router';
 import { COLORS } from '@/constants/style-constant';
 
 const OrganizationIndexHeaderBottom = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
   const { organizations } = useContext(OrganizationContext);
-  const currentOrg = organizations.find((org) => org.id === id);
+  const currentOrg = organizations.find((org) => org.id === organizationId);
 
   return (
     <>

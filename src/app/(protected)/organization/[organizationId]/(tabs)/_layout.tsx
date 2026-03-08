@@ -1,16 +1,19 @@
 import { HomeHeader } from '@/components/headers/home-header/home-header';
 import VinaupHome from '@/components/icons/vinaup-home.native';
+import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import { COLORS } from '@/constants/style-constant';
 import { Octicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Tabs, useLocalSearchParams } from 'expo-router';
 
 export default function OrganizationTabsLayout() {
+  const params = useLocalSearchParams<{ organizationId: string }>();
+  const { organizationId } = params;
   return (
     <Tabs
       screenOptions={{
         header: () => <HomeHeader />,
         tabBarStyle: {
-          backgroundColor: COLORS.vinaupBlueDark,
+          backgroundColor: COLORS.vinaupNavyDark,
         },
         tabBarActiveTintColor: COLORS.vinaupYellow,
         tabBarInactiveTintColor: COLORS.vinaupWhite,
@@ -27,6 +30,15 @@ export default function OrganizationTabsLayout() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupHome width={size} height={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        initialParams={{ organizationId }}
+        name="organization-receipt-payment"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <VinaupPlusMinus width={size} height={size} color={color} />
           ),
         }}
       />

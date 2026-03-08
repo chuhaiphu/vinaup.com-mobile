@@ -25,19 +25,18 @@ import { COLORS } from '@/constants/style-constant';
 
 export default function ProjectDetailScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ id?: string }>();
-  const projectId = params.id || '';
+  const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
   const {
     data: project,
     isLoading,
     executeFetchFn: fetchProject,
     refreshFetchFn: refreshProject,
-  } = useFetchFn<ProjectResponse>();
+  } = useFetchFn<ProjectResponse>({});
 
   const { executeMutationFn: updateProject, isMutating: isUpdatingProject } =
     useMutationFn<ProjectResponse>({
-      invalidatesTags: ['personal-receipt-payment-project'],
+      invalidatesTags: ['personal-project-list'],
     });
   const { executeMutationFn: deleteProject, isMutating: isDeletingProject } =
     useMutationFn();
@@ -47,7 +46,9 @@ export default function ProjectDetailScreen() {
     isLoading: isLoadingReceiptPayments,
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn<ReceiptPaymentResponse[]>();
+  } = useFetchFn<ReceiptPaymentResponse[]>({
+    tags: ['personal-receipt-payment-list-in-project'],
+  });
 
   useEffect(() => {
     if (projectId) {

@@ -5,7 +5,6 @@ import { COLORS } from '@/constants/style-constant';
 
 const PersonalIndexHeaderBottom = () => {
   const { currentUser } = useContext(AuthContext);
-
   return (
     <>
       <Text style={styles.text}>
