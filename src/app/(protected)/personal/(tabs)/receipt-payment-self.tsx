@@ -29,7 +29,7 @@ export default function PersonalReceiptPaymentSelf() {
     isRefreshing,
     refreshFetchFn,
   } = useFetchFn<ReceiptPaymentResponse[]>({
-    tags: ['personal-receipt-payment-list-self'],
+    tags: ['personal-receipt-payment-list'],
   });
 
   useEffect(() => {
@@ -90,9 +90,7 @@ export default function PersonalReceiptPaymentSelf() {
 
       {isLoading && <Loader size={64} />}
 
-      {!isLoading && (
-        <ReceiptPaymentsSummary receiptPayments={receiptPayments} />
-      )}
+      {!isLoading && <ReceiptPaymentsSummary receiptPayments={receiptPayments} />}
     </View>
   );
 }

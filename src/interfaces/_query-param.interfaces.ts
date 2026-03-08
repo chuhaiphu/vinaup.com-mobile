@@ -11,7 +11,8 @@ export interface ProjectFilterParam extends DateFilterParam {
 }
 
 export interface InvoiceFilterParam extends DateFilterParam {
-  invoiceTypeId?: string
+  invoiceTypeId?: string;
+  status?: string;
 }
 
 export interface TourFilterParam extends DateFilterParam {

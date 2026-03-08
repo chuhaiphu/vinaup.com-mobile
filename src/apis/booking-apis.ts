@@ -1,6 +1,6 @@
 import { CreateBookingRequest, BookingResponse, UpdateBookingRequest } from "@/interfaces/booking-interfaces";
 import { BookingFilterParam } from "@/interfaces/_query-param.interfaces";
-import { buildFilterQueryString } from "@/utils/helpers";
+import { buildFilterQueryString } from "@/utils/api-helpers";
 import { api } from "./_base";
 
 export async function createBookingApi(data: CreateBookingRequest) {

@@ -31,7 +31,10 @@ export async function getInvoiceByIdApi(id: string) {
 }
 
 export async function getInvoicesByOrganizationIdApi(organizationId: string, filter?: InvoiceFilterParam) {
-  const filterQueryString = buildFilterQueryString(filter, { invoiceTypeId: filter?.invoiceTypeId });
+  const filterQueryString = buildFilterQueryString(filter, {
+    invoiceTypeId: filter?.invoiceTypeId,
+    status: filter?.status,
+  });
   return api<InvoiceResponse[]>(`/invoice/organization/${organizationId}${filterQueryString}`, {
     method: 'GET'
   })

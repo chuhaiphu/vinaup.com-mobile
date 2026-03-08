@@ -4,44 +4,46 @@ import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
 import {
-  ProjectResponse,
-  UpdateProjectRequest,
-} from '@/interfaces/project-interfaces';
+  InvoiceResponse,
+  UpdateInvoiceRequest,
+} from '@/interfaces/invoice-interfaces';
 import {
-  deleteProjectApi,
-  getProjectByIdApi,
-  updateProjectApi,
-} from '@/apis/project-apis';
-import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
+  deleteInvoiceApi,
+  getInvoiceByIdApi,
+  updateInvoiceApi,
+} from '@/apis/invoice-apis';
+import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { ProjectHeaderCard } from '@/components/cards/project-header-card';
-import { ReceiptPaymentProjectList } from '@/components/cards/receipt-payment-project-list';
+import { InvoiceHeaderCard } from '@/components/cards/invoice-header-card';
+import { ReceiptPaymentInvoiceList } from '@/components/cards/receipt-payment-invoice-list';
 import Loader from '@/components/primitives/loader';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
-import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
-import { ProjectFooterCard } from '@/components/cards/project-footer-card';
+import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
+import { InvoiceFooterCard } from '@/components/cards/invoice-footer-card';
 import { COLORS } from '@/constants/style-constant';
 
-export default function ProjectDetailScreen() {
+export default function InvoiceDetailScreen() {
   const router = useRouter();
-  const { projectId } = useLocalSearchParams<{ projectId: string }>();
+  const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
 
   const {
-    data: project,
+    data: invoice,
     isLoading,
-    executeFetchFn: fetchProject,
-    refreshFetchFn: refreshProject,
-  } = useFetchFn<ProjectResponse>({});
+    executeFetchFn: fetchInvoice,
+    refreshFetchFn: refreshInvoice,
+  } = useFetchFn<InvoiceResponse>({});
 
-  const { executeMutationFn: updateProject, isMutating: isUpdatingProject } =
-    useMutationFn<ProjectResponse>({
-      invalidatesTags: ['personal-project-list'],
+  const { executeMutationFn: updateInvoice, isMutating: isUpdatingInvoice } =
+    useMutationFn<InvoiceResponse>({
+      invalidatesTags: ['organization-invoice-list'],
     });
-  const { executeMutationFn: deleteProject, isMutating: isDeletingProject } =
-    useMutationFn<null>({
-      invalidatesTags: ['personal-project-list'],
-    });
+  const {
+    executeMutationFn: deleteInvoiceMutation,
+    isMutating: isDeletingInvoice,
+  } = useMutationFn<null>({
+    invalidatesTags: ['organization-invoice-list'],
+  });
 
   const {
     data: receiptPayments,
@@ -49,26 +51,24 @@ export default function ProjectDetailScreen() {
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
   } = useFetchFn<ReceiptPaymentResponse[]>({
-    tags: ['personal-receipt-payment-list-in-project'],
+    tags: ['organization-receipt-payment-list-in-invoice'],
   });
 
   useEffect(() => {
-    if (projectId) {
-      fetchProject(() => getProjectByIdApi(projectId));
-      fetchReceiptPayments(() => getReceiptPaymentsByProjectIdApi(projectId));
+    if (invoiceId) {
+      fetchInvoice(() => getInvoiceByIdApi(invoiceId));
+      fetchReceiptPayments(() => getReceiptPaymentsByInvoiceIdApi(invoiceId));
     }
-  }, [projectId, fetchProject, fetchReceiptPayments]);
+  }, [invoiceId, fetchInvoice, fetchReceiptPayments]);
 
-  const handleSaveAndExit = () => {};
-
-  const handleUpdateProject = (
-    updatedFields: UpdateProjectRequest,
+  const handleUpdateInvoice = (
+    updatedFields: UpdateInvoiceRequest,
     onSuccessCallback?: () => void
   ) => {
-    if (!project) return;
-    updateProject(() => updateProjectApi(projectId, updatedFields), {
+    if (!invoice) return;
+    updateInvoice(() => updateInvoiceApi(invoiceId, updatedFields), {
       onSuccess: () => {
-        refreshProject();
+        refreshInvoice();
         onSuccessCallback?.();
       },
       onError: (error) => {
@@ -78,14 +78,14 @@ export default function ProjectDetailScreen() {
   };
 
   const handleDelete = () => {
-    if (!projectId) return;
+    if (!invoiceId) return;
     Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
       { text: 'Huỷ', style: 'cancel' },
       {
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          deleteProject(() => deleteProjectApi(projectId), {
+          deleteInvoiceMutation(() => deleteInvoiceApi(invoiceId), {
             onSuccess: () => {
               router.back();
             },
@@ -96,13 +96,6 @@ export default function ProjectDetailScreen() {
         },
       },
     ]);
-  };
-
-  const getHeaderTitle = () => {
-    if (isLoading || !project) {
-      return '';
-    }
-    return project.type === 'SELF' ? 'Chi tiết tiền công' : 'Chi tiết dự án';
   };
 
   if (isLoading) {
@@ -116,21 +109,20 @@ export default function ProjectDetailScreen() {
   return (
     <>
       <StackWithHeader
-        title={getHeaderTitle()}
+        title="Chi tiết hoá đơn"
         backTitle="Quay lại"
         onDelete={handleDelete}
-        isDeleting={isDeletingProject}
-        onSave={handleSaveAndExit}
+        isDeleting={isDeletingInvoice}
       />
       <View style={styles.container}>
-        <View style={styles.projectFilterContainer}>
+        <View style={styles.filterContainer}>
           <View style={styles.statusFilter}>
             <Select
-              isLoading={isUpdatingProject}
-              options={ProjectStatusOptions}
-              value={project?.status || ''}
+              isLoading={isUpdatingInvoice}
+              options={InvoiceStatusOptions}
+              value={invoice?.status || ''}
               onChange={(value) =>
-                handleUpdateProject({ status: value as ProjectStatus })
+                handleUpdateInvoice({ status: value as InvoiceStatus })
               }
               placeholder="Trạng thái"
               style={{
@@ -142,38 +134,42 @@ export default function ProjectDetailScreen() {
             />
           </View>
         </View>
-        <ProjectHeaderCard
-          project={project ?? undefined}
-          isLoading={isUpdatingProject}
+        <InvoiceHeaderCard
+          invoice={invoice ?? undefined}
+          isLoading={isUpdatingInvoice}
           onConfirm={(data, onSuccessCallback) =>
-            handleUpdateProject(data, onSuccessCallback)
+            handleUpdateInvoice(data, onSuccessCallback)
           }
         />
-        {project && (
-          <ReceiptPaymentProjectList
+        {invoice && (
+          <ReceiptPaymentInvoiceList
             onRefresh={() => {
-              refreshProject();
+              refreshInvoice();
               refreshReceiptPayments();
             }}
             receiptPayments={receiptPayments ?? []}
-            startDate={project.startDate}
-            endDate={project.endDate}
+            startDate={invoice.startDate}
+            endDate={invoice.endDate}
             loading={isLoadingReceiptPayments}
-            projectId={projectId}
+            invoiceId={invoiceId}
+            organizationId={invoice.organization?.id}
           />
         )}
-        <ProjectFooterCard
-          project={project ?? undefined}
+        <InvoiceFooterCard
+          invoice={invoice ?? undefined}
           onNoteConfirm={(note, onSuccessCallback) =>
-            handleUpdateProject({ note }, onSuccessCallback)
+            handleUpdateInvoice({ note }, onSuccessCallback)
           }
           onOrgCusConfirm={(orgName, cusName, onSuccessCallback) => {
-            handleUpdateProject(
-              { externalOrganizationName: orgName, externalCustomerName: cusName },
+            handleUpdateInvoice(
+              {
+                externalOrganizationName: orgName,
+                externalCustomerName: cusName,
+              },
               onSuccessCallback
             );
           }}
-          isLoading={isUpdatingProject}
+          isLoading={isUpdatingInvoice}
         />
       </View>
     </>
@@ -184,7 +180,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  projectFilterContainer: {
+  filterContainer: {
     marginVertical: 12,
     paddingHorizontal: 8,
     flexDirection: 'row',

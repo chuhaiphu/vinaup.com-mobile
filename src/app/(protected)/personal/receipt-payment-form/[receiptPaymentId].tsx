@@ -97,7 +97,7 @@ export default function ReceiptPaymentFormScreen() {
 
   const formInvalidatesTags = params.projectId
     ? ['personal-receipt-payment-list-in-project']
-    : ['personal-receipt-payment-list-self'];
+    : ['personal-receipt-payment-list'];
 
   const {
     executeMutationFn: createOrUpdateReceiptPayment,

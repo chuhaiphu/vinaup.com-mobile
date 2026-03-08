@@ -35,7 +35,7 @@ export default function OrganizationTabsLayout() {
       />
       <Tabs.Screen
         initialParams={{ organizationId }}
-        name="organization-receipt-payment"
+        name="invoice"
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupPlusMinus width={size} height={size} color={color} />

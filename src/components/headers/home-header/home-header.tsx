@@ -3,16 +3,18 @@ import { Octicons } from '@expo/vector-icons';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
-import { usePathname } from 'expo-router';
+import { useLocalSearchParams, usePathname } from 'expo-router';
 import NavigatorSelector from '../../selectors/navigator-selector/navigator-selector';
 import PersonalReceiptPaymentSelfHeaderBottom from './personal-receipt-payment-self-header-bottom';
 import PersonalReceiptPaymentProjectHeaderBottom from './personal-receipt-payment-project-header-bottom';
 import PersonalIndexHeaderBottom from './personal-index-header-bottom';
 import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
-import OrganizationReceiptPaymentHeaderBottom from './organization-receipt-payment-header-bottom';
+import InvoiceHeaderBottom from './invoice-header-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
+  const params = useLocalSearchParams<{ organizationId: string }>();
+
   const renderHeaderBottom = () => {
     switch (true) {
       case pathname.includes('/personal/receipt-payment-self'):
@@ -21,9 +23,9 @@ export const HomeHeader = () => {
         return <PersonalReceiptPaymentProjectHeaderBottom />;
       case pathname === '/personal':
         return <PersonalIndexHeaderBottom />;
-      case pathname.includes('/organization-receipt-payment'):
-        return <OrganizationReceiptPaymentHeaderBottom />;
-      case pathname.startsWith('/organization'):
+      case pathname === `/organization/${params.organizationId}/invoice`:
+        return <InvoiceHeaderBottom />;
+      case pathname === `/organization/${params.organizationId}`:
         return <OrganizationIndexHeaderBottom />;
       default:
         return null;

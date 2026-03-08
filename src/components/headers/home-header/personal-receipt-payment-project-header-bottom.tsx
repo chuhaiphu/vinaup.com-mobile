@@ -17,7 +17,7 @@ const PersonalReceiptPaymentProjectHeaderBottom = () => {
 
   const { executeMutationFn: createProject, isMutating } =
     useMutationFn<ProjectResponse>({
-      invalidatesTags: ['personal-receipt-payment-project'],
+      invalidatesTags: ['personal-project-list'],
     });
 
   const handleAddNew = async () => {
