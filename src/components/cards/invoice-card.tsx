@@ -44,7 +44,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
     if (invoice.organizationCustomer) {
       return invoice.organizationCustomer.name || '';
     }
-    return invoice.externalCustomerName || invoice.externalOrganizationName || '';
+    return invoice.externalCustomerName || invoice.externalOrganizationName || '—';
   };
 
   if (!invoice) {
@@ -82,8 +82,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
           </Text>
           <Text style={styles.totalAmountText}>
             {generateLocalePriceFormat(
-              calculateReceiptPaymentsSummary(receiptPayments || [])
-                .totalRemaining,
+              calculateReceiptPaymentsSummary(receiptPayments || []).totalRemaining,
               'vi-VN'
             )}
           </Text>

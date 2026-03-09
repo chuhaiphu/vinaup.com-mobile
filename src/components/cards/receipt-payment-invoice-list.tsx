@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Pressable,
   RefreshControl,
@@ -15,6 +15,7 @@ import { COLORS } from '@/constants/style-constant';
 import Loader from '@/components/primitives/loader';
 import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { useSafeRouter } from '@/hooks/use-safe-router';
+import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
 
 interface ReceiptPaymentInvoiceListProps {
   receiptPayments: ReceiptPaymentResponse[];
@@ -24,6 +25,7 @@ interface ReceiptPaymentInvoiceListProps {
   onRefresh: () => void;
   invoiceId: string;
   organizationId?: string;
+  invoiceTypeId?: string;
 }
 
 interface ReceiptPaymentsSection {
@@ -40,11 +42,12 @@ export function ReceiptPaymentInvoiceList({
   onRefresh,
   invoiceId,
   organizationId,
+  invoiceTypeId,
 }: ReceiptPaymentInvoiceListProps) {
   const safeRouter = useSafeRouter();
-
   const dateRange = generateDateRange(startDate, endDate);
-
+  const { getInvoiceTypeById } = useContext(InvoiceTypeContext);
+  const invoiceType = getInvoiceTypeById(invoiceTypeId || '');
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
     const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
     dateRange.forEach((d) => {
@@ -80,15 +83,16 @@ export function ReceiptPaymentInvoiceList({
     dateKey?: string;
   }) => {
     if (safeRouter.isNavigating) return;
+    const receiptPaymentType = invoiceType?.code === 'BUY' ? 'PAYMENT' : 'RECEIPT';
     safeRouter.safePush({
-      pathname: '/(protected)/personal/receipt-payment-form/[receiptPaymentId]',
+      pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: receiptPaymentId || 'new',
         invoiceId,
         organizationId,
         lockDatePicker: 'false',
         allowEditCategory: 'true',
-        receiptPaymentType: 'PAYMENT',
+        receiptPaymentType,
         transactionDate: dateKey || undefined,
       },
     });

@@ -18,7 +18,7 @@ import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
 
-export default function PersonalReceiptPaymentSelf() {
+export default function PersonalReceiptPaymentScreen() {
   const safeRouter = useSafeRouter();
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
@@ -43,7 +43,7 @@ export default function PersonalReceiptPaymentSelf() {
   const navigateToFormScreen = async (id?: string) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
-      pathname: '/(protected)/personal/receipt-payment-form/[receiptPaymentId]',
+      pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: id || 'new',
         lockDatePicker: 'false',

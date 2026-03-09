@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { Button } from '../../primitives/button';
@@ -7,10 +7,9 @@ import { TextSwitcher } from '../../primitives/text-switcher';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
-import { createInvoiceApi, getInvoiceTypesApi } from '@/apis/invoice-apis';
+import { createInvoiceApi } from '@/apis/invoice-apis';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
-import { InvoiceTypeResponse } from '@/interfaces/invoice-type-interfaces';
+import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
 
 const InvoiceHeaderBottom = () => {
   const router = useRouter();
@@ -20,30 +19,26 @@ const InvoiceHeaderBottom = () => {
   }>();
   const currentCode = params.invoiceTypeCode || 'BUY';
 
-  const { data: invoiceTypes, executeFetchFn: fetchInvoiceTypes } =
-    useFetchFn<InvoiceTypeResponse[]>({ tags: ['invoice-types'] });
-
-  useEffect(() => {
-    fetchInvoiceTypes(() => getInvoiceTypesApi());
-  }, [fetchInvoiceTypes]);
-
+  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
+  const invoiceType = getInvoiceTypeByCode(currentCode || '');
+  console.log('currentCode', currentCode);
+  console.log('invoiceType', invoiceType);
   const { executeMutationFn: createInvoice, isMutating } =
     useMutationFn<InvoiceResponse>({
       invalidatesTags: ['organization-invoice-list'],
     });
 
   const handleAddNew = async () => {
-    const invoiceType = invoiceTypes?.find((t) => t.code === currentCode);
+    const invoiceType = getInvoiceTypeByCode(currentCode || '');
     if (!invoiceType) {
       Alert.alert('Lỗi', 'Không tìm thấy loại hoá đơn');
       return;
     }
-
     await createInvoice(
       () =>
         createInvoiceApi({
           invoiceTypeId: invoiceType.id,
-          description: currentCode === 'BUY' ? 'Bán hàng' : 'Mua hàng',
+          description: currentCode === 'BUY' ? 'Mua hàng' : 'Bán hàng',
           endDate: new Date(),
           startDate: new Date(),
           organizationId: params.organizationId,
@@ -71,10 +66,10 @@ const InvoiceHeaderBottom = () => {
     <>
       <View style={styles.titleWrapper}>
         <Text style={styles.titleLeft}>
-          {currentCode === 'BUY' ? 'Thu' : 'Chi'}
+          {currentCode === 'BUY' ? 'Chi' : 'Thu'}
         </Text>
         <TextSwitcher
-          textPair={['bán hàng', 'mua hàng']}
+          textPair={['mua hàng', 'bán hàng']}
           currentIndex={currentCode === 'BUY' ? 0 : 1}
           onToggle={handleToggle}
           rightSection={

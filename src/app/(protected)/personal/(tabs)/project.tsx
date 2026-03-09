@@ -23,7 +23,7 @@ import { ProjectStatusOptions } from '@/constants/project-constants';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useLocalSearchParams } from 'expo-router';
 
-export default function PersonalReceiptPaymentProject() {
+export default function PersonalProjectScreen() {
   const safeRouter = useSafeRouter();
   const params = useLocalSearchParams<{ projectType: 'SELF' | 'COMPANY' }>();
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -67,7 +67,7 @@ export default function PersonalReceiptPaymentProject() {
     if (safeRouter.isNavigating) return;
     if (id) {
       safeRouter.safePush({
-        pathname: '/(protected)/personal/project-detail/[projectId]',
+        pathname: '/(protected)/project-detail/[projectId]',
         params: { projectId: id },
       });
     }

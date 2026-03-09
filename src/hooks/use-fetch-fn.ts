@@ -21,7 +21,7 @@ export function useFetchFn<T>(options?: FetchOptions) {
     error: null,
   });
 
-  // Incase user navigates away from the curernt component (screen)
+  // In case user navigates away from the current component (screen)
   // This will prevent error of setting state on unmounted component
   const isMounted = useRef<boolean>(true);
   const lastFetchFn = useRef<() => Promise<HttpResponse<T>>>(null);

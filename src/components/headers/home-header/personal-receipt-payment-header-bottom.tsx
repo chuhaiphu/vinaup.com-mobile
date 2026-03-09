@@ -5,12 +5,12 @@ import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 
-const PersonalReceiptPaymentSelfHeaderBottom = () => {
+const PersonalReceiptPaymentHeaderBottom = () => {
   const router = useRouter();
 
   const handleAddNew = () => {
     router.push({
-      pathname: '/(protected)/personal/receipt-payment-form/[receiptPaymentId]',
+      pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: 'new',
         lockDatePicker: 'false',
@@ -49,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PersonalReceiptPaymentSelfHeaderBottom;
+export default PersonalReceiptPaymentHeaderBottom;

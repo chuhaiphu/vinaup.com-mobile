@@ -84,7 +84,7 @@ export function ReceiptPaymentProjectList({
   }) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
-      pathname: '/(protected)/personal/receipt-payment-form/[receiptPaymentId]',
+      pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: receiptPaymentId || 'new',
         projectId,

@@ -9,9 +9,9 @@ export const STORAGE_KEYS = {
  * Personal utilities
  */
 export const PERSONAL_UTILITY_KEYS = {
-  receiptPaymentSelf: 'receipt-payment-self',
-  receiptPaymentProjectSelf: 'receipt-payment-project-self',
-  receiptPaymentProjectCompany: 'receipt-payment-project-company',
+  receiptPayment: 'receipt-payment',
+  projectSelf: 'project-self',
+  projectCompany: 'project-company',
 } as const;
 export type PersonalUtilityKey =
   (typeof PERSONAL_UTILITY_KEYS)[keyof typeof PERSONAL_UTILITY_KEYS];

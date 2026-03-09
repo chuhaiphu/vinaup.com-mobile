@@ -27,14 +27,14 @@ import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
 
 const UTILITY_OPTIONS = [
-  { label: 'Thu chi ngày', value: PERSONAL_UTILITY_KEYS.receiptPaymentSelf },
+  { label: 'Thu chi ngày', value: PERSONAL_UTILITY_KEYS.receiptPayment },
   {
     label: 'Thu chi Tiền công',
-    value: PERSONAL_UTILITY_KEYS.receiptPaymentProjectSelf,
+    value: PERSONAL_UTILITY_KEYS.projectSelf,
   },
   {
     label: 'Thu chi Dự án',
-    value: PERSONAL_UTILITY_KEYS.receiptPaymentProjectCompany,
+    value: PERSONAL_UTILITY_KEYS.projectCompany,
   },
 ];
 
@@ -107,17 +107,17 @@ export default function PersonalIndexScreen() {
 
   const allUtilities = [
     {
-      key: PERSONAL_UTILITY_KEYS.receiptPaymentSelf,
+      key: PERSONAL_UTILITY_KEYS.receiptPayment,
       label: 'Thu chi ngày',
       value: calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining,
     },
     {
-      key: PERSONAL_UTILITY_KEYS.receiptPaymentProjectSelf,
+      key: PERSONAL_UTILITY_KEYS.projectSelf,
       label: 'Thu chi Tiền công',
       value: `(${projectsSelf?.length || 0})`,
     },
     {
-      key: PERSONAL_UTILITY_KEYS.receiptPaymentProjectCompany,
+      key: PERSONAL_UTILITY_KEYS.projectCompany,
       label: 'Thu chi Dự án',
       value: `(${projectsCompany?.length || 0})`,
     },

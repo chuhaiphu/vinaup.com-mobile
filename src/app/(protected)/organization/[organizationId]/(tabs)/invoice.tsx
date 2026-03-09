@@ -1,7 +1,7 @@
 import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -13,16 +13,13 @@ import { useSafeRouter } from '@/hooks/use-safe-router';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
-import {
-  getInvoicesByOrganizationIdApi,
-  getInvoiceTypesApi,
-} from '@/apis/invoice-apis';
+import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
 import { InvoiceCard } from '@/components/cards/invoice-card';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
-import { InvoiceTypeResponse } from '@/interfaces/invoice-type-interfaces';
+import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
 
 export default function OrganizationInvoice() {
   const safeRouter = useSafeRouter();
@@ -36,12 +33,7 @@ export default function OrganizationInvoice() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const {
-    data: invoiceTypes,
-    executeFetchFn: fetchInvoiceTypes,
-  } = useFetchFn<InvoiceTypeResponse[]>({
-    tags: ['invoice-types'],
-  });
+  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
 
   const {
     data: invoices,
@@ -54,12 +46,8 @@ export default function OrganizationInvoice() {
   });
 
   useEffect(() => {
-    fetchInvoiceTypes(() => getInvoiceTypesApi());
-  }, [fetchInvoiceTypes]);
-
-  useEffect(() => {
-    if (!organizationId || !invoiceTypes) return;
-    const invoiceType = invoiceTypes.find((t) => t.code === invoiceTypeCode);
+    if (!organizationId) return;
+    const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
     if (!invoiceType) return;
 
     fetchInvoices(() =>
@@ -70,13 +58,13 @@ export default function OrganizationInvoice() {
         year: selectedDate.year(),
       })
     );
-  }, [fetchInvoices, selectedDate, organizationId, invoiceTypeCode, invoiceTypes, statusFilter]);
+  }, [fetchInvoices, selectedDate, organizationId, invoiceTypeCode, getInvoiceTypeByCode, statusFilter]);
 
   const navigateToDetail = (invoiceId: string) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
       pathname: '/(protected)/organization/invoice-detail/[invoiceId]',
-      params: { invoiceId },
+      params: { invoiceId, invoiceTypeCode },
     });
   };
 

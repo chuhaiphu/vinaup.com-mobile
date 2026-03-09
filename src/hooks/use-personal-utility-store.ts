@@ -18,9 +18,9 @@ export const usePersonalUtilitiesStore = create<PersonalUtilitiesStore>()(
   persist(
     (set) => ({
       selectedUtilities: [
-        PERSONAL_UTILITY_KEYS.receiptPaymentSelf,
-        PERSONAL_UTILITY_KEYS.receiptPaymentProjectSelf,
-        PERSONAL_UTILITY_KEYS.receiptPaymentProjectCompany,
+        PERSONAL_UTILITY_KEYS.receiptPayment,
+        PERSONAL_UTILITY_KEYS.projectSelf,
+        PERSONAL_UTILITY_KEYS.projectCompany,
       ],
       toggleUtility: (key) =>
         set((state) => {

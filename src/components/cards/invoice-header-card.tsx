@@ -3,7 +3,7 @@ import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { ProjectInfoModal } from '@/components/modals/project-info-modal';
+import { InvoiceInfoModal } from '@/components/modals/invoice-info-modal';
 import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
 
 interface InvoiceHeaderCardProps {
@@ -75,13 +75,12 @@ export function InvoiceHeaderCard({
         </View>
       </Pressable>
 
-      <ProjectInfoModal
+      <InvoiceInfoModal
         key={invoice.id}
         visible={modalVisible}
-        prjCode={invoice.code}
-        prjDescription={invoice.description}
-        prjStartDate={invoice.startDate}
-        prjEndDate={invoice.endDate}
+        invCode={invoice.code}
+        invDescription={invoice.description}
+        invStartDate={invoice.startDate}
         isLoading={isLoading}
         onConfirm={(data) => {
           onConfirm?.(data, () => setModalVisible(false));

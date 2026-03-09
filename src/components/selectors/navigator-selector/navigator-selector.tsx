@@ -20,14 +20,14 @@ export default function NavigatorSelector() {
       ),
     },
     {
-      value: '/personal/receipt-payment-self',
+      value: '/personal/receipt-payment',
       label: 'Thu chi ngày',
       leftSection: (
         <VinaupPlusMinus width={24} height={24} color={COLORS.vinaupYellow} />
       ),
     },
     {
-      value: '/personal/receipt-payment-project',
+      value: '/personal/project',
       label: 'Tiền công & Dự án',
       leftSection: <VinaupCalendarIcon />,
     },

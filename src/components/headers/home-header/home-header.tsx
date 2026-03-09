@@ -5,8 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { useLocalSearchParams, usePathname } from 'expo-router';
 import NavigatorSelector from '../../selectors/navigator-selector/navigator-selector';
-import PersonalReceiptPaymentSelfHeaderBottom from './personal-receipt-payment-self-header-bottom';
-import PersonalReceiptPaymentProjectHeaderBottom from './personal-receipt-payment-project-header-bottom';
+import PersonalReceiptPaymentHeaderBottom from './personal-receipt-payment-header-bottom';
+import PersonalProjectHeaderBottom from './personal-project-header-bottom';
 import PersonalIndexHeaderBottom from './personal-index-header-bottom';
 import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
 import InvoiceHeaderBottom from './invoice-header-bottom';
@@ -17,10 +17,10 @@ export const HomeHeader = () => {
 
   const renderHeaderBottom = () => {
     switch (true) {
-      case pathname.includes('/personal/receipt-payment-self'):
-        return <PersonalReceiptPaymentSelfHeaderBottom />;
-      case pathname.includes('/personal/receipt-payment-project'):
-        return <PersonalReceiptPaymentProjectHeaderBottom />;
+      case pathname.includes('/personal/project'):
+        return <PersonalProjectHeaderBottom />;
+      case pathname.includes('/personal/receipt-payment'):
+        return <PersonalReceiptPaymentHeaderBottom />;
       case pathname === '/personal':
         return <PersonalIndexHeaderBottom />;
       case pathname === `/organization/${params.organizationId}/invoice`:

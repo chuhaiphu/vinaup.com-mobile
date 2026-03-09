@@ -13,7 +13,9 @@ import {
   updateInvoiceApi,
 } from '@/apis/invoice-apis';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
+import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { InvoiceHeaderCard } from '@/components/cards/invoice-header-card';
 import { ReceiptPaymentInvoiceList } from '@/components/cards/receipt-payment-invoice-list';
 import Loader from '@/components/primitives/loader';
@@ -54,12 +56,25 @@ export default function InvoiceDetailScreen() {
     tags: ['organization-receipt-payment-list-in-invoice'],
   });
 
+  const {
+    data: organizationCustomers,
+    executeFetchFn: fetchOrganizationCustomers,
+  } = useFetchFn<OrganizationCustomerResponse[]>({});
+
   useEffect(() => {
     if (invoiceId) {
       fetchInvoice(() => getInvoiceByIdApi(invoiceId));
       fetchReceiptPayments(() => getReceiptPaymentsByInvoiceIdApi(invoiceId));
     }
   }, [invoiceId, fetchInvoice, fetchReceiptPayments]);
+
+  useEffect(() => {
+    if (invoice?.organization?.id) {
+      fetchOrganizationCustomers(() =>
+        getOrganizationCustomersByOrganizationIdApi(invoice.organization!.id)
+      );
+    }
+  }, [invoice?.organization?.id, fetchOrganizationCustomers]);
 
   const handleUpdateInvoice = (
     updatedFields: UpdateInvoiceRequest,
@@ -153,21 +168,33 @@ export default function InvoiceDetailScreen() {
             loading={isLoadingReceiptPayments}
             invoiceId={invoiceId}
             organizationId={invoice.organization?.id}
+            invoiceTypeId={invoice.invoiceType.id}
           />
         )}
         <InvoiceFooterCard
           invoice={invoice ?? undefined}
+          organizationCustomers={organizationCustomers ?? []}
           onNoteConfirm={(note, onSuccessCallback) =>
             handleUpdateInvoice({ note }, onSuccessCallback)
           }
-          onOrgCusConfirm={(orgName, cusName, onSuccessCallback) => {
-            handleUpdateInvoice(
-              {
-                externalOrganizationName: orgName,
-                externalCustomerName: cusName,
-              },
-              onSuccessCallback
-            );
+          onSelectCustomer={(type, customerId, onSuccessCallback) => {
+            if (type === 'external') {
+              handleUpdateInvoice(
+                {
+                  externalCustomerName: 'Khách lẻ',
+                  organizationCustomerId: null,
+                },
+                onSuccessCallback
+              );
+            } else {
+              handleUpdateInvoice(
+                {
+                  organizationCustomerId: customerId,
+                  externalCustomerName: null,
+                },
+                onSuccessCallback
+              );
+            }
           }}
           isLoading={isUpdatingInvoice}
         />

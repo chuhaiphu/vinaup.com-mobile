@@ -10,7 +10,7 @@ import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { createProjectApi } from '@/apis/project-apis';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 
-const PersonalReceiptPaymentProjectHeaderBottom = () => {
+const PersonalProjectHeaderBottom = () => {
   const router = useRouter();
   const params = useGlobalSearchParams<{ projectType: 'SELF' | 'COMPANY' }>();
   const currentProjectType = params.projectType || 'SELF';
@@ -32,7 +32,7 @@ const PersonalReceiptPaymentProjectHeaderBottom = () => {
       {
         onSuccess: (data) => {
           router.push({
-            pathname: '/(protected)/personal/project-detail/[projectId]',
+            pathname: '/(protected)/project-detail/[projectId]',
             params: { projectId: data.id },
           });
         },
@@ -86,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PersonalReceiptPaymentProjectHeaderBottom;
+export default PersonalProjectHeaderBottom;

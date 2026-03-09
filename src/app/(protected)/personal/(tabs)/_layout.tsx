@@ -30,7 +30,7 @@ export default function PersonalTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="receipt-payment-self"
+        name="receipt-payment"
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupPlusMinus width={size} height={size} color={color} />
@@ -38,7 +38,7 @@ export default function PersonalTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="receipt-payment-project"
+        name="project"
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupCalendarIcon width={size} height={size} color={color} />

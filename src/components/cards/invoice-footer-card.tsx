@@ -1,17 +1,19 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { useState } from 'react';
-import { ProjectOrgCustomerEditModal } from '@/components/modals/project-org-customer-edit-modal';
+import { InvoiceOrgCustomerEditModal } from '@/components/modals/invoice-org-customer-edit-modal';
 import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal';
 import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.native';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
+import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 
 interface InvoiceFooterCardProps {
   invoice?: InvoiceResponse;
-  onOrgCusConfirm?: (
-    organizationName: string,
-    customerName: string,
+  organizationCustomers: OrganizationCustomerResponse[];
+  onSelectCustomer?: (
+    type: 'external' | 'organization',
+    customerId?: string,
     onSuccessCallback?: () => void
   ) => void;
   onNoteConfirm?: (note: string, onSuccessCallback?: () => void) => void;
@@ -20,12 +22,17 @@ interface InvoiceFooterCardProps {
 
 export function InvoiceFooterCard({
   invoice,
-  onOrgCusConfirm,
+  organizationCustomers,
+  onSelectCustomer,
   onNoteConfirm,
   isLoading = false,
 }: InvoiceFooterCardProps) {
-  const organizationName = invoice?.externalOrganizationName ?? '';
-  const customerName = invoice?.externalCustomerName ?? '';
+  const organizationName = invoice?.organization?.name ?? '';
+  const customerName =
+    invoice?.organizationCustomer?.name ?? invoice?.externalCustomerName ?? '';
+  const currentCustomerId = invoice?.externalCustomerName
+    ? 'external'
+    : invoice?.organizationCustomer?.id ?? '';
   const note = invoice?.note ?? '';
   const [modalVisible, setModalVisible] = useState(false);
   const [noteModalVisible, setNoteModalVisible] = useState(false);
@@ -58,7 +65,7 @@ export function InvoiceFooterCard({
               </Text>
             </View>
             <View style={styles.customerCol}>
-              <Text style={styles.label}>Tên khách:</Text>
+              <Text style={styles.label}>Khách hàng:</Text>
               <Text
                 numberOfLines={2}
                 ellipsizeMode="tail"
@@ -71,14 +78,15 @@ export function InvoiceFooterCard({
         </View>
       </Pressable>
 
-      <ProjectOrgCustomerEditModal
+      <InvoiceOrgCustomerEditModal
         key={`invoice-org-customer-modal-${invoice?.id}`}
         visible={modalVisible}
         organizationName={organizationName}
-        customerName={customerName}
+        organizationCustomers={organizationCustomers}
+        currentCustomerId={currentCustomerId}
         isLoading={isLoading}
-        onConfirm={(orgName, cusName) =>
-          onOrgCusConfirm?.(orgName, cusName, () => setModalVisible(false))
+        onSelectCustomer={(type, customerId, onSuccessCallback) =>
+          onSelectCustomer?.(type, customerId, onSuccessCallback)
         }
         onClose={() => setModalVisible(false)}
       />

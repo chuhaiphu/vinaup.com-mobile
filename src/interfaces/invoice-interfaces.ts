@@ -39,6 +39,7 @@ export interface CreateInvoiceRequest {
 }
 
 export type UpdateInvoiceRequest = Partial<CreateInvoiceRequest> & {
+  code?: string;
   status?: InvoiceStatus;
   discountAmount?: number;
   discountRate?: number;
