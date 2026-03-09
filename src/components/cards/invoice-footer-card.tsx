@@ -81,6 +81,7 @@ export function InvoiceFooterCard({
       </Pressable>
 
       <InvoiceOrgCustomerEditModal
+        organizationId={invoice?.organization?.id}
         organizationName={organizationName}
         organizationCustomers={organizationCustomers}
         currentCustomerId={currentCustomerId}

@@ -1,0 +1,228 @@
+import React, { useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  CreateOrganizationCustomerRequest,
+  OrganizationCustomerResponse,
+} from '@/interfaces/organization-customer-interfaces';
+import { useMutationFn } from '@/hooks/use-mutation-fn';
+import { createOrganizationCustomerApi } from '@/apis/organization-apis';
+import { COLORS } from '@/constants/style-constant';
+
+interface CreateOrganizationCustomerModalContentProps {
+  organizationId?: string;
+  onCreated?: (customer: OrganizationCustomerResponse) => void;
+  onCloseRequest?: () => void;
+}
+
+export function CreateOrganizationCustomerModalContent({
+  organizationId,
+  onCreated,
+  onCloseRequest,
+}: CreateOrganizationCustomerModalContentProps) {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [errors, setErrors] = useState<{
+    name?: boolean;
+    phone?: boolean;
+    email?: boolean;
+  }>({});
+
+  const { executeMutationFn: createOrganizationCustomer, isMutating } =
+    useMutationFn<OrganizationCustomerResponse>({
+      invalidatesTags: ['organization-customer-list'],
+    });
+
+  const validateField = (field: keyof typeof errors, value: string) => {
+    const trimmed = value.trim();
+    switch (field) {
+      case 'name':
+        return !trimmed;
+      case 'phone':
+        return !/^0\d{8,10}$/.test(trimmed);
+      case 'email':
+        return trimmed !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+      default:
+        return false;
+    }
+  };
+
+  const validateAll = () => {
+    const newErrors: typeof errors = {};
+    if (validateField('name', name)) newErrors.name = true;
+    if (validateField('phone', phone)) newErrors.phone = true;
+    if (validateField('email', email)) newErrors.email = true;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (!organizationId) {
+      Alert.alert('Lỗi', 'Thiếu thông tin tổ chức.');
+      return;
+    }
+
+    if (!validateAll()) return;
+
+    const payload: CreateOrganizationCustomerRequest = {
+      organizationId,
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email.trim().length > 0 ? email.trim() : undefined,
+      status: 'ACTIVE',
+      joinedAt: new Date(),
+    };
+
+    createOrganizationCustomer(() => createOrganizationCustomerApi(payload), {
+      onSuccess: (created) => {
+        onCreated?.(created);
+        setName('');
+        setPhone('');
+        setEmail('');
+        setErrors({});
+        onCloseRequest?.();
+      },
+      onError: (error) => {
+        Alert.alert(
+          'Lỗi',
+          error.message || 'Có lỗi xảy ra khi tạo khách hàng tổ chức.'
+        );
+      },
+    });
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Thêm khách hàng mới</Text>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Tên khách hàng</Text>
+        <TextInput
+          style={[styles.input, errors.name && styles.inputError]}
+          value={name}
+          onChangeText={(val) => {
+            setName(val);
+            setErrors((prev) => ({
+              ...prev,
+              name: validateField('name', val),
+            }));
+          }}
+          placeholder="Nguyễn Văn A"
+          placeholderTextColor={COLORS.vinaupMediumGray}
+        />
+        {errors.name && (
+          <Text style={styles.errorText}>Vui lòng nhập tên khách hàng.</Text>
+        )}
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Số điện thoại</Text>
+        <TextInput
+          style={[styles.input, errors.phone && styles.inputError]}
+          value={phone}
+          onChangeText={(val) => {
+            setPhone(val);
+            setErrors((prev) => ({
+              ...prev,
+              phone: validateField('phone', val),
+            }));
+          }}
+          placeholder="0xxxxxxxxx"
+          keyboardType="phone-pad"
+          placeholderTextColor={COLORS.vinaupMediumGray}
+        />
+        {errors.phone && (
+          <Text style={styles.errorText}>Số điện thoại không hợp lệ.</Text>
+        )}
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Email (không bắt buộc)</Text>
+        <TextInput
+          style={[styles.input, errors.email && styles.inputError]}
+          value={email}
+          onChangeText={(val) => {
+            setEmail(val);
+            setErrors((prev) => ({
+              ...prev,
+              email: validateField('email', val),
+            }));
+          }}
+          placeholder="email@gmail.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholderTextColor={COLORS.vinaupMediumGray}
+        />
+        {errors.email && <Text style={styles.errorText}>Email không hợp lệ.</Text>}
+      </View>
+
+      <Pressable
+        style={({ pressed }) => [
+          styles.submitButton,
+          (pressed || isMutating) && styles.submitButtonDisabled,
+        ]}
+        onPress={handleSubmit}
+        disabled={isMutating}
+      >
+        <Text style={styles.submitButtonText}>Tạo khách hàng</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    paddingBottom: 32,
+    backgroundColor: '#FFFFFF',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.vinaupBlack,
+    marginBottom: 16,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: COLORS.vinaupMediumDarkGray,
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: COLORS.vinaupTeal,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: '#FBFBFB',
+  },
+  inputError: {
+    borderColor: COLORS.vinaupRed,
+  },
+  errorText: {
+    marginTop: 4,
+    fontSize: 12,
+    color: COLORS.vinaupRed,
+  },
+  submitButton: {
+    marginTop: 8,
+    backgroundColor: COLORS.vinaupTeal,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitButtonDisabled: {
+    opacity: 0.7,
+  },
+  submitButtonText: {
+    color: COLORS.vinaupWhite,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

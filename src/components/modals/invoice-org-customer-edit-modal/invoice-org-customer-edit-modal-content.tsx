@@ -1,9 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { Select, SelectOption } from '@/components/primitives/select';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
+import { SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { CreateOrganizationCustomerModal } from '@/components/modals/create-organization-customer-modal/create-organization-customer-modal';
 
 interface InvoiceOrgCustomerEditModalContentProps {
+  organizationId?: string;
   organizationName?: string;
   organizationCustomers: OrganizationCustomerResponse[];
   currentCustomerId?: string;
@@ -16,9 +20,8 @@ interface InvoiceOrgCustomerEditModalContentProps {
   onCloseRequest?: () => void;
 }
 
-const EXTERNAL_VALUE = 'external';
-
 export function InvoiceOrgCustomerEditModalContent({
+  organizationId,
   organizationName = '',
   organizationCustomers,
   currentCustomerId = '',
@@ -26,16 +29,21 @@ export function InvoiceOrgCustomerEditModalContent({
   onSelectCustomer,
   onCloseRequest,
 }: InvoiceOrgCustomerEditModalContentProps) {
+  const [localCustomers, setLocalCustomers] =
+    useState<OrganizationCustomerResponse[]>(organizationCustomers);
+
+  const createSheetRef = useRef<SlideSheetRef | null>(null);
+
   const customerOptions: SelectOption[] = [
-    { value: EXTERNAL_VALUE, label: 'Khách lẻ' },
-    ...organizationCustomers.map((c) => ({
+    { value: 'EXTERNAL', label: 'Khách lẻ' },
+    ...localCustomers.map((c) => ({
       value: c.id,
       label: c.name,
     })),
   ];
 
   const handleSelectCustomer = (value: string) => {
-    if (value === EXTERNAL_VALUE) {
+    if (value === 'EXTERNAL') {
       onSelectCustomer('external', undefined, onCloseRequest);
     } else {
       onSelectCustomer('organization', value, onCloseRequest);
@@ -63,6 +71,24 @@ export function InvoiceOrgCustomerEditModalContent({
           heightPercentage={0.5}
         />
       </View>
+
+      <Pressable
+        style={styles.createButton}
+        onPress={() => {
+          createSheetRef.current?.open();
+        }}
+      >
+        <Text style={styles.createButtonText}>+ Thêm khách hàng mới</Text>
+      </Pressable>
+
+      <CreateOrganizationCustomerModal
+        organizationId={organizationId}
+        modalRef={createSheetRef}
+        onCreated={(created) => {
+          setLocalCustomers((prev) => [...prev, created]);
+          onSelectCustomer('organization', created.id);
+        }}
+      />
     </View>
   );
 }
@@ -94,5 +120,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.vinaupBlack,
   },
+  createButton: {
+    marginTop: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.vinaupTeal,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createButtonText: {
+    fontSize: 14,
+    color: COLORS.vinaupTeal,
+    fontWeight: '500',
+  },
 });
-

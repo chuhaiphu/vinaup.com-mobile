@@ -3,6 +3,7 @@ import { OrganizationCustomerResponse } from '@/interfaces/organization-customer
 import { InvoiceOrgCustomerEditModalContent } from './invoice-org-customer-edit-modal-content';
 
 interface InvoiceOrgCustomerEditModalProps {
+  organizationId?: string;
   organizationName?: string;
   organizationCustomers: OrganizationCustomerResponse[];
   currentCustomerId?: string;
@@ -16,6 +17,7 @@ interface InvoiceOrgCustomerEditModalProps {
 }
 
 export function InvoiceOrgCustomerEditModal({
+  organizationId,
   organizationName,
   organizationCustomers,
   currentCustomerId,
@@ -26,6 +28,7 @@ export function InvoiceOrgCustomerEditModal({
   return (
     <SlideSheet ref={modalRef}>
       <InvoiceOrgCustomerEditModalContent
+        organizationId={organizationId}
         organizationName={organizationName}
         organizationCustomers={organizationCustomers}
         currentCustomerId={currentCustomerId}
@@ -38,4 +41,3 @@ export function InvoiceOrgCustomerEditModal({
     </SlideSheet>
   );
 }
-
