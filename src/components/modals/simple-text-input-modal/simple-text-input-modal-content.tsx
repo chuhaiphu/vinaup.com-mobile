@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, TextInput, Keyboard } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { useRef, useState } from 'react';
-import { Button } from '../primitives/button';
+import { Button } from '@/components/primitives/button';
 
-interface SimpleTextInputContentProps {
+interface SimpleTextInputModalContentProps {
   maxLength?: number;
   value?: string | null;
   placeholder?: string;
@@ -12,14 +12,14 @@ interface SimpleTextInputContentProps {
   onCloseRequest?: () => void;
 }
 
-export function SimpleTextInputContent({
+export function SimpleTextInputModalContent({
   maxLength = 100,
   value = '',
   placeholder,
   isLoading = false,
   onConfirm,
   onCloseRequest,
-}: SimpleTextInputContentProps) {
+}: SimpleTextInputModalContentProps) {
   const [tempValue, setTempValue] = useState(value || '');
   const inputRef = useRef<TextInput>(null);
 
@@ -119,3 +119,4 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
 });
+

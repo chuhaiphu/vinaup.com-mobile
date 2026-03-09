@@ -3,7 +3,7 @@ import { COLORS } from '@/constants/style-constant';
 import { Select, SelectOption } from '@/components/primitives/select';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 
-interface InvoiceOrgCustomerEditContentProps {
+interface InvoiceOrgCustomerEditModalContentProps {
   organizationName?: string;
   organizationCustomers: OrganizationCustomerResponse[];
   currentCustomerId?: string;
@@ -18,14 +18,14 @@ interface InvoiceOrgCustomerEditContentProps {
 
 const EXTERNAL_VALUE = 'external';
 
-export function InvoiceOrgCustomerEditContent({
+export function InvoiceOrgCustomerEditModalContent({
   organizationName = '',
   organizationCustomers,
   currentCustomerId = '',
   isLoading = false,
   onSelectCustomer,
   onCloseRequest,
-}: InvoiceOrgCustomerEditContentProps) {
+}: InvoiceOrgCustomerEditModalContentProps) {
   const customerOptions: SelectOption[] = [
     { value: EXTERNAL_VALUE, label: 'Khách lẻ' },
     ...organizationCustomers.map((c) => ({
@@ -95,3 +95,4 @@ const styles = StyleSheet.create({
     color: COLORS.vinaupBlack,
   },
 });
+

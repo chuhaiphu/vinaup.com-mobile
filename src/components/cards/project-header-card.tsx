@@ -3,8 +3,8 @@ import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
-import { ProjectInfoContent } from '@/components/modals/project-info-modal';
-import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { ProjectInfoModal } from '@/components/modals/project-info-modal/project-info-modal';
 import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
 
 interface ProjectHeaderCardProps {
@@ -79,21 +79,13 @@ export function ProjectHeaderCard({
           </View>
         </View>
       </Pressable>
-
-      <SlideSheet ref={modalRef}>
-        <ProjectInfoContent
-          key={contentKey}
-          prjCode={project.code}
-          prjDescription={project.description}
-          prjStartDate={project.startDate}
-          prjEndDate={project.endDate}
-          isLoading={isLoading}
-          onCloseRequest={() => modalRef.current?.close()}
-          onConfirm={(data) => {
-            onConfirm?.(data, () => modalRef.current?.close());
-          }}
-        />
-      </SlideSheet>
+      <ProjectInfoModal
+        project={project}
+        isLoading={isLoading}
+        contentKey={contentKey}
+        modalRef={modalRef}
+        onConfirm={onConfirm}
+      />
     </>
   );
 }

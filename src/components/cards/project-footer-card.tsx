@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { useRef } from 'react';
-import { ProjectOrgCustomerEditContent } from '@/components/modals/project-org-customer-edit-modal';
-import { SimpleTextInputContent } from '@/components/modals/simple-text-input-modal';
-import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { ProjectOrgCustomerEditModal } from '@/components/modals/project-org-customer-edit-modal/project-org-customer-edit-modal';
+import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal/simple-text-input-modal';
 import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.native';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
@@ -29,8 +29,8 @@ export function ProjectFooterCard({
   const customerName = project?.externalCustomerName ?? '';
   const note = project?.note ?? '';
 
-  const orgModalRef = useRef<SlideSheetRef>(null);
-  const noteModalRef = useRef<SlideSheetRef>(null);
+  const orgModalRef = useRef<SlideSheetRef | null>(null);
+  const noteModalRef = useRef<SlideSheetRef | null>(null);
 
   return (
     <>
@@ -73,28 +73,22 @@ export function ProjectFooterCard({
         </View>
       </Pressable>
 
-      <SlideSheet ref={orgModalRef}>
-        <ProjectOrgCustomerEditContent
-          organizationName={organizationName}
-          customerName={customerName}
-          isLoading={isLoading}
-          onCloseRequest={() => orgModalRef.current?.close()}
-          onConfirm={(orgName, cusName) =>
-            onOrgCusConfirm?.(orgName, cusName, () => orgModalRef.current?.close())
-          }
-        />
-      </SlideSheet>
+      <ProjectOrgCustomerEditModal
+        organizationName={organizationName}
+        customerName={customerName}
+        isLoading={isLoading}
+        modalRef={orgModalRef}
+        onConfirm={onOrgCusConfirm}
+      />
 
-      <SlideSheet ref={noteModalRef}>
-        <SimpleTextInputContent
-          value={note}
-          isLoading={isLoading}
-          onCloseRequest={() => noteModalRef.current?.close()}
-          onConfirm={(noteValue) =>
-            onNoteConfirm?.(noteValue, () => noteModalRef.current?.close())
-          }
-        />
-      </SlideSheet>
+      <SimpleTextInputModal
+        value={note}
+        isLoading={isLoading}
+        modalRef={noteModalRef}
+        onConfirm={(noteValue: string, onSuccessClose?: () => void) => {
+          onNoteConfirm?.(noteValue, onSuccessClose);
+        }}
+      />
     </>
   );
 }

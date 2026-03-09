@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { useRef } from 'react';
-import { InvoiceOrgCustomerEditContent } from '@/components/modals/invoice-org-customer-edit-modal';
-import { SimpleTextInputContent } from '@/components/modals/simple-text-input-modal';
-import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { InvoiceOrgCustomerEditModal } from '@/components/modals/invoice-org-customer-edit-modal/invoice-org-customer-edit-modal';
 import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.native';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
+import { SimpleTextInputModal } from '../modals/simple-text-input-modal/simple-text-input-modal';
 
 interface InvoiceFooterCardProps {
   invoice?: InvoiceResponse;
@@ -80,29 +80,23 @@ export function InvoiceFooterCard({
         </View>
       </Pressable>
 
-      <SlideSheet ref={orgModalRef}>
-        <InvoiceOrgCustomerEditContent
-          organizationName={organizationName}
-          organizationCustomers={organizationCustomers}
-          currentCustomerId={currentCustomerId}
-          isLoading={isLoading}
-          onCloseRequest={() => orgModalRef.current?.close()}
-          onSelectCustomer={(type, customerId, onSuccessCallback) =>
-            onSelectCustomer?.(type, customerId, onSuccessCallback)
-          }
-        />
-      </SlideSheet>
+      <InvoiceOrgCustomerEditModal
+        organizationName={organizationName}
+        organizationCustomers={organizationCustomers}
+        currentCustomerId={currentCustomerId}
+        isLoading={isLoading}
+        modalRef={orgModalRef}
+        onSelectCustomer={onSelectCustomer}
+      />
 
-      <SlideSheet ref={noteModalRef}>
-        <SimpleTextInputContent
-          value={note}
-          isLoading={isLoading}
-          onCloseRequest={() => noteModalRef.current?.close()}
-          onConfirm={(noteValue) =>
-            onNoteConfirm?.(noteValue, () => noteModalRef.current?.close())
-          }
-        />
-      </SlideSheet>
+      <SimpleTextInputModal
+        value={note}
+        isLoading={isLoading}
+        modalRef={noteModalRef}
+        onConfirm={(noteValue: string, onSuccessClose?: () => void) => {
+          onNoteConfirm?.(noteValue, onSuccessClose);
+        }}
+      />
     </>
   );
 }

@@ -3,8 +3,8 @@ import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
-import { InvoiceInfoContent } from '@/components/modals/invoice-info-modal';
-import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { InvoiceInfoModal } from '@/components/modals/invoice-info-modal/invoice-info-modal';
 import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
 
 interface InvoiceHeaderCardProps {
@@ -79,20 +79,13 @@ export function InvoiceHeaderCard({
           </View>
         </View>
       </Pressable>
-
-      <SlideSheet ref={modalRef}>
-        <InvoiceInfoContent
-          key={contentKey}
-          invCode={invoice.code}
-          invDescription={invoice.description}
-          invStartDate={invoice.startDate}
-          isLoading={isLoading}
-          onCloseRequest={() => modalRef.current?.close()}
-          onConfirm={(data) => {
-            onConfirm?.(data, () => modalRef.current?.close());
-          }}
-        />
-      </SlideSheet>
+      <InvoiceInfoModal
+        invoice={invoice}
+        isLoading={isLoading}
+        contentKey={contentKey}
+        modalRef={modalRef}
+        onConfirm={onConfirm}
+      />
     </>
   );
 }

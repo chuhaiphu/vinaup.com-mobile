@@ -51,7 +51,7 @@ export function Select({
   searchable = false,
   style,
 }: SelectProps) {
-  const sheetRef = useRef<SlideSheetRef>(null);
+  const sheetRef = useRef<SlideSheetRef | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredOptions = searchable

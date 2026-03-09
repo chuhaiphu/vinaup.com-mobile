@@ -3,7 +3,7 @@ import { COLORS } from '@/constants/style-constant';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/primitives/button';
 
-interface ProjectOrgCustomerEditContentProps {
+interface ProjectOrgCustomerEditModalContentProps {
   organizationName?: string | null;
   customerName?: string | null;
   isLoading?: boolean;
@@ -11,13 +11,13 @@ interface ProjectOrgCustomerEditContentProps {
   onCloseRequest?: () => void;
 }
 
-export function ProjectOrgCustomerEditContent({
+export function ProjectOrgCustomerEditModalContent({
   organizationName = '',
   customerName = '',
   isLoading = false,
   onConfirm,
   onCloseRequest,
-}: ProjectOrgCustomerEditContentProps) {
+}: ProjectOrgCustomerEditModalContentProps) {
   const [tempOrgName, setTempOrgName] = useState(organizationName || '');
   const [tempCustomerName, setTempCustomerName] = useState(customerName || '');
 
@@ -159,3 +159,4 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
 });
+

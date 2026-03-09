@@ -1,23 +1,14 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  ScrollView,
-} from 'react-native';
+import { StyleSheet, Text, View, TextInput, ScrollView } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { useState } from 'react';
 import { Button } from '@/components/primitives/button';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
-import { TextSwitcher } from '@/components/primitives/text-switcher';
 import dayjs, { Dayjs } from 'dayjs';
-import VinaupLeftRightArrows from '../icons/vinaup-left-right-arrows.native';
 
-interface ProjectInfoContentProps {
-  prjDescription?: string;
-  prjCode?: string;
-  prjStartDate?: Date;
-  prjEndDate?: Date;
+interface InvoiceInfoModalContentProps {
+  invDescription?: string;
+  invCode?: string;
+  invStartDate?: Date;
   isLoading?: boolean;
   onConfirm?: (data: {
     description: string;
@@ -28,26 +19,21 @@ interface ProjectInfoContentProps {
   onCloseRequest?: () => void;
 }
 
-export function ProjectInfoContent({
-  prjDescription = '',
-  prjCode = '',
-  prjStartDate,
-  prjEndDate,
+export function InvoiceInfoModalContent({
+  invDescription = '',
+  invCode = '',
+  invStartDate,
   isLoading = false,
   onConfirm,
   onCloseRequest,
-}: ProjectInfoContentProps) {
-  const [description, setDescription] = useState(prjDescription);
-  const [code, setCode] = useState(prjCode);
-  const [startDate, setStartDate] = useState<Dayjs>(dayjs(prjStartDate));
-  const [endDate, setEndDate] = useState<Dayjs>(dayjs(prjEndDate));
+}: InvoiceInfoModalContentProps) {
+  const [description, setDescription] = useState(invDescription);
+  const [code, setCode] = useState(invCode);
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs(invStartDate));
   const [inputErrors, setInputErrors] = useState<{
     description?: boolean;
     code?: boolean;
   }>({});
-
-  const isSameDay = startDate.isSame(endDate, 'day');
-  const dateRangeType = isSameDay ? 'day' : 'period';
 
   const handleConfirm = () => {
     const errors: typeof inputErrors = {};
@@ -59,7 +45,7 @@ export function ProjectInfoContent({
     onConfirm?.({
       description,
       startDate: startDate.toDate(),
-      endDate: endDate.toDate(),
+      endDate: startDate.hour(23).minute(59).toDate(),
       code: code.trim() || undefined,
     });
   };
@@ -106,19 +92,13 @@ export function ProjectInfoContent({
           </View>
         </View>
 
-        {/* <View style={styles.inputItem}>
+        <View style={styles.inputItem}>
           <View
-            style={[
-              styles.inputWrapper,
-              inputErrors.code && styles.inputError,
-            ]}
+            style={[styles.inputWrapper, inputErrors.code && styles.inputError]}
           >
             <View style={styles.labelSection}>
               <Text
-                style={[
-                  styles.insideLabel,
-                  inputErrors.code && styles.labelError,
-                ]}
+                style={[styles.insideLabel, inputErrors.code && styles.labelError]}
               >
                 No.
               </Text>
@@ -139,24 +119,19 @@ export function ProjectInfoContent({
               editable={!isLoading}
             />
           </View>
-        </View> */}
+        </View>
 
         <View style={styles.inputGroup}>
           <View style={styles.dateRow}>
-            <Text style={styles.inputLabel}>Bắt đầu</Text>
+            <Text style={styles.inputLabel}>Ngày</Text>
             <View style={styles.dateTimeRow}>
               <DateTimePicker
                 mode="date"
                 value={startDate}
                 onChange={(d) => {
-                  const updated = startDate
-                    .year(d.year())
-                    .month(d.month())
-                    .date(d.date());
-                  setStartDate(updated);
-                  if (dateRangeType === 'day') {
-                    setEndDate(updated.hour(23).minute(59));
-                  }
+                  setStartDate(
+                    startDate.year(d.year()).month(d.month()).date(d.date())
+                  );
                 }}
                 displayFormat="DD/MM/YYYY"
                 disabled={isLoading}
@@ -165,74 +140,12 @@ export function ProjectInfoContent({
                 mode="time"
                 value={startDate}
                 onChange={(d) => {
-                  const updated = startDate.hour(d.hour()).minute(d.minute());
-                  setStartDate(updated);
-                  if (isSameDay) {
-                    setEndDate(updated.hour(23).minute(59));
-                  }
+                  setStartDate(startDate.hour(d.hour()).minute(d.minute()));
                 }}
                 displayFormat="HH:mm"
                 disabled={isLoading}
               />
             </View>
-          </View>
-        </View>
-        <View style={styles.divider} />
-
-        {dateRangeType === 'period' && (
-          <>
-            <View style={styles.inputGroup}>
-              <View style={styles.dateRow}>
-                <Text style={styles.inputLabel}>Kết thúc</Text>
-                <View style={styles.dateTimeRow}>
-                  <DateTimePicker
-                    mode="date"
-                    value={endDate}
-                    onChange={(d) => {
-                      setEndDate(
-                        endDate.year(d.year()).month(d.month()).date(d.date())
-                      );
-                    }}
-                    displayFormat="DD/MM/YYYY"
-                    disabled={isLoading}
-                  />
-                  <DateTimePicker
-                    mode="time"
-                    value={endDate}
-                    onChange={(d) => {
-                      setEndDate(endDate.hour(d.hour()).minute(d.minute()));
-                    }}
-                    displayFormat="HH:mm"
-                    disabled={isLoading}
-                  />
-                </View>
-              </View>
-            </View>
-          </>
-        )}
-
-        <View style={styles.inputGroup}>
-          <View style={styles.dateRangeRow}>
-            <TextSwitcher
-              textPair={['Trong ngày', 'Giai đoạn']}
-              iconPosition="right"
-              iconPair={[
-                <VinaupLeftRightArrows
-                  key={'left-right-arrows'}
-                  leftArrowColor={COLORS.vinaupLightGray}
-                />,
-                <VinaupLeftRightArrows key={'left-right-arrows'} />,
-              ]}
-              currentIndex={dateRangeType === 'day' ? 0 : 1}
-              onToggle={() => {
-                const nextType = dateRangeType === 'day' ? 'period' : 'day';
-                if (nextType === 'day') {
-                  setEndDate(startDate.hour(23).minute(59));
-                } else {
-                  setEndDate(startDate.add(1, 'day').hour(23).minute(59));
-                }
-              }}
-            />
           </View>
         </View>
       </ScrollView>
@@ -323,18 +236,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
   },
-  divider: {
-    height: 1,
-    backgroundColor: COLORS.vinaupLightGray,
-    width: '100%',
-    marginBottom: 8,
-  },
-  dateRangeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginTop: 8,
-  },
   buttonGroup: {
     flexDirection: 'row',
     gap: 12,
@@ -371,3 +272,4 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
 });
+
