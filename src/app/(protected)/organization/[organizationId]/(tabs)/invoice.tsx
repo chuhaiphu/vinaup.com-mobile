@@ -63,7 +63,7 @@ export default function OrganizationInvoice() {
   const navigateToDetail = (invoiceId: string) => {
     if (safeRouter.isNavigating) return;
     safeRouter.safePush({
-      pathname: '/(protected)/organization/invoice-detail/[invoiceId]',
+      pathname: '/(protected)/invoice-detail/[invoiceId]',
       params: { invoiceId, invoiceTypeCode },
     });
   };

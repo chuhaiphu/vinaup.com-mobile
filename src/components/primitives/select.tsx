@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
   ActivityIndicator,
   StyleProp,
   TextStyle,
+  TextInput,
 } from 'react-native';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
 
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SlideSheet, SlideSheetRef } from './slide-sheet';
 
 export interface SelectOption {
   label: string | null;
@@ -34,6 +32,7 @@ interface SelectProps {
   disabled?: boolean;
   heightPercentage?: number;
   renderTrigger?: React.ReactNode;
+  searchable?: boolean;
   style?: {
     triggerText?: StyleProp<TextStyle>;
   };
@@ -49,46 +48,27 @@ export function Select({
   disabled = false,
   heightPercentage = 0.8,
   renderTrigger,
+  searchable = false,
   style,
 }: SelectProps) {
-  const [visible, setVisible] = useState(false);
-  const { height: screenHeight } = useWindowDimensions();
-  const MODAL_HEIGHT = screenHeight * heightPercentage;
-  const translateY = useSharedValue(MODAL_HEIGHT);
-  const handleOpen = () => {
-    setVisible(true);
-    if (!enableAnimation) {
-      translateY.value = 0;
-      return;
-    }
-    translateY.value = MODAL_HEIGHT;
-    translateY.value = withTiming(0, { duration: 350 });
-  };
+  const sheetRef = useRef<SlideSheetRef>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleClose = (callback?: () => void) => {
-    if (!enableAnimation) {
-      callback?.();
-      setVisible(false);
-      return;
-    }
-
-    translateY.value = withTiming(MODAL_HEIGHT, { duration: 200 }, (finished) => {
-      if (finished) {
-        scheduleOnRN(setVisible, false);
-        if (callback) {
-          scheduleOnRN(callback);
-        }
-      }
-    });
-  };
+  const filteredOptions = searchable
+    ? options.filter((opt) =>
+        opt.label?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : options;
 
   const selectedOption = options.find((opt) => opt.value === value);
   const selectedLabel = selectedOption?.label || placeholder;
 
+  const handleOpen = () => {
+    sheetRef.current?.open();
+  };
+
   const handleSelect = (val: string) => {
-    handleClose(() => {
-      onChange(val);
-    });
+    sheetRef.current?.close(() => onChange(val));
   };
 
   return (
@@ -117,64 +97,61 @@ export function Select({
           )}
         </Pressable>
       )}
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => handleClose()}
+      <SlideSheet
+        ref={sheetRef}
+        onClose={() => setSearchQuery('')}
+        enableAnimation={enableAnimation}
+        heightPercentage={heightPercentage}
       >
-        <View style={styles.overlay}>
-          <Pressable style={styles.backdrop} onPress={() => handleClose()} />
-
-          <Animated.View
-            style={[
-              styles.sheetContent,
-              {
-                height: MODAL_HEIGHT,
-                transform: [{ translateY: translateY }],
-              },
-            ]}
-          >
-            <View style={styles.header}>
-              {/* <View style={styles.handle} /> */}
-              <Text style={styles.headerTitle}>{placeholder}</Text>
-            </View>
-
-            <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
-              {options.map((item) => {
-                const isSelected = item.value === value;
-                return (
-                  <Pressable
-                    key={item.value}
-                    style={[styles.optionItem, isSelected && styles.optionSelected]}
-                    onPress={() => handleSelect(item.value || '')}
-                  >
-                    <View style={styles.optionLeftContent}>
-                      {item.leftSection}
-                      <Text
-                        style={[
-                          styles.optionText,
-                          isSelected && styles.optionTextActive,
-                        ]}
-                      >
-                        {item.label}
-                      </Text>
-                    </View>
-                    {isSelected && (
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={22}
-                        color={COLORS.vinaupTeal}
-                      />
-                    )}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-            <SafeAreaView edges={['bottom']} />
-          </Animated.View>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{placeholder}</Text>
         </View>
-      </Modal>
+        {searchable && (
+          <View style={styles.searchContainer}>
+            <Ionicons name="search" size={20} color={COLORS.vinaupMediumGray} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Tìm kiếm..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholderTextColor={COLORS.vinaupMediumGray}
+              autoFocus
+            />
+          </View>
+        )}
+        <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
+          {filteredOptions.map((item) => {
+            const isSelected = item.value === value;
+            return (
+              <Pressable
+                key={item.value}
+                style={[styles.optionItem, isSelected && styles.optionSelected]}
+                onPress={() => handleSelect(item.value || '')}
+              >
+                <View style={styles.optionLeftContent}>
+                  {item.leftSection}
+                  <Text
+                    style={[
+                      styles.optionText,
+                      isSelected && styles.optionTextActive,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </View>
+                {isSelected && (
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={22}
+                    color={COLORS.vinaupTeal}
+                  />
+                )}
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+        <SafeAreaView edges={['bottom']} />
+      </SlideSheet>
     </>
   );
 }
@@ -191,29 +168,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   disabled: { opacity: 0.5 },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  sheetContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    width: '100%',
-    overflow: 'hidden',
-  },
-  handle: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 3,
-    alignSelf: 'center',
-    marginBottom: 10,
-  },
   header: {
     paddingTop: 12,
     paddingBottom: 12,
@@ -225,6 +179,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#EEE',
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+    paddingVertical: 8,
   },
   listPadding: {
     paddingBottom: 20,

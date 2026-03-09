@@ -2,8 +2,9 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
-import { useState } from 'react';
-import { InvoiceInfoModal } from '@/components/modals/invoice-info-modal';
+import { useRef, useState } from 'react';
+import { InvoiceInfoContent } from '@/components/modals/invoice-info-modal';
+import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
 import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
 
 interface InvoiceHeaderCardProps {
@@ -25,7 +26,8 @@ export function InvoiceHeaderCard({
   isLoading,
   onConfirm,
 }: InvoiceHeaderCardProps) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const modalRef = useRef<SlideSheetRef>(null);
+  const [contentKey, setContentKey] = useState(0);
 
   if (!invoice) {
     return (
@@ -34,6 +36,11 @@ export function InvoiceHeaderCard({
       </View>
     );
   }
+
+  const handleOpen = () => {
+    setContentKey((k) => k + 1);
+    modalRef.current?.open();
+  };
 
   const getDateRangeText = () => {
     const start = dayjs(invoice.startDate);
@@ -58,7 +65,7 @@ export function InvoiceHeaderCard({
 
   return (
     <>
-      <Pressable style={styles.container} onPress={() => setModalVisible(true)}>
+      <Pressable style={styles.container} onPress={handleOpen}>
         <View style={styles.mainInfo}>
           <View style={styles.leftInfo}>
             <Text style={styles.entityName}>Tên: {invoice.description}</Text>
@@ -68,25 +75,24 @@ export function InvoiceHeaderCard({
             <View style={styles.editButton}>
               <VinaupPenLineVariant width={18} height={18} />
             </View>
-            <Text style={styles.entityCode}>
-              No. {invoice.code.slice(0, 8)}
-            </Text>
+            <Text style={styles.entityCode}>No. {invoice.code.slice(0, 8)}</Text>
           </View>
         </View>
       </Pressable>
 
-      <InvoiceInfoModal
-        key={invoice.id}
-        visible={modalVisible}
-        invCode={invoice.code}
-        invDescription={invoice.description}
-        invStartDate={invoice.startDate}
-        isLoading={isLoading}
-        onConfirm={(data) => {
-          onConfirm?.(data, () => setModalVisible(false));
-        }}
-        onClose={() => setModalVisible(false)}
-      />
+      <SlideSheet ref={modalRef}>
+        <InvoiceInfoContent
+          key={contentKey}
+          invCode={invoice.code}
+          invDescription={invoice.description}
+          invStartDate={invoice.startDate}
+          isLoading={isLoading}
+          onCloseRequest={() => modalRef.current?.close()}
+          onConfirm={(data) => {
+            onConfirm?.(data, () => modalRef.current?.close());
+          }}
+        />
+      </SlideSheet>
     </>
   );
 }

@@ -71,10 +71,10 @@ export default function InvoiceDetailScreen() {
   useEffect(() => {
     if (invoice?.organization?.id) {
       fetchOrganizationCustomers(() =>
-        getOrganizationCustomersByOrganizationIdApi(invoice.organization!.id)
+        getOrganizationCustomersByOrganizationIdApi(invoice?.organization?.id || '')
       );
     }
-  }, [invoice?.organization?.id, fetchOrganizationCustomers]);
+  }, [invoice?.organization, fetchOrganizationCustomers]);
 
   const handleUpdateInvoice = (
     updatedFields: UpdateInvoiceRequest,

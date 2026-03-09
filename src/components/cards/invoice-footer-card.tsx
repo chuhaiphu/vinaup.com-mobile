@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { useState } from 'react';
-import { InvoiceOrgCustomerEditModal } from '@/components/modals/invoice-org-customer-edit-modal';
-import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal';
+import { useRef } from 'react';
+import { InvoiceOrgCustomerEditContent } from '@/components/modals/invoice-org-customer-edit-modal';
+import { SimpleTextInputContent } from '@/components/modals/simple-text-input-modal';
+import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
 import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.native';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
@@ -32,16 +33,17 @@ export function InvoiceFooterCard({
     invoice?.organizationCustomer?.name ?? invoice?.externalCustomerName ?? '';
   const currentCustomerId = invoice?.externalCustomerName
     ? 'external'
-    : invoice?.organizationCustomer?.id ?? '';
+    : (invoice?.organizationCustomer?.id ?? '');
   const note = invoice?.note ?? '';
-  const [modalVisible, setModalVisible] = useState(false);
-  const [noteModalVisible, setNoteModalVisible] = useState(false);
+
+  const orgModalRef = useRef<SlideSheetRef>(null);
+  const noteModalRef = useRef<SlideSheetRef>(null);
 
   return (
     <>
       <Pressable
         style={styles.noteContainer}
-        onPress={() => setNoteModalVisible(true)}
+        onPress={() => noteModalRef.current?.open()}
         disabled={isLoading}
       >
         <VinaupInfoNote width={20} height={20} color={COLORS.vinaupTeal} />
@@ -53,7 +55,7 @@ export function InvoiceFooterCard({
 
       <Pressable
         style={styles.container}
-        onPress={() => setModalVisible(true)}
+        onPress={() => orgModalRef.current?.open()}
         disabled={isLoading}
       >
         <View style={styles.card}>
@@ -78,29 +80,29 @@ export function InvoiceFooterCard({
         </View>
       </Pressable>
 
-      <InvoiceOrgCustomerEditModal
-        key={`invoice-org-customer-modal-${invoice?.id}`}
-        visible={modalVisible}
-        organizationName={organizationName}
-        organizationCustomers={organizationCustomers}
-        currentCustomerId={currentCustomerId}
-        isLoading={isLoading}
-        onSelectCustomer={(type, customerId, onSuccessCallback) =>
-          onSelectCustomer?.(type, customerId, onSuccessCallback)
-        }
-        onClose={() => setModalVisible(false)}
-      />
+      <SlideSheet ref={orgModalRef}>
+        <InvoiceOrgCustomerEditContent
+          organizationName={organizationName}
+          organizationCustomers={organizationCustomers}
+          currentCustomerId={currentCustomerId}
+          isLoading={isLoading}
+          onCloseRequest={() => orgModalRef.current?.close()}
+          onSelectCustomer={(type, customerId, onSuccessCallback) =>
+            onSelectCustomer?.(type, customerId, onSuccessCallback)
+          }
+        />
+      </SlideSheet>
 
-      <SimpleTextInputModal
-        key={`invoice-note-modal-${invoice?.id}`}
-        visible={noteModalVisible}
-        value={note}
-        isLoading={isLoading}
-        onConfirm={(noteValue) =>
-          onNoteConfirm?.(noteValue, () => setNoteModalVisible(false))
-        }
-        onClose={() => setNoteModalVisible(false)}
-      />
+      <SlideSheet ref={noteModalRef}>
+        <SimpleTextInputContent
+          value={note}
+          isLoading={isLoading}
+          onCloseRequest={() => noteModalRef.current?.close()}
+          onConfirm={(noteValue) =>
+            onNoteConfirm?.(noteValue, () => noteModalRef.current?.close())
+          }
+        />
+      </SlideSheet>
     </>
   );
 }

@@ -2,24 +2,19 @@ import {
   StyleSheet,
   Text,
   View,
-  Modal,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
   ScrollView,
 } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/primitives/button';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs, { Dayjs } from 'dayjs';
 
-interface InvoiceInfoModalProps {
+interface InvoiceInfoContentProps {
   invDescription?: string;
   invCode?: string;
   invStartDate?: Date;
-  visible: boolean;
   isLoading?: boolean;
   onConfirm?: (data: {
     description: string;
@@ -27,18 +22,17 @@ interface InvoiceInfoModalProps {
     endDate: Date;
     code?: string;
   }) => void;
-  onClose?: () => void;
+  onCloseRequest?: () => void;
 }
 
-export function InvoiceInfoModal({
+export function InvoiceInfoContent({
   invDescription = '',
   invCode = '',
   invStartDate,
-  visible,
   isLoading = false,
   onConfirm,
-  onClose,
-}: InvoiceInfoModalProps) {
+  onCloseRequest,
+}: InvoiceInfoContentProps) {
   const [description, setDescription] = useState(invDescription);
   const [code, setCode] = useState(invCode);
   const [startDate, setStartDate] = useState<Dayjs>(dayjs(invStartDate));
@@ -46,12 +40,6 @@ export function InvoiceInfoModal({
     description?: boolean;
     code?: boolean;
   }>({});
-
-  useEffect(() => {
-    if (visible) {
-      setInputErrors({});
-    }
-  }, [visible]);
 
   const handleConfirm = () => {
     const errors: typeof inputErrors = {};
@@ -69,172 +57,142 @@ export function InvoiceInfoModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      onRequestClose={onClose}
-      animationType="fade"
-    >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.modalContainer}
+    <View style={styles.modalContent}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <Pressable style={styles.modalOverlay} onPress={onClose} />
-        <View style={styles.modalContent}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
+        <View style={styles.inputItem}>
+          <View
+            style={[
+              styles.inputWrapper,
+              inputErrors.description && styles.inputError,
+            ]}
           >
-            <View style={styles.inputItem}>
-              <View
+            <View style={styles.labelSection}>
+              <Text
                 style={[
-                  styles.inputWrapper,
-                  inputErrors.description && styles.inputError,
+                  styles.insideLabel,
+                  inputErrors.description && styles.labelError,
                 ]}
               >
-                <View style={styles.labelSection}>
-                  <Text
-                    style={[
-                      styles.insideLabel,
-                      inputErrors.description && styles.labelError,
-                    ]}
-                  >
-                    Tiêu đề
-                  </Text>
-                </View>
-                <View style={styles.separator} />
-                <TextInput
-                  style={styles.inputNative}
-                  placeholder="..."
-                  maxLength={40}
-                  value={description}
-                  onChangeText={(value) => {
-                    setDescription(value);
-                    setInputErrors((prev) => ({
-                      ...prev,
-                      description: !value.trim() ? true : undefined,
-                    }));
-                  }}
-                  placeholderTextColor={COLORS.vinaupMediumGray}
-                  editable={!isLoading}
-                />
-              </View>
+                Tiêu đề
+              </Text>
             </View>
-
-            <View style={styles.inputItem}>
-              <View
-                style={[
-                  styles.inputWrapper,
-                  inputErrors.code && styles.inputError,
-                ]}
-              >
-                <View style={styles.labelSection}>
-                  <Text
-                    style={[
-                      styles.insideLabel,
-                      inputErrors.code && styles.labelError,
-                    ]}
-                  >
-                    No.
-                  </Text>
-                </View>
-                <View style={styles.separator} />
-                <TextInput
-                  style={styles.inputNative}
-                  value={code}
-                  placeholder="Mã số"
-                  onChangeText={(value) => {
-                    setCode(value);
-                    setInputErrors((prev) => ({
-                      ...prev,
-                      code: value.trim() === '' ? true : undefined,
-                    }));
-                  }}
-                  placeholderTextColor={COLORS.vinaupMediumGray}
-                  editable={!isLoading}
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <View style={styles.dateRow}>
-                <Text style={styles.inputLabel}>Ngày</Text>
-                <View style={styles.dateTimeRow}>
-                  <DateTimePicker
-                    mode="date"
-                    value={startDate}
-                    onChange={(d) => {
-                      setStartDate(
-                        startDate
-                          .year(d.year())
-                          .month(d.month())
-                          .date(d.date())
-                      );
-                    }}
-                    displayFormat="DD/MM/YYYY"
-                    disabled={isLoading}
-                  />
-                  <DateTimePicker
-                    mode="time"
-                    value={startDate}
-                    onChange={(d) => {
-                      setStartDate(
-                        startDate.hour(d.hour()).minute(d.minute())
-                      );
-                    }}
-                    displayFormat="HH:mm"
-                    disabled={isLoading}
-                  />
-                </View>
-              </View>
-            </View>
-          </ScrollView>
-
-          <View style={styles.buttonGroup}>
-            <Button
-              style={[styles.cancelButton, isLoading && styles.buttonDisabled]}
-              onPress={onClose}
-              disabled={isLoading}
-            >
-              <Text style={styles.cancelButtonText}>Huỷ</Text>
-            </Button>
-            <Button
-              style={[styles.confirmButton, isLoading && styles.buttonDisabled]}
-              onPress={handleConfirm}
-              disabled={isLoading}
-              isLoading={isLoading}
-            >
-              <Text style={styles.confirmButtonText}>Xác nhận</Text>
-            </Button>
+            <View style={styles.separator} />
+            <TextInput
+              style={styles.inputNative}
+              placeholder="..."
+              maxLength={40}
+              value={description}
+              onChangeText={(value) => {
+                setDescription(value);
+                setInputErrors((prev) => ({
+                  ...prev,
+                  description: !value.trim() ? true : undefined,
+                }));
+              }}
+              placeholderTextColor={COLORS.vinaupMediumGray}
+              editable={!isLoading}
+            />
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </Modal>
+
+        <View style={styles.inputItem}>
+          <View
+            style={[
+              styles.inputWrapper,
+              inputErrors.code && styles.inputError,
+            ]}
+          >
+            <View style={styles.labelSection}>
+              <Text
+                style={[
+                  styles.insideLabel,
+                  inputErrors.code && styles.labelError,
+                ]}
+              >
+                No.
+              </Text>
+            </View>
+            <View style={styles.separator} />
+            <TextInput
+              style={styles.inputNative}
+              value={code}
+              placeholder="Mã số"
+              onChangeText={(value) => {
+                setCode(value);
+                setInputErrors((prev) => ({
+                  ...prev,
+                  code: value.trim() === '' ? true : undefined,
+                }));
+              }}
+              placeholderTextColor={COLORS.vinaupMediumGray}
+              editable={!isLoading}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputGroup}>
+          <View style={styles.dateRow}>
+            <Text style={styles.inputLabel}>Ngày</Text>
+            <View style={styles.dateTimeRow}>
+              <DateTimePicker
+                mode="date"
+                value={startDate}
+                onChange={(d) => {
+                  setStartDate(
+                    startDate
+                      .year(d.year())
+                      .month(d.month())
+                      .date(d.date())
+                  );
+                }}
+                displayFormat="DD/MM/YYYY"
+                disabled={isLoading}
+              />
+              <DateTimePicker
+                mode="time"
+                value={startDate}
+                onChange={(d) => {
+                  setStartDate(
+                    startDate.hour(d.hour()).minute(d.minute())
+                  );
+                }}
+                displayFormat="HH:mm"
+                disabled={isLoading}
+              />
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+
+      <View style={styles.buttonGroup}>
+        <Button
+          style={[styles.cancelButton, isLoading && styles.buttonDisabled]}
+          onPress={onCloseRequest}
+          disabled={isLoading}
+        >
+          <Text style={styles.cancelButtonText}>Huỷ</Text>
+        </Button>
+        <Button
+          style={[styles.confirmButton, isLoading && styles.buttonDisabled]}
+          onPress={handleConfirm}
+          disabled={isLoading}
+          isLoading={isLoading}
+        >
+          <Text style={styles.confirmButtonText}>Xác nhận</Text>
+        </Button>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   modalContent: {
-    backgroundColor: COLORS.vinaupLightWhite,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 20,
     paddingBottom: 32,
-    zIndex: 1,
-    maxHeight: '80%',
   },
   inputItem: {
     width: '100%',

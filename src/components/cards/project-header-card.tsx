@@ -2,8 +2,9 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
-import { useState } from 'react';
-import { ProjectInfoModal } from '@/components/modals/project-info-modal';
+import { useRef, useState } from 'react';
+import { ProjectInfoContent } from '@/components/modals/project-info-modal';
+import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
 import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
 
 interface ProjectHeaderCardProps {
@@ -25,7 +26,8 @@ export function ProjectHeaderCard({
   isLoading,
   onConfirm,
 }: ProjectHeaderCardProps) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const modalRef = useRef<SlideSheetRef>(null);
+  const [contentKey, setContentKey] = useState(0);
 
   if (!project) {
     return (
@@ -34,6 +36,11 @@ export function ProjectHeaderCard({
       </View>
     );
   }
+
+  const handleOpen = () => {
+    setContentKey((k) => k + 1);
+    modalRef.current?.open();
+  };
 
   const getDateRangeText = () => {
     const start = dayjs(project.startDate);
@@ -58,7 +65,7 @@ export function ProjectHeaderCard({
 
   return (
     <>
-      <Pressable style={styles.container} onPress={() => setModalVisible(true)}>
+      <Pressable style={styles.container} onPress={handleOpen}>
         <View style={styles.mainInfo}>
           <View style={styles.leftInfo}>
             <Text style={styles.entityName}>Tên: {project.description}</Text>
@@ -73,19 +80,20 @@ export function ProjectHeaderCard({
         </View>
       </Pressable>
 
-      <ProjectInfoModal
-        key={project.id}
-        visible={modalVisible}
-        prjCode={project.code}
-        prjDescription={project.description}
-        prjStartDate={project.startDate}
-        prjEndDate={project.endDate}
-        isLoading={isLoading}
-        onConfirm={(data) => {
-          onConfirm?.(data, () => setModalVisible(false));
-        }}
-        onClose={() => setModalVisible(false)}
-      />
+      <SlideSheet ref={modalRef}>
+        <ProjectInfoContent
+          key={contentKey}
+          prjCode={project.code}
+          prjDescription={project.description}
+          prjStartDate={project.startDate}
+          prjEndDate={project.endDate}
+          isLoading={isLoading}
+          onCloseRequest={() => modalRef.current?.close()}
+          onConfirm={(data) => {
+            onConfirm?.(data, () => modalRef.current?.close());
+          }}
+        />
+      </SlideSheet>
     </>
   );
 }

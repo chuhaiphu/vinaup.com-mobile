@@ -1,34 +1,23 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Modal,
-  TextInput,
-  Alert,
-  Pressable,
-} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Alert } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/primitives/button';
-import { KeyboardSafeAvoidingView } from '../primitives/keyboard-safe-avoiding-view';
 
-interface ProjectOrgCustomerEditModalProps {
-  visible: boolean;
+interface ProjectOrgCustomerEditContentProps {
   organizationName?: string | null;
   customerName?: string | null;
   isLoading?: boolean;
   onConfirm?: (organizationName: string, customerName: string) => void;
-  onClose?: () => void;
+  onCloseRequest?: () => void;
 }
 
-export function ProjectOrgCustomerEditModal({
-  visible,
+export function ProjectOrgCustomerEditContent({
   organizationName = '',
   customerName = '',
   isLoading = false,
   onConfirm,
-  onClose,
-}: ProjectOrgCustomerEditModalProps) {
+  onCloseRequest,
+}: ProjectOrgCustomerEditContentProps) {
   const [tempOrgName, setTempOrgName] = useState(organizationName || '');
   const [tempCustomerName, setTempCustomerName] = useState(customerName || '');
 
@@ -42,11 +31,11 @@ export function ProjectOrgCustomerEditModal({
     }
     onConfirm?.(tempOrgName, tempCustomerName);
   };
-  
+
   const handleClose = () => {
     setTempOrgName(organizationName || '');
     setTempCustomerName(customerName || '');
-    onClose?.();
+    onCloseRequest?.();
   };
 
   const handleOrgInputSubmit = () => {
@@ -58,90 +47,63 @@ export function ProjectOrgCustomerEditModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      onRequestClose={handleClose}
-      animationType="fade"
-    >
-      <KeyboardSafeAvoidingView style={styles.modalContainer}>
-        <Pressable style={styles.modalOverlay} onPress={handleClose} />
-        <View style={styles.modalContent}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Tổ chức</Text>
-            <TextInput
-              ref={orgInputRef}
-              style={styles.input}
-              placeholder="Nhập tên tổ chức"
-              value={tempOrgName}
-              onChangeText={setTempOrgName}
-              placeholderTextColor={COLORS.vinaupMediumGray}
-              returnKeyType="next"
-              onSubmitEditing={handleOrgInputSubmit}
-              editable={!isLoading}
-            />
-          </View>
+    <View style={styles.modalContent}>
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Tổ chức</Text>
+        <TextInput
+          ref={orgInputRef}
+          style={styles.input}
+          placeholder="Nhập tên tổ chức"
+          value={tempOrgName}
+          onChangeText={setTempOrgName}
+          placeholderTextColor={COLORS.vinaupMediumGray}
+          returnKeyType="next"
+          onSubmitEditing={handleOrgInputSubmit}
+          editable={!isLoading}
+        />
+      </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Tên khách</Text>
-            <TextInput
-              ref={customerInputRef}
-              style={styles.input}
-              placeholder="Nhập tên khách"
-              value={tempCustomerName}
-              onChangeText={setTempCustomerName}
-              placeholderTextColor={COLORS.vinaupMediumGray}
-              returnKeyType="done"
-              onSubmitEditing={handleCustomerInputSubmit}
-              editable={!isLoading}
-            />
-          </View>
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Tên khách</Text>
+        <TextInput
+          ref={customerInputRef}
+          style={styles.input}
+          placeholder="Nhập tên khách"
+          value={tempCustomerName}
+          onChangeText={setTempCustomerName}
+          placeholderTextColor={COLORS.vinaupMediumGray}
+          returnKeyType="done"
+          onSubmitEditing={handleCustomerInputSubmit}
+          editable={!isLoading}
+        />
+      </View>
 
-          <View style={styles.buttonGroup}>
-            <Button
-              style={[styles.cancelButton, isLoading && styles.buttonDisabled]}
-              onPress={onClose}
-              disabled={isLoading}
-            >
-              <Text style={styles.cancelButtonText}>Huỷ</Text>
-            </Button>
-            <Button
-              style={[styles.confirmButton, isLoading && styles.buttonDisabled]}
-              onPress={handleConfirm}
-              disabled={isLoading}
-              isLoading={isLoading}
-            >
-              <Text style={styles.confirmButtonText}>Xác nhận</Text>
-            </Button>
-          </View>
-        </View>
-      </KeyboardSafeAvoidingView>
-    </Modal>
+      <View style={styles.buttonGroup}>
+        <Button
+          style={[styles.cancelButton, isLoading && styles.buttonDisabled]}
+          onPress={handleClose}
+          disabled={isLoading}
+        >
+          <Text style={styles.cancelButtonText}>Huỷ</Text>
+        </Button>
+        <Button
+          style={[styles.confirmButton, isLoading && styles.buttonDisabled]}
+          onPress={handleConfirm}
+          disabled={isLoading}
+          isLoading={isLoading}
+        >
+          <Text style={styles.confirmButtonText}>Xác nhận</Text>
+        </Button>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 20,
     paddingBottom: 32,
-    zIndex: 1,
   },
   inputGroup: {
     marginBottom: 16,

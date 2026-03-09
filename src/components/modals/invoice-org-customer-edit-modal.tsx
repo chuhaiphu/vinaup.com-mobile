@@ -1,17 +1,9 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Modal,
-  Pressable,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { Select, SelectOption } from '@/components/primitives/select';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
-import { KeyboardSafeAvoidingView } from '../primitives/keyboard-safe-avoiding-view';
 
-interface InvoiceOrgCustomerEditModalProps {
-  visible: boolean;
+interface InvoiceOrgCustomerEditContentProps {
   organizationName?: string;
   organizationCustomers: OrganizationCustomerResponse[];
   currentCustomerId?: string;
@@ -21,20 +13,19 @@ interface InvoiceOrgCustomerEditModalProps {
     customerId?: string,
     onSuccessCallback?: () => void
   ) => void;
-  onClose: () => void;
+  onCloseRequest?: () => void;
 }
 
 const EXTERNAL_VALUE = 'external';
 
-export function InvoiceOrgCustomerEditModal({
-  visible,
+export function InvoiceOrgCustomerEditContent({
   organizationName = '',
   organizationCustomers,
   currentCustomerId = '',
   isLoading = false,
   onSelectCustomer,
-  onClose,
-}: InvoiceOrgCustomerEditModalProps) {
+  onCloseRequest,
+}: InvoiceOrgCustomerEditContentProps) {
   const customerOptions: SelectOption[] = [
     { value: EXTERNAL_VALUE, label: 'Khách lẻ' },
     ...organizationCustomers.map((c) => ({
@@ -45,68 +36,42 @@ export function InvoiceOrgCustomerEditModal({
 
   const handleSelectCustomer = (value: string) => {
     if (value === EXTERNAL_VALUE) {
-      onSelectCustomer('external', undefined, onClose);
+      onSelectCustomer('external', undefined, onCloseRequest);
     } else {
-      onSelectCustomer('organization', value, onClose);
+      onSelectCustomer('organization', value, onCloseRequest);
     }
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      onRequestClose={onClose}
-      animationType="fade"
-    >
-      <KeyboardSafeAvoidingView style={styles.modalContainer}>
-        <Pressable style={styles.modalOverlay} onPress={onClose} />
-        <View style={styles.modalContent}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Tổ chức</Text>
-            <View style={styles.orgNameContainer}>
-              <Text style={styles.orgNameText}>{organizationName}</Text>
-            </View>
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Khách hàng</Text>
-            <Select
-              isLoading={isLoading}
-              options={customerOptions}
-              value={currentCustomerId}
-              onChange={handleSelectCustomer}
-              placeholder="Chọn khách hàng"
-              heightPercentage={0.5}
-            />
-          </View>
+    <View style={styles.modalContent}>
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Tổ chức</Text>
+        <View style={styles.orgNameContainer}>
+          <Text style={styles.orgNameText}>{organizationName}</Text>
         </View>
-      </KeyboardSafeAvoidingView>
-    </Modal>
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.inputLabel}>Khách hàng</Text>
+        <Select
+          searchable
+          isLoading={isLoading}
+          options={customerOptions}
+          value={currentCustomerId}
+          onChange={handleSelectCustomer}
+          placeholder="Chọn khách hàng"
+          heightPercentage={0.5}
+        />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-  },
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
   modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 20,
     paddingBottom: 32,
-    zIndex: 1,
   },
   inputGroup: {
     marginBottom: 16,

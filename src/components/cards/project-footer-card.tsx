@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { useState } from 'react';
-import { ProjectOrgCustomerEditModal } from '@/components/modals/project-org-customer-edit-modal';
-import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal';
+import { useRef } from 'react';
+import { ProjectOrgCustomerEditContent } from '@/components/modals/project-org-customer-edit-modal';
+import { SimpleTextInputContent } from '@/components/modals/simple-text-input-modal';
+import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
 import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.native';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
@@ -27,13 +28,15 @@ export function ProjectFooterCard({
   const organizationName = project?.externalOrganizationName ?? '';
   const customerName = project?.externalCustomerName ?? '';
   const note = project?.note ?? '';
-  const [modalVisible, setModalVisible] = useState(false);
-  const [noteModalVisible, setNoteModalVisible] = useState(false);
+
+  const orgModalRef = useRef<SlideSheetRef>(null);
+  const noteModalRef = useRef<SlideSheetRef>(null);
+
   return (
     <>
       <Pressable
         style={styles.noteContainer}
-        onPress={() => setNoteModalVisible(true)}
+        onPress={() => noteModalRef.current?.open()}
         disabled={isLoading}
       >
         <VinaupInfoNote width={20} height={20} color={COLORS.vinaupTeal} />
@@ -45,7 +48,7 @@ export function ProjectFooterCard({
 
       <Pressable
         style={styles.container}
-        onPress={() => setModalVisible(true)}
+        onPress={() => orgModalRef.current?.open()}
         disabled={isLoading}
       >
         <View style={styles.card}>
@@ -66,39 +69,32 @@ export function ProjectFooterCard({
                 {customerName || ''}
               </Text>
             </View>
-            {/* <View style={styles.editButton}>
-              <VinaupPenLineVariant
-                width={12}
-                height={12}
-                color={COLORS.vinaupTeal}
-              />
-            </View> */}
           </View>
         </View>
       </Pressable>
 
-      <ProjectOrgCustomerEditModal
-        key={`project-org-customer-modal-${project?.id}`}
-        visible={modalVisible}
-        organizationName={organizationName}
-        customerName={customerName}
-        isLoading={isLoading}
-        onConfirm={(orgName, customerName) =>
-          onOrgCusConfirm?.(orgName, customerName, () => setModalVisible(false))
-        }
-        onClose={() => setModalVisible(false)}
-      />
+      <SlideSheet ref={orgModalRef}>
+        <ProjectOrgCustomerEditContent
+          organizationName={organizationName}
+          customerName={customerName}
+          isLoading={isLoading}
+          onCloseRequest={() => orgModalRef.current?.close()}
+          onConfirm={(orgName, cusName) =>
+            onOrgCusConfirm?.(orgName, cusName, () => orgModalRef.current?.close())
+          }
+        />
+      </SlideSheet>
 
-      <SimpleTextInputModal
-        key={`project-note-modal-${project?.id}`}
-        visible={noteModalVisible}
-        value={note}
-        isLoading={isLoading}
-        onConfirm={(noteValue) =>
-          onNoteConfirm?.(noteValue, () => setNoteModalVisible(false))
-        }
-        onClose={() => setNoteModalVisible(false)}
-      />
+      <SlideSheet ref={noteModalRef}>
+        <SimpleTextInputContent
+          value={note}
+          isLoading={isLoading}
+          onCloseRequest={() => noteModalRef.current?.close()}
+          onConfirm={(noteValue) =>
+            onNoteConfirm?.(noteValue, () => noteModalRef.current?.close())
+          }
+        />
+      </SlideSheet>
     </>
   );
 }
@@ -161,17 +157,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     gap: 4,
   },
-  noteLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
   noteValue: {
     flex: 1,
     fontSize: 16,
     color: COLORS.vinaupBlack,
   },
-  // editButton: {
-  //   padding: 4,
-  //   alignSelf: 'flex-start',
-  // },
 });
