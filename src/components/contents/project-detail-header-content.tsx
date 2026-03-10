@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
   },
   leftInfo: {
     flex: 1,
-    gap: 4,
+    gap: 8,
   },
   rightInfo: {
     alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    gap: 8,
   },
   entityName: {
     fontSize: 18,

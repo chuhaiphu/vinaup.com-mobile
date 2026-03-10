@@ -40,9 +40,9 @@ export default function NavigatorSelector() {
   return (
     <Select
       heightPercentage={0.9}
-      renderTrigger={
+      renderTrigger={() => (
         <FontAwesome6 name="list-check" size={24} color={COLORS.vinaupSoftYellow} />
-      }
+      )}
       options={navItems}
       value={pathname}
       onChange={handleNavigation}

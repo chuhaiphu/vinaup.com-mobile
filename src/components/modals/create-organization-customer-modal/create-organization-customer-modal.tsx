@@ -18,7 +18,7 @@ export function CreateOrganizationCustomerModal({
   };
 
   return (
-    <SlideSheet ref={modalRef} heightPercentage={0.55}>
+    <SlideSheet ref={modalRef} heightPercentage={0.5}>
       <CreateOrganizationCustomerModalContent
         organizationId={organizationId}
         onCreated={(customer) => {

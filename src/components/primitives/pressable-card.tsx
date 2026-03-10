@@ -22,6 +22,14 @@ export function PressableCard({
   style,
   ...pressableProps
 }: PressableCardProps) {
+  if (!pressableProps.onPress) {
+    return (
+      <View style={[styles.container, style?.container]}>
+        <View style={[styles.card, style?.card]}>{children}</View>
+      </View>
+    );
+  }
+
   return (
     <Pressable
       {...pressableProps}

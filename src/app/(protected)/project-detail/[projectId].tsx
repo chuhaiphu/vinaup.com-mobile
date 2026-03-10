@@ -1,5 +1,5 @@
-import { View, StyleSheet, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { View, StyleSheet, Alert, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
@@ -15,21 +15,24 @@ import {
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { ProjectDetailHeaderContent } from '@/components/contents/project-detail-header-content';
-import { ReceiptPaymentProjectList } from '@/components/cards/receipt-payment-project-list';
+import { ReceiptPaymentProjectListContent } from '@/components/contents/receipt-payment-project-list-content';
 import Loader from '@/components/primitives/loader';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
 import { ProjectDetailFooterContent } from '@/components/contents/project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
+import { useSafeRouter } from '@/hooks/use-safe-router';
+import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 
 export default function ProjectDetailScreen() {
-  const router = useRouter();
+  const safeRouter = useSafeRouter();
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
   const {
     data: project,
-    isLoading,
+    isLoading: isLoadingProject,
+    isRefreshing: isRefreshingProject,
     executeFetchFn: fetchProject,
     refreshFetchFn: refreshProject,
   } = useFetchFn<ProjectResponse>({});
@@ -46,6 +49,7 @@ export default function ProjectDetailScreen() {
   const {
     data: receiptPayments,
     isLoading: isLoadingReceiptPayments,
+    isRefreshing: isRefreshingReceiptPayments,
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
   } = useFetchFn<ReceiptPaymentResponse[]>({
@@ -59,7 +63,12 @@ export default function ProjectDetailScreen() {
     }
   }, [projectId, fetchProject, fetchReceiptPayments]);
 
-  const handleSaveAndExit = () => {};
+  const handleSaveAndExit = () => {
+    if (!project) return;
+    refreshProject();
+    refreshReceiptPayments();
+    safeRouter.safeBack();
+  };
 
   const handleUpdateProject = (
     updatedFields: UpdateProjectRequest,
@@ -87,7 +96,7 @@ export default function ProjectDetailScreen() {
         onPress: () => {
           deleteProject(() => deleteProjectApi(projectId), {
             onSuccess: () => {
-              router.back();
+              safeRouter.safeBack();
             },
             onError: (error) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
@@ -99,13 +108,13 @@ export default function ProjectDetailScreen() {
   };
 
   const getHeaderTitle = () => {
-    if (isLoading || !project) {
+    if (isLoadingProject || !project) {
       return '';
     }
-    return project.type === 'SELF' ? 'Chi tiết tiền công' : 'Chi tiết dự án';
+    return project.type === 'SELF' ? 'Chi tiết Tiền công' : 'Chi tiết Dự án';
   };
 
-  if (isLoading) {
+  if (isLoadingProject) {
     return (
       <View>
         <Loader size={64} />
@@ -126,7 +135,13 @@ export default function ProjectDetailScreen() {
         <View style={styles.projectFilterContainer}>
           <View style={styles.statusFilter}>
             <Select
-              isLoading={isUpdatingProject}
+              renderTrigger={(option) => (
+                <>
+                  <VinaupVerticalExpandArrow width={18} height={18} />
+                  <Text>{option.label || 'Trạng thái'}</Text>
+                </>
+              )}
+              isLoading={isUpdatingProject || isRefreshingProject}
               options={ProjectStatusOptions}
               value={project?.status || ''}
               onChange={(value) =>
@@ -144,13 +159,13 @@ export default function ProjectDetailScreen() {
         </View>
         <ProjectDetailHeaderContent
           project={project ?? undefined}
-          isLoading={isUpdatingProject}
+          isLoading={isUpdatingProject || isRefreshingProject}
           onConfirm={(data, onSuccessCallback) =>
             handleUpdateProject(data, onSuccessCallback)
           }
         />
         {project && (
-          <ReceiptPaymentProjectList
+          <ReceiptPaymentProjectListContent
             onRefresh={() => {
               refreshProject();
               refreshReceiptPayments();
@@ -159,6 +174,7 @@ export default function ProjectDetailScreen() {
             startDate={project.startDate}
             endDate={project.endDate}
             loading={isLoadingReceiptPayments}
+            refreshing={isRefreshingReceiptPayments}
             projectId={projectId}
           />
         )}
@@ -167,7 +183,7 @@ export default function ProjectDetailScreen() {
           onConfirm={(data, onSuccessCallback) =>
             handleUpdateProject(data, onSuccessCallback)
           }
-          isLoading={isUpdatingProject}
+          isLoading={isUpdatingProject || isRefreshingProject}
         />
       </View>
     </>

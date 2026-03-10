@@ -95,9 +95,16 @@ export default function ReceiptPaymentFormScreen() {
     fetchCategories(() => getCategoriesOfCurrentUserApi());
   }, [fetchCategories]);
 
-  const formInvalidatesTags = params.projectId
-    ? ['personal-receipt-payment-list-in-project']
-    : ['personal-receipt-payment-list'];
+  const formInvalidatesTags = (() => {
+    switch (true) {
+      case !!params.projectId:
+        return ['personal-receipt-payment-list-in-project'];
+      case !!params.invoiceId:
+        return ['organization-receipt-payment-list-in-invoice'];
+      default:
+        return ['personal-receipt-payment-list'];
+    }
+  })();
 
   const {
     executeMutationFn: createOrUpdateReceiptPayment,

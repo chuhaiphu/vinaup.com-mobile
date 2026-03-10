@@ -37,9 +37,9 @@ export function ProjectDetailFooterContent({
         onPress={() => noteModalRef.current?.open()}
         disabled={isLoading}
       >
-        <VinaupInfoNote width={20} height={20} color={COLORS.vinaupTeal} />
+        <VinaupInfoNote width={22} height={22} color={COLORS.vinaupTeal} />
         <Text style={styles.noteValue} numberOfLines={2} ellipsizeMode="tail">
-          {note || '—'}
+          {note || 'Ghi chú...'}
         </Text>
         <VinaupPenLineVariant width={16} height={16} color={COLORS.vinaupTeal} />
       </Pressable>
@@ -53,23 +53,23 @@ export function ProjectDetailFooterContent({
         }}
       >
         <View style={styles.rowsNew}>
-            <View style={styles.orgCol}>
-              <Text style={styles.label}>Tổ chức:</Text>
-              <Text style={[styles.value, styles.valueLeft]}>
-                {organizationName || ''}
-              </Text>
-            </View>
-            <View style={styles.customerCol}>
-              <Text style={styles.label}>Tên khách:</Text>
-              <Text
-                numberOfLines={2}
-                ellipsizeMode="tail"
-                style={[styles.value, styles.valueRight]}
-              >
-                {customerName || ''}
-              </Text>
-            </View>
+          <View style={styles.orgCol}>
+            <Text style={styles.label}>Tổ chức:</Text>
+            <Text style={[styles.value, styles.valueLeft]}>
+              {organizationName || ''}
+            </Text>
           </View>
+          <View style={styles.customerCol}>
+            <Text style={styles.label}>Tên khách:</Text>
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="tail"
+              style={[styles.value, styles.valueRight]}
+            >
+              {customerName || ''}
+            </Text>
+          </View>
+        </View>
       </PressableCard>
 
       <ProjectOrgCustomerEditModal
@@ -128,7 +128,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: '500',
     color: COLORS.vinaupTeal,
   },
   valueLeft: {
@@ -147,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 12,
-    gap: 4,
+    gap: 8,
   },
   noteValue: {
     flex: 1,

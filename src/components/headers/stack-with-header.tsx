@@ -1,5 +1,5 @@
 import { Stack, useRouter } from 'expo-router';
-import { View, Pressable } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { COLORS } from '@/constants/style-constant';
@@ -35,6 +35,13 @@ export function StackWithHeader({
       options={{
         title,
         headerStyle: { backgroundColor: COLORS.vinaupTeal },
+        headerTitle: ({ children }) => (
+          <Text
+            style={{ fontSize: 20, fontWeight: '400', color: COLORS.vinaupWhite }}
+          >
+            {children}
+          </Text>
+        ),
         headerTintColor: '#fff',
         ...(backTitle && { headerBackTitle: backTitle }),
         headerLeft: () => (

@@ -21,6 +21,7 @@ interface ReceiptPaymentProjectListProps {
   startDate: Date;
   endDate: Date;
   loading?: boolean;
+  refreshing?: boolean;
   onRefresh: () => void;
   projectId: string;
 }
@@ -31,11 +32,12 @@ interface ReceiptPaymentsSection {
   data: ReceiptPaymentResponse[];
 }
 
-export function ReceiptPaymentProjectList({
+export function ReceiptPaymentProjectListContent({
   receiptPayments,
   startDate,
   endDate,
   loading,
+  refreshing,
   onRefresh,
   projectId,
 }: ReceiptPaymentProjectListProps) {
@@ -131,7 +133,7 @@ export function ReceiptPaymentProjectList({
       keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl
-          refreshing={loading ?? false}
+          refreshing={refreshing ?? false}
           onRefresh={onRefresh}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}

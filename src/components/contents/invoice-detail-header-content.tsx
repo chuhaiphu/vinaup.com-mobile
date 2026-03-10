@@ -79,7 +79,7 @@ export function InvoiceDetailHeaderContent({
         </View>
         <View style={styles.rightInfo}>
           <View style={styles.editButton}>
-            <VinaupPenLineVariant width={18} height={18} />
+            <VinaupPenLineVariant width={16} height={16} />
           </View>
           <Text style={styles.entityCode}>No. {invoice.code.slice(0, 8)}</Text>
         </View>
@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
   },
   leftInfo: {
     flex: 1,
-    gap: 4,
+    gap: 8,
   },
   rightInfo: {
     alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    gap: 8,
   },
   entityName: {
     fontSize: 18,

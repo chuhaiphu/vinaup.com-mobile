@@ -1,5 +1,5 @@
-import { View, StyleSheet, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { View, StyleSheet, Alert, Text, Pressable } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
 import { useFetchFn } from '@/hooks/use-fetch-fn';
@@ -17,21 +17,26 @@ import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { InvoiceDetailHeaderContent } from '@/components/contents/invoice-detail-header-content';
-import { ReceiptPaymentInvoiceList } from '@/components/cards/receipt-payment-invoice-list';
+import { ReceiptPaymentInvoiceContent } from '@/components/contents/receipt-payment-invoice-list-content';
 import Loader from '@/components/primitives/loader';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { InvoiceDetailFooterContent } from '@/components/contents/invoice-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
+import { useSafeRouter } from '@/hooks/use-safe-router';
+import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Entypo from '@expo/vector-icons/Entypo';
 
 export default function InvoiceDetailScreen() {
-  const router = useRouter();
+  const safeRouter = useSafeRouter();
   const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
 
   const {
     data: invoice,
-    isLoading,
+    isLoading: isLoadingInvoice,
+    isRefreshing: isRefreshingInvoice,
     executeFetchFn: fetchInvoice,
     refreshFetchFn: refreshInvoice,
   } = useFetchFn<InvoiceResponse>({});
@@ -50,6 +55,7 @@ export default function InvoiceDetailScreen() {
   const {
     data: receiptPayments,
     isLoading: isLoadingReceiptPayments,
+    isRefreshing: isRefreshingReceiptPayments,
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
   } = useFetchFn<ReceiptPaymentResponse[]>({
@@ -102,7 +108,7 @@ export default function InvoiceDetailScreen() {
         onPress: () => {
           deleteInvoiceMutation(() => deleteInvoiceApi(invoiceId), {
             onSuccess: () => {
-              router.back();
+              safeRouter.safeBack();
             },
             onError: (error) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
@@ -113,7 +119,14 @@ export default function InvoiceDetailScreen() {
     ]);
   };
 
-  if (isLoading) {
+  const handleSaveAndExit = () => {
+    if (!invoice) return;
+    refreshInvoice();
+    refreshReceiptPayments();
+    safeRouter.safeBack();
+  };
+
+  if (isLoadingInvoice) {
     return (
       <View>
         <Loader size={64} />
@@ -124,16 +137,23 @@ export default function InvoiceDetailScreen() {
   return (
     <>
       <StackWithHeader
-        title="Chi tiết hoá đơn"
+        title={'Chi tiết' + ' ' + invoice?.invoiceType.description}
         backTitle="Quay lại"
         onDelete={handleDelete}
+        onSave={handleSaveAndExit}
         isDeleting={isDeletingInvoice}
       />
       <View style={styles.container}>
-        <View style={styles.filterContainer}>
+        <View style={styles.actionContainer}>
           <View style={styles.statusFilter}>
             <Select
-              isLoading={isUpdatingInvoice}
+              renderTrigger={(option) => (
+                <>
+                  <VinaupVerticalExpandArrow width={16} height={16} />
+                  <Text>{option.label || 'Trạng thái'}</Text>
+                </>
+              )}
+              isLoading={isUpdatingInvoice || isRefreshingInvoice}
               options={InvoiceStatusOptions}
               value={invoice?.status || ''}
               onChange={(value) =>
@@ -148,16 +168,31 @@ export default function InvoiceDetailScreen() {
               }}
             />
           </View>
+          <View style={styles.actionButton}>
+            <Pressable style={styles.actionButtonItem}>
+              <Text style={styles.actionButtonItemText}>Hóa đơn</Text>
+            </Pressable>
+            <Pressable style={styles.actionButtonItem}>
+              <FontAwesome5 name="copy" size={18} color={COLORS.vinaupTeal} />
+            </Pressable>
+            <Pressable style={styles.actionButtonItem}>
+              <Entypo
+                name="dots-three-horizontal"
+                size={18}
+                color={COLORS.vinaupTeal}
+              />
+            </Pressable>
+          </View>
         </View>
         <InvoiceDetailHeaderContent
           invoice={invoice ?? undefined}
-          isLoading={isUpdatingInvoice}
+          isLoading={isUpdatingInvoice || isRefreshingInvoice}
           onConfirm={(data, onSuccessCallback) =>
             handleUpdateInvoice(data, onSuccessCallback)
           }
         />
         {invoice && (
-          <ReceiptPaymentInvoiceList
+          <ReceiptPaymentInvoiceContent
             onRefresh={() => {
               refreshInvoice();
               refreshReceiptPayments();
@@ -166,6 +201,7 @@ export default function InvoiceDetailScreen() {
             startDate={invoice.startDate}
             endDate={invoice.endDate}
             loading={isLoadingReceiptPayments}
+            refreshing={isRefreshingReceiptPayments}
             invoiceId={invoiceId}
             organizationId={invoice.organization?.id}
             invoiceTypeId={invoice.invoiceType.id}
@@ -207,12 +243,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  filterContainer: {
+  actionContainer: {
     marginVertical: 12,
     paddingHorizontal: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  actionButton: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionButtonItem: {},
+  actionButtonItemText: {
+    fontSize: 16,
+    color: COLORS.vinaupTeal,
   },
   statusFilter: {
     flexDirection: 'row',

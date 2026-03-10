@@ -22,6 +22,7 @@ interface ReceiptPaymentInvoiceListProps {
   startDate: Date;
   endDate: Date;
   loading?: boolean;
+  refreshing?: boolean;
   onRefresh: () => void;
   invoiceId: string;
   organizationId?: string;
@@ -34,11 +35,12 @@ interface ReceiptPaymentsSection {
   data: ReceiptPaymentResponse[];
 }
 
-export function ReceiptPaymentInvoiceList({
+export function ReceiptPaymentInvoiceContent({
   receiptPayments,
   startDate,
   endDate,
   loading,
+  refreshing,
   onRefresh,
   invoiceId,
   organizationId,
@@ -133,7 +135,7 @@ export function ReceiptPaymentInvoiceList({
       keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl
-          refreshing={loading ?? false}
+          refreshing={refreshing ?? false}
           onRefresh={onRefresh}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
@@ -150,8 +152,8 @@ export function ReceiptPaymentInvoiceList({
       renderSectionHeader={({ section: { title, data, dateKey } }) => (
         <View style={styles.sectionHeader}>
           <View style={styles.dateHeader}>
-            <Text style={styles.dateHeaderText}>{title}</Text>
-            <Text style={styles.receiptPaymentCount}>({data.length})</Text>
+            {/* <Text style={styles.dateHeaderText}>{title}</Text>
+            <Text style={styles.receiptPaymentCount}>({data.length})</Text> */}
           </View>
           <Pressable onPress={() => navigateToFormScreen({ dateKey })}>
             <VinaupAddNew width={24} height={24} iconColor={COLORS.vinaupWhite} />
@@ -186,8 +188,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-    marginTop: 12,
-    marginBottom: 4,
+    paddingVertical: 12,
   },
   dateHeader: {
     flexDirection: 'row',

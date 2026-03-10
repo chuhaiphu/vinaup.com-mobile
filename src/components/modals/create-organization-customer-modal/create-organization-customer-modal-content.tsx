@@ -94,9 +94,11 @@ export function CreateOrganizationCustomerModalContent({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Thêm khách hàng mới</Text>
-
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Tên khách hàng</Text>
+        <View style={styles.labelRow}>
+          <Text style={styles.label}>Tên</Text>
+          <Text style={styles.requiredMark}>*</Text>
+        </View>
         <TextInput
           style={[styles.input, errors.name && styles.inputError]}
           value={name}
@@ -116,7 +118,10 @@ export function CreateOrganizationCustomerModalContent({
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Số điện thoại</Text>
+        <View style={styles.labelRow}>
+          <Text style={styles.label}>Điện thoại</Text>
+          <Text style={styles.requiredMark}>*</Text>
+        </View>
         <TextInput
           style={[styles.input, errors.phone && styles.inputError]}
           value={phone}
@@ -137,7 +142,9 @@ export function CreateOrganizationCustomerModalContent({
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Email (không bắt buộc)</Text>
+        <View style={styles.labelRow}>
+          <Text style={styles.label}>Email</Text>
+        </View>
         <TextInput
           style={[styles.input, errors.email && styles.inputError]}
           value={email}
@@ -174,7 +181,6 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingVertical: 20,
-    paddingBottom: 32,
     backgroundColor: '#FFFFFF',
   },
   title: {
@@ -186,15 +192,22 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 16,
   },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
   label: {
     fontSize: 16,
     fontWeight: '500',
-    color: COLORS.vinaupMediumDarkGray,
-    marginBottom: 8,
+  },
+  requiredMark: {
+    fontSize: 16,
+    color: COLORS.vinaupRed,
+    marginLeft: 4,
   },
   input: {
-    borderWidth: 1,
-    borderColor: COLORS.vinaupTeal,
+    borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -222,7 +235,7 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: COLORS.vinaupWhite,
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '500',
   },
 });

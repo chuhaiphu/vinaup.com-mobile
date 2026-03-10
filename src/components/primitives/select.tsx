@@ -31,7 +31,7 @@ interface SelectProps {
   placeholder?: string;
   disabled?: boolean;
   heightPercentage?: number;
-  renderTrigger?: React.ReactNode;
+  renderTrigger?: (option: SelectOption) => React.ReactNode;
   searchable?: boolean;
   style?: {
     triggerText?: StyleProp<TextStyle>;
@@ -83,7 +83,7 @@ export function Select({
           onPress={() => !disabled && handleOpen()}
         >
           {renderTrigger ? (
-            renderTrigger
+            renderTrigger(selectedOption || { label: '', value: '' })
           ) : (
             <>
               <Text
@@ -108,7 +108,7 @@ export function Select({
         </View>
         {searchable && (
           <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color={COLORS.vinaupMediumGray} />
+            <Ionicons name="search" size={20} color={COLORS.vinaupTeal} />
             <TextInput
               style={styles.searchInput}
               placeholder="Tìm kiếm..."
