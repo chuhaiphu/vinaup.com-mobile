@@ -1,13 +1,14 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { PressableCard } from '@/components/primitives/pressable-card';
 import { InvoiceInfoModal } from '@/components/modals/invoice-info-modal/invoice-info-modal';
 import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
 
-interface InvoiceHeaderCardProps {
+interface InvoiceDetailHeaderContentProps {
   invoice?: InvoiceResponse;
   isLoading?: boolean;
   onConfirm?: (
@@ -21,17 +22,17 @@ interface InvoiceHeaderCardProps {
   ) => void;
 }
 
-export function InvoiceHeaderCard({
+export function InvoiceDetailHeaderContent({
   invoice,
   isLoading,
   onConfirm,
-}: InvoiceHeaderCardProps) {
+}: InvoiceDetailHeaderContentProps) {
   const modalRef = useRef<SlideSheetRef>(null);
   const [contentKey, setContentKey] = useState(0);
 
   if (!invoice) {
     return (
-      <View style={styles.container}>
+      <View>
         <Text>Không có dữ liệu</Text>
       </View>
     );
@@ -65,20 +66,24 @@ export function InvoiceHeaderCard({
 
   return (
     <>
-      <Pressable style={styles.container} onPress={handleOpen}>
-        <View style={styles.mainInfo}>
-          <View style={styles.leftInfo}>
-            <Text style={styles.entityName}>Tên: {invoice.description}</Text>
-            <View style={styles.dateRow}>{getDateRangeText()}</View>
-          </View>
-          <View style={styles.rightInfo}>
-            <View style={styles.editButton}>
-              <VinaupPenLineVariant width={18} height={18} />
-            </View>
-            <Text style={styles.entityCode}>No. {invoice.code.slice(0, 8)}</Text>
-          </View>
+      <PressableCard
+        onPress={handleOpen}
+        style={{
+          container: styles.cardContainer,
+          card: styles.card,
+        }}
+      >
+        <View style={styles.leftInfo}>
+          <Text style={styles.entityName}>Tên: {invoice.description}</Text>
+          <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
-      </Pressable>
+        <View style={styles.rightInfo}>
+          <View style={styles.editButton}>
+            <VinaupPenLineVariant width={18} height={18} />
+          </View>
+          <Text style={styles.entityCode}>No. {invoice.code.slice(0, 8)}</Text>
+        </View>
+      </PressableCard>
       <InvoiceInfoModal
         invoice={invoice}
         isLoading={isLoading}
@@ -91,18 +96,11 @@ export function InvoiceHeaderCard({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 8,
-  },
-  mainInfo: {
+  cardContainer: {},
+  card: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 8,
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.vinaupMediumGray,
   },
   leftInfo: {
     flex: 1,
@@ -131,8 +129,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   editButton: {
-    padding: 2,
-    borderRadius: 4,
+    padding: 6,
+    borderRadius: 50,
+    backgroundColor: COLORS.vinaupYellow,
   },
   entityCode: {
     fontSize: 14,

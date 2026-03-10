@@ -45,17 +45,24 @@ export function StackWithHeader({
             }}
             style={{
               alignItems: 'center',
-              marginLeft: -10,
+              marginLeft: -8,
               marginRight: 4,
               flexDirection: 'row',
             }}
           >
-            <Ionicons name="chevron-back" size={32} color="#fff" />
+            <Ionicons name="chevron-back" size={28} color="#fff" />
           </Pressable>
         ),
         ...(hasHeaderRight && {
           headerRight: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 20,
+                marginRight: -4,
+              }}
+            >
               {onDelete && (
                 <Button
                   onPress={onDelete}
@@ -64,7 +71,7 @@ export function StackWithHeader({
                     color: COLORS.vinaupWhite,
                   }}
                 >
-                  <FontAwesome name="trash-o" size={24} color="#fff" />
+                  <FontAwesome name="trash-o" size={20} color="#fff" />
                 </Button>
               )}
               {onSave && (

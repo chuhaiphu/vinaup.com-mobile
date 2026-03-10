@@ -16,13 +16,13 @@ import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
-import { InvoiceHeaderCard } from '@/components/cards/invoice-header-card';
+import { InvoiceDetailHeaderContent } from '@/components/contents/invoice-detail-header-content';
 import { ReceiptPaymentInvoiceList } from '@/components/cards/receipt-payment-invoice-list';
 import Loader from '@/components/primitives/loader';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
-import { InvoiceFooterCard } from '@/components/cards/invoice-footer-card';
+import { InvoiceDetailFooterContent } from '@/components/contents/invoice-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 
 export default function InvoiceDetailScreen() {
@@ -149,7 +149,7 @@ export default function InvoiceDetailScreen() {
             />
           </View>
         </View>
-        <InvoiceHeaderCard
+        <InvoiceDetailHeaderContent
           invoice={invoice ?? undefined}
           isLoading={isUpdatingInvoice}
           onConfirm={(data, onSuccessCallback) =>
@@ -171,7 +171,7 @@ export default function InvoiceDetailScreen() {
             invoiceTypeId={invoice.invoiceType.id}
           />
         )}
-        <InvoiceFooterCard
+        <InvoiceDetailFooterContent
           invoice={invoice ?? undefined}
           organizationCustomers={organizationCustomers ?? []}
           onNoteConfirm={(note, onSuccessCallback) =>

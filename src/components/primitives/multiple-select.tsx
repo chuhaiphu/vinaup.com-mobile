@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Text,
-  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
   ActivityIndicator,
   StyleProp,
   TextStyle,
 } from 'react-native';
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
 
 import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import VinaupDoubleCheck from '../icons/vinaup-double-check.native';
+import { SlideSheet, SlideSheetRef } from './slide-sheet';
 
 export interface MultiSelectOption {
   label: string;
@@ -52,32 +49,10 @@ export function MultiSelect({
   renderTrigger,
   style,
 }: MultiSelectProps) {
-  const [visible, setVisible] = useState(false);
-  const { height: screenHeight } = useWindowDimensions();
-  const MODAL_HEIGHT = screenHeight * heightPercentage;
-  const translateY = useSharedValue(MODAL_HEIGHT);
+  const sheetRef = useRef<SlideSheetRef | null>(null);
 
   const handleOpen = () => {
-    setVisible(true);
-    if (!enableAnimation) {
-      translateY.value = 0;
-      return;
-    }
-    translateY.value = MODAL_HEIGHT;
-    translateY.value = withTiming(0, { duration: 350 });
-  };
-
-  const handleClose = () => {
-    if (!enableAnimation) {
-      setVisible(false);
-      return;
-    }
-
-    translateY.value = withTiming(MODAL_HEIGHT, { duration: 200 }, (finished) => {
-      if (finished) {
-        scheduleOnRN(setVisible, false);
-      }
-    });
+    sheetRef.current?.open();
   };
 
   const handleToggle = (val: string) => {
@@ -123,58 +98,43 @@ export function MultiSelect({
         </Pressable>
       )}
 
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        onRequestClose={handleClose}
+      <SlideSheet
+        ref={sheetRef}
+        enableAnimation={enableAnimation}
+        heightPercentage={heightPercentage}
       >
-        <View style={styles.overlay}>
-          <Pressable style={styles.backdrop} onPress={handleClose} />
-
-          <Animated.View
-            style={[
-              styles.sheetContent,
-              {
-                height: MODAL_HEIGHT,
-                transform: [{ translateY: translateY }],
-              },
-            ]}
-          >
-            <View style={styles.header}>
-              <Text style={styles.headerTitle}>{placeholder}</Text>
-              <Text style={styles.headerSubtitle}>Nổi bật</Text>
-            </View>
-
-            <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
-              <View style={styles.card}>
-                {options.map((item, index) => {
-                  const isSelected = values.includes(item.value);
-                  return (
-                    <Pressable
-                      key={item.value}
-                      style={[
-                        styles.optionItem,
-                        index < options.length - 1 && styles.optionDivider,
-                      ]}
-                      onPress={() => handleToggle(item.value)}
-                    >
-                      <View style={styles.optionLeftContent}>
-                        {item.leftSection}
-                        <Text style={styles.optionText}>{item.label}</Text>
-                      </View>
-                      <View style={[styles.checkbox]}>
-                        {isSelected && <VinaupDoubleCheck />}
-                      </View>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </ScrollView>
-            <SafeAreaView edges={['bottom']} />
-          </Animated.View>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{placeholder}</Text>
+          <Text style={styles.headerSubtitle}>Nổi bật</Text>
         </View>
-      </Modal>
+
+        <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
+          <View style={styles.card}>
+            {options.map((item, index) => {
+              const isSelected = values.includes(item.value);
+              return (
+                <Pressable
+                  key={item.value}
+                  style={[
+                    styles.optionItem,
+                    index < options.length - 1 && styles.optionDivider,
+                  ]}
+                  onPress={() => handleToggle(item.value)}
+                >
+                  <View style={styles.optionLeftContent}>
+                    {item.leftSection}
+                    <Text style={styles.optionText}>{item.label}</Text>
+                  </View>
+                  <View style={[styles.checkbox]}>
+                    {isSelected && <VinaupDoubleCheck />}
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        </ScrollView>
+        <SafeAreaView edges={['bottom']} />
+      </SlideSheet>
     </>
   );
 }
@@ -191,21 +151,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   disabled: { opacity: 0.5 },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  sheetContent: {
-    backgroundColor: COLORS.vinaupSoftGray,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    width: '100%',
-    overflow: 'hidden',
-  },
   header: {
     paddingVertical: 12,
     paddingHorizontal: 20,

@@ -14,13 +14,13 @@ import {
 } from '@/apis/project-apis';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { ProjectHeaderCard } from '@/components/cards/project-header-card';
+import { ProjectDetailHeaderContent } from '@/components/contents/project-detail-header-content';
 import { ReceiptPaymentProjectList } from '@/components/cards/receipt-payment-project-list';
 import Loader from '@/components/primitives/loader';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
-import { ProjectFooterCard } from '@/components/cards/project-footer-card';
+import { ProjectDetailFooterContent } from '@/components/contents/project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 
 export default function ProjectDetailScreen() {
@@ -142,7 +142,7 @@ export default function ProjectDetailScreen() {
             />
           </View>
         </View>
-        <ProjectHeaderCard
+        <ProjectDetailHeaderContent
           project={project ?? undefined}
           isLoading={isUpdatingProject}
           onConfirm={(data, onSuccessCallback) =>
@@ -162,17 +162,11 @@ export default function ProjectDetailScreen() {
             projectId={projectId}
           />
         )}
-        <ProjectFooterCard
+        <ProjectDetailFooterContent
           project={project ?? undefined}
-          onNoteConfirm={(note, onSuccessCallback) =>
-            handleUpdateProject({ note }, onSuccessCallback)
+          onConfirm={(data, onSuccessCallback) =>
+            handleUpdateProject(data, onSuccessCallback)
           }
-          onOrgCusConfirm={(orgName, cusName, onSuccessCallback) => {
-            handleUpdateProject(
-              { externalOrganizationName: orgName, externalCustomerName: cusName },
-              onSuccessCallback
-            );
-          }}
           isLoading={isUpdatingProject}
         />
       </View>
