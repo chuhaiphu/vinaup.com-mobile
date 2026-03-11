@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image } from 'expo-image';
 
 interface LoaderProps {
   size?: number;
@@ -7,7 +7,7 @@ interface LoaderProps {
 export default function Loader({ size = 128 }: LoaderProps) {
   return (
     <Image
-      source={require('@/components/icons/vinaup-loader.gif')}
+      source={{ uri: 'vinaup_loader' }}
       style={{ width: size, height: size }}
       alt="Loading..."
     />

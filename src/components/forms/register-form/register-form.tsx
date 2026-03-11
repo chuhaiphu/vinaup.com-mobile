@@ -7,17 +7,17 @@ import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Alert,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { styles } from './register-form.styles';
+import { Button } from '@/components/primitives/button';
 
 const RegisterForm = () => {
   const [fullName, setFullName] = useState('');
@@ -94,7 +94,7 @@ const RegisterForm = () => {
                 secureTextEntry={!showPassword}
                 placeholderTextColor={COLORS.vinaupMediumGray}
               />
-              <TouchableOpacity
+              <Pressable
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
               >
@@ -103,20 +103,18 @@ const RegisterForm = () => {
                   size={20}
                   color={COLORS.vinaupMediumGray}
                 />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            {isLoading ? (
-              <Image
-                source={require('@/components/icons/vinaup-loader.gif')}
-                style={styles.buttonLoader}
-              />
-            ) : (
-              <Text style={styles.buttonText}>Đăng ký</Text>
-            )}
-          </TouchableOpacity>
+          <Button
+            isLoading={isLoading}
+            style={styles.button}
+            onPress={handleRegister}
+            disabled={isLoading}
+          >
+            <Text style={styles.buttonText}>Đăng ký</Text>
+          </Button>
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Bạn đã có tài khoản?</Text>
             <FontAwesome6

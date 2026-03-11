@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import VinaupExpand from '@/components/icons/vinaup-expand.native';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
@@ -75,8 +70,8 @@ export function ReceiptPaymentsSummary({
         <View style={styles.summaryRow}>
           <View style={styles.summaryLeft}>
             <VinaupExpand
-              width={14}
-              height={14}
+              width={16}
+              height={16}
               color={isExpanded ? 'gray' : COLORS.vinaupTeal}
             />
           </View>
@@ -98,19 +93,19 @@ const styles = StyleSheet.create({
   },
   expandedContent: {
     backgroundColor: COLORS.vinaupWhite,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 12,
     gap: 8,
   },
   row: {
     flexDirection: 'row',
+    gap: 16,
     justifyContent: 'space-between',
   },
   column: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 4,
   },
   label: {
     fontSize: 14,
@@ -126,13 +121,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: COLORS.vinaupLightGreen,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 10,
   },
   summaryLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
   toggleText: {
     fontSize: 14,

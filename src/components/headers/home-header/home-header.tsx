@@ -1,6 +1,6 @@
 import { COLORS, HEADER_HEIGHT } from '@/constants/style-constant';
 import { Octicons } from '@expo/vector-icons';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { useLocalSearchParams, usePathname } from 'expo-router';
@@ -42,9 +42,9 @@ export const HomeHeader = () => {
           <OwnerSelector />
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity>
+          <Pressable>
             <Octicons name="bell" size={18} color={COLORS.vinaupTeal} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
       {headerBottom && <View style={styles.bottomRow}>{headerBottom}</View>}

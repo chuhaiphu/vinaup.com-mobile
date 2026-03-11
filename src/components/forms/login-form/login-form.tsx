@@ -8,17 +8,17 @@ import { Link, router } from 'expo-router';
 import React, { useContext, useState } from 'react';
 import {
   Alert,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { styles } from './login-form.styles';
+import { Button } from '@/components/primitives/button';
 
 const LoginForm = () => {
   const { isLoading, performLogin } = useContext(AuthContext);
@@ -57,7 +57,6 @@ const LoginForm = () => {
             <VinaupLogoSecondary width={80} height={80} />
             <Text style={styles.formTitle}>Đăng nhập</Text>
           </View>
-
           <View style={styles.inputContainer}>
             <TextInput
               placeholder="Nhập email"
@@ -78,7 +77,7 @@ const LoginForm = () => {
                 secureTextEntry={!showPassword}
                 placeholderTextColor={COLORS.vinaupMediumGray}
               />
-              <TouchableOpacity
+              <Pressable
                 style={styles.eyeIcon}
                 onPress={() => setShowPassword(!showPassword)}
               >
@@ -87,24 +86,18 @@ const LoginForm = () => {
                   size={20}
                   color={COLORS.vinaupMediumGray}
                 />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
-          <TouchableOpacity
+          <Button
+            isLoading={isLoading}
             style={styles.button}
             onPress={handleLogin}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <Image
-                source={require('@/components/icons/vinaup-loader.gif')}
-                style={styles.buttonLoader}
-              />
-            ) : (
-              <Text style={styles.buttonText}>Đăng nhập</Text>
-            )}
-          </TouchableOpacity>
+            <Text style={styles.buttonText}>Đăng nhập</Text>
+          </Button>
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>Bạn chưa có tài khoản?</Text>
             <FontAwesome6

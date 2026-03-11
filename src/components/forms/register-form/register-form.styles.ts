@@ -55,10 +55,6 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  buttonLoader: {
-    width: 48,
-    height: 48,
-  },
   footerContainer: {
     display: 'flex',
     flexDirection: 'row',
