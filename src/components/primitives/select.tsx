@@ -15,6 +15,7 @@ import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SlideSheet, SlideSheetRef } from './slide-sheet';
+import { PressableOpacity } from './pressable-opacity';
 
 export interface SelectOption {
   label: string | null;
@@ -78,7 +79,7 @@ export function Select({
           <ActivityIndicator size="small" color={COLORS.vinaupTeal} />
         </View>
       ) : (
-        <Pressable
+        <PressableOpacity
           style={[styles.trigger, disabled && styles.disabled]}
           onPress={() => !disabled && handleOpen()}
         >
@@ -95,7 +96,7 @@ export function Select({
               <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />
             </>
           )}
-        </Pressable>
+        </PressableOpacity>
       )}
       <SlideSheet
         ref={sheetRef}

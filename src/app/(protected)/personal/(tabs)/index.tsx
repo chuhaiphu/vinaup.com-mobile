@@ -1,4 +1,11 @@
-import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import {
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
@@ -18,7 +25,6 @@ import {
 } from '@/constants/app-constant';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
-import { styles } from './index.styles';
 import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
@@ -70,7 +76,9 @@ export default function PersonalIndexScreen() {
     executeFetchFn: fetchReceiptPaymentsSelf,
     isRefreshing: isRefreshingReceiptPaymentsSelf,
     refreshFetchFn: refreshReceiptPaymentsSelf,
-  } = useFetchFn<ReceiptPaymentResponse[]>();
+  } = useFetchFn<ReceiptPaymentResponse[]>({
+    tags: ['personal-receipt-payment-list'],
+  });
 
   const {
     data: projectsSelf,
@@ -210,7 +218,7 @@ export default function PersonalIndexScreen() {
         </Pressable>
       </View>
 
-      <PersonalHomeIndexSummary />
+      <PersonalHomeIndexSummary receiptPayments={receiptPaymentsSelf} />
 
       <View style={styles.utilitiesRow}>
         <View style={styles.utilitiesLeft}>
@@ -258,3 +266,75 @@ export default function PersonalIndexScreen() {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.vinaupSoftGray,
+    paddingTop: 12,
+    paddingHorizontal: 8,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  dateText: {
+    fontSize: 18,
+    color: COLORS.vinaupTeal,
+  },
+  iconButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  utilitiesRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  utilitiesLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  utilitiesText: {
+    fontSize: 18,
+  },
+  utilityOptionIcon: {
+    width: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginTop: 24,
+  },
+  gridItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  gridIconBox: {
+    marginBottom: 8,
+  },
+  gridTextBox: {
+    backgroundColor: COLORS.vinaupLightGreen,
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxHeight: 52,
+    height: 52,
+  },
+  gridText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: COLORS.vinaupTeal,
+  },
+});

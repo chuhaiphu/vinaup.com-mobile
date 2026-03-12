@@ -1,6 +1,5 @@
-import { COLORS } from "@/constants/style-constant";
-import { StyleSheet } from "react-native";
-
+import { COLORS } from '@/constants/style-constant';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   formRoot: {
@@ -20,6 +19,10 @@ export const styles = StyleSheet.create({
     color: COLORS.vinaupWhite,
     fontSize: 24,
     marginTop: 24,
+  },
+  formLogo: {
+    width: 80,
+    height: 80,
   },
   inputContainer: {
     marginBottom: 20,

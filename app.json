@@ -39,7 +39,7 @@
       [
         "expo-asset",
         {
-          "assets": ["./src/assets/images/vinaup_loader.gif"]
+          "assets": ["./src/assets/images/"]
         }
       ],
       "@react-native-community/datetimepicker"

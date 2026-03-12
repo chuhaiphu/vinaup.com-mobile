@@ -1,5 +1,4 @@
 import { loginApi } from '@/apis/auth-apis';
-import { VinaupLogoSecondary } from '@/components/icons/vinaup-logo-secondary.native';
 import { COLORS } from '@/constants/style-constant';
 import { AuthContext } from '@/providers/auth-provider';
 import { ApiError } from '@/utils/api-error';
@@ -19,6 +18,7 @@ import {
 } from 'react-native';
 import { styles } from './login-form.styles';
 import { Button } from '@/components/primitives/button';
+import { Image } from 'expo-image';
 
 const LoginForm = () => {
   const { isLoading, performLogin } = useContext(AuthContext);
@@ -54,7 +54,7 @@ const LoginForm = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
           <View style={styles.formHeader}>
-            <VinaupLogoSecondary width={80} height={80} />
+            <Image source={{ uri: 'vinaup_logo_secondary' }} style={styles.formLogo} />
             <Text style={styles.formTitle}>Đăng nhập</Text>
           </View>
           <View style={styles.inputContainer}>

@@ -1,10 +1,11 @@
 import { Stack, useRouter } from 'expo-router';
-import { View, Pressable, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { COLORS } from '@/constants/style-constant';
 import { Button } from '@/components/primitives/button';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
+import { PressableOpacity } from '../primitives/pressable-opacity';
 
 interface StackWithHeaderProps {
   title: string;
@@ -45,7 +46,7 @@ export function StackWithHeader({
         headerTintColor: '#fff',
         ...(backTitle && { headerBackTitle: backTitle }),
         headerLeft: () => (
-          <Pressable
+          <PressableOpacity
             onPress={() => {
               if (onBack) onBack();
               router.back();
@@ -58,7 +59,7 @@ export function StackWithHeader({
             }}
           >
             <Ionicons name="chevron-back" size={28} color="#fff" />
-          </Pressable>
+          </PressableOpacity>
         ),
         ...(hasHeaderRight && {
           headerRight: () => (

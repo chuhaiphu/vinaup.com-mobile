@@ -3,8 +3,19 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { Feather } from '@expo/vector-icons';
 import VinaupPlusMinus from '../icons/vinaup-plus-minus.native';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
+import { generateLocalePriceFormat } from '@/utils/generator-helpers';
 
-export function PersonalHomeIndexSummary() {
+interface PersonalHomeIndexSummaryProps {
+  receiptPayments?: ReceiptPaymentResponse[] | null;
+}
+
+export function PersonalHomeIndexSummary({
+  receiptPayments,
+}: PersonalHomeIndexSummaryProps) {
+  const summary = calculateReceiptPaymentsSummary(receiptPayments);
+
   return (
     <View style={styles.summaryCard}>
       <View style={styles.summaryHeaderRow}>
@@ -27,8 +38,12 @@ export function PersonalHomeIndexSummary() {
 
       <View style={styles.summaryValueRow}>
         <Text style={styles.summaryLeftValue}>Cá nhân</Text>
-        <Text style={styles.summaryCenterValue}>25.000.000</Text>
-        <Text style={styles.summaryRightValue}>25.000.000</Text>
+        <Text style={styles.summaryCenterValue}>
+          {generateLocalePriceFormat(summary.totalReceipt)}
+        </Text>
+        <Text style={styles.summaryRightValue}>
+          {generateLocalePriceFormat(summary.totalPayment)}
+        </Text>
       </View>
 
       <Pressable style={styles.summaryBanner} onPress={() => {}}>

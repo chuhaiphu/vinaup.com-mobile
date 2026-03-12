@@ -1,5 +1,4 @@
 import { registerApi } from '@/apis/user-apis';
-import { VinaupLogoSecondary } from '@/components/icons/vinaup-logo-secondary.native';
 import { COLORS } from '@/constants/style-constant';
 import { ApiError } from '@/utils/api-error';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -18,6 +17,7 @@ import {
 } from 'react-native';
 import { styles } from './register-form.styles';
 import { Button } from '@/components/primitives/button';
+import { Image } from 'expo-image';
 
 const RegisterForm = () => {
   const [fullName, setFullName] = useState('');
@@ -61,7 +61,7 @@ const RegisterForm = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
           <View style={styles.formHeader}>
-            <VinaupLogoSecondary width={80} height={80} />
+            <Image source={{ uri: 'vinaup_logo_secondary' }} style={styles.formLogo} />
             <Text style={styles.formTitle}>Đăng ký</Text>
           </View>
 
