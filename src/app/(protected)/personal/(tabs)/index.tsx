@@ -1,11 +1,4 @@
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
@@ -25,22 +18,52 @@ import {
 } from '@/constants/app-constant';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
-
-const UTILITY_OPTIONS = [
-  { label: 'Thu chi ngày', value: PERSONAL_UTILITY_KEYS.receiptPayment },
-  {
-    label: 'Thu chi Tiền công',
-    value: PERSONAL_UTILITY_KEYS.projectSelf,
-  },
-  {
-    label: 'Thu chi Dự án',
-    value: PERSONAL_UTILITY_KEYS.projectCompany,
-  },
-];
+import { styles } from './index.styles';
+import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
+import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
+import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
+import { useRouter } from 'expo-router';
+import { PersonalHomeIndexSummary } from '@/components/summaries/personal-home-index-summary';
 
 export default function PersonalIndexScreen() {
+  const router = useRouter();
   const { selectedUtilities, setUtilities } = usePersonalUtilitiesStore();
   const [selectedDate, setSelectedDate] = useState(dayjs());
+
+  const utilityOptions = [
+    {
+      label: 'Thu chi ngày',
+      value: PERSONAL_UTILITY_KEYS.receiptPayment,
+      leftSection: (
+        <View style={styles.utilityOptionIcon}>
+          <VinaupPlusMinus width={22} height={22} color={COLORS.vinaupTeal} />
+        </View>
+      ),
+    },
+    {
+      label: 'Thu chi Tiền công',
+      value: PERSONAL_UTILITY_KEYS.projectSelf,
+      leftSection: (
+        <View style={styles.utilityOptionIcon}>
+          <VinaupCalendarIcon width={22} height={22} color={COLORS.vinaupTeal} />
+        </View>
+      ),
+    },
+    {
+      label: 'Thu chi Dự án',
+      value: PERSONAL_UTILITY_KEYS.projectCompany,
+      leftSection: (
+        <View style={styles.utilityOptionIcon}>
+          <VinaupPlusMinusMultiplyEqual
+            width={22}
+            height={22}
+            color={COLORS.vinaupTeal}
+          />
+        </View>
+      ),
+    },
+  ];
 
   const {
     data: receiptPaymentsSelf,
@@ -90,7 +113,17 @@ export default function PersonalIndexScreen() {
   }, [fetchProjectsCompany, selectedDate]);
 
   const handlePress = (id: string) => {
-    console.log('Pressed:', id);
+    if (id === PERSONAL_UTILITY_KEYS.projectSelf) {
+      router.push('/(protected)/personal/(tabs)/project-self');
+      return;
+    }
+    if (id === PERSONAL_UTILITY_KEYS.projectCompany) {
+      router.push('/(protected)/personal/(tabs)/project-company');
+      return;
+    }
+    if (id === PERSONAL_UTILITY_KEYS.receiptPayment) {
+      router.push('/(protected)/personal/(tabs)/receipt-payment');
+    }
   };
   const onRefresh = async () => {
     await Promise.all([
@@ -110,22 +143,40 @@ export default function PersonalIndexScreen() {
       key: PERSONAL_UTILITY_KEYS.receiptPayment,
       label: 'Thu chi ngày',
       value: calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining,
+      icon: <VinaupPlusMinus width={28} height={28} color={COLORS.vinaupTeal} />,
     },
     {
       key: PERSONAL_UTILITY_KEYS.projectSelf,
       label: 'Thu chi Tiền công',
       value: `(${projectsSelf?.length || 0})`,
+      icon: <VinaupCalendarIcon width={28} height={28} color={COLORS.vinaupTeal} />,
     },
     {
       key: PERSONAL_UTILITY_KEYS.projectCompany,
       label: 'Thu chi Dự án',
       value: `(${projectsCompany?.length || 0})`,
+      icon: (
+        <VinaupPlusMinusMultiplyEqual
+          width={28}
+          height={28}
+          color={COLORS.vinaupTeal}
+        />
+      ),
     },
   ];
 
   const visibleUtilities = allUtilities.filter((item) =>
     selectedUtilities.includes(item.key)
   );
+
+  const getGridDisplayUtilities = () => {
+    const gridDisplayItems = [...visibleUtilities];
+    while (gridDisplayItems.length < 3) {
+      // push placeholder item to ensure 3 columns in the grid
+      gridDisplayItems.push(null as unknown as (typeof visibleUtilities)[0]);
+    }
+    return gridDisplayItems;
+  };
 
   return (
     <ScrollView
@@ -159,99 +210,51 @@ export default function PersonalIndexScreen() {
         </Pressable>
       </View>
 
+      <PersonalHomeIndexSummary />
+
       <View style={styles.utilitiesRow}>
         <View style={styles.utilitiesLeft}>
-          <VinaupUtilityIcon width={22} height={22} />
+          <VinaupUtilityIcon width={18} height={18} />
           <Text style={styles.utilitiesText}>Tiện ích</Text>
         </View>
         <MultiSelect
-          options={UTILITY_OPTIONS}
+          options={utilityOptions}
           values={selectedUtilities}
           onChange={(vals) => setUtilities(vals as PersonalUtilityKey[])}
           placeholder="Tiện ích"
           heightPercentage={0.3}
           renderTrigger={
-            <Feather name="edit" size={24} color={COLORS.vinaupTeal} />
+            <Feather name="edit" size={20} color={COLORS.vinaupTeal} />
           }
         />
       </View>
 
-      <View style={styles.card}>
-        {visibleUtilities.map((item, index) => (
-          <Pressable
-            key={item.key}
-            style={[
-              styles.cardRow,
-              index < visibleUtilities.length - 1 && styles.cardRowDivider,
-            ]}
-            onPress={() => handlePress(item.key)}
-          >
-            <Text style={styles.cardLabel}>{item.label}</Text>
-            <Text style={styles.cardValue}>{item.value}</Text>
-          </Pressable>
-        ))}
+      <View style={styles.gridContainer}>
+        {getGridDisplayUtilities().map((item, index) => {
+          if (!item) {
+            return <View key={`placeholder-${index}`} style={styles.gridItem} />;
+          }
+          return (
+            <PressableOpacity
+              key={item.key}
+              style={[styles.gridItem]}
+              onPress={() => handlePress(item.key)}
+            >
+              <View style={styles.gridIconBox}>{item.icon}</View>
+
+              <View style={[styles.gridTextBox]}>
+                <Text
+                  style={styles.gridText}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
+                  {item.label}
+                </Text>
+              </View>
+            </PressableOpacity>
+          );
+        })}
       </View>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.vinaupSoftGray,
-    paddingTop: 12,
-    paddingHorizontal: 8,
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  dateText: {
-    fontSize: 18,
-    color: COLORS.vinaupTeal,
-  },
-  iconButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  utilitiesRow: {
-    marginTop: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  utilitiesLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  utilitiesText: {
-    fontSize: 18
-  },
-  card: {
-    marginTop: 8,
-    backgroundColor: COLORS.vinaupWhite,
-    borderRadius: 14,
-    paddingHorizontal: 8,
-  },
-  cardRow: {
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  cardRowDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.vinaupLightGray,
-  },
-  cardLabel: {
-    fontSize: 18,
-    color: COLORS.vinaupTeal,
-  },
-  cardValue: {
-    fontSize: 18,
-    color: COLORS.vinaupBlack,
-  },
-});

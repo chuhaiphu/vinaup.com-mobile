@@ -21,11 +21,15 @@ import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { useLocalSearchParams } from 'expo-router';
 
-export default function PersonalProjectScreen() {
+type PersonalProjectListContentProps = {
+  projectType: 'SELF' | 'COMPANY';
+};
+
+export function PersonalProjectListContent({
+  projectType,
+}: PersonalProjectListContentProps) {
   const safeRouter = useSafeRouter();
-  const params = useLocalSearchParams<{ projectType: 'SELF' | 'COMPANY' }>();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
@@ -39,23 +43,21 @@ export default function PersonalProjectScreen() {
     tags: ['personal-project-list'],
   });
 
-  const {
-    data: allReceiptPayments,
-    executeFetchFn: fetchAllReceiptPayments,
-  } = useFetchFn<ReceiptPaymentResponse[]>({
-    tags: ['personal-receipt-payment-list-all-projects'],
-  });
+  const { data: allReceiptPayments, executeFetchFn: fetchAllReceiptPayments } =
+    useFetchFn<ReceiptPaymentResponse[]>({
+      tags: ['personal-receipt-payment-list-all-projects'],
+    });
 
   useEffect(() => {
     fetchProjects(() =>
       getProjectsOfCurrentUserApi({
-        type: params.projectType || 'SELF',
+        type: projectType,
         status: projectStatusFilter,
         month: selectedDate.month() + 1,
         year: selectedDate.year(),
       })
     );
-  }, [fetchProjects, selectedDate, params.projectType, projectStatusFilter]);
+  }, [fetchProjects, selectedDate, projectType, projectStatusFilter]);
 
   useEffect(() => {
     if (!projects || projects.length === 0) return;

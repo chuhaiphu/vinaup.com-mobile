@@ -6,6 +6,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
+import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 
 export default function NavigatorSelector() {
   const router = useRouter();
@@ -27,9 +28,22 @@ export default function NavigatorSelector() {
       ),
     },
     {
-      value: '/personal/project',
-      label: 'Tiền công & Dự án',
-      leftSection: <VinaupCalendarIcon />,
+      value: '/personal/project-self',
+      label: 'Thu chi Tiền công',
+      leftSection: (
+        <VinaupCalendarIcon width={24} height={24} color={COLORS.vinaupYellow} />
+      ),
+    },
+    {
+      value: '/personal/project-company',
+      label: 'Thu chi Dự án',
+      leftSection: (
+        <VinaupPlusMinusMultiplyEqual
+          width={24}
+          height={24}
+          color={COLORS.vinaupYellow}
+        />
+      ),
     },
   ];
 

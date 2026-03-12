@@ -15,6 +15,7 @@ import { COLORS } from '@/constants/style-constant';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import VinaupDoubleCheck from '../icons/vinaup-double-check.native';
 import { SlideSheet, SlideSheetRef } from './slide-sheet';
+import { PressableOpacity } from './pressable-opacity';
 
 export interface MultiSelectOption {
   label: string;
@@ -32,6 +33,14 @@ interface MultiSelectProps {
   disabled?: boolean;
   heightPercentage?: number;
   renderTrigger?: React.ReactNode;
+  renderOption?: (
+    item: MultiSelectOption,
+    ctx: {
+      index: number;
+      isSelected: boolean;
+      toggle: () => void;
+    }
+  ) => React.ReactNode;
   style?: {
     triggerText?: StyleProp<TextStyle>;
   };
@@ -47,6 +56,7 @@ export function MultiSelect({
   disabled = false,
   heightPercentage = 0.8,
   renderTrigger,
+  renderOption,
   style,
 }: MultiSelectProps) {
   const sheetRef = useRef<SlideSheetRef | null>(null);
@@ -78,7 +88,7 @@ export function MultiSelect({
           <ActivityIndicator size="small" color={COLORS.vinaupTeal} />
         </View>
       ) : (
-        <Pressable
+        <PressableOpacity
           style={[styles.trigger, disabled && styles.disabled]}
           onPress={() => !disabled && handleOpen()}
         >
@@ -95,7 +105,7 @@ export function MultiSelect({
               <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />
             </>
           )}
-        </Pressable>
+        </PressableOpacity>
       )}
 
       <SlideSheet
@@ -112,6 +122,14 @@ export function MultiSelect({
           <View style={styles.card}>
             {options.map((item, index) => {
               const isSelected = values.includes(item.value);
+              if (renderOption) {
+                const option = renderOption(item, {
+                  index,
+                  isSelected,
+                  toggle: () => handleToggle(item.value),
+                });
+                return <React.Fragment key={item.value}>{option}</React.Fragment>;
+              }
               return (
                 <Pressable
                   key={item.value}

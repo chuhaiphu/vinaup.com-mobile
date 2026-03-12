@@ -1,0 +1,74 @@
+import React from 'react';
+import { View, Text, Alert, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Button } from '../../primitives/button';
+import VinaupAddNew from '../../icons/vinaup-add-new.native';
+import { COLORS } from '@/constants/style-constant';
+import { useMutationFn } from '@/hooks/use-mutation-fn';
+import { createProjectApi } from '@/apis/project-apis';
+import { ProjectResponse } from '@/interfaces/project-interfaces';
+
+const PersonalProjectSelfHeaderBottom = () => {
+  const router = useRouter();
+
+  const { executeMutationFn: createProject, isMutating } =
+    useMutationFn<ProjectResponse>({
+      invalidatesTags: ['personal-project-list'],
+    });
+
+  const handleAddNew = async () => {
+    await createProject(
+      () =>
+        createProjectApi({
+          description: 'Tiền công',
+          type: 'SELF',
+          endDate: new Date(),
+          startDate: new Date(),
+        }),
+      {
+        onSuccess: (data) => {
+          router.push({
+            pathname: '/(protected)/project-detail/[projectId]',
+            params: { projectId: data.id },
+          });
+        },
+        onError: (error) =>
+          Alert.alert('Lỗi', error.message || 'Không thể tạo dự án mới'),
+      }
+    );
+  };
+
+  return (
+    <>
+      <View style={styles.titleWrapper}>
+        <Text style={styles.titleLeft}>Thu chi</Text>
+        <Text style={styles.titleRight}> Tiền công</Text>
+      </View>
+      <Button
+        onPress={handleAddNew}
+        isLoading={isMutating}
+        loaderStyle={{ size: 32 }}
+      >
+        <VinaupAddNew width={30} height={30} />
+      </Button>
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  titleWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  titleLeft: {
+    fontSize: 18,
+    color: COLORS.vinaupBlack,
+  },
+  titleRight: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.vinaupTeal,
+  },
+});
+
+export default PersonalProjectSelfHeaderBottom;

@@ -1,19 +1,15 @@
 import React from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
-import { useRouter, useGlobalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
-import { TextSwitcher } from '../../primitives/text-switcher';
-import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { createProjectApi } from '@/apis/project-apis';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 
-const PersonalProjectHeaderBottom = () => {
+const PersonalProjectCompanyHeaderBottom = () => {
   const router = useRouter();
-  const params = useGlobalSearchParams<{ projectType: 'SELF' | 'COMPANY' }>();
-  const currentProjectType = params.projectType || 'SELF';
 
   const { executeMutationFn: createProject, isMutating } =
     useMutationFn<ProjectResponse>({
@@ -24,8 +20,8 @@ const PersonalProjectHeaderBottom = () => {
     await createProject(
       () =>
         createProjectApi({
-          description: currentProjectType === 'COMPANY' ? 'Dự án' : 'Tiền công',
-          type: currentProjectType === 'COMPANY' ? 'COMPANY' : 'SELF',
+          description: 'Dự án',
+          type: 'COMPANY',
           endDate: new Date(),
           startDate: new Date(),
         }),
@@ -42,22 +38,11 @@ const PersonalProjectHeaderBottom = () => {
     );
   };
 
-  const handleToggle = () => {
-    router.setParams({ projectType: currentProjectType === 'SELF' ? 'COMPANY' : 'SELF' });
-  };
-
   return (
     <>
       <View style={styles.titleWrapper}>
         <Text style={styles.titleLeft}>Thu chi</Text>
-        <TextSwitcher
-          textPair={['Tiền công', 'Dự án']}
-          currentIndex={currentProjectType === 'COMPANY' ? 1 : 0}
-          onToggle={handleToggle}
-          rightSection={
-            <FontAwesome6 name="caret-down" size={20} color={COLORS.vinaupTeal} />
-          }
-        />
+        <Text style={styles.titleRight}> Dự án</Text>
       </View>
       <Button
         onPress={handleAddNew}
@@ -86,4 +71,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PersonalProjectHeaderBottom;
+export default PersonalProjectCompanyHeaderBottom;
