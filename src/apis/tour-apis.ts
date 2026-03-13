@@ -10,9 +10,9 @@ import {
   UpdateUserInvitedRequest,
   MemberInChargeTourImplementationResponse,
   UserInvitedTourImplementationResponse,
-  TourImplementationAdditionalDataRowResponse,
-  CreateTourImplementationAdditionalDataRowRequest,
-  UpdateTourImplementationAdditionalDataRowRequest,
+  TourImplementationAdditionalDataResponse,
+  CreateTourImplementationAdditionalDataRequest,
+  UpdateTourImplementationAdditionalDataRequest,
 } from "@/interfaces/tour-implementation-interfaces";
 import { api } from "./_base";
 import { buildFilterQueryString } from "@/utils/api-helpers";
@@ -166,24 +166,24 @@ export async function updateUserInvitedApi(
   );
 }
 
-// Additional Data Row APIs
-export async function getAdditionalDataRowsByTourImplementationIdApi(
+// Additional Data APIs
+export async function getAdditionalDataByTourImplementationIdApi(
   tourImplementationId: string
 ) {
-  return api<TourImplementationAdditionalDataRowResponse[]>(
-    `/tour/tour-implementation/${tourImplementationId}/additional-data-rows`,
+  return api<TourImplementationAdditionalDataResponse[]>(
+    `/tour/tour-implementation/${tourImplementationId}/additional-data`,
     {
       method: "GET",
     }
   );
 }
 
-export async function createAdditionalDataRowApi(
+export async function createAdditionalDataApi(
   tourImplementationId: string,
-  data: CreateTourImplementationAdditionalDataRowRequest
+  data: CreateTourImplementationAdditionalDataRequest
 ) {
-  return api<TourImplementationAdditionalDataRowResponse>(
-    `/tour/tour-implementation/${tourImplementationId}/additional-data-rows`,
+  return api<TourImplementationAdditionalDataResponse>(
+    `/tour/tour-implementation/${tourImplementationId}/additional-data`,
     {
       method: "POST",
       body: JSON.stringify(data),
@@ -191,12 +191,12 @@ export async function createAdditionalDataRowApi(
   );
 }
 
-export async function updateAdditionalDataRowApi(
-  additionalDataRowId: string,
-  data: UpdateTourImplementationAdditionalDataRowRequest
+export async function updateAdditionalDataApi(
+  additionalDataId: string,
+  data: UpdateTourImplementationAdditionalDataRequest
 ) {
-  return api<TourImplementationAdditionalDataRowResponse>(
-    `/tour/tour-implementation/additional-data-rows/${additionalDataRowId}`,
+  return api<TourImplementationAdditionalDataResponse>(
+    `/tour/tour-implementation/additional-data/${additionalDataId}`,
     {
       method: "PUT",
       body: JSON.stringify(data),
@@ -204,11 +204,11 @@ export async function updateAdditionalDataRowApi(
   );
 }
 
-export async function deleteAdditionalDataRowApi(
-  additionalDataRowId: string
+export async function deleteAdditionalDataApi(
+  additionalDataId: string
 ) {
   return api<null>(
-    `/tour/tour-implementation/additional-data-rows/${additionalDataRowId}`,
+    `/tour/tour-implementation/additional-data/${additionalDataId}`,
     {
       method: "DELETE",
     }

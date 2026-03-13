@@ -21,7 +21,7 @@ export interface TourImplementationResponse {
   createdBy: UserResponse;
   tour: TourResponse;
   membersInCharge: MemberInChargeTourImplementationResponse[];
-  addtionalDataRows: TourImplementationAdditionalDataRowResponse[];
+  additionalData: TourImplementationAdditionalDataResponse[];
   tourImplementationReceiptPayments: {
     id: string;
     tourImplementationId: string;
@@ -42,35 +42,35 @@ export interface MemberInChargeTourImplementationResponse {
   role: string;
 }
 
-
 export interface CreateUserInvitedRequest {
   userId?: string | null;
   organizationMemberId?: string | null;
   role: string;
-  tourImplementationAdditionalDataRowId: string;
+  tourImplementationAdditionalDataId: string;
   customUserName?: string;
 }
 export type UpdateUserInvitedRequest = Partial<CreateUserInvitedRequest> & {
-  currentOption?: number 
-}
+  currentOption?: number;
+};
 export interface UserInvitedTourImplementationResponse {
   id: string;
   userId: string | null;
   role: string;
-  tourImplementationAddtionalDataRowId: string | null;
+  tourImplementationAdditionalDataId: string | null;
   organizationMember: OrganizationMemberResponse | null;
   user: UserResponse | null;
   customUserName: string | null;
   currentOption: number;
 }
 
-export interface CreateTourImplementationAdditionalDataRowRequest {
+export interface CreateTourImplementationAdditionalDataRequest {
   position: number;
   carName?: string;
 }
 
-export type UpdateTourImplementationAdditionalDataRowRequest = Partial<CreateTourImplementationAdditionalDataRowRequest>;
-export interface TourImplementationAdditionalDataRowResponse {
+export type UpdateTourImplementationAdditionalDataRequest =
+  Partial<CreateTourImplementationAdditionalDataRequest>;
+export interface TourImplementationAdditionalDataResponse {
   id: string;
   tourImplementationId: string;
   carName: string | null;
