@@ -17,7 +17,7 @@ interface InvoiceCardProps {
 export function InvoiceCard({ invoice }: InvoiceCardProps) {
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
     useFetchFn<ReceiptPaymentResponse[]>({
-      tags: ['invoice-receipt-payment-list'],
+      tags: ['organization-receipt-payment-list-in-invoice'],
     });
 
   useEffect(() => {

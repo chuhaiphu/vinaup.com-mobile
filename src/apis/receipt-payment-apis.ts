@@ -70,6 +70,13 @@ export async function getReceiptPaymentsByInvoiceIdApi(invoiceId: string) {
   );
 }
 
+export async function getReceiptPaymentsByInvoiceIdsApi(invoiceIds: string[]) {
+  return wireApi<ReceiptPaymentResponse[]>('/receipt-payment/invoices', {
+    method: 'POST',
+    body: JSON.stringify({ invoiceIds }),
+  });
+}
+
 export async function getReceiptPaymentsByTourCalculationIdApi(
   tourCalculationId: string
 ) {

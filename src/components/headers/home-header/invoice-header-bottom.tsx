@@ -19,10 +19,7 @@ const InvoiceHeaderBottom = () => {
   }>();
   const currentCode = params.invoiceTypeCode || 'BUY';
 
-  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
-  const invoiceType = getInvoiceTypeByCode(currentCode || '');
-  console.log('currentCode', currentCode);
-  console.log('invoiceType', invoiceType);
+  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);;
   const { executeMutationFn: createInvoice, isMutating } =
     useMutationFn<InvoiceResponse>({
       invalidatesTags: ['organization-invoice-list'],

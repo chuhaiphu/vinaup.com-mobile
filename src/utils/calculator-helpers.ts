@@ -17,7 +17,7 @@ export function calculateReceiptPaymentsSummary(
 
   return receiptPayments.reduce(
     (acc, item) => {
-      const total = item.unitPrice * item.quantity;
+      const total = item.unitPrice * item.quantity * item.frequency;
 
       if (item.transactionType === 'BANK') {
         if (item.type === 'RECEIPT') acc.bankIn += total;

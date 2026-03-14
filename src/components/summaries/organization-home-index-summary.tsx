@@ -7,42 +7,44 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
 
-interface PersonalHomeIndexSummaryProps {
+interface OrganizationHomeIndexSummaryProps {
   receiptPayments?: ReceiptPaymentResponse[] | null;
 }
 
-export function PersonalHomeIndexSummary({
+export function OrganizationHomeIndexSummary({
   receiptPayments,
-}: PersonalHomeIndexSummaryProps) {
+}: OrganizationHomeIndexSummaryProps) {
   const summary = calculateReceiptPaymentsSummary(receiptPayments);
+  const cashNet = summary.cashIn - summary.cashOut;
+  const bankNet = summary.bankIn - summary.bankOut;
 
   return (
     <View style={styles.summaryCard}>
       <View style={styles.summaryHeaderRow}>
         <View style={styles.summaryHeaderItem}>
           <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Thu chi</Text>
+            <Text style={styles.summaryHeaderText}>Thu</Text>
           </View>
         </View>
         <View style={styles.summaryHeaderItem}>
           <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Thu vào</Text>
+            <Text style={styles.summaryHeaderText}>Tiền mặt</Text>
           </View>
         </View>
         <View style={styles.summaryHeaderItem}>
           <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Chi ra</Text>
+            <Text style={styles.summaryHeaderText}>Ngân hàng</Text>
           </View>
         </View>
       </View>
 
       <View style={styles.summaryValueRow}>
-        <Text style={styles.summaryLeftValue}>Cá nhân</Text>
+        <Text style={styles.summaryLeftValue}>Bán hàng</Text>
         <Text style={styles.summaryCenterValue}>
-          {generateLocalePriceFormat(summary.totalReceipt)}
+          {generateLocalePriceFormat(cashNet)}
         </Text>
         <Text style={styles.summaryRightValue}>
-          {generateLocalePriceFormat(summary.totalPayment)}
+          {generateLocalePriceFormat(bankNet)}
         </Text>
       </View>
 
@@ -52,7 +54,7 @@ export function PersonalHomeIndexSummary({
             <VinaupPlusMinus width={20} height={20} color={COLORS.vinaupTeal} />
           </View>
           <Text style={styles.summaryBannerText}>
-            Xem thu chi tháng này của bạn
+            Xem doanh số tháng này của bạn
           </Text>
         </View>
         <Feather name="chevron-right" size={22} color={COLORS.vinaupTeal} />

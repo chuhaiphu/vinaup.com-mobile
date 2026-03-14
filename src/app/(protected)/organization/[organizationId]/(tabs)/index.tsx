@@ -10,64 +10,107 @@ import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
-import { useEffect, useState } from 'react';
-import { getReceiptPaymentsByOrganizationIdApi } from '@/apis/receipt-payment-apis';
+import { useContext, useEffect, useState } from 'react';
+import { getReceiptPaymentsByInvoiceIdsApi } from '@/apis/receipt-payment-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useFetchFn } from 'fetchwire';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { MultiSelect } from '@/components/primitives/multiple-select';
 import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
-import { ORG_UTILITY_KEYS } from '@/constants/app-constant';
-import { useLocalSearchParams } from 'expo-router';
+import { ORG_UTILITY_KEYS, type OrgUtilityKey } from '@/constants/app-constant';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import dayjs from 'dayjs';
-import { DateTimePicker } from '@/components/primitives/date-time-picker';
-
-const UTILITY_OPTIONS = [
-  { label: 'Thu bán hàng', value: ORG_UTILITY_KEYS.receiptPaymentReceipt },
-  { label: 'Chi mua hàng', value: ORG_UTILITY_KEYS.receiptPaymentPayment },
-];
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
+import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
+import { OrganizationHomeIndexSummary } from '@/components/summaries/organization-home-index-summary';
+import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
+import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
+import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 
 export default function OrganizationIndexScreen() {
+  const router = useRouter();
   const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
   const { getSelectedUtilities, setUtilities } = useOrganizationUtilitiesStore();
   const selectedUtilities = getSelectedUtilities(organizationId);
+  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
 
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
+  const utilityOptions = [
+    {
+      label: 'Thu bán hàng',
+      value: ORG_UTILITY_KEYS.receiptPaymentReceipt,
+      leftSection: (
+        <View style={styles.utilityOptionIcon}>
+          <VinaupPlusMinus width={22} height={22} color={COLORS.vinaupTeal} />
+        </View>
+      ),
+    },
+    {
+      label: 'Chi mua hàng',
+      value: ORG_UTILITY_KEYS.receiptPaymentPayment,
+      leftSection: (
+        <View style={styles.utilityOptionIcon}>
+          <VinaupPlusMinus width={22} height={22} color={COLORS.vinaupTeal} />
+        </View>
+      ),
+    },
+  ];
+
+  const {
+    data: invoices,
+    executeFetchFn: fetchInvoices,
+    isRefreshing: isRefreshingInvoices,
+    refreshFetchFn: refreshInvoices,
+  } = useFetchFn<InvoiceResponse[]>({
+    tags: ['organization-invoice-list'],
+  });
+
   const {
     data: receiptPayments,
-    executeFetchFn: fetchReceiptPayments,
+    executeFetchFn: fetchReceiptPaymentsByInvoiceIds,
     isRefreshing,
-    refreshFetchFn: refreshReceiptPayments,
+    refreshFetchFn: refreshReceiptPaymentsByInvoiceIds,
   } = useFetchFn<ReceiptPaymentResponse[]>({
-    tags: ['organization-receipt-payment-list'],
+    tags: ['organization-receipt-payment-list-in-invoice'],
   });
 
   useEffect(() => {
-    if (!organizationId) return;
-    fetchReceiptPayments(() =>
-      getReceiptPaymentsByOrganizationIdApi(organizationId, {
-        date: selectedDate.toDate(),
+    fetchInvoices(() =>
+      getInvoicesByOrganizationIdApi(organizationId, {
+        invoiceTypeId: getInvoiceTypeByCode('SELL')?.id,
+        month: selectedDate.month() + 1,
+        year: selectedDate.year(),
       })
     );
-  }, [fetchReceiptPayments, organizationId, selectedDate]);
+  }, [fetchInvoices, selectedDate, organizationId, getInvoiceTypeByCode]);
+
+  useEffect(() => {
+    if (!organizationId) return;
+    if (!invoices || invoices.length === 0) return;
+    const invoiceIds = invoices.map((i) => i.id);
+    fetchReceiptPaymentsByInvoiceIds(() =>
+      getReceiptPaymentsByInvoiceIdsApi(invoiceIds)
+    );
+  }, [fetchReceiptPaymentsByInvoiceIds, organizationId, selectedDate, invoices]);
 
   const handlePress = (key: string) => {
-    console.log('Pressed:', key);
+    if (key === 'settings') return;
+    if (organizationId) {
+      router.push(`/(protected)/organization/${organizationId}/(tabs)/invoice`);
+    }
   };
-
-  const summary = calculateReceiptPaymentsSummary(receiptPayments);
 
   const allUtilities = [
     {
       key: ORG_UTILITY_KEYS.receiptPaymentReceipt,
       label: 'Thu bán hàng',
-      value: summary.totalReceipt,
+      icon: <VinaupPlusMinus width={28} height={28} color={COLORS.vinaupTeal} />,
     },
     {
       key: ORG_UTILITY_KEYS.receiptPaymentPayment,
       label: 'Chi mua hàng',
-      value: summary.totalPayment,
+      icon: <VinaupPlusMinus width={28} height={28} color={COLORS.vinaupTeal} />,
     },
   ];
 
@@ -75,26 +118,34 @@ export default function OrganizationIndexScreen() {
     selectedUtilities.includes(item.key)
   );
 
+  const getGridDisplayUtilities = () => {
+    const gridDisplayItems = [...visibleUtilities];
+    while (gridDisplayItems.length < 3) {
+      gridDisplayItems.push(null as unknown as (typeof visibleUtilities)[0]);
+    }
+    return gridDisplayItems;
+  };
+
   return (
     <ScrollView
       style={styles.container}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={refreshReceiptPayments}
+          onRefresh={refreshReceiptPaymentsByInvoiceIds}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />
       }
     >
       <View style={styles.topRow}>
-        <DateTimePicker
+        <MonthYearPicker
           leftSection={
             <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
           }
           value={selectedDate}
           onChange={setSelectedDate}
-          displayFormat="DD/MM"
+          displayFormat="MM/YYYY"
           style={{
             dateText: styles.dateText,
           }}
@@ -107,37 +158,49 @@ export default function OrganizationIndexScreen() {
         </Pressable>
       </View>
 
+      <OrganizationHomeIndexSummary receiptPayments={receiptPayments} />
+
       <View style={styles.utilitiesRow}>
         <View style={styles.utilitiesLeft}>
-          <VinaupUtilityIcon width={22} height={22} />
+          <VinaupUtilityIcon width={18} height={18} />
           <Text style={styles.utilitiesText}>Tiện ích</Text>
         </View>
         <MultiSelect
-          options={UTILITY_OPTIONS}
+          options={utilityOptions}
           values={selectedUtilities}
-          onChange={(vals) => setUtilities(organizationId, vals)}
+          onChange={(vals) => setUtilities(organizationId, vals as OrgUtilityKey[])}
           placeholder="Tiện ích"
           heightPercentage={0.3}
           renderTrigger={
-            <Feather name="edit" size={24} color={COLORS.vinaupTeal} />
+            <Feather name="edit" size={20} color={COLORS.vinaupTeal} />
           }
         />
       </View>
 
-      <View style={styles.card}>
-        {visibleUtilities.map((item, index) => (
-          <Pressable
-            key={item.key}
-            style={[
-              styles.cardRow,
-              index < visibleUtilities.length - 1 && styles.cardRowDivider,
-            ]}
-            onPress={() => handlePress(item.key)}
-          >
-            <Text style={styles.cardLabel}>{item.label}</Text>
-            <Text style={styles.cardValue}>{item.value}</Text>
-          </Pressable>
-        ))}
+      <View style={styles.gridContainer}>
+        {getGridDisplayUtilities().map((item, index) => {
+          if (!item) {
+            return <View key={`placeholder-${index}`} style={styles.gridItem} />;
+          }
+          return (
+            <PressableOpacity
+              key={item.key}
+              style={styles.gridItem}
+              onPress={() => handlePress(item.key)}
+            >
+              <View style={styles.gridIconBox}>{item.icon}</View>
+              <View style={styles.gridTextBox}>
+                <Text
+                  style={styles.gridText}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
+                  {item.label}
+                </Text>
+              </View>
+            </PressableOpacity>
+          );
+        })}
       </View>
     </ScrollView>
   );
@@ -165,7 +228,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   utilitiesRow: {
-    marginTop: 8,
+    marginTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -178,28 +241,39 @@ const styles = StyleSheet.create({
   utilitiesText: {
     fontSize: 18,
   },
-  card: {
-    marginTop: 8,
-    backgroundColor: COLORS.vinaupWhite,
-    borderRadius: 14,
-    paddingHorizontal: 8,
-  },
-  cardRow: {
-    paddingVertical: 12,
-    flexDirection: 'row',
+  utilityOptionIcon: {
+    width: 28,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gridContainer: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 8,
+    marginTop: 24,
   },
-  cardRowDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.vinaupLightGray,
+  gridItem: {
+    flex: 1,
+    alignItems: 'center',
   },
-  cardLabel: {
-    fontSize: 18,
+  gridIconBox: {
+    marginBottom: 8,
+  },
+  gridTextBox: {
+    backgroundColor: COLORS.vinaupLightGreen,
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxHeight: 52,
+    height: 52,
+  },
+  gridText: {
+    textAlign: 'center',
+    fontSize: 14,
     color: COLORS.vinaupTeal,
-  },
-  cardValue: {
-    fontSize: 18,
-    color: COLORS.vinaupBlack,
   },
 });

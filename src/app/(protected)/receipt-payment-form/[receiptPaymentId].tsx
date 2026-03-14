@@ -72,6 +72,7 @@ export default function ReceiptPaymentFormScreen() {
       setDescription(existingReceiptPayment.description || '');
       setUnitPrice(existingReceiptPayment.unitPrice);
       setQuantity(existingReceiptPayment.quantity);
+      setFrequency(existingReceiptPayment.frequency ?? 1);
       setType(existingReceiptPayment.type);
       setVatRate(existingReceiptPayment.vatRate || 0);
       setTransactionType(existingReceiptPayment.transactionType);
@@ -133,6 +134,7 @@ export default function ReceiptPaymentFormScreen() {
   const [description, setDescription] = useState('');
   const [unitPrice, setUnitPrice] = useState<number>(1);
   const [quantity, setQuantity] = useState<number>(1);
+  const [frequency, setFrequency] = useState<number>(1);
   const [type, setType] = useState<ReceiptPaymentType>(
     params.receiptPaymentType || 'PAYMENT'
   );
@@ -181,6 +183,7 @@ export default function ReceiptPaymentFormScreen() {
       description,
       unitPrice,
       quantity,
+      frequency,
       type,
       vatRate,
       transactionType,
@@ -445,13 +448,14 @@ export default function ReceiptPaymentFormScreen() {
               <View style={{ flex: 0.66 }}>
                 <View style={styles.inputWrapper}>
                   <View style={styles.labelSection}>
-                    <Text style={styles.insideLabel}>Số lượng</Text>
+                    <Text style={styles.insideLabel}>Số lần</Text>
                   </View>
                   <View style={styles.separator} />
                   <TextInput
                     style={[styles.inputNative, { flex: 1 }]}
-                    placeholder="0"
+                    value={String(frequency)}
                     keyboardType="numeric"
+                    onChangeText={(val) => setFrequency(Number(val))}
                   />
                 </View>
               </View>

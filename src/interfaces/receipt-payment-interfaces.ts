@@ -19,6 +19,7 @@ export interface ReceiptPaymentResponse {
   transactionType: ReceiptPaymentTransactionType;
   transactionDate: Date;
   quantity: number;
+  frequency: number;
   vatRate: number;
   note: string | null;
   createdBy: UserResponse;
@@ -44,6 +45,7 @@ export interface CreateReceiptPaymentRequest {
   transactionType: ReceiptPaymentTransactionType;
   transactionDate: Date;
   quantity: number;
+  frequency: number;
   vatRate?: number;
   note?: string | null;
   categoryId: string;

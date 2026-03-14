@@ -37,11 +37,17 @@ export function ReceiptPaymentCard({ receiptPayment }: ReceiptPaymentCardProps) 
           <View style={styles.quantityContainer}>
             <Text style={styles.multiplySign}>x</Text>
             <Text style={styles.quantityText}>{receiptPayment.quantity}</Text>
+            <Text style={styles.multiplySign}>x</Text>
+            <Text style={styles.quantityText}>
+              {receiptPayment.frequency ?? 1}
+            </Text>
             <Text style={styles.equalSign}>=</Text>
           </View>
           <View style={styles.totalPriceContainer}>
             <Text style={styles.totalPriceText}>
-              {receiptPayment.quantity * receiptPayment.unitPrice}
+              {receiptPayment.quantity *
+                (receiptPayment.frequency ?? 1) *
+                receiptPayment.unitPrice}
             </Text>
           </View>
         </View>

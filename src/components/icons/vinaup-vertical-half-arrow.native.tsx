@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Svg, { Path, SvgProps } from 'react-native-svg';
-const VinaupCollapseToggle = (props: SvgProps) => (
+const VinaupVerticalHalfArrow = (props: SvgProps) => (
   <Svg viewBox="0 0 20 23" fill="none" {...props}>
     <Path
       fill={props.color}
@@ -8,4 +8,4 @@ const VinaupCollapseToggle = (props: SvgProps) => (
     />
   </Svg>
 );
-export default VinaupCollapseToggle;
+export default VinaupVerticalHalfArrow;

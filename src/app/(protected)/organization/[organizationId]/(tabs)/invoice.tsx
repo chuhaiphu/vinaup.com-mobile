@@ -21,7 +21,7 @@ import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
 import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
 
-export default function OrganizationInvoice() {
+export default function OrganizationInvoiceScreen() {
   const safeRouter = useSafeRouter();
   const params = useLocalSearchParams<{
     organizationId: string;

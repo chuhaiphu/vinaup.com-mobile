@@ -1,4 +1,5 @@
 import { HomeHeader } from '@/components/headers/home-header/home-header';
+import VinaupCircleHorizontalHalfArrow from '@/components/icons/vinaup-circle-horizontal-half-arrow.native';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import { COLORS } from '@/constants/style-constant';
@@ -43,7 +44,19 @@ export default function OrganizationTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="organization-profile"
+        name="tour"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <VinaupCircleHorizontalHalfArrow
+              width={size * 1.1}
+              height={size * 1.1}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
         options={{
           tabBarIcon: ({ color, size }) => (
             <Octicons name="person" size={size} color={color} />
