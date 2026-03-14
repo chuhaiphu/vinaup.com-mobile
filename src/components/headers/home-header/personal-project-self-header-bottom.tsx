@@ -6,36 +6,34 @@ import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from 'fetchwire';
 import { createProjectApi } from '@/apis/project-apis';
-import { ProjectResponse } from '@/interfaces/project-interfaces';
 
 const PersonalProjectSelfHeaderBottom = () => {
   const router = useRouter();
 
-  const { executeMutationFn: createProject, isMutating } =
-    useMutationFn<ProjectResponse>({
-      invalidatesTags: ['personal-project-list'],
+  const createProjectFn = () =>
+    createProjectApi({
+      description: 'Tiền công',
+      type: 'SELF',
+      endDate: new Date(),
+      startDate: new Date(),
     });
 
+  const { executeMutationFn: createProject, isMutating } = useMutationFn(
+    createProjectFn,
+    { invalidatesTags: ['personal-project-list'] }
+  );
+
   const handleAddNew = async () => {
-    await createProject(
-      () =>
-        createProjectApi({
-          description: 'Tiền công',
-          type: 'SELF',
-          endDate: new Date(),
-          startDate: new Date(),
-        }),
-      {
-        onSuccess: (data) => {
-          router.push({
-            pathname: '/(protected)/project-detail/[projectId]',
-            params: { projectId: data.id },
-          });
-        },
-        onError: (error) =>
-          Alert.alert('Lỗi', error.message || 'Không thể tạo dự án mới'),
-      }
-    );
+    await createProject({
+      onSuccess: (data) => {
+        router.push({
+          pathname: '/(protected)/project-detail/[projectId]',
+          params: { projectId: data.id },
+        });
+      },
+      onError: (error) =>
+        Alert.alert('Lỗi', error.message || 'Không thể tạo dự án mới'),
+    });
   };
 
   return (

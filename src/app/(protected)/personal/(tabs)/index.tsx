@@ -12,9 +12,7 @@ import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
 import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useFetchFn } from 'fetchwire';
-import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { MultiSelect } from '@/components/primitives/multiple-select';
@@ -71,53 +69,56 @@ export default function PersonalIndexScreen() {
     },
   ];
 
+  const fetchReceiptPaymentsSelfFn = () =>
+    getReceiptPaymentsByCurrentUserApi({
+      date: selectedDate.toDate(),
+    });
+
   const {
     data: receiptPaymentsSelf,
     executeFetchFn: fetchReceiptPaymentsSelf,
     isRefreshing: isRefreshingReceiptPaymentsSelf,
     refreshFetchFn: refreshReceiptPaymentsSelf,
-  } = useFetchFn<ReceiptPaymentResponse[]>({
+  } = useFetchFn(fetchReceiptPaymentsSelfFn, {
     tags: ['personal-receipt-payment-list'],
   });
+
+  const fetchProjectsSelfFn = () =>
+    getProjectsOfCurrentUserApi({
+      type: 'SELF',
+      date: selectedDate.toDate(),
+    });
 
   const {
     data: projectsSelf,
     executeFetchFn: fetchProjectsSelf,
     isRefreshing: isRefreshingProjectsSelf,
     refreshFetchFn: refreshProjectsSelf,
-  } = useFetchFn<ProjectResponse[]>();
+  } = useFetchFn(fetchProjectsSelfFn);
+
+  const fetchProjectsCompanyFn = () =>
+    getProjectsOfCurrentUserApi({
+      type: 'COMPANY',
+      date: selectedDate.toDate(),
+    });
 
   const {
     data: projectsCompany,
     executeFetchFn: fetchProjectsCompany,
     isRefreshing: isRefreshingProjectsCompany,
     refreshFetchFn: refreshProjectsCompany,
-  } = useFetchFn<ProjectResponse[]>();
+  } = useFetchFn(fetchProjectsCompanyFn);
 
   useEffect(() => {
-    fetchReceiptPaymentsSelf(() =>
-      getReceiptPaymentsByCurrentUserApi({
-        date: selectedDate.toDate(),
-      })
-    );
+    fetchReceiptPaymentsSelf();
   }, [fetchReceiptPaymentsSelf, selectedDate]);
 
   useEffect(() => {
-    fetchProjectsSelf(() =>
-      getProjectsOfCurrentUserApi({
-        type: 'SELF',
-        date: selectedDate.toDate(),
-      })
-    );
+    fetchProjectsSelf();
   }, [fetchProjectsSelf, selectedDate]);
 
   useEffect(() => {
-    fetchProjectsCompany(() =>
-      getProjectsOfCurrentUserApi({
-        type: 'COMPANY',
-        date: selectedDate.toDate(),
-      })
-    );
+    fetchProjectsCompany();
   }, [fetchProjectsCompany, selectedDate]);
 
   const handlePress = (id: string) => {

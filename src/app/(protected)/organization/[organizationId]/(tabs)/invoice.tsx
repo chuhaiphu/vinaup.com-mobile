@@ -12,7 +12,6 @@ import {
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
 import { InvoiceCard } from '@/components/cards/invoice-card';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
@@ -35,13 +34,32 @@ export default function OrganizationInvoiceScreen() {
 
   const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
 
+  const fetchInvoicesFn = () => {
+    const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
+    if (!invoiceType) {
+      return getInvoicesByOrganizationIdApi(organizationId, {
+        invoiceTypeId: undefined,
+        status: statusFilter || undefined,
+        month: selectedDate.month() + 1,
+        year: selectedDate.year(),
+      });
+    }
+
+    return getInvoicesByOrganizationIdApi(organizationId, {
+      invoiceTypeId: invoiceType.id,
+      status: statusFilter || undefined,
+      month: selectedDate.month() + 1,
+      year: selectedDate.year(),
+    });
+  };
+
   const {
     data: invoices,
     isLoading,
     executeFetchFn: fetchInvoices,
     isRefreshing,
     refreshFetchFn: refreshInvoices,
-  } = useFetchFn<InvoiceResponse[]>({
+  } = useFetchFn(fetchInvoicesFn, {
     tags: ['organization-invoice-list'],
   });
 
@@ -50,14 +68,7 @@ export default function OrganizationInvoiceScreen() {
     const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
     if (!invoiceType) return;
 
-    fetchInvoices(() =>
-      getInvoicesByOrganizationIdApi(organizationId, {
-        invoiceTypeId: invoiceType.id,
-        status: statusFilter || undefined,
-        month: selectedDate.month() + 1,
-        year: selectedDate.year(),
-      })
-    );
+    fetchInvoices();
   }, [
     fetchInvoices,
     selectedDate,

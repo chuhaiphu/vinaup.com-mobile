@@ -4,7 +4,6 @@ import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
 import { ProjectStatusDisplay } from '@/constants/project-constants';
 import { useFetchFn } from 'fetchwire';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect } from 'react';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
@@ -15,13 +14,18 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const fetchReceiptPaymentsFn = () =>
+    getReceiptPaymentsByProjectIdApi(project?.id || '');
+
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
-    useFetchFn<ReceiptPaymentResponse[]>({
+    useFetchFn(fetchReceiptPaymentsFn, {
       tags: ['personal-receipt-payment-list-in-project'],
     });
 
   useEffect(() => {
-    fetchReceiptPayments(() => getReceiptPaymentsByProjectIdApi(project?.id || ''));
+    if (project?.id) {
+      fetchReceiptPayments();
+    }
   }, [project, fetchReceiptPayments]);
 
   const getProjectInfoText = () => {

@@ -2,18 +2,14 @@ import { View, StyleSheet, Alert, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
-import { useFetchFn, useMutationFn } from 'fetchwire';
-import {
-  ProjectResponse,
-  UpdateProjectRequest,
-} from '@/interfaces/project-interfaces';
+import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
+import { UpdateProjectRequest } from '@/interfaces/project-interfaces';
 import {
   deleteProjectApi,
   getProjectByIdApi,
   updateProjectApi,
 } from '@/apis/project-apis';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { ProjectDetailHeaderContent } from '@/components/contents/project-detail-header-content';
 import { ReceiptPaymentProjectListContent } from '@/components/contents/receipt-payment-project-list-content';
 import Loader from '@/components/primitives/loader';
@@ -28,37 +24,45 @@ export default function ProjectDetailScreen() {
   const safeRouter = useSafeRouter();
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
+  const fetchProjectFn = () => getProjectByIdApi(projectId);
   const {
     data: project,
     isLoading: isLoadingProject,
     isRefreshing: isRefreshingProject,
     executeFetchFn: fetchProject,
     refreshFetchFn: refreshProject,
-  } = useFetchFn<ProjectResponse>({});
+  } = useFetchFn(fetchProjectFn);
+
+  const updateProjectFn = (updatedFields: UpdateProjectRequest) =>
+    updateProjectApi(projectId, updatedFields);
 
   const { executeMutationFn: updateProject, isMutating: isUpdatingProject } =
-    useMutationFn<ProjectResponse>({
-      invalidatesTags: ['personal-project-list'],
-    });
-  const { executeMutationFn: deleteProject, isMutating: isDeletingProject } =
-    useMutationFn<null>({
+    useMutationFn(updateProjectFn, {
       invalidatesTags: ['personal-project-list'],
     });
 
+  const deleteProjectFn = () => deleteProjectApi(projectId);
+  const { executeMutationFn: deleteProject, isMutating: isDeletingProject } =
+    useMutationFn(deleteProjectFn, {
+      invalidatesTags: ['personal-project-list'],
+    });
+
+  const fetchReceiptPaymentsFn = () =>
+    getReceiptPaymentsByProjectIdApi(projectId);
   const {
     data: receiptPayments,
     isLoading: isLoadingReceiptPayments,
     isRefreshing: isRefreshingReceiptPayments,
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn<ReceiptPaymentResponse[]>({
+  } = useFetchFn(fetchReceiptPaymentsFn, {
     tags: ['personal-receipt-payment-list-in-project'],
   });
 
   useEffect(() => {
     if (projectId) {
-      fetchProject(() => getProjectByIdApi(projectId));
-      fetchReceiptPayments(() => getReceiptPaymentsByProjectIdApi(projectId));
+      fetchProject();
+      fetchReceiptPayments();
     }
   }, [projectId, fetchProject, fetchReceiptPayments]);
 
@@ -74,12 +78,12 @@ export default function ProjectDetailScreen() {
     onSuccessCallback?: () => void
   ) => {
     if (!project) return;
-    updateProject(() => updateProjectApi(projectId, updatedFields), {
+    updateProject(updatedFields, {
       onSuccess: () => {
         refreshProject();
         onSuccessCallback?.();
       },
-      onError: (error) => {
+      onError: (error: ApiError) => {
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật.');
       },
     });
@@ -93,11 +97,11 @@ export default function ProjectDetailScreen() {
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          deleteProject(() => deleteProjectApi(projectId), {
+          deleteProject({
             onSuccess: () => {
               safeRouter.safeBack();
             },
-            onError: (error) => {
+            onError: (error: ApiError) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });

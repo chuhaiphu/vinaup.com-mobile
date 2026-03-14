@@ -2,11 +2,8 @@ import { View, StyleSheet, Alert, Text, Pressable } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
-import { useFetchFn, useMutationFn } from 'fetchwire';
-import {
-  InvoiceResponse,
-  UpdateInvoiceRequest,
-} from '@/interfaces/invoice-interfaces';
+import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
+import { UpdateInvoiceRequest } from '@/interfaces/invoice-interfaces';
 import {
   deleteInvoiceApi,
   getInvoiceByIdApi,
@@ -14,8 +11,6 @@ import {
 } from '@/apis/invoice-apis';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { InvoiceDetailHeaderContent } from '@/components/contents/invoice-detail-header-content';
 import { ReceiptPaymentInvoiceContent } from '@/components/contents/receipt-payment-invoice-list-content';
 import Loader from '@/components/primitives/loader';
@@ -32,66 +27,74 @@ export default function InvoiceDetailScreen() {
   const safeRouter = useSafeRouter();
   const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
 
+  const fetchInvoiceFn = () => getInvoiceByIdApi(invoiceId);
   const {
     data: invoice,
     isLoading: isLoadingInvoice,
     isRefreshing: isRefreshingInvoice,
     executeFetchFn: fetchInvoice,
     refreshFetchFn: refreshInvoice,
-  } = useFetchFn<InvoiceResponse>({});
+  } = useFetchFn(fetchInvoiceFn);
+
+  const updateInvoiceFn = (updatedFields: UpdateInvoiceRequest) =>
+    updateInvoiceApi(invoiceId, updatedFields);
 
   const { executeMutationFn: updateInvoice, isMutating: isUpdatingInvoice } =
-    useMutationFn<InvoiceResponse>({
+    useMutationFn(updateInvoiceFn, {
       invalidatesTags: ['organization-invoice-list'],
     });
+
+  const deleteInvoiceFn = () => deleteInvoiceApi(invoiceId);
   const {
     executeMutationFn: deleteInvoiceMutation,
     isMutating: isDeletingInvoice,
-  } = useMutationFn<null>({
+  } = useMutationFn(deleteInvoiceFn, {
     invalidatesTags: ['organization-invoice-list'],
   });
 
+  const fetchReceiptPaymentsFn = () =>
+    getReceiptPaymentsByInvoiceIdApi(invoiceId);
   const {
     data: receiptPayments,
     isLoading: isLoadingReceiptPayments,
     isRefreshing: isRefreshingReceiptPayments,
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn<ReceiptPaymentResponse[]>({
+  } = useFetchFn(fetchReceiptPaymentsFn, {
     tags: ['organization-receipt-payment-list-in-invoice'],
   });
 
+  const fetchOrganizationCustomersFn = () =>
+    getOrganizationCustomersByOrganizationIdApi(invoice?.organization?.id || '');
   const {
     data: organizationCustomers,
     executeFetchFn: fetchOrganizationCustomers,
-  } = useFetchFn<OrganizationCustomerResponse[]>({});
+  } = useFetchFn(fetchOrganizationCustomersFn);
 
   useEffect(() => {
     if (invoiceId) {
-      fetchInvoice(() => getInvoiceByIdApi(invoiceId));
-      fetchReceiptPayments(() => getReceiptPaymentsByInvoiceIdApi(invoiceId));
+      fetchInvoice();
+      fetchReceiptPayments();
     }
   }, [invoiceId, fetchInvoice, fetchReceiptPayments]);
 
   useEffect(() => {
     if (invoice?.organization?.id) {
-      fetchOrganizationCustomers(() =>
-        getOrganizationCustomersByOrganizationIdApi(invoice?.organization?.id || '')
-      );
+      fetchOrganizationCustomers();
     }
-  }, [invoice?.organization, fetchOrganizationCustomers]);
+  }, [invoice?.organization?.id, fetchOrganizationCustomers]);
 
   const handleUpdateInvoice = (
     updatedFields: UpdateInvoiceRequest,
     onSuccessCallback?: () => void
   ) => {
     if (!invoice) return;
-    updateInvoice(() => updateInvoiceApi(invoiceId, updatedFields), {
+    updateInvoice(updatedFields, {
       onSuccess: () => {
         refreshInvoice();
         onSuccessCallback?.();
       },
-      onError: (error) => {
+      onError: (error: ApiError) => {
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật.');
       },
     });
@@ -105,11 +108,11 @@ export default function InvoiceDetailScreen() {
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          deleteInvoiceMutation(() => deleteInvoiceApi(invoiceId), {
+          deleteInvoiceMutation({
             onSuccess: () => {
               safeRouter.safeBack();
             },
-            onError: (error) => {
+            onError: (error: ApiError) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });

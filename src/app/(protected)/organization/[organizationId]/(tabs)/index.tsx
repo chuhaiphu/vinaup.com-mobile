@@ -12,7 +12,6 @@ import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
 import { useContext, useEffect, useState } from 'react';
 import { getReceiptPaymentsByInvoiceIdsApi } from '@/apis/receipt-payment-apis';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useFetchFn } from 'fetchwire';
 import { MultiSelect } from '@/components/primitives/multiple-select';
 import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
@@ -22,7 +21,6 @@ import dayjs from 'dayjs';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import { OrganizationHomeIndexSummary } from '@/components/summaries/organization-home-index-summary';
-import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
 import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
@@ -57,41 +55,42 @@ export default function OrganizationIndexScreen() {
     },
   ];
 
+  const fetchInvoicesFn = () =>
+    getInvoicesByOrganizationIdApi(organizationId, {
+      invoiceTypeId: getInvoiceTypeByCode('SELL')?.id,
+      month: selectedDate.month() + 1,
+      year: selectedDate.year(),
+    });
+
   const {
     data: invoices,
     executeFetchFn: fetchInvoices,
-    isRefreshing: isRefreshingInvoices,
-    refreshFetchFn: refreshInvoices,
-  } = useFetchFn<InvoiceResponse[]>({
+  } = useFetchFn(fetchInvoicesFn, {
     tags: ['organization-invoice-list'],
   });
+
+  const fetchReceiptPaymentsByInvoiceIdsFn = () =>
+    getReceiptPaymentsByInvoiceIdsApi(
+      (invoices || []).map((i) => i.id)
+    );
 
   const {
     data: receiptPayments,
     executeFetchFn: fetchReceiptPaymentsByInvoiceIds,
     isRefreshing,
     refreshFetchFn: refreshReceiptPaymentsByInvoiceIds,
-  } = useFetchFn<ReceiptPaymentResponse[]>({
+  } = useFetchFn(fetchReceiptPaymentsByInvoiceIdsFn, {
     tags: ['organization-receipt-payment-list-in-invoice'],
   });
 
   useEffect(() => {
-    fetchInvoices(() =>
-      getInvoicesByOrganizationIdApi(organizationId, {
-        invoiceTypeId: getInvoiceTypeByCode('SELL')?.id,
-        month: selectedDate.month() + 1,
-        year: selectedDate.year(),
-      })
-    );
+    fetchInvoices();
   }, [fetchInvoices, selectedDate, organizationId, getInvoiceTypeByCode]);
 
   useEffect(() => {
     if (!organizationId) return;
     if (!invoices || invoices.length === 0) return;
-    const invoiceIds = invoices.map((i) => i.id);
-    fetchReceiptPaymentsByInvoiceIds(() =>
-      getReceiptPaymentsByInvoiceIdsApi(invoiceIds)
-    );
+    fetchReceiptPaymentsByInvoiceIds();
   }, [fetchReceiptPaymentsByInvoiceIds, organizationId, selectedDate, invoices]);
 
   const handlePress = (key: string) => {

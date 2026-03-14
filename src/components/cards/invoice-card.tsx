@@ -4,7 +4,6 @@ import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { InvoiceStatusDisplay } from '@/constants/invoice-constants';
 import { useFetchFn } from 'fetchwire';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect } from 'react';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
@@ -15,14 +14,17 @@ interface InvoiceCardProps {
 }
 
 export function InvoiceCard({ invoice }: InvoiceCardProps) {
+  const fetchReceiptPaymentsFn = () =>
+    getReceiptPaymentsByInvoiceIdApi(invoice?.id || '');
+
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
-    useFetchFn<ReceiptPaymentResponse[]>({
+    useFetchFn(fetchReceiptPaymentsFn, {
       tags: ['organization-receipt-payment-list-in-invoice'],
     });
 
   useEffect(() => {
     if (invoice?.id) {
-      fetchReceiptPayments(() => getReceiptPaymentsByInvoiceIdApi(invoice.id));
+      fetchReceiptPayments();
     }
   }, [invoice, fetchReceiptPayments]);
 

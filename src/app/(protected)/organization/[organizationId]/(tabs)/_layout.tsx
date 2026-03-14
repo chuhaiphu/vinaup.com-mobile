@@ -48,8 +48,8 @@ export default function OrganizationTabsLayout() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupCircleHorizontalHalfArrow
-              width={size * 1.1}
-              height={size * 1.1}
+              width={size * 1.15}
+              height={size * 1.15}
               color={color}
             />
           ),

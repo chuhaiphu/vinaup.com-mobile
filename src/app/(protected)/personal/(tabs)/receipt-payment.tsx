@@ -3,7 +3,6 @@ import Loader from '@/components/primitives/loader';
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from 'fetchwire';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect, useState } from 'react';
 import {
   FlatList,
@@ -21,23 +20,24 @@ import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-
 export default function PersonalReceiptPaymentScreen() {
   const safeRouter = useSafeRouter();
   const [selectedDate, setSelectedDate] = useState(dayjs());
-
   const {
     data: receiptPayments,
     isLoading,
     executeFetchFn: fetchReceiptPayments,
     isRefreshing,
     refreshFetchFn,
-  } = useFetchFn<ReceiptPaymentResponse[]>({
-    tags: ['personal-receipt-payment-list'],
-  });
-
-  useEffect(() => {
-    fetchReceiptPayments(() =>
+  } = useFetchFn(
+    () =>
       getReceiptPaymentsByCurrentUserApi({
         date: selectedDate.toDate(),
-      })
-    );
+      }),
+    {
+      tags: ['personal-receipt-payment-list'],
+    }
+  );
+
+  useEffect(() => {
+    fetchReceiptPayments();
   }, [fetchReceiptPayments, selectedDate]);
 
   const navigateToFormScreen = async (id?: string) => {

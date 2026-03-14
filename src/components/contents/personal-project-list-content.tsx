@@ -12,7 +12,6 @@ import {
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
 import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment-apis';
 import { ProjectCard } from '@/components/cards/project-card';
@@ -20,7 +19,6 @@ import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 
 type PersonalProjectListContentProps = {
   projectType: 'SELF' | 'COMPANY';
@@ -39,30 +37,33 @@ export function PersonalProjectListContent({
     executeFetchFn: fetchProjects,
     isRefreshing: isRefreshingProjects,
     refreshFetchFn: refreshProjects,
-  } = useFetchFn<ProjectResponse[]>({
+  } = useFetchFn(() =>
+    getProjectsOfCurrentUserApi({
+      type: projectType,
+      status: projectStatusFilter,
+      month: selectedDate.month() + 1,
+      year: selectedDate.year(),
+    }),
+  {
     tags: ['personal-project-list'],
   });
 
   const { data: allReceiptPayments, executeFetchFn: fetchAllReceiptPayments } =
-    useFetchFn<ReceiptPaymentResponse[]>({
+    useFetchFn(() =>
+      getReceiptPaymentsByProjectIdsApi(
+        (projects || []).map((p) => p.id),
+      ),
+    {
       tags: ['personal-receipt-payment-list-all-projects'],
     });
 
   useEffect(() => {
-    fetchProjects(() =>
-      getProjectsOfCurrentUserApi({
-        type: projectType,
-        status: projectStatusFilter,
-        month: selectedDate.month() + 1,
-        year: selectedDate.year(),
-      })
-    );
+    fetchProjects();
   }, [fetchProjects, selectedDate, projectType, projectStatusFilter]);
 
   useEffect(() => {
     if (!projects || projects.length === 0) return;
-    const projectIds = projects.map((p) => p.id);
-    fetchAllReceiptPayments(() => getReceiptPaymentsByProjectIdsApi(projectIds));
+    fetchAllReceiptPayments();
   }, [projects, fetchAllReceiptPayments]);
 
   const navigateToFormScreen = async (id?: string) => {

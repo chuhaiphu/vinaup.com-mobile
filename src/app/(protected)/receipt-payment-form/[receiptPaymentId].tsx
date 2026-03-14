@@ -19,15 +19,11 @@ import {
   ReceiptPaymentTransactionType,
   ReceiptPaymentType,
 } from '@/constants/receipt-payment-constants';
-import {
-  CreateReceiptPaymentRequest,
-  ReceiptPaymentResponse,
-} from '@/interfaces/receipt-payment-interfaces';
+import { CreateReceiptPaymentRequest } from '@/interfaces/receipt-payment-interfaces';
 import { COLORS } from '@/constants/style-constant';
 import { Select } from '@/components/primitives/select';
 import { getCategoriesOfCurrentUserApi } from '@/apis/category-apis';
 import { useFetchFn, useMutationFn } from 'fetchwire';
-import { CategoryResponse } from '@/interfaces/category-interfaces';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import VinaupLeftArrowWithFill from '@/components/icons/vinaup-left-arrow-with-fill.native';
 import VinaupRightArrowWithFill from '@/components/icons/vinaup-right-arrow-with-fill.native';
@@ -61,11 +57,14 @@ export default function ReceiptPaymentFormScreen() {
   const { receiptPaymentId } = params;
   const isUpdateMode = receiptPaymentId !== 'new';
 
+  const fetchReceiptPaymentFn = () =>
+    getReceiptPaymentByIdApi(receiptPaymentId);
+
   const {
     data: existingReceiptPayment,
     isLoading: isFetchingReceiptPayment,
     executeFetchFn: fetchReceiptPayment,
-  } = useFetchFn<ReceiptPaymentResponse>();
+  } = useFetchFn(fetchReceiptPaymentFn);
 
   useEffect(() => {
     if (existingReceiptPayment) {
@@ -84,15 +83,19 @@ export default function ReceiptPaymentFormScreen() {
 
   useEffect(() => {
     if (isUpdateMode) {
-      fetchReceiptPayment(() => getReceiptPaymentByIdApi(receiptPaymentId));
+      fetchReceiptPayment();
     }
   }, [receiptPaymentId, isUpdateMode, fetchReceiptPayment]);
 
-  const { data: categories, executeFetchFn: fetchCategories } =
-    useFetchFn<CategoryResponse[]>();
+  const fetchCategoriesFn = () => getCategoriesOfCurrentUserApi();
+
+  const {
+    data: categories,
+    executeFetchFn: fetchCategories,
+  } = useFetchFn(fetchCategoriesFn);
 
   useEffect(() => {
-    fetchCategories(() => getCategoriesOfCurrentUserApi());
+    fetchCategories();
   }, [fetchCategories]);
 
   const formInvalidatesTags = (() => {
@@ -106,16 +109,50 @@ export default function ReceiptPaymentFormScreen() {
     }
   })();
 
+  const createOrUpdateReceiptPaymentFn = () => {
+    const submitData: CreateReceiptPaymentRequest = {
+      description,
+      unitPrice,
+      quantity,
+      frequency,
+      type,
+      vatRate,
+      transactionType,
+      note,
+      transactionDate: transactionDate.toDate(),
+      currency: 'VND',
+      categoryId: selectedCategory,
+      projectId: params.projectId,
+      invoiceId: params.invoiceId,
+      bookingId: params.bookingId,
+      tourCalculationId: params.tourCalculationId,
+      tourImplementationId: params.tourImplementationId,
+      tourSettlementId: params.tourSettlementId,
+      groupCode: params.groupCode,
+      organizationId: params.organizationId,
+    };
+
+    if (isUpdateMode) {
+      return updateReceiptPaymentApi(receiptPaymentId, submitData);
+    }
+
+    return createReceiptPaymentApi(submitData);
+  };
+
   const {
     executeMutationFn: createOrUpdateReceiptPayment,
     isMutating: isMutatingReceiptPayment,
-  } = useMutationFn<ReceiptPaymentResponse>({
+  } = useMutationFn(createOrUpdateReceiptPaymentFn, {
     invalidatesTags: formInvalidatesTags,
   });
+
+  const deleteReceiptPaymentFn = () =>
+    deleteReceiptPaymentApi(receiptPaymentId);
+
   const {
     executeMutationFn: deleteReceiptPayment,
     isMutating: isDeletingReceiptPayment,
-  } = useMutationFn({
+  } = useMutationFn(deleteReceiptPaymentFn, {
     invalidatesTags: formInvalidatesTags,
   });
 
@@ -179,33 +216,7 @@ export default function ReceiptPaymentFormScreen() {
       return;
     }
 
-    const submitData: CreateReceiptPaymentRequest = {
-      description,
-      unitPrice,
-      quantity,
-      frequency,
-      type,
-      vatRate,
-      transactionType,
-      note,
-      transactionDate: transactionDate.toDate(),
-      currency: 'VND',
-      categoryId: selectedCategory,
-      projectId: params.projectId,
-      invoiceId: params.invoiceId,
-      bookingId: params.bookingId,
-      tourCalculationId: params.tourCalculationId,
-      tourImplementationId: params.tourImplementationId,
-      tourSettlementId: params.tourSettlementId,
-      groupCode: params.groupCode,
-      organizationId: params.organizationId,
-    };
-
-    const mutationApi = isUpdateMode
-      ? () => updateReceiptPaymentApi(receiptPaymentId, submitData)
-      : () => createReceiptPaymentApi(submitData);
-
-    createOrUpdateReceiptPayment(mutationApi, {
+    createOrUpdateReceiptPayment({
       onSuccess: () => {
         safeRouter.safeBack();
       },
@@ -223,7 +234,7 @@ export default function ReceiptPaymentFormScreen() {
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          deleteReceiptPayment(() => deleteReceiptPaymentApi(receiptPaymentId), {
+          deleteReceiptPayment({
             onSuccess: () => {
               safeRouter.safeBack();
             },

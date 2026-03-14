@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import {
-  CreateOrganizationCustomerRequest,
-  OrganizationCustomerResponse,
-} from '@/interfaces/organization-customer-interfaces';
+import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { useMutationFn } from 'fetchwire';
 import { createOrganizationCustomerApi } from '@/apis/organization-apis';
 import { COLORS } from '@/constants/style-constant';
@@ -28,8 +25,18 @@ export function CreateOrganizationCustomerModalContent({
     email?: boolean;
   }>({});
 
+  const createOrganizationCustomerFn = () =>
+    createOrganizationCustomerApi({
+      organizationId: organizationId!,
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email.trim().length > 0 ? email.trim() : undefined,
+      status: 'ACTIVE',
+      joinedAt: new Date(),
+    });
+
   const { executeMutationFn: createOrganizationCustomer, isMutating } =
-    useMutationFn<OrganizationCustomerResponse>({
+    useMutationFn(createOrganizationCustomerFn, {
       invalidatesTags: ['organization-customer-list'],
     });
 
@@ -64,16 +71,7 @@ export function CreateOrganizationCustomerModalContent({
 
     if (!validateAll()) return;
 
-    const payload: CreateOrganizationCustomerRequest = {
-      organizationId,
-      name: name.trim(),
-      phone: phone.trim(),
-      email: email.trim().length > 0 ? email.trim() : undefined,
-      status: 'ACTIVE',
-      joinedAt: new Date(),
-    };
-
-    createOrganizationCustomer(() => createOrganizationCustomerApi(payload), {
+    createOrganizationCustomer({
       onSuccess: (created) => {
         onCreated?.(created);
         setName('');

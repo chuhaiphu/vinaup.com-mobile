@@ -8,7 +8,6 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from 'fetchwire';
 import { createInvoiceApi } from '@/apis/invoice-apis';
-import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
 
 const InvoiceHeaderBottom = () => {
@@ -19,11 +18,24 @@ const InvoiceHeaderBottom = () => {
   }>();
   const currentCode = params.invoiceTypeCode || 'BUY';
 
-  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);;
-  const { executeMutationFn: createInvoice, isMutating } =
-    useMutationFn<InvoiceResponse>({
-      invalidatesTags: ['organization-invoice-list'],
+  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
+
+  const createInvoiceFn = () => {
+    const invoiceType = getInvoiceTypeByCode(currentCode || '');
+    if (!invoiceType) return Promise.reject(new Error('Không tìm thấy loại hoá đơn'));
+    return createInvoiceApi({
+      invoiceTypeId: invoiceType.id,
+      description: currentCode === 'BUY' ? 'Mua hàng' : 'Bán hàng',
+      endDate: new Date(),
+      startDate: new Date(),
+      organizationId: params.organizationId,
     });
+  };
+
+  const { executeMutationFn: createInvoice, isMutating } = useMutationFn(
+    createInvoiceFn,
+    { invalidatesTags: ['organization-invoice-list'] }
+  );
 
   const handleAddNew = async () => {
     const invoiceType = getInvoiceTypeByCode(currentCode || '');
@@ -31,26 +43,16 @@ const InvoiceHeaderBottom = () => {
       Alert.alert('Lỗi', 'Không tìm thấy loại hoá đơn');
       return;
     }
-    await createInvoice(
-      () =>
-        createInvoiceApi({
-          invoiceTypeId: invoiceType.id,
-          description: currentCode === 'BUY' ? 'Mua hàng' : 'Bán hàng',
-          endDate: new Date(),
-          startDate: new Date(),
-          organizationId: params.organizationId,
-        }),
-      {
-        onSuccess: (data) => {
-          router.push({
-            pathname: '/(protected)/invoice-detail/[invoiceId]',
-            params: { invoiceId: data.id },
-          });
-        },
-        onError: (error) =>
-          Alert.alert('Lỗi', error.message || 'Không thể tạo hoá đơn mới'),
-      }
-    );
+    await createInvoice({
+      onSuccess: (data) => {
+        router.push({
+          pathname: '/(protected)/invoice-detail/[invoiceId]',
+          params: { invoiceId: data.id },
+        });
+      },
+      onError: (error) =>
+        Alert.alert('Lỗi', error.message || 'Không thể tạo hoá đơn mới'),
+    });
   };
 
   const handleToggle = () => {

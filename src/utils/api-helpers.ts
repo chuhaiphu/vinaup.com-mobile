@@ -1,5 +1,7 @@
 import { DateFilterParam } from '@/interfaces/_query-param.interfaces';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 // Helper function to build date filter params
 // Return URLSearchParams object contains date filter parameters
 //
@@ -19,7 +21,8 @@ function buildDateFilterParams(
   params: URLSearchParams = new URLSearchParams()
 ): URLSearchParams {
   if (filter) {
-    if (filter.date) params.append('date', dayjs(filter.date).format('YYYY-MM-DD'));
+    if (filter.date)
+      params.append('date', dayjs(filter.date).utc().format('YYYY-MM-DD'));
     if (filter.month) params.append('month', filter.month.toString());
     if (filter.quarter) params.append('quarter', filter.quarter.toString());
     if (filter.year) params.append('year', filter.year.toString());

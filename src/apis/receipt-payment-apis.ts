@@ -18,6 +18,7 @@ export async function getReceiptPaymentsByCurrentUserApi(
   filter?: ReceiptPaymentFilterParam
 ) {
   const filterQueryString = buildFilterQueryString(filter, { type: filter?.type });
+  console.log('filterQueryString', filterQueryString);
   return wireApi<ReceiptPaymentResponse[]>(`/receipt-payment${filterQueryString}`, {
     method: 'GET',
   });
