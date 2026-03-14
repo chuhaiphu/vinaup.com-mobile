@@ -2,7 +2,7 @@ import { View, StyleSheet, Alert, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn, useMutationFn } from 'fetchwire';
 import {
   ProjectResponse,
   UpdateProjectRequest,
@@ -17,7 +17,6 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { ProjectDetailHeaderContent } from '@/components/contents/project-detail-header-content';
 import { ReceiptPaymentProjectListContent } from '@/components/contents/receipt-payment-project-list-content';
 import Loader from '@/components/primitives/loader';
-import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
 import { ProjectDetailFooterContent } from '@/components/contents/project-detail-footer-content';

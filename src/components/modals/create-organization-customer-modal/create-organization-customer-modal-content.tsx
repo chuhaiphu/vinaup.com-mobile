@@ -4,7 +4,7 @@ import {
   CreateOrganizationCustomerRequest,
   OrganizationCustomerResponse,
 } from '@/interfaces/organization-customer-interfaces';
-import { useMutationFn } from '@/hooks/use-mutation-fn';
+import { useMutationFn } from 'fetchwire';
 import { createOrganizationCustomerApi } from '@/apis/organization-apis';
 import { COLORS } from '@/constants/style-constant';
 

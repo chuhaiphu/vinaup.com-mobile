@@ -1,9 +1,9 @@
-import { RegisterRequest } from "@/interfaces/auth-interfaces";
-import { UserResponse } from "@/interfaces/user-interfaces";
-import { api } from "./_base";
+import { RegisterRequest } from '@/interfaces/auth-interfaces';
+import { UserResponse } from '@/interfaces/user-interfaces';
+import { wireApi } from 'fetchwire';
 
 export const registerApi = async (payload: RegisterRequest) => {
-  const response = await api<UserResponse>('/user/register', {
+  const response = await wireApi<UserResponse>('/user/register', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -11,7 +11,7 @@ export const registerApi = async (payload: RegisterRequest) => {
 };
 
 export const getCurrentUserApi = async () => {
-  const response = await api<UserResponse>('/user/me', {
+  const response = await wireApi<UserResponse>('/user/me', {
     method: 'GET',
   });
   return response;

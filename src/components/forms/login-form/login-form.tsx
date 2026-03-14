@@ -1,7 +1,7 @@
 import { loginApi } from '@/apis/auth-apis';
 import { COLORS } from '@/constants/style-constant';
 import { AuthContext } from '@/providers/auth-provider';
-import { ApiError } from '@/utils/api-error';
+import { ApiError } from 'fetchwire';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import React, { useContext, useState } from 'react';
@@ -54,7 +54,10 @@ const LoginForm = () => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
           <View style={styles.formHeader}>
-            <Image source={{ uri: 'vinaup_logo_secondary' }} style={styles.formLogo} />
+            <Image
+              source={{ uri: 'vinaup_logo_secondary' }}
+              style={styles.formLogo}
+            />
             <Text style={styles.formTitle}>Đăng nhập</Text>
           </View>
           <View style={styles.inputContainer}>

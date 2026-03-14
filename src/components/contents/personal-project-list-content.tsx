@@ -1,6 +1,6 @@
 import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn } from 'fetchwire';
 import { useEffect, useState } from 'react';
 import {
   FlatList,

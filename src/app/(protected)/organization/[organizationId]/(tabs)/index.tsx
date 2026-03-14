@@ -13,7 +13,7 @@ import VinaupCog from '@/components/icons/vinaup-cog.native';
 import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByOrganizationIdApi } from '@/apis/receipt-payment-apis';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn } from 'fetchwire';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { MultiSelect } from '@/components/primitives/multiple-select';
 import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';

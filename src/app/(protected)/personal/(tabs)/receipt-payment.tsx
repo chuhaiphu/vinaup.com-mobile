@@ -2,7 +2,7 @@ import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis'
 import Loader from '@/components/primitives/loader';
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn } from 'fetchwire';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect, useState } from 'react';
 import {

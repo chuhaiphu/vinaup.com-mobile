@@ -1,11 +1,15 @@
-import { CreateBookingRequest, BookingResponse, UpdateBookingRequest } from "@/interfaces/booking-interfaces";
-import { BookingFilterParam } from "@/interfaces/_query-param.interfaces";
-import { buildFilterQueryString } from "@/utils/api-helpers";
-import { api } from "./_base";
+import {
+  CreateBookingRequest,
+  BookingResponse,
+  UpdateBookingRequest,
+} from '@/interfaces/booking-interfaces';
+import { BookingFilterParam } from '@/interfaces/_query-param.interfaces';
+import { buildFilterQueryString } from '@/utils/api-helpers';
+import { wireApi } from 'fetchwire';
 
 export async function createBookingApi(data: CreateBookingRequest) {
-  return api<BookingResponse>("/booking", {
-    method: "POST",
+  return wireApi<BookingResponse>('/booking', {
+    method: 'POST',
     body: JSON.stringify(data),
   });
 }
@@ -17,28 +21,28 @@ export async function getBookingsByOrganizationIdApi(
   const filterQueryString = buildFilterQueryString(filter, {
     status: filter?.status,
   });
-  return api<BookingResponse[]>(
+  return wireApi<BookingResponse[]>(
     `/booking/organization/${organizationId}${filterQueryString}`,
-    { method: "GET" }
+    { method: 'GET' }
   );
 }
 
 export async function getBookingByIdApi(id: string) {
-  return api<BookingResponse>(`/booking/${id}`, {
-    method: "GET",
+  return wireApi<BookingResponse>(`/booking/${id}`, {
+    method: 'GET',
   });
 }
 
 export async function updateBookingApi(id: string, data: UpdateBookingRequest) {
-  return api<BookingResponse>(`/booking/${id}`, {
-    method: "PUT",
+  return wireApi<BookingResponse>(`/booking/${id}`, {
+    method: 'PUT',
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteBookingApi(id: string) {
-  return api<null>(`/booking/${id}`, {
-    method: "DELETE",
+  return wireApi<null>(`/booking/${id}`, {
+    method: 'DELETE',
   });
 }
 
@@ -49,8 +53,8 @@ export async function getBookingsByTourImplementationIdApi(
   const filterQueryString = buildFilterQueryString(filter, {
     status: filter?.status,
   });
-  return api<BookingResponse[]>(
+  return wireApi<BookingResponse[]>(
     `/booking/tour-implementation/${tourImplementationId}${filterQueryString}`,
-    { method: "GET" }
+    { method: 'GET' }
   );
 }

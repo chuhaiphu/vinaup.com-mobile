@@ -1,27 +1,33 @@
-import { UpdateSignatureUrlRequest, SignatureResponse } from "@/interfaces/signature-interfaces";
-import { api } from "./_base";
+import {
+  UpdateSignatureUrlRequest,
+  SignatureResponse,
+} from '@/interfaces/signature-interfaces';
+import { wireApi } from 'fetchwire';
 
-export async function updateSignatureUrlApi(id: string, data: UpdateSignatureUrlRequest) {
-  return api<SignatureResponse>(`/signature/${id}/url`, {
+export async function updateSignatureUrlApi(
+  id: string,
+  data: UpdateSignatureUrlRequest
+) {
+  return wireApi<SignatureResponse>(`/signature/${id}/url`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
 }
 
 export async function signSignatureApi(id: string) {
-  return api<SignatureResponse>(`/signature/${id}/sign`, {
+  return wireApi<SignatureResponse>(`/signature/${id}/sign`, {
     method: 'POST',
   });
 }
 
 export async function getSignaturesByDocumentIdApi(documentId: string) {
-  return api<SignatureResponse[]>(`/signature/document/${documentId}`, {
+  return wireApi<SignatureResponse[]>(`/signature/document/${documentId}`, {
     method: 'GET',
   });
 }
 
 export async function getSignatureByIdApi(id: string) {
-  return api<SignatureResponse>(`/signature/${id}`, {
+  return wireApi<SignatureResponse>(`/signature/${id}`, {
     method: 'GET',
   });
 }

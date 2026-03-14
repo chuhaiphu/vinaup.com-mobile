@@ -26,12 +26,11 @@ import {
 import { COLORS } from '@/constants/style-constant';
 import { Select } from '@/components/primitives/select';
 import { getCategoriesOfCurrentUserApi } from '@/apis/category-apis';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn, useMutationFn } from 'fetchwire';
 import { CategoryResponse } from '@/interfaces/category-interfaces';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import VinaupLeftArrowWithFill from '@/components/icons/vinaup-left-arrow-with-fill.native';
 import VinaupRightArrowWithFill from '@/components/icons/vinaup-right-arrow-with-fill.native';
-import { useMutationFn } from '@/hooks/use-mutation-fn';
 import {
   createReceiptPaymentApi,
   deleteReceiptPaymentApi,

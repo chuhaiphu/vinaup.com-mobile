@@ -1,6 +1,6 @@
 import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn } from 'fetchwire';
 import { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
@@ -58,7 +58,14 @@ export default function OrganizationInvoice() {
         year: selectedDate.year(),
       })
     );
-  }, [fetchInvoices, selectedDate, organizationId, invoiceTypeCode, getInvoiceTypeByCode, statusFilter]);
+  }, [
+    fetchInvoices,
+    selectedDate,
+    organizationId,
+    invoiceTypeCode,
+    getInvoiceTypeByCode,
+    statusFilter,
+  ]);
 
   const navigateToDetail = (invoiceId: string) => {
     if (safeRouter.isNavigating) return;

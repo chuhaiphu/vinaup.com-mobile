@@ -2,7 +2,7 @@ import { View, StyleSheet, Alert, Text, Pressable } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn, useMutationFn } from 'fetchwire';
 import {
   InvoiceResponse,
   UpdateInvoiceRequest,
@@ -19,7 +19,6 @@ import { OrganizationCustomerResponse } from '@/interfaces/organization-customer
 import { InvoiceDetailHeaderContent } from '@/components/contents/invoice-detail-header-content';
 import { ReceiptPaymentInvoiceContent } from '@/components/contents/receipt-payment-invoice-list-content';
 import Loader from '@/components/primitives/loader';
-import { useMutationFn } from '@/hooks/use-mutation-fn';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { InvoiceDetailFooterContent } from '@/components/contents/invoice-detail-footer-content';

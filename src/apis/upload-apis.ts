@@ -1,18 +1,18 @@
-import { api } from "./_base";
+import { wireApi } from 'fetchwire';
 
 export async function uploadImageApi(file: File) {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append('file', file);
 
-  return api<null>("/upload", {
-    method: "POST",
+  return wireApi<null>('/upload', {
+    method: 'POST',
     body: formData,
   });
 }
 
 export async function deleteImageApi(path: string) {
-  return api<null>("/upload", {
-    method: "DELETE",
+  return wireApi<null>('/upload', {
+    method: 'DELETE',
     body: JSON.stringify({ path }),
   });
 }

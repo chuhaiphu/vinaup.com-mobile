@@ -6,7 +6,7 @@ import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { TextSwitcher } from '../../primitives/text-switcher';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
-import { useMutationFn } from '@/hooks/use-mutation-fn';
+import { useMutationFn } from 'fetchwire';
 import { createInvoiceApi } from '@/apis/invoice-apis';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { InvoiceTypeContext } from '@/providers/invoice-type-provider';

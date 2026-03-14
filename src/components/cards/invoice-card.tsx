@@ -3,7 +3,7 @@ import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { InvoiceStatusDisplay } from '@/constants/invoice-constants';
-import { useFetchFn } from '@/hooks/use-fetch-fn';
+import { useFetchFn } from 'fetchwire';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useEffect } from 'react';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
