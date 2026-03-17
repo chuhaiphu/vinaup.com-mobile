@@ -37,5 +37,5 @@ export interface CreateTourRequest {
 }
 
 export type UpdateTourRequest = Partial<CreateTourRequest> & {
-  status?: string;
+  status?: TourStatus;
 };

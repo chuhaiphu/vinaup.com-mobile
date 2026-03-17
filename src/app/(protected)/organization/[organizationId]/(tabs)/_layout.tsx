@@ -45,6 +45,7 @@ export default function OrganizationTabsLayout() {
       />
       <Tabs.Screen
         name="tour"
+        initialParams={{ organizationId }}
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupCircleHorizontalHalfArrow

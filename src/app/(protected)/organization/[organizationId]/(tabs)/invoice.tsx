@@ -26,6 +26,7 @@ export default function OrganizationInvoiceScreen() {
     organizationId: string;
     invoiceTypeCode: string;
   }>();
+
   const { organizationId } = params;
   const invoiceTypeCode = params.invoiceTypeCode || 'BUY';
 

@@ -7,7 +7,7 @@ import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.nat
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
-import { SimpleTextInputModal } from '../modals/simple-text-input-modal/simple-text-input-modal';
+import { SimpleTextInputModal } from '../../modals/simple-text-input-modal/simple-text-input-modal';
 import { InvoiceOrgCustomerSelectModal } from '@/components/modals/invoice-org-customer-select-modal/invoice-org-customer-select-modal';
 import { CreateOrganizationCustomerModal } from '@/components/modals/create-organization-customer-modal/create-organization-customer-modal';
 import { Ionicons, Feather } from '@expo/vector-icons';

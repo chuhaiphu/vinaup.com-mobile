@@ -1,104 +1,198 @@
+import React from 'react';
 import { Stack, useRouter } from 'expo-router';
-import { View, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '@/constants/style-constant';
 import { Button } from '@/components/primitives/button';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { PressableOpacity } from '../primitives/pressable-opacity';
 
+// Rút gọn style interface, tập trung vào layout
+interface StackWithHeaderStyles {
+  container?: StyleProp<ViewStyle>;
+  headerBar?: StyleProp<ViewStyle>;
+  title?: StyleProp<TextStyle>;
+  leftContainer?: StyleProp<ViewStyle>;
+  rightContainer?: StyleProp<ViewStyle>;
+  extensionContainer?: StyleProp<ViewStyle>;
+}
+
 interface StackWithHeaderProps {
   title: string;
-  backTitle?: string;
-  /** If provided, renders a custom chevron-back Pressable instead of the default back button */
+  // Back props
   onBack?: () => void;
-  /** If provided, renders a Save & Exit button in the header right */
+  backIcon?: React.ReactNode;
+  hideBack?: boolean;
+  // Save props
   onSave?: () => void;
+  saveIcon?: React.ReactNode;
   isSaving?: boolean;
-  /** If provided, renders a Trash button in the header right (before save) */
+  // Delete props
   onDelete?: () => void;
+  deleteIcon?: React.ReactNode;
   isDeleting?: boolean;
+  // Children & Styles
+  children?: React.ReactNode;
+  styles?: StackWithHeaderStyles;
 }
 
 export function StackWithHeader({
   title,
-  backTitle,
   onBack,
+  backIcon,
+  hideBack = false,
   onSave,
+  saveIcon,
   isSaving,
   onDelete,
+  deleteIcon,
   isDeleting,
+  children,
+  styles: customStyles,
 }: StackWithHeaderProps) {
-  const hasHeaderRight = Boolean(onSave || onDelete);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+
+  // Mặc định các icon nếu không được truyền từ props
+  const defaultBackIcon = (
+    <Ionicons name="chevron-back" size={28} color={COLORS.vinaupWhite} />
+  );
+  const defaultDeleteIcon = (
+    <FontAwesome name="trash-o" size={20} color={COLORS.vinaupWhite} />
+  );
+  const defaultSaveIcon = (
+    <VinaupSaveAndExit width={32} height={24} color={COLORS.vinaupYellow} />
+  );
+
   return (
     <Stack.Screen
       options={{
-        title,
-        headerStyle: { backgroundColor: COLORS.vinaupTeal },
-        headerTitle: ({ children }) => (
-          <Text
-            style={{ fontSize: 20, fontWeight: '400', color: COLORS.vinaupWhite }}
+        header: () => (
+          <View
+            style={[
+              { paddingTop: insets.top, backgroundColor: COLORS.vinaupTeal },
+              defaultStyles.container,
+              customStyles?.container,
+            ]}
           >
-            {children}
-          </Text>
-        ),
-        headerTintColor: '#fff',
-        ...(backTitle && { headerBackTitle: backTitle }),
-        headerLeft: () => (
-          <PressableOpacity
-            onPress={() => {
-              if (onBack) onBack();
-              router.back();
-            }}
-            style={{
-              alignItems: 'center',
-              marginLeft: -8,
-              marginRight: 4,
-              flexDirection: 'row',
-            }}
-          >
-            <Ionicons name="chevron-back" size={28} color="#fff" />
-          </PressableOpacity>
-        ),
-        ...(hasHeaderRight && {
-          headerRight: () => (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 20,
-                marginRight: -4,
-              }}
-            >
-              {onDelete && (
-                <Button
-                  onPress={onDelete}
-                  isLoading={isDeleting}
-                  loaderStyle={{
-                    color: COLORS.vinaupWhite,
-                  }}
+            <View style={[defaultStyles.headerBar, customStyles?.headerBar]}>
+              {/* Left Section */}
+              <View
+                style={[
+                  defaultStyles.innerContainer,
+                  defaultStyles.left,
+                  customStyles?.leftContainer,
+                ]}
+              >
+                {!hideBack && (
+                  <PressableOpacity
+                    onPress={() => {
+                      if (onBack) onBack();
+                      router.back();
+                    }}
+                    style={defaultStyles.backButton}
+                  >
+                    {backIcon ?? defaultBackIcon}
+                  </PressableOpacity>
+                )}
+                <Text
+                  numberOfLines={1}
+                  style={[defaultStyles.titleText, customStyles?.title]}
                 >
-                  <FontAwesome name="trash-o" size={20} color="#fff" />
-                </Button>
-              )}
-              {onSave && (
-                <Button
-                  onPress={onSave}
-                  isLoading={isSaving}
-                  loaderStyle={{ color: COLORS.vinaupWhite }}
-                >
-                  <VinaupSaveAndExit
-                    width={32}
-                    height={24}
-                    color={COLORS.vinaupYellow}
-                  />
-                </Button>
-              )}
+                  {title}
+                </Text>
+              </View>
+
+              {/* Right Section */}
+              <View
+                style={[
+                  defaultStyles.innerContainer,
+                  defaultStyles.right,
+                  customStyles?.rightContainer,
+                ]}
+              >
+                <View style={defaultStyles.actionGroup}>
+                  {onDelete && (
+                    <Button
+                      onPress={onDelete}
+                      isLoading={isDeleting}
+                      loaderStyle={{ color: COLORS.vinaupYellow }}
+                    >
+                      {deleteIcon ?? defaultDeleteIcon}
+                    </Button>
+                  )}
+                  {onSave && (
+                    <Button
+                      onPress={onSave}
+                      isLoading={isSaving}
+                      loaderStyle={{ color: COLORS.vinaupYellow }}
+                    >
+                      {saveIcon ?? defaultSaveIcon}
+                    </Button>
+                  )}
+                </View>
+              </View>
             </View>
-          ),
-        }),
+
+            {children && (
+              <View
+                style={[
+                  defaultStyles.extension,
+                  customStyles?.extensionContainer,
+                ]}
+              >
+                {children}
+              </View>
+            )}
+          </View>
+        ),
       }}
     />
   );
 }
+
+const defaultStyles = StyleSheet.create({
+  container: {},
+  headerBar: {
+    height: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  innerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  left: {
+    alignItems: 'center',
+  },
+  right: {
+    justifyContent: 'flex-end',
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: '400',
+    color: COLORS.vinaupWhite,
+  },
+  backButton: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginRight: 4,
+  },
+  actionGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  extension: {
+    paddingBottom: 8,
+  },
+});

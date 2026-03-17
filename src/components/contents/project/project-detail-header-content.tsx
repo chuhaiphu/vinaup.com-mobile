@@ -1,15 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
+import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
-import { InvoiceInfoModal } from '@/components/modals/invoice-info-modal/invoice-info-modal';
-import VinaupPenLineVariant from '../icons/vinaup-pen-line-variant.native';
+import { ProjectInfoModal } from '@/components/modals/project-info-modal/project-info-modal';
+import VinaupPenLineVariant from '../../icons/vinaup-pen-line-variant.native';
 
-interface InvoiceDetailHeaderContentProps {
-  invoice?: InvoiceResponse;
+interface ProjectDetailHeaderContentProps {
+  project?: ProjectResponse;
   isLoading?: boolean;
   onConfirm?: (
     data: {
@@ -22,15 +22,15 @@ interface InvoiceDetailHeaderContentProps {
   ) => void;
 }
 
-export function InvoiceDetailHeaderContent({
-  invoice,
+export function ProjectDetailHeaderContent({
+  project,
   isLoading,
   onConfirm,
-}: InvoiceDetailHeaderContentProps) {
+}: ProjectDetailHeaderContentProps) {
   const modalRef = useRef<SlideSheetRef>(null);
   const [contentKey, setContentKey] = useState(0);
 
-  if (!invoice) {
+  if (!project) {
     return (
       <View>
         <Text>Không có dữ liệu</Text>
@@ -44,8 +44,8 @@ export function InvoiceDetailHeaderContent({
   };
 
   const getDateRangeText = () => {
-    const start = dayjs(invoice.startDate);
-    const end = dayjs(invoice.endDate);
+    const start = dayjs(project.startDate);
+    const end = dayjs(project.endDate);
 
     if (start.isSame(end, 'day')) {
       return (
@@ -74,18 +74,18 @@ export function InvoiceDetailHeaderContent({
         }}
       >
         <View style={styles.leftInfo}>
-          <Text style={styles.entityName}>Tên: {invoice.description}</Text>
+          <Text style={styles.entityName}>Tên: {project.description}</Text>
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
           <View style={styles.editButton}>
             <VinaupPenLineVariant width={16} height={16} />
           </View>
-          <Text style={styles.entityCode}>No. {invoice.code.slice(0, 8)}</Text>
+          {/* <Text style={styles.entityCode}>No. {project.code.slice(0, 8)}</Text> */}
         </View>
       </PressableCard>
-      <InvoiceInfoModal
-        invoice={invoice}
+      <ProjectInfoModal
+        project={project}
         isLoading={isLoading}
         contentKey={contentKey}
         modalRef={modalRef}

@@ -11,12 +11,12 @@ import {
 } from '@/apis/invoice-apis';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
-import { InvoiceDetailHeaderContent } from '@/components/contents/invoice-detail-header-content';
-import { ReceiptPaymentInvoiceContent } from '@/components/contents/receipt-payment-invoice-list-content';
+import { InvoiceDetailHeaderContent } from '@/components/contents/invoice/invoice-detail-header-content';
+import { ReceiptPaymentInvoiceContent } from '@/components/contents/invoice/receipt-payment-invoice-list-content';
 import Loader from '@/components/primitives/loader';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
-import { InvoiceDetailFooterContent } from '@/components/contents/invoice-detail-footer-content';
+import { InvoiceDetailFooterContent } from '@/components/contents/invoice/invoice-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
@@ -52,8 +52,7 @@ export default function InvoiceDetailScreen() {
     invalidatesTags: ['organization-invoice-list'],
   });
 
-  const fetchReceiptPaymentsFn = () =>
-    getReceiptPaymentsByInvoiceIdApi(invoiceId);
+  const fetchReceiptPaymentsFn = () => getReceiptPaymentsByInvoiceIdApi(invoiceId);
   const {
     data: receiptPayments,
     isLoading: isLoadingReceiptPayments,

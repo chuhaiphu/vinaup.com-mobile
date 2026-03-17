@@ -10,12 +10,12 @@ import {
   updateProjectApi,
 } from '@/apis/project-apis';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
-import { ProjectDetailHeaderContent } from '@/components/contents/project-detail-header-content';
-import { ReceiptPaymentProjectListContent } from '@/components/contents/receipt-payment-project-list-content';
+import { ProjectDetailHeaderContent } from '@/components/contents/project/project-detail-header-content';
+import { ReceiptPaymentProjectListContent } from '@/components/contents/project/receipt-payment-project-list-content';
 import Loader from '@/components/primitives/loader';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
-import { ProjectDetailFooterContent } from '@/components/contents/project-detail-footer-content';
+import { ProjectDetailFooterContent } from '@/components/contents/project/project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
@@ -47,8 +47,7 @@ export default function ProjectDetailScreen() {
       invalidatesTags: ['personal-project-list'],
     });
 
-  const fetchReceiptPaymentsFn = () =>
-    getReceiptPaymentsByProjectIdApi(projectId);
+  const fetchReceiptPaymentsFn = () => getReceiptPaymentsByProjectIdApi(projectId);
   const {
     data: receiptPayments,
     isLoading: isLoadingReceiptPayments,

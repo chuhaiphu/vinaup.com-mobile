@@ -11,6 +11,7 @@ import PersonalProjectCompanyHeaderBottom from './personal-project-company-heade
 import PersonalIndexHeaderBottom from './personal-index-header-bottom';
 import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
 import InvoiceHeaderBottom from './invoice-header-bottom';
+import OrganizationTourHeaderBottom from './organization-tour-header-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
@@ -30,6 +31,8 @@ export const HomeHeader = () => {
         return <InvoiceHeaderBottom />;
       case pathname === `/organization/${params.organizationId}`:
         return <OrganizationIndexHeaderBottom />;
+      case pathname.includes(`/organization/${params.organizationId}/tour`):
+        return <OrganizationTourHeaderBottom />;
       default:
         return null;
     }
