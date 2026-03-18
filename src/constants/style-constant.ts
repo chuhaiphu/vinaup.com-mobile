@@ -26,4 +26,4 @@ export const COLORS = {
   vinaupNavyDark: '#01233a',
 };
 
-export const HEADER_HEIGHT = 60;
+export const HEADER_HEIGHT = 56;

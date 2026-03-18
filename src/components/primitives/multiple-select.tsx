@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import {
   View,
   Text,
-  Pressable,
   ScrollView,
   StyleSheet,
   ActivityIndicator,
@@ -131,7 +130,7 @@ export function MultiSelect({
                 return <React.Fragment key={item.value}>{option}</React.Fragment>;
               }
               return (
-                <Pressable
+                <PressableOpacity
                   key={item.value}
                   style={[
                     styles.optionItem,
@@ -146,7 +145,7 @@ export function MultiSelect({
                   <View style={[styles.checkbox]}>
                     {isSelected && <VinaupDoubleCheck />}
                   </View>
-                </Pressable>
+                </PressableOpacity>
               );
             })}
           </View>

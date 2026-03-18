@@ -1,19 +1,24 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { InvoiceStatusDisplay } from '@/constants/invoice-constants';
 import { useFetchFn } from 'fetchwire';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { useSafeRouter } from '@/hooks/use-safe-router';
+import { PressableOpacity } from '../primitives/pressable-opacity';
 
 interface InvoiceCardProps {
   invoice?: InvoiceResponse;
 }
 
 export function InvoiceCard({ invoice }: InvoiceCardProps) {
+  const safeRouter = useSafeRouter();
+
+  const [isShowingPrice, setIsShowingPrice] = useState(false);
   const fetchReceiptPaymentsFn = () =>
     getReceiptPaymentsByInvoiceIdApi(invoice?.id || '');
 
@@ -41,12 +46,24 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
     ).format('DD/MM')}`;
   };
 
-  const getInfoText = () => {
+  const getInvoiceInfoText = () => {
     if (!invoice) return '';
     if (invoice.organizationCustomer) {
       return invoice.organizationCustomer.name || '';
     }
     return invoice.externalCustomerName || invoice.externalOrganizationName || '—';
+  };
+
+  const togglePrice = () => {
+    setIsShowingPrice(!isShowingPrice);
+  };
+
+  const navigateToDetail = (invoiceId: string) => {
+    if (safeRouter.isNavigating) return;
+    safeRouter.safePush({
+      pathname: '/(protected)/invoice-detail/[invoiceId]',
+      params: { invoiceId, invoiceTypeCode: invoice?.invoiceType?.code },
+    });
   };
 
   if (!invoice) {
@@ -64,6 +81,25 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
       <View style={styles.innerHeader}>
         <View style={styles.left}>
           <Text style={styles.dateRangeText}>{getDateRangeText()}</Text>
+          <PressableOpacity onPress={togglePrice}>
+            <Text
+              style={[
+                styles.equalSignText,
+                isShowingPrice && styles.equalSignActive,
+              ]}
+            >
+              =
+            </Text>
+          </PressableOpacity>
+          {isShowingPrice && (
+            <Text style={styles.invoiceTotalAmountText}>
+              {generateLocalePriceFormat(
+                calculateReceiptPaymentsSummary(receiptPayments || [])
+                  .totalRemaining,
+                'vi-VN'
+              )}
+            </Text>
+          )}
         </View>
         <View style={styles.right}>
           <Text style={styles.statusText}>
@@ -71,25 +107,28 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
           </Text>
         </View>
       </View>
-      <View style={styles.content}>
-        <View style={styles.topRow}>
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionText}>{invoice.description}</Text>
+      <Pressable onPress={() => navigateToDetail(invoice.id)}>
+        <View style={styles.content}>
+          <View style={styles.topRow}>
+            <View style={styles.descriptionContainer}>
+              <Text style={styles.descriptionText}>{invoice.description}</Text>
+            </View>
+            <Text style={styles.codeText}>No. {invoice.code.slice(0, 8)}</Text>
           </View>
-          <Text style={styles.codeText}>No. {invoice.code.slice(0, 8)}</Text>
+          <View style={styles.bottomRow}>
+            <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
+              {getInvoiceInfoText()}
+            </Text>
+            {/* <Text style={styles.totalAmountText}>
+              {generateLocalePriceFormat(
+                calculateReceiptPaymentsSummary(receiptPayments || [])
+                  .totalRemaining,
+                'vi-VN'
+              )}
+            </Text> */}
+          </View>
         </View>
-        <View style={styles.bottomRow}>
-          <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
-            {getInfoText()}
-          </Text>
-          <Text style={styles.totalAmountText}>
-            {generateLocalePriceFormat(
-              calculateReceiptPaymentsSummary(receiptPayments || []).totalRemaining,
-              'vi-VN'
-            )}
-          </Text>
-        </View>
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -116,6 +155,22 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     color: COLORS.vinaupBlack,
+  },
+  equalSignText: {
+    fontSize: 20,
+    lineHeight: 20,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    color: COLORS.vinaupTeal,
+    backgroundColor: COLORS.vinaupWhite,
+    overflow: 'hidden',
+  },
+  equalSignActive: {
+    backgroundColor: 'transparent',
+  },
+  invoiceTotalAmountText: {
+    fontSize: 16,
+    flexShrink: 0,
   },
   content: {
     backgroundColor: '#FFFFFF',

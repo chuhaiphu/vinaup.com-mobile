@@ -61,12 +61,11 @@ export function StackWithHeader({
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  // Mặc định các icon nếu không được truyền từ props
   const defaultBackIcon = (
-    <Ionicons name="chevron-back" size={28} color={COLORS.vinaupWhite} />
+    <Ionicons name="chevron-back" size={28} color={COLORS.vinaupTeal} />
   );
   const defaultDeleteIcon = (
-    <FontAwesome name="trash-o" size={20} color={COLORS.vinaupWhite} />
+    <FontAwesome name="trash-o" size={20} color={COLORS.vinaupTeal} />
   );
   const defaultSaveIcon = (
     <VinaupSaveAndExit width={32} height={24} color={COLORS.vinaupYellow} />
@@ -78,7 +77,7 @@ export function StackWithHeader({
         header: () => (
           <View
             style={[
-              { paddingTop: insets.top, backgroundColor: COLORS.vinaupTeal },
+              { paddingTop: insets.top },
               defaultStyles.container,
               customStyles?.container,
             ]}
@@ -124,7 +123,7 @@ export function StackWithHeader({
                     <Button
                       onPress={onDelete}
                       isLoading={isDeleting}
-                      loaderStyle={{ color: COLORS.vinaupYellow }}
+                      loaderStyle={{ color: COLORS.vinaupTeal }}
                     >
                       {deleteIcon ?? defaultDeleteIcon}
                     </Button>
@@ -144,10 +143,7 @@ export function StackWithHeader({
 
             {children && (
               <View
-                style={[
-                  defaultStyles.extension,
-                  customStyles?.extensionContainer,
-                ]}
+                style={[defaultStyles.extension, customStyles?.extensionContainer]}
               >
                 {children}
               </View>
@@ -160,7 +156,7 @@ export function StackWithHeader({
 }
 
 const defaultStyles = StyleSheet.create({
-  container: {},
+  container: { backgroundColor: COLORS.vinaupWhite },
   headerBar: {
     height: 56,
     flexDirection: 'row',
@@ -180,17 +176,18 @@ const defaultStyles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: '400',
-    color: COLORS.vinaupWhite,
+    color: COLORS.vinaupTeal,
   },
   backButton: {
     alignItems: 'center',
     flexDirection: 'row',
     marginRight: 4,
+    marginLeft: -8,
   },
   actionGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 20,
   },
   extension: {
     paddingBottom: 8,

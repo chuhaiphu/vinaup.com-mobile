@@ -7,10 +7,14 @@ import { Avatar } from '@/components/primitives/avatar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { COLORS } from '@/constants/style-constant';
 import { Select, SelectOption } from '@/components/primitives/select';
+import { StyleSheet, Text } from 'react-native';
+import VinaupVerticalHalfArrow from '@/components/icons/vinaup-vertical-half-arrow.native';
 
 export const OwnerSelector = () => {
   const router = useRouter();
-  const { organizationId: currentOrgId } = useLocalSearchParams<{ organizationId: string }>();
+  const { organizationId: currentOrgId } = useLocalSearchParams<{
+    organizationId: string;
+  }>();
   const { currentUser } = useContext(AuthContext);
   const { organizations } = useContext(OrganizationContext);
   const { ownerMode, setOwnerMode } = useContext(OwnerModeContext);
@@ -77,6 +81,26 @@ export const OwnerSelector = () => {
       value={getCurrentValue()}
       onChange={handleValueChange}
       placeholder="Owners"
+      renderTrigger={(option) => (
+        <>
+          <Text style={styles.triggerText} numberOfLines={1}>
+            {option.label}
+          </Text>
+          <VinaupVerticalHalfArrow
+            width={18}
+            height={18}
+            color={COLORS.vinaupTeal}
+          />
+        </>
+      )}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  triggerText: {
+    color: COLORS.vinaupTeal,
+    fontSize: 18,
+    fontWeight: '400',
+  },
+});

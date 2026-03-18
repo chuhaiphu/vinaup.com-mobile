@@ -128,7 +128,6 @@ export default function ProjectDetailScreen() {
     <>
       <StackWithHeader
         title={getHeaderTitle()}
-        backTitle="Quay lại"
         onDelete={handleDelete}
         isDeleting={isDeletingProject}
         onSave={handleSaveAndExit}
@@ -140,7 +139,9 @@ export default function ProjectDetailScreen() {
               renderTrigger={(option) => (
                 <>
                   <VinaupVerticalExpandArrow width={18} height={18} />
-                  <Text>{option.label || 'Trạng thái'}</Text>
+                  <Text style={{ color: COLORS.vinaupTeal }}>
+                    {option.label || 'Trạng thái'}
+                  </Text>
                 </>
               )}
               isLoading={isUpdatingProject || isRefreshingProject}
@@ -153,7 +154,7 @@ export default function ProjectDetailScreen() {
               style={{
                 triggerText: {
                   fontSize: 16,
-                  color: COLORS.vinaupBlack,
+                  color: COLORS.vinaupTeal,
                 },
               }}
             />

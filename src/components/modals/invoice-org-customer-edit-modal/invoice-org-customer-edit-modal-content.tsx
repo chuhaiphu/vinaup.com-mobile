@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { Select, SelectOption } from '@/components/primitives/select';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { CreateOrganizationCustomerModal } from '@/components/modals/create-organization-customer-modal/create-organization-customer-modal';
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 interface InvoiceOrgCustomerEditModalContentProps {
   organizationId?: string;
@@ -72,14 +73,14 @@ export function InvoiceOrgCustomerEditModalContent({
         />
       </View>
 
-      <Pressable
+      <PressableOpacity
         style={styles.createButton}
         onPress={() => {
           createSheetRef.current?.open();
         }}
       >
         <Text style={styles.createButtonText}>+ Thêm khách hàng mới</Text>
-      </Pressable>
+      </PressableOpacity>
 
       <CreateOrganizationCustomerModal
         organizationId={organizationId}

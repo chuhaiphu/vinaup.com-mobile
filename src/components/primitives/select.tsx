@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
-  Pressable,
   ScrollView,
   StyleSheet,
   ActivityIndicator,
@@ -124,7 +123,7 @@ export function Select({
           {filteredOptions.map((item) => {
             const isSelected = item.value === value;
             return (
-              <Pressable
+              <PressableOpacity
                 key={item.value}
                 style={[styles.optionItem, isSelected && styles.optionSelected]}
                 onPress={() => handleSelect(item.value || '')}
@@ -147,7 +146,7 @@ export function Select({
                     color={COLORS.vinaupTeal}
                   />
                 )}
-              </Pressable>
+              </PressableOpacity>
             );
           })}
         </ScrollView>

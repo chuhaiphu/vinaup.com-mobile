@@ -4,12 +4,11 @@ import { useFetchFn } from 'fetchwire';
 import { useContext, useEffect, useState } from 'react';
 import {
   FlatList,
-  Pressable,
   RefreshControl,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
@@ -19,9 +18,9 @@ import { Select } from '@/components/primitives/select';
 import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
 import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
+import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 
 export default function OrganizationInvoiceScreen() {
-  const safeRouter = useSafeRouter();
   const params = useLocalSearchParams<{
     organizationId: string;
     invoiceTypeCode: string;
@@ -79,14 +78,6 @@ export default function OrganizationInvoiceScreen() {
     statusFilter,
   ]);
 
-  const navigateToDetail = (invoiceId: string) => {
-    if (safeRouter.isNavigating) return;
-    safeRouter.safePush({
-      pathname: '/(protected)/invoice-detail/[invoiceId]',
-      params: { invoiceId, invoiceTypeCode },
-    });
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.filterContainer}>
@@ -103,6 +94,14 @@ export default function OrganizationInvoiceScreen() {
         />
         <View style={styles.statusFilter}>
           <Select
+            renderTrigger={(option) => (
+              <>
+                <VinaupVerticalExpandArrow width={18} height={18} />
+                <Text style={{ color: COLORS.vinaupTeal }}>
+                  {option.label || 'Trạng thái'}
+                </Text>
+              </>
+            )}
             options={InvoiceStatusOptions}
             value={statusFilter}
             onChange={(value) => setStatusFilter(value)}
@@ -110,7 +109,7 @@ export default function OrganizationInvoiceScreen() {
             style={{
               triggerText: {
                 fontSize: 16,
-                color: COLORS.vinaupBlack,
+                color: COLORS.vinaupTeal,
               },
             }}
           />
@@ -121,11 +120,7 @@ export default function OrganizationInvoiceScreen() {
           data={invoices}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => navigateToDetail(item.id)}>
-              <InvoiceCard invoice={item} />
-            </Pressable>
-          )}
+          renderItem={({ item }) => <InvoiceCard invoice={item} />}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}

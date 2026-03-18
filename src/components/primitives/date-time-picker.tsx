@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Text,
-  Pressable,
   Platform,
   StyleSheet,
   StyleProp,
@@ -15,6 +14,7 @@ import NativeDatetimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { COLORS } from '@/constants/style-constant';
+import { PressableOpacity } from './pressable-opacity';
 
 interface DateTimePickerProps {
   mode?: 'date' | 'time';
@@ -72,7 +72,7 @@ export function DateTimePicker({
 
   return (
     <>
-      <Pressable
+      <PressableOpacity
         onPress={handleShowDatePicker}
         style={[isDisabled && styles.disabled, style?.disabled, styles.container]}
         disabled={isDisabled}
@@ -90,7 +90,7 @@ export function DateTimePicker({
           {value.format(displayFormat)}
         </Text>
         {rightSection && <View style={styles.rightSection}>{rightSection}</View>}
-      </Pressable>
+      </PressableOpacity>
 
       {Platform.OS === 'ios' && showDatePicker && (
         <NativeDatetimePicker

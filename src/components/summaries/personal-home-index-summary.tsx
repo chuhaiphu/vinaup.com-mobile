@@ -6,6 +6,8 @@ import VinaupPlusMinus from '../icons/vinaup-plus-minus.native';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { PressableOpacity } from '../primitives/pressable-opacity';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 
 interface PersonalHomeIndexSummaryProps {
   receiptPayments?: ReceiptPaymentResponse[] | null;
@@ -15,42 +17,43 @@ export function PersonalHomeIndexSummary({
   receiptPayments,
 }: PersonalHomeIndexSummaryProps) {
   const summary = calculateReceiptPaymentsSummary(receiptPayments);
+  const safeRouter = useSafeRouter();
+
+  const handlePressFirstColumn = () => {
+    safeRouter.safePush('/(protected)/personal/(tabs)/receipt-payment');
+  };
 
   return (
     <View style={styles.summaryCard}>
-      <View style={styles.summaryHeaderRow}>
-        <View style={styles.summaryHeaderItem}>
-          <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Thu chi</Text>
-          </View>
-        </View>
-        <View style={styles.summaryHeaderItem}>
-          <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Thu vào</Text>
-          </View>
-        </View>
-        <View style={styles.summaryHeaderItem}>
-          <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Chi ra</Text>
-          </View>
-        </View>
-      </View>
+      <View style={styles.summaryMainRow}>
+        <PressableOpacity
+          style={[styles.summaryColumn, styles.firstColumn]}
+          onPress={handlePressFirstColumn}
+        >
+          <Text style={[styles.columnLabel, styles.firstColumnLabel]}>
+            Tiêu dùng
+          </Text>
+          <Text style={[styles.columnValue, styles.firstColumnValue]}>Cá nhân</Text>
+        </PressableOpacity>
 
-      <View style={styles.summaryValueRow}>
-        <Text style={styles.summaryLeftValue}>Cá nhân</Text>
-        <Text style={styles.summaryCenterValue}>
-          {generateLocalePriceFormat(summary.totalReceipt)}
-        </Text>
-        <Text style={styles.summaryRightValue}>
-          {generateLocalePriceFormat(summary.totalPayment)}
-        </Text>
+        <View style={styles.summaryColumn}>
+          <Text style={styles.columnLabel}>Thu vào</Text>
+          <Text style={styles.columnValue}>
+            {generateLocalePriceFormat(summary.totalReceipt)}
+          </Text>
+        </View>
+
+        <View style={styles.summaryColumn}>
+          <Text style={styles.columnLabel}>Chi ra</Text>
+          <Text style={styles.columnValue}>
+            {generateLocalePriceFormat(summary.totalPayment)}
+          </Text>
+        </View>
       </View>
 
       <Pressable style={styles.summaryBanner} onPress={() => {}}>
         <View style={styles.summaryBannerLeft}>
-          <View>
-            <VinaupPlusMinus width={20} height={20} color={COLORS.vinaupTeal} />
-          </View>
+          <VinaupPlusMinus width={20} height={20} color={COLORS.vinaupTeal} />
           <Text style={styles.summaryBannerText}>
             Xem thu chi tháng này của bạn
           </Text>
@@ -66,48 +69,40 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: COLORS.vinaupWhite,
     borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    padding: 8,
   },
-  summaryHeaderRow: {
+  summaryMainRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
   },
-  summaryHeaderItem: {
-    flexDirection: 'row',
+  summaryColumn: {
     flex: 1,
+    alignItems: 'flex-start',
+    padding: 4,
+    borderRadius: 4,
   },
-  summaryHeaderText: {
-    fontSize: 18,
+  firstColumn: {
+    backgroundColor: COLORS.vinaupLightYellow,
+    flex: 0.8,
+    marginRight: 8,
+  },
+  firstColumnLabel: {
+    color: COLORS.vinaupTeal,
+    borderBottomWidth: 0,
+  },
+  firstColumnValue: {
+    color: COLORS.vinaupTeal,
+  },
+  columnLabel: {
+    fontSize: 16,
     color: COLORS.vinaupMediumDarkGray,
-  },
-  underlineContainer: {
-    borderBottomWidth: 1.5,
+    marginBottom: 4,
+    borderBottomWidth: 1,
     borderBottomColor: COLORS.vinaupMediumGray,
   },
-  summaryValueRow: {
-    marginTop: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  summaryLeftValue: {
-    flex: 1,
-    fontSize: 20,
+  columnValue: {
+    fontSize: 18,
     color: COLORS.vinaupBlack,
-    textAlign: 'left',
-  },
-  summaryCenterValue: {
-    flex: 1,
-    fontSize: 20,
-    color: COLORS.vinaupBlack,
-  },
-  summaryRightValue: {
-    flex: 1,
-    fontSize: 20,
-    color: COLORS.vinaupBlack,
+    textAlign: 'center',
   },
   summaryBanner: {
     marginTop: 12,

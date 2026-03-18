@@ -29,7 +29,7 @@ const LoginForm = () => {
   const handleLogin = async () => {
     try {
       const response = await loginApi(email, password);
-      if (response.statusCode === 200 && response.data?.user) {
+      if (response.status === 200 && response.data?.user) {
         await performLogin(response.data.user, response.data.accessToken);
         router.replace('/');
       }

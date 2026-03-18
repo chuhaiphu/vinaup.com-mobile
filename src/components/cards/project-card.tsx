@@ -1,19 +1,24 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
 import { ProjectStatusDisplay } from '@/constants/project-constants';
 import { useFetchFn } from 'fetchwire';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { useSafeRouter } from '@/hooks/use-safe-router';
+import { PressableOpacity } from '../primitives/pressable-opacity';
 
 interface ProjectCardProps {
   project?: ProjectResponse;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const safeRouter = useSafeRouter();
+
+  const [isShowingPrice, setIsShowingPrice] = useState(false);
   const fetchReceiptPaymentsFn = () =>
     getReceiptPaymentsByProjectIdApi(project?.id || '');
 
@@ -49,6 +54,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
     ).format('DD/MM')}`;
   };
 
+  const togglePrice = () => {
+    setIsShowingPrice(!isShowingPrice);
+  };
+
+  const navigateToDetail = async (id?: string) => {
+    if (safeRouter.isNavigating) return;
+    if (id) {
+      safeRouter.safePush({
+        pathname: '/(protected)/project-detail/[projectId]',
+        params: { projectId: id },
+      });
+    }
+  };
+
   if (!project) {
     return (
       <View style={styles.container}>
@@ -65,6 +84,25 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <Text style={styles.projectDateRangeText}>
             {getProjectDateRangeText()}
           </Text>
+          <PressableOpacity onPress={togglePrice}>
+            <Text
+              style={[
+                styles.equalSignText,
+                isShowingPrice && styles.equalSignActive,
+              ]}
+            >
+              =
+            </Text>
+          </PressableOpacity>
+          {isShowingPrice && (
+            <Text style={styles.projectTotalAmountText}>
+              {generateLocalePriceFormat(
+                calculateReceiptPaymentsSummary(receiptPayments || [])
+                  .totalRemaining,
+                'vi-VN'
+              )}
+            </Text>
+          )}
         </View>
         <View style={styles.right}>
           <Text style={styles.projectStatusText}>
@@ -72,27 +110,23 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </Text>
         </View>
       </View>
-      <View style={styles.content}>
-        <View style={styles.topRow}>
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionText}>{project.description}</Text>
+      <Pressable onPress={() => navigateToDetail(project.id)}>
+        <View style={styles.content}>
+          <View style={styles.topRow}>
+            <View style={styles.descriptionContainer}>
+              <Text style={styles.descriptionText}>{project.description}</Text>
+            </View>
+            <View style={styles.action}>
+              {/* <VinaupPenLine width={20} height={20} /> */}
+            </View>
           </View>
-          <View style={styles.action}>
-            {/* <VinaupPenLine width={20} height={20} /> */}
+          <View style={styles.bottomRow}>
+            <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
+              {getProjectInfoText()}
+            </Text>
           </View>
         </View>
-        <View style={styles.bottomRow}>
-          <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
-            {getProjectInfoText()}
-          </Text>
-          <Text style={styles.projectTotalAmountText}>
-            {generateLocalePriceFormat(
-              calculateReceiptPaymentsSummary(receiptPayments || []).totalRemaining,
-              'vi-VN'
-            )}
-          </Text>
-        </View>
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -102,7 +136,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   innerHeader: {
-    marginVertical: 4,
+    marginVertical: 8,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
@@ -119,19 +153,22 @@ const styles = StyleSheet.create({
   projectTotalAmountText: {
     fontSize: 16,
     flexShrink: 0,
-    marginLeft: 8,
   },
   projectStatusText: {
     fontSize: 14,
     color: COLORS.vinaupBlack,
   },
-  equalLabel: {
-    fontSize: 16,
-    lineHeight: 16,
+  equalSignText: {
+    fontSize: 20,
+    lineHeight: 20,
     paddingHorizontal: 4,
     borderRadius: 4,
-    backgroundColor: COLORS.vinaupWhite,
     color: COLORS.vinaupTeal,
+    backgroundColor: COLORS.vinaupWhite,
+    overflow: 'hidden',
+  },
+  equalSignActive: {
+    backgroundColor: 'transparent',
   },
   content: {
     backgroundColor: '#FFFFFF',

@@ -13,9 +13,9 @@ import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { generateDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
 import Loader from '@/components/primitives/loader';
-import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
 
 interface ReceiptPaymentInvoiceListProps {
   receiptPayments: ReceiptPaymentResponse[];
@@ -150,15 +150,11 @@ export function ReceiptPaymentInvoiceContent({
         </Pressable>
       )}
       renderSectionHeader={({ section: { title, data, dateKey } }) => (
-        <View style={styles.sectionHeader}>
-          <View style={styles.dateHeader}>
-            {/* <Text style={styles.dateHeaderText}>{title}</Text>
-            <Text style={styles.receiptPaymentCount}>({data.length})</Text> */}
-          </View>
-          <Pressable onPress={() => navigateToFormScreen({ dateKey })}>
-            <VinaupAddNew width={24} height={24} iconColor={COLORS.vinaupWhite} />
-          </Pressable>
-        </View>
+        <ReceiptPaymentSectionListHeader
+          title={title}
+          receiptPayments={data}
+          onPressAddNew={() => navigateToFormScreen({ dateKey })}
+        />
       )}
       renderSectionFooter={({ section }) =>
         section.data.length === 0 ? (
@@ -182,26 +178,6 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 24,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-  },
-  dateHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  dateHeaderText: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  receiptPaymentCount: {
-    fontSize: 16,
-    color: COLORS.vinaupMediumDarkGray,
   },
   emptyGroup: {
     paddingHorizontal: 10,

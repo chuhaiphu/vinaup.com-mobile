@@ -1,14 +1,6 @@
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
-import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
 import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
@@ -29,6 +21,7 @@ import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-m
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { useRouter } from 'expo-router';
 import { PersonalHomeIndexSummary } from '@/components/summaries/personal-home-index-summary';
+import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 
 export default function PersonalIndexScreen() {
   const router = useRouter();
@@ -211,20 +204,24 @@ export default function PersonalIndexScreen() {
             dateText: styles.dateText,
           }}
         />
-        <Pressable
+        <PressableOpacity
           style={styles.iconButton}
           onPress={() => handlePress('settings')}
         >
           <VinaupCog width={24} height={24} />
-        </Pressable>
+        </PressableOpacity>
       </View>
 
       <PersonalHomeIndexSummary receiptPayments={receiptPaymentsSelf} />
 
       <View style={styles.utilitiesRow}>
         <View style={styles.utilitiesLeft}>
-          <VinaupUtilityIcon width={18} height={18} />
-          <Text style={styles.utilitiesText}>Tiện ích</Text>
+          <VinaupLogoPrimary
+            width={20}
+            height={20}
+            color={COLORS.vinaupMediumGray}
+          />
+          <Text style={styles.utilitiesText}>Nổi bật</Text>
         </View>
         <MultiSelect
           options={utilityOptions}
@@ -298,10 +295,10 @@ const styles = StyleSheet.create({
   utilitiesLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 6,
   },
   utilitiesText: {
-    fontSize: 18,
+    fontSize: 16,
   },
   utilityOptionIcon: {
     width: 28,

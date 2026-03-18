@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Pressable,
   Text,
   StyleSheet,
   StyleProp,
@@ -9,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
+import { PressableOpacity } from './pressable-opacity';
 
 interface TextSwitcherProps {
   leftSection?: React.ReactNode;
@@ -36,13 +36,16 @@ export function TextSwitcher({
 }: TextSwitcherProps) {
   const currentIcon = iconPair ? iconPair[currentIndex] : null;
   return (
-    <Pressable onPress={onToggle} style={[styles.container, style?.container]}>
+    <PressableOpacity
+      onPress={onToggle}
+      style={[styles.container, style?.container]}
+    >
       {leftSection && <View>{leftSection}</View>}
       {iconPosition === 'left' && <View>{currentIcon}</View>}
       <Text style={[styles.text, style?.text]}>{textPair[currentIndex]}</Text>
       {iconPosition === 'right' && <View>{currentIcon}</View>}
       {rightSection && <View>{rightSection}</View>}
-    </Pressable>
+    </PressableOpacity>
   );
 }
 

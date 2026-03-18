@@ -1,14 +1,6 @@
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
-import VinaupUtilityIcon from '@/components/icons/vinaup-utility-icon.native';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
 import { useContext, useEffect, useState } from 'react';
 import { getReceiptPaymentsByInvoiceIdsApi } from '@/apis/receipt-payment-apis';
@@ -24,6 +16,7 @@ import { OrganizationHomeIndexSummary } from '@/components/summaries/organizatio
 import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
 import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
+import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 
 export default function OrganizationIndexScreen() {
   const router = useRouter();
@@ -62,17 +55,15 @@ export default function OrganizationIndexScreen() {
       year: selectedDate.year(),
     });
 
-  const {
-    data: invoices,
-    executeFetchFn: fetchInvoices,
-  } = useFetchFn(fetchInvoicesFn, {
-    tags: ['organization-invoice-list'],
-  });
+  const { data: invoices, executeFetchFn: fetchInvoices } = useFetchFn(
+    fetchInvoicesFn,
+    {
+      tags: ['organization-invoice-list'],
+    }
+  );
 
   const fetchReceiptPaymentsByInvoiceIdsFn = () =>
-    getReceiptPaymentsByInvoiceIdsApi(
-      (invoices || []).map((i) => i.id)
-    );
+    getReceiptPaymentsByInvoiceIdsApi((invoices || []).map((i) => i.id));
 
   const {
     data: receiptPayments,
@@ -96,7 +87,14 @@ export default function OrganizationIndexScreen() {
   const handlePress = (key: string) => {
     if (key === 'settings') return;
     if (organizationId) {
-      router.push(`/(protected)/organization/${organizationId}/(tabs)/invoice`);
+      router.push({
+        pathname: `/(protected)/organization/[organizationId]/(tabs)/invoice`,
+        params: {
+          organizationId,
+          invoiceTypeCode:
+            key === ORG_UTILITY_KEYS.receiptPaymentReceipt ? 'SELL' : 'BUY',
+        },
+      });
     }
   };
 
@@ -149,20 +147,27 @@ export default function OrganizationIndexScreen() {
             dateText: styles.dateText,
           }}
         />
-        <Pressable
+        <PressableOpacity
           style={styles.iconButton}
           onPress={() => handlePress('settings')}
         >
           <VinaupCog width={24} height={24} />
-        </Pressable>
+        </PressableOpacity>
       </View>
 
-      <OrganizationHomeIndexSummary receiptPayments={receiptPayments} />
+      <OrganizationHomeIndexSummary
+        receiptPayments={receiptPayments}
+        organizationId={organizationId}
+      />
 
       <View style={styles.utilitiesRow}>
         <View style={styles.utilitiesLeft}>
-          <VinaupUtilityIcon width={18} height={18} />
-          <Text style={styles.utilitiesText}>Tiện ích</Text>
+          <VinaupLogoPrimary
+            width={20}
+            height={20}
+            color={COLORS.vinaupMediumGray}
+          />
+          <Text style={styles.utilitiesText}>Nổi bật</Text>
         </View>
         <MultiSelect
           options={utilityOptions}
@@ -235,10 +240,10 @@ const styles = StyleSheet.create({
   utilitiesLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 6,
   },
   utilitiesText: {
-    fontSize: 18,
+    fontSize: 16,
   },
   utilityOptionIcon: {
     width: 28,

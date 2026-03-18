@@ -30,7 +30,7 @@ const RegisterForm = () => {
     setIsLoading(true);
     try {
       const response = await registerApi({ email, password, name: fullName });
-      if (response.statusCode === 201) {
+      if (response.status === 201) {
         Alert.alert('Đăng ký thành công', 'Vui lòng đăng nhập.', [
           { text: 'OK', onPress: () => router.replace('/login') },
         ]);

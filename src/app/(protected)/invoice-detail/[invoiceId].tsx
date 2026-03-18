@@ -1,4 +1,4 @@
-import { View, StyleSheet, Alert, Text, Pressable } from 'react-native';
+import { View, StyleSheet, Alert, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
@@ -22,6 +22,7 @@ import { useSafeRouter } from '@/hooks/use-safe-router';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 export default function InvoiceDetailScreen() {
   const safeRouter = useSafeRouter();
@@ -139,7 +140,6 @@ export default function InvoiceDetailScreen() {
     <>
       <StackWithHeader
         title={'Chi tiết' + ' ' + invoice?.invoiceType.description}
-        backTitle="Quay lại"
         onDelete={handleDelete}
         onSave={handleSaveAndExit}
         isDeleting={isDeletingInvoice}
@@ -151,7 +151,9 @@ export default function InvoiceDetailScreen() {
               renderTrigger={(option) => (
                 <>
                   <VinaupVerticalExpandArrow width={16} height={16} />
-                  <Text>{option.label || 'Trạng thái'}</Text>
+                  <Text style={{ color: COLORS.vinaupTeal }}>
+                    {option.label || 'Trạng thái'}
+                  </Text>
                 </>
               )}
               isLoading={isUpdatingInvoice || isRefreshingInvoice}
@@ -164,25 +166,25 @@ export default function InvoiceDetailScreen() {
               style={{
                 triggerText: {
                   fontSize: 16,
-                  color: COLORS.vinaupBlack,
+                  color: COLORS.vinaupTeal,
                 },
               }}
             />
           </View>
           <View style={styles.actionButton}>
-            <Pressable style={styles.actionButtonItem}>
+            <PressableOpacity style={styles.actionButtonItem}>
               <Text style={styles.actionButtonItemText}>Hóa đơn</Text>
-            </Pressable>
-            <Pressable style={styles.actionButtonItem}>
+            </PressableOpacity>
+            <PressableOpacity style={styles.actionButtonItem}>
               <FontAwesome5 name="copy" size={18} color={COLORS.vinaupTeal} />
-            </Pressable>
-            <Pressable style={styles.actionButtonItem}>
+            </PressableOpacity>
+            <PressableOpacity style={styles.actionButtonItem}>
               <Entypo
                 name="dots-three-horizontal"
                 size={18}
                 color={COLORS.vinaupTeal}
               />
-            </Pressable>
+            </PressableOpacity>
           </View>
         </View>
         <InvoiceDetailHeaderContent

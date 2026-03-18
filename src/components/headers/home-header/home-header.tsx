@@ -1,6 +1,6 @@
 import { COLORS, HEADER_HEIGHT } from '@/constants/style-constant';
 import { Octicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { useLocalSearchParams, usePathname } from 'expo-router';
@@ -12,6 +12,7 @@ import PersonalIndexHeaderBottom from './personal-index-header-bottom';
 import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
 import InvoiceHeaderBottom from './invoice-header-bottom';
 import OrganizationTourHeaderBottom from './organization-tour-header-bottom';
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
@@ -26,11 +27,13 @@ export const HomeHeader = () => {
       case pathname.includes('/personal/receipt-payment'):
         return <PersonalReceiptPaymentHeaderBottom />;
       case pathname === '/personal':
-        return <PersonalIndexHeaderBottom />;
+        // return <PersonalIndexHeaderBottom />;
+        return null;
       case pathname === `/organization/${params.organizationId}/invoice`:
         return <InvoiceHeaderBottom />;
       case pathname === `/organization/${params.organizationId}`:
-        return <OrganizationIndexHeaderBottom />;
+        // return <OrganizationIndexHeaderBottom />;
+        return null;
       case pathname.includes(`/organization/${params.organizationId}/tour`):
         return <OrganizationTourHeaderBottom />;
       default:
@@ -48,9 +51,9 @@ export const HomeHeader = () => {
           <OwnerSelector />
         </View>
         <View style={styles.headerRight}>
-          <Pressable>
+          <PressableOpacity>
             <Octicons name="bell" size={18} color={COLORS.vinaupTeal} />
-          </Pressable>
+          </PressableOpacity>
         </View>
       </View>
       {headerBottom && <View style={styles.bottomRow}>{headerBottom}</View>}
@@ -61,18 +64,8 @@ export const HomeHeader = () => {
 const styles = StyleSheet.create({
   safeAreaView: {
     backgroundColor: COLORS.vinaupWhite,
-    zIndex: 10,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 1,
-    // elevation is for Android shadow
-    elevation: 3,
   },
   headerContainer: {
     height: HEADER_HEIGHT,
@@ -85,8 +78,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 8,
-    paddingBottom: 12,
+    backgroundColor: COLORS.vinaupSoftGray,
+    marginHorizontal: 8,
+    marginBottom: 8,
+    borderRadius: 8,
+    padding: 8,
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -104,12 +100,12 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
   },
   userNameText: {
     color: COLORS.vinaupBlueDark,

@@ -2,14 +2,7 @@ import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from 'fetchwire';
 import { useEffect, useState } from 'react';
-import {
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
@@ -19,6 +12,7 @@ import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
+import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 
 type PersonalProjectListContentProps = {
   projectType: 'SELF' | 'COMPANY';
@@ -27,7 +21,6 @@ type PersonalProjectListContentProps = {
 export function PersonalProjectListContent({
   projectType,
 }: PersonalProjectListContentProps) {
-  const safeRouter = useSafeRouter();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
@@ -37,25 +30,26 @@ export function PersonalProjectListContent({
     executeFetchFn: fetchProjects,
     isRefreshing: isRefreshingProjects,
     refreshFetchFn: refreshProjects,
-  } = useFetchFn(() =>
-    getProjectsOfCurrentUserApi({
-      type: projectType,
-      status: projectStatusFilter,
-      month: selectedDate.month() + 1,
-      year: selectedDate.year(),
-    }),
-  {
-    tags: ['personal-project-list'],
-  });
+  } = useFetchFn(
+    () =>
+      getProjectsOfCurrentUserApi({
+        type: projectType,
+        status: projectStatusFilter,
+        month: selectedDate.month() + 1,
+        year: selectedDate.year(),
+      }),
+    {
+      tags: ['personal-project-list'],
+    }
+  );
 
   const { data: allReceiptPayments, executeFetchFn: fetchAllReceiptPayments } =
-    useFetchFn(() =>
-      getReceiptPaymentsByProjectIdsApi(
-        (projects || []).map((p) => p.id),
-      ),
-    {
-      tags: ['personal-receipt-payment-list-all-projects'],
-    });
+    useFetchFn(
+      () => getReceiptPaymentsByProjectIdsApi((projects || []).map((p) => p.id)),
+      {
+        tags: ['personal-receipt-payment-list-all-projects'],
+      }
+    );
 
   useEffect(() => {
     fetchProjects();
@@ -65,16 +59,6 @@ export function PersonalProjectListContent({
     if (!projects || projects.length === 0) return;
     fetchAllReceiptPayments();
   }, [projects, fetchAllReceiptPayments]);
-
-  const navigateToFormScreen = async (id?: string) => {
-    if (safeRouter.isNavigating) return;
-    if (id) {
-      safeRouter.safePush({
-        pathname: '/(protected)/project-detail/[projectId]',
-        params: { projectId: id },
-      });
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -92,6 +76,14 @@ export function PersonalProjectListContent({
         />
         <View style={styles.statusFilter}>
           <Select
+            renderTrigger={(option) => (
+              <>
+                <VinaupVerticalExpandArrow width={18} height={18} />
+                <Text style={{ color: COLORS.vinaupTeal }}>
+                  {option.label || 'Trạng thái'}
+                </Text>
+              </>
+            )}
             options={ProjectStatusOptions}
             value={projectStatusFilter}
             onChange={(value) => setProjectStatusFilter(value)}
@@ -99,7 +91,7 @@ export function PersonalProjectListContent({
             style={{
               triggerText: {
                 fontSize: 16,
-                color: COLORS.vinaupBlack,
+                color: COLORS.vinaupTeal,
               },
             }}
           />
@@ -110,11 +102,7 @@ export function PersonalProjectListContent({
           data={projects}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => navigateToFormScreen(item.id)}>
-              <ProjectCard project={item} />
-            </Pressable>
-          )}
+          renderItem={({ item }) => <ProjectCard project={item} />}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshingProjects}

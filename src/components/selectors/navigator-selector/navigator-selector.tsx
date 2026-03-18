@@ -2,11 +2,11 @@ import React from 'react';
 import { useRouter, usePathname, Route } from 'expo-router';
 import { Select } from '@/components/primitives/select';
 import { COLORS } from '@/constants/style-constant';
-import { FontAwesome6 } from '@expo/vector-icons';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
+import VinaupSelector from '@/components/icons/vinaup-selector.native';
 
 export default function NavigatorSelector() {
   const router = useRouter();
@@ -54,9 +54,7 @@ export default function NavigatorSelector() {
   return (
     <Select
       heightPercentage={0.9}
-      renderTrigger={() => (
-        <FontAwesome6 name="list-check" size={24} color={COLORS.vinaupSoftYellow} />
-      )}
+      renderTrigger={() => <VinaupSelector width={28} height={28} />}
       options={navItems}
       value={pathname}
       onChange={handleNavigation}

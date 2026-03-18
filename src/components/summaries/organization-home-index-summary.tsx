@@ -6,53 +6,62 @@ import VinaupPlusMinus from '../icons/vinaup-plus-minus.native';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { PressableOpacity } from '../primitives/pressable-opacity';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 
 interface OrganizationHomeIndexSummaryProps {
   receiptPayments?: ReceiptPaymentResponse[] | null;
+  organizationId: string;
 }
-
 export function OrganizationHomeIndexSummary({
   receiptPayments,
+  organizationId,
 }: OrganizationHomeIndexSummaryProps) {
   const summary = calculateReceiptPaymentsSummary(receiptPayments);
   const cashNet = summary.cashIn - summary.cashOut;
   const bankNet = summary.bankIn - summary.bankOut;
 
+  const safeRouter = useSafeRouter();
+  const handlePressFirstColumn = () => {
+    safeRouter.safePush({
+      pathname: `/(protected)/organization/[organizationId]/(tabs)/invoice`,
+      params: {
+        organizationId,
+        invoiceTypeCode: 'SELL',
+      },
+    });
+  };
   return (
     <View style={styles.summaryCard}>
-      <View style={styles.summaryHeaderRow}>
-        <View style={styles.summaryHeaderItem}>
-          <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Thu</Text>
-          </View>
-        </View>
-        <View style={styles.summaryHeaderItem}>
-          <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Tiền mặt</Text>
-          </View>
-        </View>
-        <View style={styles.summaryHeaderItem}>
-          <View style={styles.underlineContainer}>
-            <Text style={styles.summaryHeaderText}>Ngân hàng</Text>
-          </View>
-        </View>
-      </View>
+      <View style={styles.summaryMainRow}>
+        <PressableOpacity
+          style={[styles.summaryColumn, styles.firstColumn]}
+          onPress={handlePressFirstColumn}
+        >
+          <Text style={[styles.columnLabel, styles.firstColumnLabel]}>Thu</Text>
+          <Text style={[styles.columnValue, styles.firstColumnValue]}>
+            Bán hàng
+          </Text>
+        </PressableOpacity>
 
-      <View style={styles.summaryValueRow}>
-        <Text style={styles.summaryLeftValue}>Bán hàng</Text>
-        <Text style={styles.summaryCenterValue}>
-          {generateLocalePriceFormat(cashNet)}
-        </Text>
-        <Text style={styles.summaryRightValue}>
-          {generateLocalePriceFormat(bankNet)}
-        </Text>
+        <View style={styles.summaryColumn}>
+          <Text style={styles.columnLabel}>Tiền mặt</Text>
+          <Text style={styles.columnValue}>
+            {generateLocalePriceFormat(cashNet)}
+          </Text>
+        </View>
+
+        <View style={styles.summaryColumn}>
+          <Text style={styles.columnLabel}>Ngân hàng</Text>
+          <Text style={styles.columnValue}>
+            {generateLocalePriceFormat(bankNet)}
+          </Text>
+        </View>
       </View>
 
       <Pressable style={styles.summaryBanner} onPress={() => {}}>
         <View style={styles.summaryBannerLeft}>
-          <View>
-            <VinaupPlusMinus width={20} height={20} color={COLORS.vinaupTeal} />
-          </View>
+          <VinaupPlusMinus width={20} height={20} color={COLORS.vinaupTeal} />
           <Text style={styles.summaryBannerText}>
             Xem doanh số tháng này của bạn
           </Text>
@@ -68,48 +77,40 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: COLORS.vinaupWhite,
     borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    padding: 8,
   },
-  summaryHeaderRow: {
+  summaryMainRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
   },
-  summaryHeaderItem: {
-    flexDirection: 'row',
+  summaryColumn: {
     flex: 1,
+    alignItems: 'flex-start',
+    padding: 4,
+    borderRadius: 4,
   },
-  summaryHeaderText: {
-    fontSize: 18,
+  firstColumn: {
+    backgroundColor: COLORS.vinaupLightYellow,
+    flex: 0.8,
+    marginRight: 8,
+  },
+  firstColumnLabel: {
+    color: COLORS.vinaupTeal,
+    borderBottomWidth: 0,
+  },
+  firstColumnValue: {
+    color: COLORS.vinaupTeal,
+  },
+  columnLabel: {
+    fontSize: 16,
     color: COLORS.vinaupMediumDarkGray,
-  },
-  underlineContainer: {
-    borderBottomWidth: 1.5,
+    marginBottom: 4,
+    borderBottomWidth: 1,
     borderBottomColor: COLORS.vinaupMediumGray,
   },
-  summaryValueRow: {
-    marginTop: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  summaryLeftValue: {
-    flex: 1,
-    fontSize: 20,
+  columnValue: {
+    fontSize: 18,
     color: COLORS.vinaupBlack,
-    textAlign: 'left',
-  },
-  summaryCenterValue: {
-    flex: 1,
-    fontSize: 20,
-    color: COLORS.vinaupBlack,
-  },
-  summaryRightValue: {
-    flex: 1,
-    fontSize: 20,
-    color: COLORS.vinaupBlack,
+    textAlign: 'center',
   },
   summaryBanner: {
     marginTop: 12,
