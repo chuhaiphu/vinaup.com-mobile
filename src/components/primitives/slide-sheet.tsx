@@ -35,6 +35,9 @@ export function SlideSheet({
   ref,
 }: SlideSheetProps) {
   const [modalVisible, setModalVisible] = useState(false);
+  // Use this to reset the children component state on every open, 
+  // By unmounting them when the sheet is closed, and only mounting them when the sheet is open
+  const [shouldMountChildren, setShouldMountChildren] = useState(false);
   const { height: screenHeight } = useWindowDimensions();
   const sheetHeight = heightPercentage
     ? screenHeight * heightPercentage
@@ -56,6 +59,8 @@ export function SlideSheet({
     translateY.value = withTiming(animDistance, { duration: 200 }, (finished) => {
       if (finished) {
         scheduleOnRN(setModalVisible, false);
+        // keep the children mounted during the closing animation, only unmount them after the animation is complete
+        scheduleOnRN(setShouldMountChildren, false);
         if (onClose) scheduleOnRN(onClose);
         if (onComplete) scheduleOnRN(onComplete);
       }
@@ -64,6 +69,7 @@ export function SlideSheet({
 
   const handleOpen = () => {
     setModalVisible(true);
+    setShouldMountChildren(true);
     if (!enableAnimation) {
       translateY.value = 0;
       return;
@@ -94,7 +100,7 @@ export function SlideSheet({
               animatedStyle,
             ]}
           >
-            {children}
+            {shouldMountChildren ? children : null}
           </Animated.View>
         </KeyboardSafeAvoidingView>
       </View>

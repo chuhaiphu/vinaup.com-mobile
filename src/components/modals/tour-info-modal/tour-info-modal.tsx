@@ -1,9 +1,9 @@
 import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
-import { ProjectResponse } from '@/interfaces/project-interfaces';
-import { ProjectInfoModalContent } from './project-info-modal-content';
+import { TourResponse } from '@/interfaces/tour-interfaces';
+import { TourInfoModalContent } from './tour-info-modal-content';
 
-interface ProjectInfoModalProps {
-  project: ProjectResponse;
+interface TourInfoModalProps {
+  tour: TourResponse;
   isLoading?: boolean;
   modalRef: React.RefObject<SlideSheetRef | null>;
   onConfirm?: (
@@ -11,25 +11,23 @@ interface ProjectInfoModalProps {
       description: string;
       startDate: Date;
       endDate: Date;
-      code?: string;
     },
     onSuccessCallback?: () => void
   ) => void;
 }
 
-export function ProjectInfoModal({
-  project,
+export function TourInfoModal({
+  tour,
   isLoading,
   modalRef,
   onConfirm,
-}: ProjectInfoModalProps) {
+}: TourInfoModalProps) {
   return (
     <SlideSheet ref={modalRef}>
-      <ProjectInfoModalContent
-        prjCode={project.code}
-        prjDescription={project.description}
-        prjStartDate={project.startDate}
-        prjEndDate={project.endDate}
+      <TourInfoModalContent
+        tourDescription={tour.description}
+        tourStartDate={tour.startDate}
+        tourEndDate={tour.endDate}
         isLoading={isLoading}
         onCloseRequest={() => modalRef.current?.close()}
         onConfirm={(data) => {
@@ -39,4 +37,3 @@ export function ProjectInfoModal({
     </SlideSheet>
   );
 }
-

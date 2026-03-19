@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import dayjs from 'dayjs';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
 import { ProjectInfoModal } from '@/components/modals/project-info-modal/project-info-modal';
@@ -28,7 +28,6 @@ export function ProjectDetailHeaderContent({
   onConfirm,
 }: ProjectDetailHeaderContentProps) {
   const modalRef = useRef<SlideSheetRef>(null);
-  const [contentKey, setContentKey] = useState(0);
 
   if (!project) {
     return (
@@ -39,7 +38,6 @@ export function ProjectDetailHeaderContent({
   }
 
   const handleOpen = () => {
-    setContentKey((k) => k + 1);
     modalRef.current?.open();
   };
 
@@ -87,7 +85,6 @@ export function ProjectDetailHeaderContent({
       <ProjectInfoModal
         project={project}
         isLoading={isLoading}
-        contentKey={contentKey}
         modalRef={modalRef}
         onConfirm={onConfirm}
       />

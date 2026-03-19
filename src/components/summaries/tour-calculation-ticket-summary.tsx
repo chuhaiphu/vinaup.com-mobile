@@ -1,0 +1,323 @@
+import { COLORS } from '@/constants/style-constant';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import { useMutationFn, type ApiError } from 'fetchwire';
+import { updateTourCalculationApi } from '@/apis/tour-apis';
+import { UpdateTourCalculationRequest } from '@/interfaces/tour-calculation-interfaces';
+import { PressableOpacity } from '../primitives/pressable-opacity';
+import { VinaupPenLine } from '../icons/vinaup-pen-line.native';
+import { FontAwesome } from '@expo/vector-icons';
+import { TourCalculationTicketModal } from '../modals/tour-calculation-ticket-form-modal/tour-calculation-ticket-modal';
+import { SlideSheetRef } from '../primitives/slide-sheet';
+
+interface TourCalculationTicketSummaryProps {
+  id: string;
+  adultTicketCount?: number;
+  childTicketCount?: number;
+  adultTicketPrice?: number;
+  childTicketPrice?: number;
+  taxRate?: number;
+  totalReceipt: string;
+  totalPayment: string;
+  totalTaxPay: string;
+  netProfitBeforeTaxPay: string;
+  netProfitAfterTaxPay: string;
+  profitMarginBeforeTaxPay: string;
+  profitMarginAfterTaxPay: string;
+}
+
+export function TourCalculationTicketSummary({
+  id,
+  adultTicketCount = 0,
+  childTicketCount = 0,
+  adultTicketPrice = 0,
+  childTicketPrice = 0,
+  taxRate = 0,
+  totalReceipt,
+  totalPayment,
+  totalTaxPay,
+  netProfitBeforeTaxPay,
+  netProfitAfterTaxPay,
+  profitMarginBeforeTaxPay,
+  profitMarginAfterTaxPay,
+}: TourCalculationTicketSummaryProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isAfterTax, setIsAfterTax] = useState(true);
+
+  const totalTickets = adultTicketCount + childTicketCount;
+
+  const formatNumber = (num: number) => {
+    return num.toLocaleString('vi-VN');
+  };
+
+  const modalRef = useRef<SlideSheetRef>(null);
+  const handleOpenModal = () => {
+    modalRef.current?.open();
+  };
+
+  const updateTourCalculationFn = (updatedFields: UpdateTourCalculationRequest) =>
+    updateTourCalculationApi(id, updatedFields);
+
+  const {
+    executeMutationFn: updateTourCalculation,
+    isMutating: isUpdatingCalculation,
+  } = useMutationFn(updateTourCalculationFn, {
+    invalidatesTags: ['tour-calculation'],
+  });
+
+  const handleConfirm = (
+    data: {
+      adultPrice: number;
+      childPrice: number;
+      adultQuantity: number;
+      childQuantity: number;
+    },
+    onSuccessCallback?: () => void
+  ) => {
+    console.log('Data to update:', data);
+    updateTourCalculation(
+      {
+        adultTicketCount: data.adultQuantity,
+        childTicketCount: data.childQuantity,
+        adultTicketPrice: data.adultPrice,
+        childTicketPrice: data.childPrice,
+      },
+      {
+        onSuccess: () => {
+          onSuccessCallback?.();
+        },
+        onError: (error: ApiError) => {
+          Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật.');
+        },
+      }
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>
+          Người lớn ({adultTicketCount}) + Trẻ em ({childTicketCount}) ={' '}
+          {totalTickets}
+        </Text>
+        <View style={styles.headerActions}>
+          <PressableOpacity onPress={handleOpenModal} hitSlop={4}>
+            <VinaupPenLine width={16} height={16} />
+          </PressableOpacity>
+          <PressableOpacity onPress={() => setIsExpanded(!isExpanded)} hitSlop={4}>
+            <View style={styles.expandToggle}>
+              <FontAwesome
+                name={isExpanded ? 'caret-down' : 'caret-up'}
+                size={20}
+                color={COLORS.vinaupTeal}
+                style={isExpanded ? { marginTop: 0 } : { marginTop: -2 }}
+              />
+            </View>
+          </PressableOpacity>
+        </View>
+      </View>
+
+      {isExpanded && (
+        <View style={styles.contentContainer}>
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <Text style={[styles.columnText, styles.boldText]}>Số lượng</Text>
+            </View>
+            <View style={styles.rightColumn}>
+              <Text style={[styles.columnText, styles.boldText, styles.textRight]}>
+                Giá bán <Text style={styles.normalWeight}>(dự kiến)</Text>
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <View style={styles.subColumnContainer}>
+                <Text style={styles.subLabel}>Người lớn</Text>
+                <Text style={styles.subEqual}>=</Text>
+                <Text style={styles.subValue}>{adultTicketCount}</Text>
+              </View>
+            </View>
+            <View style={styles.rightColumn}>
+              <View style={styles.subColumnContainer}>
+                <Text style={styles.subLabel}>Người lớn</Text>
+                <Text style={styles.subEqual}>=</Text>
+                <Text style={[styles.subValue, styles.textRight]}>
+                  {formatNumber(adultTicketPrice)}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <View style={styles.subColumnContainer}>
+                <Text style={styles.subLabel}>Trẻ em</Text>
+                <Text style={styles.subEqual}>=</Text>
+                <Text style={styles.subValue}>{childTicketCount}</Text>
+              </View>
+            </View>
+            <View style={styles.rightColumn}>
+              <View style={styles.subColumnContainer}>
+                <Text style={styles.subLabel}>Trẻ em</Text>
+                <Text style={styles.subEqual}>=</Text>
+                <Text style={[styles.subValue, styles.textRight]}>
+                  {formatNumber(childTicketPrice)}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {[
+            { label: 'Tổng thu', value: totalReceipt },
+            { label: 'Tổng chi', value: totalPayment },
+          ].map((item, idx) => (
+            <View key={idx} style={styles.row}>
+              <View style={styles.leftColumn}>
+                <Text style={styles.summaryLabel}>{item.label}</Text>
+              </View>
+              <View style={styles.rightColumn}>
+                <Text style={[styles.summaryValue, styles.textRight]}>
+                  {item.value}
+                </Text>
+              </View>
+            </View>
+          ))}
+
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <Text style={styles.summaryLabel}>Thuế phải nộp</Text>
+              <View style={styles.taxRateBadge}>
+                <Text style={styles.taxRateText}>{taxRate} %</Text>
+                <VinaupPenLine width={15} height={15} />
+              </View>
+            </View>
+            <View style={styles.rightColumn}>
+              <Text style={[styles.summaryValue, styles.textRight]}>
+                {totalTaxPay}
+              </Text>
+            </View>
+          </View>
+
+          {/* Lợi nhuận & Tỷ suất */}
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <Text style={styles.summaryLabel}>
+                Lợi nhuận {isAfterTax ? 'sau' : 'trước'} thuế
+              </Text>
+            </View>
+            <View style={styles.rightColumn}>
+              <Text
+                style={[styles.summaryValue, styles.boldText, styles.textRight]}
+              >
+                {isAfterTax ? netProfitAfterTaxPay : netProfitBeforeTaxPay}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <Text style={styles.summaryLabel}>Tỷ suất lợi nhuận</Text>
+            </View>
+            <View style={styles.rightColumn}>
+              <Text style={[styles.summaryValue, styles.textRight]}>
+                {isAfterTax ? profitMarginAfterTaxPay : profitMarginBeforeTaxPay}
+              </Text>
+            </View>
+          </View>
+
+          {/* <View style={styles.toggleContainer}>
+            <Text style={styles.toggleLabel}>Lợi nhuận sau thuế</Text>
+            <Switch
+              value={isAfterTax}
+              onValueChange={setIsAfterTax}
+              trackColor={{ false: '#D1D1D1', true: '#81b0ff' }}
+            />
+          </View> */}
+        </View>
+      )}
+      <TourCalculationTicketModal
+        initialData={{
+          adultPrice: adultTicketPrice,
+          childPrice: childTicketPrice,
+          adultQuantity: adultTicketCount,
+          childQuantity: childTicketCount,
+        }}
+        modalRef={modalRef}
+        isLoading={isUpdatingCalculation}
+        onConfirm={(data, onSuccessCallback) =>
+          handleConfirm(data, onSuccessCallback)
+        }
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    padding: 8,
+    marginVertical: 2,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 16,
+    color: COLORS.vinaupMediumDarkGray,
+  },
+  expandToggle: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: COLORS.vinaupYellow,
+    borderWidth: 1,
+    borderRadius: 16,
+  },
+  headerActions: { flexDirection: 'row', gap: 16, alignItems: 'center' },
+  iconText: { fontSize: 18, color: '#007AFF' },
+  contentContainer: { marginTop: 8 },
+  row: { flexDirection: 'row', paddingVertical: 4 },
+  leftColumn: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingRight: 2,
+    gap: 4,
+  },
+  rightColumn: { flex: 1, paddingLeft: 2 },
+
+  subColumnContainer: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  subLabel: { flex: 1.5, fontSize: 16 },
+  subEqual: { width: 16, fontSize: 16, textAlign: 'center' },
+  subValue: { flex: 2, fontSize: 16 },
+
+  columnText: { fontSize: 16 },
+  textRight: { textAlign: 'right' },
+  boldText: { fontWeight: 'bold' },
+  normalWeight: { fontWeight: 'normal' },
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.vinaupLightGray,
+    marginVertical: 8,
+  },
+  summaryLabel: { fontSize: 16 },
+  summaryValue: { fontSize: 16 },
+  taxRateBadge: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  taxRateText: { fontSize: 16, fontWeight: '500' },
+  smallIcon: { fontSize: 12 },
+  toggleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F5F5F5',
+  },
+  toggleLabel: { fontSize: 14 },
+});

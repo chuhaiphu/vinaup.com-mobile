@@ -9,11 +9,15 @@ import { Select } from '@/components/primitives/select';
 import { COLORS } from '@/constants/style-constant';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
-import { getTourByIdApi } from '@/apis/tour-apis';
-import { TourStatusOptions } from '@/constants/tour-constants';
+import { getTourByIdApi, updateTourApi } from '@/apis/tour-apis';
+import { TourStatus, TourStatusOptions } from '@/constants/tour-constants';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Entypo from '@expo/vector-icons/Entypo';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { OrganizationTourDetailTabListContent } from '@/components/contents/tour/organization-tour-detail-tab-list-content';
+import { UpdateTourRequest } from '@/interfaces/tour-interfaces';
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 export default function TourDetailLayout() {
   const safeRouter = useSafeRouter();
@@ -25,7 +29,7 @@ export default function TourDetailLayout() {
   const tab = segments[segments.length - 1] as string;
   const fetchTourFn = () => getTourByIdApi(tourId);
   const {
-    data: tour,
+    data: tourData,
     isLoading: isLoadingTour,
     isRefreshing: isRefreshingTour,
     executeFetchFn: fetchTour,
@@ -50,8 +54,32 @@ export default function TourDetailLayout() {
     }
   }, [tourId, fetchTour, fetchReceiptPayments]);
 
+  const updateTourFn = (updatedFields: UpdateTourRequest) =>
+    updateTourApi(tourId, updatedFields);
+
+  const { executeMutationFn: updateTour, isMutating: isUpdatingTour } =
+    useMutationFn(updateTourFn, {
+      invalidatesTags: ['organization-tour-list'],
+    });
+
+  const handleUpdateTour = (
+    updatedFields: UpdateTourRequest,
+    onSuccessCallback?: () => void
+  ) => {
+    if (!tourData) return;
+    updateTour(updatedFields, {
+      onSuccess: () => {
+        refreshTour();
+        onSuccessCallback?.();
+      },
+      onError: (error: ApiError) => {
+        Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật.');
+      },
+    });
+  };
+
   const handleSaveAndExit = () => {
-    if (!tour) return;
+    if (!tourData) return;
     refreshTour();
     refreshReceiptPayments();
     safeRouter.safeBack();
@@ -93,26 +121,49 @@ export default function TourDetailLayout() {
           title: styles.headerTitle,
         }}
       >
-        <OrganizationTourDetailTabListContent currentTab={tab} />
+        <OrganizationTourDetailTabListContent currentTab={tab} tourId={tourId} />
       </StackWithHeader>
       <View style={styles.container}>
-        <View style={styles.tourFilterContainer}>
+        <View style={styles.actionContainer}>
           <View style={styles.statusFilter}>
             <Select
               renderTrigger={(option) => (
                 <>
-                  <VinaupVerticalExpandArrow width={18} height={18} />
-                  <Text style={styles.statusFilterText}>
+                  <VinaupVerticalExpandArrow width={16} height={16} />
+                  <Text style={{ color: COLORS.vinaupTeal }}>
                     {option.label || 'Trạng thái'}
                   </Text>
                 </>
               )}
-              isLoading={isRefreshingTour}
+              isLoading={isUpdatingTour || isRefreshingTour}
               options={TourStatusOptions}
-              value={tour?.status || ''}
-              onChange={(value) => {}}
+              value={tourData?.status || ''}
+              onChange={(value) =>
+                handleUpdateTour({ status: value as TourStatus })
+              }
               placeholder="Trạng thái"
+              style={{
+                triggerText: {
+                  fontSize: 16,
+                  color: COLORS.vinaupTeal,
+                },
+              }}
             />
+          </View>
+          <View style={styles.actionButton}>
+            <PressableOpacity style={styles.actionButtonItem}>
+              <Text style={styles.actionButtonItemText}>Tour</Text>
+            </PressableOpacity>
+            <PressableOpacity style={styles.actionButtonItem}>
+              <FontAwesome5 name="copy" size={18} color={COLORS.vinaupTeal} />
+            </PressableOpacity>
+            <PressableOpacity style={styles.actionButtonItem}>
+              <Entypo
+                name="dots-three-horizontal"
+                size={18}
+                color={COLORS.vinaupTeal}
+              />
+            </PressableOpacity>
           </View>
         </View>
         <View>
@@ -140,19 +191,24 @@ const styles = StyleSheet.create({
   headerDeleteButtonIcon: {
     color: COLORS.vinaupTeal,
   },
-  tourFilterContainer: {
+  actionContainer: {
     marginVertical: 12,
     paddingHorizontal: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  actionButton: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionButtonItem: {},
+  actionButtonItemText: {
+    fontSize: 16,
+    color: COLORS.vinaupTeal,
+  },
   statusFilter: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  statusFilterText: {
-    fontSize: 16,
-    color: COLORS.vinaupTeal,
   },
 });

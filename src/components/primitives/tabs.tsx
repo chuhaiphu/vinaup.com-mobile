@@ -17,9 +17,10 @@ export interface TabsListStyles {
 
 export interface TabsTabStyles {
   tab?: StyleProp<ViewStyle>;
+  tabTextContainer?: StyleProp<ViewStyle>;
   tabText?: StyleProp<TextStyle>;
-  activeTab?: StyleProp<ViewStyle>;
   activeTabText?: StyleProp<TextStyle>;
+  indicator?: StyleProp<ViewStyle>;
 }
 
 export interface TabsPanelStyles {
@@ -51,7 +52,7 @@ const List = ({ children, styles, gap }: TabsListProps) => {
   return (
     <ScrollView
       horizontal
-      showsHorizontalScrollIndicator={true}
+      showsHorizontalScrollIndicator={false}
       contentContainerStyle={[defaultStyles.list, styles?.list, { gap }]}
     >
       {children}
@@ -61,28 +62,30 @@ const List = ({ children, styles, gap }: TabsListProps) => {
 
 const Tab = ({ value, children, styles, currentValue, onPress }: TabProps) => {
   const isActive = currentValue === value;
-
+  const handlePress = () => {
+    if (value === currentValue) return;
+    onPress?.(value);
+  };
   return (
     <PressableOpacity
-      onPress={() => onPress?.(value)}
+      onPress={handlePress}
       activeOpacity={0.7}
-      style={[
-        defaultStyles.tab,
-        styles?.tab,
-        isActive && defaultStyles.activeTab,
-        isActive && styles?.activeTab,
-      ]}
+      style={[defaultStyles.tab, styles?.tab]}
     >
-      <Text
-        style={[
-          defaultStyles.tabText,
-          styles?.tabText,
-          isActive && defaultStyles.activeTabText,
-          isActive && styles?.activeTabText,
-        ]}
-      >
-        {children}
-      </Text>
+      <View style={[defaultStyles.tabTextContainer, styles?.tabTextContainer]}>
+        <Text
+          style={[
+            defaultStyles.tabText,
+            styles?.tabText,
+            isActive && defaultStyles.activeTabText,
+            isActive && styles?.activeTabText,
+          ]}
+        >
+          {children}
+        </Text>
+
+        {isActive && <View style={[defaultStyles.indicator, styles?.indicator]} />}
+      </View>
     </PressableOpacity>
   );
 };
@@ -101,13 +104,25 @@ Tabs.Panel = Panel;
 export default Tabs;
 
 const defaultStyles = StyleSheet.create({
-  list: {},
-  tab: {
-    padding: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+  list: {
+    flexDirection: 'row',
   },
-  activeTab: { borderBottomColor: COLORS.vinaupYellow },
+  tab: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabTextContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  indicator: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: COLORS.vinaupYellow,
+  },
   tabText: {
     fontSize: 14,
     color: COLORS.vinaupBlack,

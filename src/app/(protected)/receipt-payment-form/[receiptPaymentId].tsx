@@ -57,8 +57,7 @@ export default function ReceiptPaymentFormScreen() {
   const { receiptPaymentId } = params;
   const isUpdateMode = receiptPaymentId !== 'new';
 
-  const fetchReceiptPaymentFn = () =>
-    getReceiptPaymentByIdApi(receiptPaymentId);
+  const fetchReceiptPaymentFn = () => getReceiptPaymentByIdApi(receiptPaymentId);
 
   const {
     data: existingReceiptPayment,
@@ -89,10 +88,8 @@ export default function ReceiptPaymentFormScreen() {
 
   const fetchCategoriesFn = () => getCategoriesOfCurrentUserApi();
 
-  const {
-    data: categories,
-    executeFetchFn: fetchCategories,
-  } = useFetchFn(fetchCategoriesFn);
+  const { data: categories, executeFetchFn: fetchCategories } =
+    useFetchFn(fetchCategoriesFn);
 
   useEffect(() => {
     fetchCategories();
@@ -146,8 +143,7 @@ export default function ReceiptPaymentFormScreen() {
     invalidatesTags: formInvalidatesTags,
   });
 
-  const deleteReceiptPaymentFn = () =>
-    deleteReceiptPaymentApi(receiptPaymentId);
+  const deleteReceiptPaymentFn = () => deleteReceiptPaymentApi(receiptPaymentId);
 
   const {
     executeMutationFn: deleteReceiptPayment,
@@ -555,22 +551,20 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FBFBFB',
     borderRadius: 4,
     borderWidth: 1,
     borderColor: COLORS.vinaupTeal,
     overflow: 'hidden',
     minHeight: 50,
+    paddingRight: 8,
   },
   inputNative: {
     flex: 1,
-    backgroundColor: '#FBFBFB',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    textAlign: 'right',
     fontSize: 18,
   },
   currencyBadge: {
-    width: 50,
+    marginLeft: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -579,7 +573,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   segmentMini: {
-    width: 100,
+    width: 80,
     flexDirection: 'row',
     alignItems: 'stretch',
     alignSelf: 'stretch',
@@ -610,7 +604,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   unitText: {
-    width: 50,
     textAlign: 'center',
     fontSize: 18,
     color: 'black',

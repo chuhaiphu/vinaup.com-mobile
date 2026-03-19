@@ -87,8 +87,8 @@ export const OwnerSelector = () => {
             {option.label}
           </Text>
           <VinaupVerticalHalfArrow
-            width={18}
-            height={18}
+            width={14}
+            height={14}
             color={COLORS.vinaupTeal}
           />
         </>

@@ -5,7 +5,6 @@ import { InvoiceInfoModalContent } from './invoice-info-modal-content';
 interface InvoiceInfoModalProps {
   invoice: InvoiceResponse;
   isLoading?: boolean;
-  contentKey: number;
   modalRef: React.RefObject<SlideSheetRef | null>;
   onConfirm?: (
     data: {
@@ -21,14 +20,12 @@ interface InvoiceInfoModalProps {
 export function InvoiceInfoModal({
   invoice,
   isLoading,
-  contentKey,
   modalRef,
   onConfirm,
 }: InvoiceInfoModalProps) {
   return (
     <SlideSheet ref={modalRef}>
       <InvoiceInfoModalContent
-        key={contentKey}
         invCode={invoice.code}
         invDescription={invoice.description}
         invStartDate={invoice.startDate}

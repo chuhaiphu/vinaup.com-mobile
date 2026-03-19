@@ -1,54 +1,45 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
+import { TourResponse } from '@/interfaces/tour-interfaces';
 import dayjs from 'dayjs';
 import { useRef } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
-import { InvoiceInfoModal } from '@/components/modals/invoice-info-modal/invoice-info-modal';
+import { TourInfoModal } from '@/components/modals/tour-info-modal/tour-info-modal';
 import VinaupPenLineVariant from '../../icons/vinaup-pen-line-variant.native';
 
-interface InvoiceDetailHeaderContentProps {
-  invoice?: InvoiceResponse;
+interface TourDetailHeaderContentProps {
+  tour?: TourResponse;
   isLoading?: boolean;
   onConfirm?: (
     data: {
       description: string;
       startDate: Date;
       endDate: Date;
-      code?: string;
     },
     onSuccessCallback?: () => void
   ) => void;
 }
 
-export function InvoiceDetailHeaderContent({
-  invoice,
+export function TourDetailHeaderContent({
+  tour,
   isLoading,
   onConfirm,
-}: InvoiceDetailHeaderContentProps) {
+}: TourDetailHeaderContentProps) {
   const modalRef = useRef<SlideSheetRef>(null);
-
-  if (!invoice) {
-    return (
-      <View>
-        <Text>Không có dữ liệu</Text>
-      </View>
-    );
-  }
 
   const handleOpen = () => {
     modalRef.current?.open();
   };
 
   const getDateRangeText = () => {
-    const start = dayjs(invoice.startDate);
-    const end = dayjs(invoice.endDate);
+    const start = dayjs(tour?.startDate);
+    const end = dayjs(tour?.endDate);
 
     if (start.isSame(end, 'day')) {
       return (
         <>
-          <Text style={styles.dateText}>Ngày {start.format('DD/MM')} </Text>
+          <Text style={styles.dateText}>Ngày {start.format('DD/MM/YY')} </Text>
           <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         </>
       );
@@ -57,7 +48,7 @@ export function InvoiceDetailHeaderContent({
       <>
         <Text style={styles.dateText}>Từ {start.format('DD/MM')} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
-        <Text style={styles.dateText}> đến {end.format('DD/MM')}</Text>
+        <Text style={styles.dateText}> đến {end.format('DD/MM/YY')}</Text>
       </>
     );
   };
@@ -72,22 +63,24 @@ export function InvoiceDetailHeaderContent({
         }}
       >
         <View style={styles.leftInfo}>
-          <Text style={styles.entityName}>Tên: {invoice.description}</Text>
+          <Text style={styles.entityName}>Tour: {tour?.description}</Text>
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
           <View style={styles.editButton}>
-            <VinaupPenLineVariant width={16} height={16} />
+            <VinaupPenLineVariant width={14} height={14} />
           </View>
-          <Text style={styles.entityCode}>No. {invoice.code.slice(0, 8)}</Text>
+          <Text style={styles.entityCode}>No. {tour?.code.slice(0, 8)}</Text>
         </View>
       </PressableCard>
-      <InvoiceInfoModal
-        invoice={invoice}
-        isLoading={isLoading}
-        modalRef={modalRef}
-        onConfirm={onConfirm}
-      />
+      {tour && (
+        <TourInfoModal
+          tour={tour}
+          isLoading={isLoading}
+          modalRef={modalRef}
+          onConfirm={onConfirm}
+        />
+      )}
     </>
   );
 }
@@ -119,7 +112,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: COLORS.vinaupMediumDarkGray,
-    fontSize: 16,
+    fontSize: 15,
   },
   hourText: {
     color: COLORS.vinaupMediumGray,
@@ -131,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.vinaupYellow,
   },
   entityCode: {
-    fontSize: 14,
+    fontSize: 15,
     color: COLORS.vinaupMediumDarkGray,
   },
 });

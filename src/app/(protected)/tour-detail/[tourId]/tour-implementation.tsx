@@ -6,96 +6,54 @@ import VinaupHome from '@/components/icons/vinaup-home.native';
 
 export default function TourImplementationScreen() {
   const [currentTab, setCurrentTab] = useState('1');
+
+  const tabs = [
+    { value: '1', label: 'Home', isIcon: true },
+    { value: '2', label: 'Tab 2' },
+    { value: '3', label: 'Tab 3' },
+    { value: '4', label: 'Tab 4' },
+    { value: '5', label: 'Tab 5' },
+  ];
+
   return (
     <View style={styles.container}>
       <Tabs.List styles={{ list: styles.tabList }} gap={12}>
-        <Tabs.Tab
-          styles={{
-            tab: styles.tab,
-            tabText: styles.tabText,
-            activeTab: styles.activeTab,
-            activeTabText: styles.activeTabText,
-          }}
-          value="1"
-          currentValue={currentTab}
-          onPress={setCurrentTab}
-        >
-          <VinaupHome
-            width={20}
-            height={20}
-            color={currentTab === '1' ? COLORS.vinaupTeal : COLORS.vinaupMediumGray}
-          />
-        </Tabs.Tab>
-        <Tabs.Tab
-          styles={{
-            tab: styles.tab,
-            tabText: styles.tabText,
-            activeTab: styles.activeTab,
-            activeTabText: styles.activeTabText,
-          }}
-          value="2"
-          currentValue={currentTab}
-          onPress={setCurrentTab}
-        >
-          Tab 2
-        </Tabs.Tab>
-        <Tabs.Tab
-          styles={{
-            tab: styles.tab,
-            tabText: styles.tabText,
-            activeTab: styles.activeTab,
-            activeTabText: styles.activeTabText,
-          }}
-          value="3"
-          currentValue={currentTab}
-          onPress={setCurrentTab}
-        >
-          Tab 3
-        </Tabs.Tab>
-        <Tabs.Tab
-          styles={{
-            tab: styles.tab,
-            tabText: styles.tabText,
-            activeTab: styles.activeTab,
-            activeTabText: styles.activeTabText,
-          }}
-          value="4"
-          currentValue={currentTab}
-          onPress={setCurrentTab}
-        >
-          Tab 4
-        </Tabs.Tab>
-        <Tabs.Tab
-          styles={{
-            tab: styles.tab,
-            tabText: styles.tabText,
-            activeTab: styles.activeTab,
-            activeTabText: styles.activeTabText,
-          }}
-          value="5"
-          currentValue={currentTab}
-          onPress={setCurrentTab}
-        >
-          Tab 5
-        </Tabs.Tab>
+        {tabs.map((item) => (
+          <Tabs.Tab
+            key={item.value}
+            value={item.value}
+            currentValue={currentTab}
+            onPress={setCurrentTab}
+            styles={{
+              tab: [styles.tab, currentTab === item.value && styles.activeTab],
+              tabText: styles.tabText,
+              activeTabText: styles.activeTabText,
+              indicator: { height: 0 },
+            }}
+          >
+            {item.isIcon ? (
+              <VinaupHome
+                width={18}
+                height={18}
+                color={
+                  currentTab === item.value
+                    ? COLORS.vinaupTeal
+                    : COLORS.vinaupMediumGray
+                }
+              />
+            ) : (
+              item.label
+            )}
+          </Tabs.Tab>
+        ))}
       </Tabs.List>
 
       <View style={styles.content}>
-        <Tabs.Panel value="1" currentValue={currentTab}>
-          <Text style={styles.text}>Nội dung Panel 1</Text>
-        </Tabs.Panel>
-        <Tabs.Panel value="2" currentValue={currentTab}>
-          <Text style={styles.text}>Nội dung Panel 2</Text>
-        </Tabs.Panel>
-        <Tabs.Panel value="3" currentValue={currentTab}>
-          <Text style={styles.text}>Nội dung Panel 3</Text>
-        </Tabs.Panel>
-        <Tabs.Panel value="4" currentValue={currentTab}>
-          <Text style={styles.text}>Nội dung Panel 4</Text>
-        </Tabs.Panel>
-        <Tabs.Panel value="5" currentValue={currentTab}>
-          <Text style={styles.text}>Nội dung Panel 5</Text>
-        </Tabs.Panel>
+        {tabs.map((item) => (
+          <Tabs.Panel key={item.value} value={item.value} currentValue={currentTab}>
+            <Text style={styles.text}>Nội dung Panel {item.value}</Text>
+          </Tabs.Panel>
+        ))}
       </View>
     </View>
   );
@@ -104,7 +62,6 @@ export default function TourImplementationScreen() {
 const styles = StyleSheet.create({
   container: {},
   content: {
-    padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -113,32 +70,29 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   tabList: {
-    borderBottomWidth: 0,
     backgroundColor: COLORS.vinaupSoftGray,
-    marginHorizontal: 8,
-    borderRadius: 4,
-    justifyContent: 'space-between',
+    padding: 4,
+    borderRadius: 8,
+    flexDirection: 'row',
   },
   tab: {
-    borderBottomWidth: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: 32,
     borderRadius: 8,
     backgroundColor: COLORS.vinaupWhite,
-    padding: 4,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    paddingHorizontal: 6,
   },
   activeTab: {
-    borderWidth: 1,
-    borderBottomWidth: 1,
     backgroundColor: COLORS.vinaupLightYellow,
     borderColor: COLORS.vinaupYellow,
   },
   tabText: {
-    fontSize: 16,
+    fontSize: 14,
     color: COLORS.vinaupMediumGray,
   },
   activeTabText: {
     color: COLORS.vinaupTeal,
-    fontWeight: 'normal',
+    fontWeight: '600',
   },
 });
