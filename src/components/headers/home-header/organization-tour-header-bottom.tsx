@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from 'fetchwire';
 import { createTourApi } from '@/apis/tour-apis';
 import dayjs from 'dayjs';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 
 const OrganizationTourHeaderBottom = () => {
-  const router = useRouter();
+  const safeRouter = useSafeRouter();
   const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
 
   const createTourFn = () =>
@@ -29,7 +30,7 @@ const OrganizationTourHeaderBottom = () => {
   const handleAddNew = async () => {
     await createTour({
       onSuccess: (data) => {
-        router.push({
+        safeRouter.safePush({
           pathname: '/(protected)/tour-detail/[tourId]',
           params: { tourId: data.id },
         });

@@ -3,8 +3,6 @@ import { Slot, useLocalSearchParams, useSegments } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
-import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
-import Loader from '@/components/primitives/loader';
 import { Select } from '@/components/primitives/select';
 import { COLORS } from '@/constants/style-constant';
 import { useSafeRouter } from '@/hooks/use-safe-router';
@@ -30,29 +28,16 @@ export default function TourDetailLayout() {
   const fetchTourFn = () => getTourByIdApi(tourId);
   const {
     data: tourData,
-    isLoading: isLoadingTour,
     isRefreshing: isRefreshingTour,
     executeFetchFn: fetchTour,
     refreshFetchFn: refreshTour,
   } = useFetchFn(fetchTourFn);
 
-  const fetchReceiptPaymentsFn = () => getReceiptPaymentsByProjectIdApi(tourId);
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPayments,
-    refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn(fetchReceiptPaymentsFn, {
-    tags: ['organization-receipt-payment-list-in-tour'],
-  });
-
   useEffect(() => {
     if (tourId) {
       fetchTour();
-      fetchReceiptPayments();
     }
-  }, [tourId, fetchTour, fetchReceiptPayments]);
+  }, [tourId, fetchTour]);
 
   const updateTourFn = (updatedFields: UpdateTourRequest) =>
     updateTourApi(tourId, updatedFields);
@@ -81,7 +66,6 @@ export default function TourDetailLayout() {
   const handleSaveAndExit = () => {
     if (!tourData) return;
     refreshTour();
-    refreshReceiptPayments();
     safeRouter.safeBack();
   };
 

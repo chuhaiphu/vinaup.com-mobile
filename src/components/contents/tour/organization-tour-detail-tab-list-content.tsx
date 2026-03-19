@@ -1,6 +1,6 @@
 import Tabs from '@/components/primitives/tabs';
 import { COLORS } from '@/constants/style-constant';
-import { useRouter } from 'expo-router';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 import { StyleSheet } from 'react-native';
 
 interface OrganizationTourDetailTabListContentProps {
@@ -12,10 +12,10 @@ export const OrganizationTourDetailTabListContent = ({
   tourId,
   currentTab,
 }: OrganizationTourDetailTabListContentProps) => {
-  const router = useRouter();
+  const safeRouter = useSafeRouter();
 
   const handleTabChange = (value: string) => {
-    router.replace(`/(protected)/tour-detail/${tourId}/${value}`);
+    safeRouter.safePush(`/(protected)/tour-detail/${tourId}/${value}`);
   };
 
   const tabItems = [

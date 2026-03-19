@@ -19,12 +19,12 @@ import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
-import { useRouter } from 'expo-router';
 import { PersonalHomeIndexSummary } from '@/components/summaries/personal-home-index-summary';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 
 export default function PersonalIndexScreen() {
-  const router = useRouter();
+  const safeRouter = useSafeRouter();
   const { selectedUtilities, setUtilities } = usePersonalUtilitiesStore();
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
@@ -116,15 +116,15 @@ export default function PersonalIndexScreen() {
 
   const handlePress = (id: string) => {
     if (id === PERSONAL_UTILITY_KEYS.projectSelf) {
-      router.push('/(protected)/personal/(tabs)/project-self');
+      safeRouter.safePush('/(protected)/personal/(tabs)/project-self');
       return;
     }
     if (id === PERSONAL_UTILITY_KEYS.projectCompany) {
-      router.push('/(protected)/personal/(tabs)/project-company');
+      safeRouter.safePush('/(protected)/personal/(tabs)/project-company');
       return;
     }
     if (id === PERSONAL_UTILITY_KEYS.receiptPayment) {
-      router.push('/(protected)/personal/(tabs)/receipt-payment');
+      safeRouter.safePush('/(protected)/personal/(tabs)/receipt-payment');
     }
   };
   const onRefresh = async () => {

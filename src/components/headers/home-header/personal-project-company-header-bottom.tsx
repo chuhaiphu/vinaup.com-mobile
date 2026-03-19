@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from 'fetchwire';
 import { createProjectApi } from '@/apis/project-apis';
+import { useSafeRouter } from '@/hooks/use-safe-router';
 
 const PersonalProjectCompanyHeaderBottom = () => {
-  const router = useRouter();
+  const safeRouter = useSafeRouter();
 
   const createProjectFn = () =>
     createProjectApi({
@@ -26,7 +26,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
   const handleAddNew = async () => {
     await createProject({
       onSuccess: (data) => {
-        router.push({
+        safeRouter.safePush({
           pathname: '/(protected)/project-detail/[projectId]',
           params: { projectId: data.id },
         });
