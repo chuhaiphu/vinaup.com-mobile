@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { View, Alert } from 'react-native';
+import { Alert, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { useEffect } from 'react';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
@@ -13,10 +13,11 @@ import { TourCalculationTicketSummary } from '@/components/summaries/tour-calcul
 import { getReceiptPaymentsByTourCalculationIdApi } from '@/apis/receipt-payment-apis';
 import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { ReceiptPaymentTourCalculationListContent } from '@/components/contents/tour/receipt-payment-tour-calculation-list-content';
+import { COLORS } from '@/constants/style-constant';
 
 export default function TourCalculationScreen() {
   const { tourId } = useLocalSearchParams<{ tourId: string }>();
-  console.log('tourId in TourCalculationScreen:', tourId);
   const fetchTourFn = () => getTourByIdApi(tourId);
   const {
     data: tour,
@@ -29,7 +30,6 @@ export default function TourCalculationScreen() {
   const fetchTourCalculationFn = () => getTourCalculationByTourIdApi(tourId);
   const {
     data: tourCalculation,
-    isLoading: isLoadingTourCalculation,
     isRefreshing: isRefreshingTourCalculation,
     executeFetchFn: fetchTourCalculation,
     refreshFetchFn: refreshTourCalculation,
@@ -97,7 +97,25 @@ export default function TourCalculationScreen() {
   };
 
   return (
-    <View>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={
+            isRefreshingTour ||
+            isRefreshingTourCalculation ||
+            isRefreshingReceiptPayments
+          }
+          onRefresh={() => {
+            refreshTour();
+            refreshTourCalculation();
+            refreshReceiptPaymentsByTourCalculation();
+          }}
+          colors={[COLORS.vinaupTeal]}
+          tintColor={COLORS.vinaupTeal}
+        />
+      }
+    >
       <TourDetailHeaderContent
         tour={tour ?? undefined}
         isLoading={isUpdatingTour || isRefreshingTour || isLoadingTour}
@@ -128,6 +146,22 @@ export default function TourCalculationScreen() {
           tourTicketSummaryData.profitMarginAfterTaxPay
         )}
       />
-    </View>
+      {tour && tourCalculation && (
+        <ReceiptPaymentTourCalculationListContent
+          receiptPayments={receiptPayments ?? []}
+          startDate={tour?.startDate}
+          endDate={tour?.endDate}
+          loading={isLoadingReceiptPayments}
+          tourCalculationId={tourCalculation.id}
+          organizationId={tour.organization?.id}
+        />
+      )}
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

@@ -1,32 +1,26 @@
-import React, { useContext } from 'react';
+import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
+import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
+import Loader from '@/components/primitives/loader';
+import { COLORS } from '@/constants/style-constant';
+import { useSafeRouter } from '@/hooks/use-safe-router';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { generateDateRange } from '@/utils/generator-helpers';
+import dayjs from 'dayjs';
 import {
   Pressable,
-  RefreshControl,
   SectionList,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import dayjs from 'dayjs';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
-import { generateDateRange } from '@/utils/generator-helpers';
-import { COLORS } from '@/constants/style-constant';
-import Loader from '@/components/primitives/loader';
-import { useSafeRouter } from '@/hooks/use-safe-router';
-import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
-import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
 
-interface ReceiptPaymentInvoiceListContentProps {
+interface ReceiptPaymentTourCalculationListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
   startDate: Date;
   endDate: Date;
   loading?: boolean;
-  refreshing?: boolean;
-  onRefresh: () => void;
-  invoiceId: string;
+  tourCalculationId: string;
   organizationId?: string;
-  invoiceTypeId?: string;
 }
 
 interface ReceiptPaymentsSection {
@@ -35,21 +29,16 @@ interface ReceiptPaymentsSection {
   data: ReceiptPaymentResponse[];
 }
 
-export function ReceiptPaymentInvoiceListContent({
+export function ReceiptPaymentTourCalculationListContent({
   receiptPayments,
   startDate,
   endDate,
   loading,
-  refreshing,
-  onRefresh,
-  invoiceId,
+  tourCalculationId,
   organizationId,
-  invoiceTypeId,
-}: ReceiptPaymentInvoiceListContentProps) {
+}: ReceiptPaymentTourCalculationListContentProps) {
   const safeRouter = useSafeRouter();
   const dateRange = generateDateRange(startDate, endDate);
-  const { getInvoiceTypeById } = useContext(InvoiceTypeContext);
-  const invoiceType = getInvoiceTypeById(invoiceTypeId || '');
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
     const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
     dateRange.forEach((d) => {
@@ -85,16 +74,14 @@ export function ReceiptPaymentInvoiceListContent({
     dateKey?: string;
   }) => {
     if (safeRouter.isNavigating) return;
-    const receiptPaymentType = invoiceType?.code === 'BUY' ? 'PAYMENT' : 'RECEIPT';
     safeRouter.safePush({
       pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: receiptPaymentId || 'new',
-        invoiceId,
+        tourCalculationId,
         organizationId,
         lockDatePicker: 'false',
         allowEditCategory: 'true',
-        receiptPaymentType,
         transactionDate: dateKey || undefined,
       },
     });
@@ -131,16 +118,9 @@ export function ReceiptPaymentInvoiceListContent({
 
   return (
     <SectionList
+      scrollEnabled={false}
       sections={receiptPaymentSections}
       keyExtractor={(item) => item.id}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing ?? false}
-          onRefresh={onRefresh}
-          colors={[COLORS.vinaupTeal]}
-          tintColor={COLORS.vinaupTeal}
-        />
-      }
       renderItem={({ item }) => (
         <Pressable
           key={item.id}

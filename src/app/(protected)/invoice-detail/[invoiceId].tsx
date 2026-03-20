@@ -12,7 +12,7 @@ import {
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
 import { InvoiceDetailHeaderContent } from '@/components/contents/invoice/invoice-detail-header-content';
-import { ReceiptPaymentInvoiceContent } from '@/components/contents/invoice/receipt-payment-invoice-list-content';
+import { ReceiptPaymentInvoiceListContent } from '@/components/contents/invoice/receipt-payment-invoice-list-content';
 import Loader from '@/components/primitives/loader';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
@@ -195,7 +195,7 @@ export default function InvoiceDetailScreen() {
           }
         />
         {invoice && (
-          <ReceiptPaymentInvoiceContent
+          <ReceiptPaymentInvoiceListContent
             onRefresh={() => {
               refreshInvoice();
               refreshReceiptPayments();

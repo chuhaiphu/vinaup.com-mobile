@@ -28,7 +28,6 @@ export function TourCalculationTaxInputModalContent({
 
   useImperativeHandle(ref, () => ({
     focus: () => {
-      console.log('focus called on content');
       inputRef.current?.focus();
       inputRef.current?.setNativeProps({
         selection: { start: taxRate.length, end: taxRate.length },
@@ -44,7 +43,6 @@ export function TourCalculationTaxInputModalContent({
   return (
     <View style={styles.modalContent}>
       <Text style={styles.sectionTitle}>Thuế phải nộp</Text>
-
       <View style={styles.inputItem}>
         <View style={styles.inputWrapper}>
           <TextInput

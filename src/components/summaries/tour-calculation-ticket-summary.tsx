@@ -1,6 +1,6 @@
 import { COLORS } from '@/constants/style-constant';
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useMutationFn, type ApiError } from 'fetchwire';
 import { updateTourCalculationApi } from '@/apis/tour-apis';
 import { UpdateTourCalculationRequest } from '@/interfaces/tour-calculation-interfaces';
@@ -44,7 +44,6 @@ export function TourCalculationTicketSummary({
 }: TourCalculationTicketSummaryProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isAfterTax, setIsAfterTax] = useState(true);
-  const [tempTaxRate, setTempTaxRate] = useState(taxRate.toString());
 
   const totalTickets = adultTicketCount + childTicketCount;
 
@@ -160,9 +159,11 @@ export function TourCalculationTicketSummary({
             </View>
             <View style={styles.rightColumn}>
               <View style={styles.subColumnContainer}>
-                <Text style={styles.subLabel}>Người lớn</Text>
-                <Text style={styles.subEqual}>=</Text>
-                <Text style={[styles.subValue, styles.textRight]}>
+                <Text style={[styles.subLabel, styles.subLabelRight]}>
+                  Người lớn
+                </Text>
+                <Text style={[styles.subEqual, styles.subEqualRight]}>=</Text>
+                <Text style={[styles.subValue, styles.subValueRight]}>
                   {formatNumber(adultTicketPrice)}
                 </Text>
               </View>
@@ -179,9 +180,9 @@ export function TourCalculationTicketSummary({
             </View>
             <View style={styles.rightColumn}>
               <View style={styles.subColumnContainer}>
-                <Text style={styles.subLabel}>Trẻ em</Text>
-                <Text style={styles.subEqual}>=</Text>
-                <Text style={[styles.subValue, styles.textRight]}>
+                <Text style={[styles.subLabel, styles.subLabelRight]}>Trẻ em</Text>
+                <Text style={[styles.subEqual, styles.subEqualRight]}>=</Text>
+                <Text style={[styles.subValue, styles.subValueRight]}>
                   {formatNumber(childTicketPrice)}
                 </Text>
               </View>
@@ -223,7 +224,6 @@ export function TourCalculationTicketSummary({
             </View>
           </View>
 
-          {/* Lợi nhuận & Tỷ suất */}
           <View style={styles.row}>
             <View style={styles.leftColumn}>
               <Text style={styles.summaryLabel}>
@@ -323,6 +323,9 @@ const styles = StyleSheet.create({
   subLabel: { flex: 1.5, fontSize: 16 },
   subEqual: { width: 16, fontSize: 16, textAlign: 'center' },
   subValue: { flex: 2, fontSize: 16 },
+  subLabelRight: { textAlign: 'right' },
+  subEqualRight: { textAlign: 'right' },
+  subValueRight: { flex: 1.5, textAlign: 'right' },
 
   columnText: { fontSize: 16 },
   textRight: { textAlign: 'right' },

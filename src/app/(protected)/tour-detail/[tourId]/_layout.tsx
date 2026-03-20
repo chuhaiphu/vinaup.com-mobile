@@ -150,7 +150,7 @@ export default function TourDetailLayout() {
             </PressableOpacity>
           </View>
         </View>
-        <View>
+        <View style={styles.slotContainer}>
           <Slot />
         </View>
       </View>
@@ -194,5 +194,8 @@ const styles = StyleSheet.create({
   statusFilter: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  slotContainer: {
+    flex: 1,
   },
 });

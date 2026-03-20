@@ -16,7 +16,7 @@ import Loader from '@/components/primitives/loader';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import { ReceiptPaymentSectionListHeader } from '../../headers/receipt-payment-section-list-header';
 
-interface ReceiptPaymentProjectListProps {
+interface ReceiptPaymentProjectListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
   startDate: Date;
   endDate: Date;
@@ -40,7 +40,7 @@ export function ReceiptPaymentProjectListContent({
   refreshing,
   onRefresh,
   projectId,
-}: ReceiptPaymentProjectListProps) {
+}: ReceiptPaymentProjectListContentProps) {
   const safeRouter = useSafeRouter();
 
   const dateRange = generateDateRange(startDate, endDate);
