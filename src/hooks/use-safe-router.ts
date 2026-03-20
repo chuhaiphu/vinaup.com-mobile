@@ -1,45 +1,44 @@
-import { useState, useCallback } from 'react';
-import { Href, useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import { useRouter, Href } from 'expo-router';
+import { useRef } from 'react';
 
-export const useSafeRouter = () => {
+interface UseSafeRouterOptions {
+  timeout?: number;
+}
+
+export const useSafeRouter = (options?: UseSafeRouterOptions) => {
   const router = useRouter();
-  const [isNavigating, setIsNavigating] = useState(false);
 
-  // Reset navigating state when screen is focused again
-  useFocusEffect(
-    useCallback(() => {
-      setIsNavigating(false);
-    }, [])
-  );
+  const isNavigating = useRef(false);
+  const TIMEOUT = options?.timeout ?? 300;
 
-  // create new screen instance with fresh state and push it to the screen stack
-  const safePush = (href: Href) => {
-    if (isNavigating) return;
-    setIsNavigating(true);
-    router.push(href);
+  const wrapSafeAction = (action: (href: Href) => void) => {
+    // Debounce logic to prevent multiple rapid navigations
+    return (href: Href) => {
+      if (isNavigating.current) return;
+
+      // Lock navigation when action is triggered
+      action(href);
+      isNavigating.current = true;
+
+      // Reset the navigating flag after a delay to allow the navigation action to complete
+      setTimeout(() => {
+        isNavigating.current = false;
+      }, TIMEOUT);
+    };
   };
 
-  // create new screen instance with fresh state and replace it with the current screen
-  const safeReplace = (href: Href) => {
-    if (isNavigating) return;
-    setIsNavigating(true);
-    router.replace(href);
+  return {
+    safePush: wrapSafeAction((href) => router.push(href)),
+    safeReplace: wrapSafeAction((href) => router.replace(href)),
+    safeNavigate: wrapSafeAction((href) => router.navigate(href)),
+    safeBack: () => {
+      if (isNavigating.current) return;
+      isNavigating.current = true;
+      router.back();
+      setTimeout(() => {
+        isNavigating.current = false;
+      }, TIMEOUT);
+    },
+    isNavigating: isNavigating.current,
   };
-
-  // pop the current screen from the screen stack and go back to the previous screen
-  const safeBack = () => {
-    if (isNavigating) return;
-    setIsNavigating(true);
-    router.back();
-  };
-
-  // navigating to a new route pushes a screen onto a stack, and backing out of that route pops it off the stack
-  const safeNavigate = (href: Href) => {
-    if (isNavigating) return;
-    setIsNavigating(true);
-    router.navigate(href);
-  };
-
-  return { safePush, safeReplace, safeBack, safeNavigate, isNavigating };
 };

@@ -21,6 +21,7 @@ export interface SlideSheetRef {
 
 interface SlideSheetProps {
   onClose?: () => void;
+  onOpen?: () => void;
   enableAnimation?: boolean;
   heightPercentage?: number;
   children: React.ReactNode;
@@ -29,13 +30,14 @@ interface SlideSheetProps {
 
 export function SlideSheet({
   onClose,
+  onOpen,
   enableAnimation = true,
   heightPercentage,
   children,
   ref,
 }: SlideSheetProps) {
   const [modalVisible, setModalVisible] = useState(false);
-  // Use this to reset the children component state on every open, 
+  // Use this to reset the children component state on every open,
   // By unmounting them when the sheet is closed, and only mounting them when the sheet is open
   const [shouldMountChildren, setShouldMountChildren] = useState(false);
   const { height: screenHeight } = useWindowDimensions();
@@ -75,7 +77,11 @@ export function SlideSheet({
       return;
     }
     translateY.value = animDistance;
-    translateY.value = withTiming(0, { duration: 350 });
+    translateY.value = withTiming(0, { duration: 350 }, (finished) => {
+      if (finished && onOpen) {
+        scheduleOnRN(onOpen);
+      }
+    });
   };
 
   useImperativeHandle(ref, () => ({

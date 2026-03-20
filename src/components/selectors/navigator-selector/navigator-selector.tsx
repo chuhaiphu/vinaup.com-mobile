@@ -49,7 +49,7 @@ export default function NavigatorSelector() {
   ];
 
   const handleNavigation = (path: string) => {
-    safeRouter.safePush(path as Route);
+    safeRouter.safeNavigate(path as Route);
   };
 
   return (

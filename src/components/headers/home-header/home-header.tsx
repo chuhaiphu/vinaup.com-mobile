@@ -8,8 +8,8 @@ import NavigatorSelector from '../../selectors/navigator-selector/navigator-sele
 import PersonalReceiptPaymentHeaderBottom from './personal-receipt-payment-header-bottom';
 import PersonalProjectSelfHeaderBottom from './personal-project-self-header-bottom';
 import PersonalProjectCompanyHeaderBottom from './personal-project-company-header-bottom';
-import PersonalIndexHeaderBottom from './personal-index-header-bottom';
-import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
+// import PersonalIndexHeaderBottom from './personal-index-header-bottom';
+// import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
 import InvoiceHeaderBottom from './invoice-header-bottom';
 import OrganizationTourHeaderBottom from './organization-tour-header-bottom';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';

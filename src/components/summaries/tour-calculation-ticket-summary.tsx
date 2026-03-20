@@ -1,6 +1,6 @@
 import { COLORS } from '@/constants/style-constant';
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, TextInput } from 'react-native';
 import { useMutationFn, type ApiError } from 'fetchwire';
 import { updateTourCalculationApi } from '@/apis/tour-apis';
 import { UpdateTourCalculationRequest } from '@/interfaces/tour-calculation-interfaces';
@@ -9,6 +9,7 @@ import { VinaupPenLine } from '../icons/vinaup-pen-line.native';
 import { FontAwesome } from '@expo/vector-icons';
 import { TourCalculationTicketModal } from '../modals/tour-calculation-ticket-form-modal/tour-calculation-ticket-modal';
 import { SlideSheetRef } from '../primitives/slide-sheet';
+import { TourCalculationTaxModal } from '../modals/tour-calculation-tax-input-modal/tour-calculation-tax-input';
 
 interface TourCalculationTicketSummaryProps {
   id: string;
@@ -43,6 +44,7 @@ export function TourCalculationTicketSummary({
 }: TourCalculationTicketSummaryProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isAfterTax, setIsAfterTax] = useState(true);
+  const [tempTaxRate, setTempTaxRate] = useState(taxRate.toString());
 
   const totalTickets = adultTicketCount + childTicketCount;
 
@@ -50,9 +52,13 @@ export function TourCalculationTicketSummary({
     return num.toLocaleString('vi-VN');
   };
 
-  const modalRef = useRef<SlideSheetRef>(null);
-  const handleOpenModal = () => {
-    modalRef.current?.open();
+  const tourTicketModalRef = useRef<SlideSheetRef>(null);
+  const taxModalRef = useRef<SlideSheetRef>(null);
+  const handleOpenTourTicketModal = () => {
+    tourTicketModalRef.current?.open();
+  };
+  const handleOpenTaxModal = () => {
+    taxModalRef.current?.open();
   };
 
   const updateTourCalculationFn = (updatedFields: UpdateTourCalculationRequest) =>
@@ -65,7 +71,7 @@ export function TourCalculationTicketSummary({
     invalidatesTags: ['tour-calculation'],
   });
 
-  const handleConfirm = (
+  const handleConfirmUpdateTourTicket = (
     data: {
       adultPrice: number;
       childPrice: number;
@@ -74,7 +80,6 @@ export function TourCalculationTicketSummary({
     },
     onSuccessCallback?: () => void
   ) => {
-    console.log('Data to update:', data);
     updateTourCalculation(
       {
         adultTicketCount: data.adultQuantity,
@@ -93,6 +98,20 @@ export function TourCalculationTicketSummary({
     );
   };
 
+  const handleConfirmUpdateTax = (newTaxRate: number, onSuccess: () => void) => {
+    updateTourCalculation(
+      { taxRate: newTaxRate },
+      {
+        onSuccess: () => {
+          onSuccess(); // Đóng modal
+        },
+        onError: (error: ApiError) => {
+          Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật thuế.');
+        },
+      }
+    );
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -102,7 +121,7 @@ export function TourCalculationTicketSummary({
           {totalTickets}
         </Text>
         <View style={styles.headerActions}>
-          <PressableOpacity onPress={handleOpenModal} hitSlop={4}>
+          <PressableOpacity onPress={handleOpenTourTicketModal} hitSlop={4}>
             <VinaupPenLine width={16} height={16} />
           </PressableOpacity>
           <PressableOpacity onPress={() => setIsExpanded(!isExpanded)} hitSlop={4}>
@@ -192,7 +211,9 @@ export function TourCalculationTicketSummary({
               <Text style={styles.summaryLabel}>Thuế phải nộp</Text>
               <View style={styles.taxRateBadge}>
                 <Text style={styles.taxRateText}>{taxRate} %</Text>
-                <VinaupPenLine width={15} height={15} />
+                <PressableOpacity onPress={handleOpenTaxModal}>
+                  <VinaupPenLine width={15} height={15} />
+                </PressableOpacity>
               </View>
             </View>
             <View style={styles.rightColumn}>
@@ -246,11 +267,17 @@ export function TourCalculationTicketSummary({
           adultQuantity: adultTicketCount,
           childQuantity: childTicketCount,
         }}
-        modalRef={modalRef}
+        modalRef={tourTicketModalRef}
         isLoading={isUpdatingCalculation}
         onConfirm={(data, onSuccessCallback) =>
-          handleConfirm(data, onSuccessCallback)
+          handleConfirmUpdateTourTicket(data, onSuccessCallback)
         }
+      />
+      <TourCalculationTaxModal
+        modalRef={taxModalRef}
+        initialTaxRate={taxRate}
+        isLoading={isUpdatingCalculation}
+        onConfirm={handleConfirmUpdateTax}
       />
     </View>
   );

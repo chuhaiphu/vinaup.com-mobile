@@ -15,7 +15,7 @@ export const OrganizationTourDetailTabListContent = ({
   const safeRouter = useSafeRouter();
 
   const handleTabChange = (value: string) => {
-    safeRouter.safePush(`/(protected)/tour-detail/${tourId}/${value}`);
+    safeRouter.safeReplace(`/(protected)/tour-detail/${tourId}/${value}`);
   };
 
   const tabItems = [

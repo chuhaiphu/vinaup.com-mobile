@@ -17,6 +17,18 @@ export default function RootLayout() {
     getToken: async () => {
       return await AsyncStorage.getItem(STORAGE_KEYS.accessToken);
     },
+    transformResponse(res) {
+      const rawResponse = res as {
+        statusCode?: number;
+        data: object;
+        message?: string;
+      };
+      return {
+        status: rawResponse.statusCode,
+        data: rawResponse.data,
+        message: rawResponse.message || '',
+      };
+    },
   });
   return (
     <AuthProvider>

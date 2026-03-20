@@ -8,12 +8,13 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '@/constants/style-constant';
 import { Button } from '@/components/primitives/button';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { PressableOpacity } from '../primitives/pressable-opacity';
+import VinaupLeftArrowTwoLayers from '../icons/vinaup-left-arrow-two-layers.native';
 
 // Rút gọn style interface, tập trung vào layout
 interface StackWithHeaderStyles {
@@ -61,9 +62,7 @@ export function StackWithHeader({
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const defaultBackIcon = (
-    <Ionicons name="chevron-back" size={28} color={COLORS.vinaupTeal} />
-  );
+  const defaultBackIcon = <VinaupLeftArrowTwoLayers />;
   const defaultDeleteIcon = (
     <FontAwesome name="trash-o" size={20} color={COLORS.vinaupTeal} />
   );
@@ -182,7 +181,6 @@ const defaultStyles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginRight: 4,
-    marginLeft: -8,
   },
   actionGroup: {
     flexDirection: 'row',
