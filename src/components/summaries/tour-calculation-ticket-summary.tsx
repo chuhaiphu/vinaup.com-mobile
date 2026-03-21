@@ -6,10 +6,11 @@ import { updateTourCalculationApi } from '@/apis/tour-apis';
 import { UpdateTourCalculationRequest } from '@/interfaces/tour-calculation-interfaces';
 import { PressableOpacity } from '../primitives/pressable-opacity';
 import { VinaupPenLine } from '../icons/vinaup-pen-line.native';
-import { FontAwesome } from '@expo/vector-icons';
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { TourCalculationTicketModal } from '../modals/tour-calculation-ticket-form-modal/tour-calculation-ticket-modal';
 import { SlideSheetRef } from '../primitives/slide-sheet';
 import { TourCalculationTaxModal } from '../modals/tour-calculation-tax-input-modal/tour-calculation-tax-input';
+import { TourCalculationTicketSummaryPopover } from '../popovers/tour-calculation-ticket-summary-popover';
 
 interface TourCalculationTicketSummaryProps {
   id: string;
@@ -102,7 +103,7 @@ export function TourCalculationTicketSummary({
       { taxRate: newTaxRate },
       {
         onSuccess: () => {
-          onSuccess(); // Đóng modal
+          onSuccess();
         },
         onError: (error: ApiError) => {
           Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật thuế.');
@@ -121,7 +122,7 @@ export function TourCalculationTicketSummary({
         </Text>
         <View style={styles.headerActions}>
           <PressableOpacity onPress={handleOpenTourTicketModal} hitSlop={4}>
-            <VinaupPenLine width={16} height={16} />
+            <AntDesign name="edit" size={22} color={COLORS.vinaupTeal} />
           </PressableOpacity>
           <PressableOpacity onPress={() => setIsExpanded(!isExpanded)} hitSlop={4}>
             <View style={styles.expandToggle}>
@@ -191,21 +192,27 @@ export function TourCalculationTicketSummary({
 
           <View style={styles.divider} />
 
-          {[
-            { label: 'Tổng thu', value: totalReceipt },
-            { label: 'Tổng chi', value: totalPayment },
-          ].map((item, idx) => (
-            <View key={idx} style={styles.row}>
-              <View style={styles.leftColumn}>
-                <Text style={styles.summaryLabel}>{item.label}</Text>
-              </View>
-              <View style={styles.rightColumn}>
-                <Text style={[styles.summaryValue, styles.textRight]}>
-                  {item.value}
-                </Text>
-              </View>
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <Text style={styles.summaryLabel}>Tổng thu</Text>
             </View>
-          ))}
+            <View style={styles.rightColumn}>
+              <Text style={[styles.summaryValue, styles.textRight]}>
+                {totalReceipt}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.leftColumn}>
+              <Text style={styles.summaryLabel}>Tổng chi</Text>
+            </View>
+            <View style={styles.rightColumn}>
+              <Text style={[styles.summaryValue, styles.textRight]}>
+                {totalPayment}
+              </Text>
+            </View>
+          </View>
 
           <View style={styles.row}>
             <View style={styles.leftColumn}>
@@ -279,6 +286,7 @@ export function TourCalculationTicketSummary({
         isLoading={isUpdatingCalculation}
         onConfirm={handleConfirmUpdateTax}
       />
+      <TourCalculationTicketSummaryPopover onPenClick={handleOpenTourTicketModal} />
     </View>
   );
 }

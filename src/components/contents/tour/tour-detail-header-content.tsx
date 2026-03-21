@@ -63,7 +63,7 @@ export function TourDetailHeaderContent({
         }}
       >
         <View style={styles.leftInfo}>
-          <Text style={styles.entityName}>Tour: {tour?.description}</Text>
+          <Text style={styles.entityName}>Tên: {tour?.description}</Text>
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>

@@ -15,7 +15,7 @@ const OrganizationTourHeaderBottom = () => {
 
   const createTourFn = () =>
     createTourApi({
-      description: 'Tour trong nước',
+      description: 'Tiêu đề tour',
       organizationId,
       externalCustomerName: 'Khách lẻ',
       startDate: dayjs().toDate(),

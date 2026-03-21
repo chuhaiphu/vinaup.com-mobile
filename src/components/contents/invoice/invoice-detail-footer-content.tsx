@@ -3,7 +3,6 @@ import { COLORS } from '@/constants/style-constant';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
-import VinaupPenLineVariant from '@/components/icons/vinaup-pen-line-variant.native';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
@@ -11,6 +10,7 @@ import { SimpleTextInputModal } from '../../modals/simple-text-input-modal/simpl
 import { InvoiceOrgCustomerSelectModal } from '@/components/modals/invoice-org-customer-select-modal/invoice-org-customer-select-modal';
 import { CreateOrganizationCustomerModal } from '@/components/modals/create-organization-customer-modal/create-organization-customer-modal';
 import { Ionicons, Feather } from '@expo/vector-icons';
+import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 
 interface InvoiceDetailFooterContentProps {
   invoice?: InvoiceResponse;
@@ -66,7 +66,7 @@ export function InvoiceDetailFooterContent({
         <Text style={styles.noteValue} numberOfLines={2} ellipsizeMode="tail">
           {note || 'Ghi chú...'}
         </Text>
-        <VinaupPenLineVariant width={16} height={16} color={COLORS.vinaupTeal} />
+        <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
       </Pressable>
 
       <PressableCard

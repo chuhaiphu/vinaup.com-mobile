@@ -6,26 +6,23 @@ import { PressableCard } from '@/components/primitives/pressable-card';
 import { ProjectOrgCustomerEditModal } from '@/components/modals/project-org-customer-edit-modal/project-org-customer-edit-modal';
 import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal/simple-text-input-modal';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
-import {
-  ProjectResponse,
-  UpdateProjectRequest,
-} from '@/interfaces/project-interfaces';
+import { TourResponse, UpdateTourRequest } from '@/interfaces/tour-interfaces';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 
-interface ProjectDetailFooterContentProps {
-  project?: ProjectResponse;
-  onConfirm?: (data: UpdateProjectRequest, onSuccessCallback?: () => void) => void;
+interface TourDetailFooterContentProps {
+  tour?: TourResponse;
+  onConfirm?: (data: UpdateTourRequest, onSuccessCallback?: () => void) => void;
   isLoading?: boolean;
 }
 
-export function ProjectDetailFooterContent({
-  project,
+export function TourDetailFooterContent({
+  tour,
   onConfirm,
   isLoading = false,
-}: ProjectDetailFooterContentProps) {
-  const organizationName = project?.externalOrganizationName ?? '';
-  const customerName = project?.externalCustomerName ?? '';
-  const note = project?.note ?? '';
+}: TourDetailFooterContentProps) {
+  const organizationName = tour?.externalOrganizationName ?? '';
+  const customerName = tour?.externalCustomerName ?? '';
+  const note = tour?.note ?? '';
 
   const orgModalRef = useRef<SlideSheetRef | null>(null);
   const noteModalRef = useRef<SlideSheetRef | null>(null);
@@ -98,13 +95,12 @@ export function ProjectDetailFooterContent({
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    marginBottom: 20,
-  },
+  cardContainer: {},
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingVertical: 4,
+    paddingTop: 4,
+    paddingBottom: 10,
   },
   rowsNew: {
     flex: 1,

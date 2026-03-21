@@ -1,6 +1,7 @@
 import {
   UpdateSignatureUrlRequest,
   SignatureResponse,
+  CreateSignatureRequest,
 } from '@/interfaces/signature-interfaces';
 import { wireApi } from 'fetchwire';
 
@@ -10,6 +11,13 @@ export async function updateSignatureUrlApi(
 ) {
   return wireApi<SignatureResponse>(`/signature/${id}/url`, {
     method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function createSignatureApi(data: CreateSignatureRequest) {
+  return wireApi<SignatureResponse>('/signature', {
+    method: 'POST',
     body: JSON.stringify(data),
   });
 }

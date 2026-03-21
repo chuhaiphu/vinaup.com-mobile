@@ -1,23 +1,20 @@
-import { View, StyleSheet, Alert, Text } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Slot, useLocalSearchParams, useSegments } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
-import { Select } from '@/components/primitives/select';
 import { COLORS } from '@/constants/style-constant';
 import { useSafeRouter } from '@/hooks/use-safe-router';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { getTourByIdApi, updateTourApi } from '@/apis/tour-apis';
-import { TourStatus, TourStatusOptions } from '@/constants/tour-constants';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import Entypo from '@expo/vector-icons/Entypo';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { OrganizationTourDetailTabListContent } from '@/components/contents/tour/organization-tour-detail-tab-list-content';
 import { UpdateTourRequest } from '@/interfaces/tour-interfaces';
-import { PressableOpacity } from '@/components/primitives/pressable-opacity';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TourDetailLayout() {
+  const insets = useSafeAreaInsets();
+
   const safeRouter = useSafeRouter();
   const { tourId } = useLocalSearchParams<{
     tourId: string;
@@ -28,6 +25,7 @@ export default function TourDetailLayout() {
   const fetchTourFn = () => getTourByIdApi(tourId);
   const {
     data: tourData,
+    isLoading: isLoadingTour,
     isRefreshing: isRefreshingTour,
     executeFetchFn: fetchTour,
     refreshFetchFn: refreshTour,
@@ -107,49 +105,7 @@ export default function TourDetailLayout() {
       >
         <OrganizationTourDetailTabListContent currentTab={tab} tourId={tourId} />
       </StackWithHeader>
-      <View style={styles.container}>
-        <View style={styles.actionContainer}>
-          <View style={styles.statusFilter}>
-            <Select
-              renderTrigger={(option) => (
-                <>
-                  <VinaupVerticalExpandArrow width={16} height={16} />
-                  <Text style={{ color: COLORS.vinaupTeal }}>
-                    {option.label || 'Trạng thái'}
-                  </Text>
-                </>
-              )}
-              isLoading={isUpdatingTour || isRefreshingTour}
-              options={TourStatusOptions}
-              value={tourData?.status || ''}
-              onChange={(value) =>
-                handleUpdateTour({ status: value as TourStatus })
-              }
-              placeholder="Trạng thái"
-              style={{
-                triggerText: {
-                  fontSize: 16,
-                  color: COLORS.vinaupTeal,
-                },
-              }}
-            />
-          </View>
-          <View style={styles.actionButton}>
-            <PressableOpacity style={styles.actionButtonItem}>
-              <Text style={styles.actionButtonItemText}>Tour</Text>
-            </PressableOpacity>
-            <PressableOpacity style={styles.actionButtonItem}>
-              <FontAwesome5 name="copy" size={18} color={COLORS.vinaupTeal} />
-            </PressableOpacity>
-            <PressableOpacity style={styles.actionButtonItem}>
-              <Entypo
-                name="dots-three-horizontal"
-                size={18}
-                color={COLORS.vinaupTeal}
-              />
-            </PressableOpacity>
-          </View>
-        </View>
+      <View style={[styles.container, { paddingBottom: insets.bottom }]}>
         <View style={styles.slotContainer}>
           <Slot />
         </View>
@@ -174,26 +130,6 @@ const styles = StyleSheet.create({
   },
   headerDeleteButtonIcon: {
     color: COLORS.vinaupTeal,
-  },
-  actionContainer: {
-    marginVertical: 12,
-    paddingHorizontal: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  actionButton: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButtonItem: {},
-  actionButtonItemText: {
-    fontSize: 16,
-    color: COLORS.vinaupTeal,
-  },
-  statusFilter: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   slotContainer: {
     flex: 1,
