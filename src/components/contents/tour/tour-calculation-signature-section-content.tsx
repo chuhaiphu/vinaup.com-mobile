@@ -8,7 +8,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import SignatureEntityContent from '../signature/signature-entity-content';
 import VinaupUnlock from '@/components/icons/vinaup-unlock.native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { COLORS } from '@/constants/style-constant';
 import { AuthContext } from '@/providers/auth-provider';
@@ -57,6 +57,7 @@ export default function TourCalculationSignatureContent({
     });
 
   useEffect(() => {
+    if (!tourCalculationId) return;
     fetchSignatures();
     fetchOrganizationMembers();
   }, [
@@ -158,8 +159,12 @@ export default function TourCalculationSignatureContent({
             />
           </Pressable>
           <View style={styles.leftContent}>
-            <Text style={styles.titleUnderline}>Trình ký</Text>
-            <VinaupUnlock width={16} height={16} color={COLORS.vinaupTeal} />
+            <Text style={styles.titleUnderline}>Ký tên</Text>
+            <Ionicons
+              name="information-circle-sharp"
+              size={24}
+              color={COLORS.vinaupYellow}
+            />
           </View>
         </View>
         <View style={styles.headerRight}>
@@ -170,7 +175,11 @@ export default function TourCalculationSignatureContent({
             onPress={handleOpenSignerSelectModal}
             disabled={isLoading || isManagingReceiverSignatures}
           >
-            <Feather name="user-plus" size={24} color={COLORS.vinaupTeal} />
+            <Feather
+              name={receivers && receivers.length > 0 ? 'user-minus' : 'user-plus'}
+              size={24}
+              color={COLORS.vinaupTeal}
+            />
           </PressableOpacity>
         </View>
       </View>

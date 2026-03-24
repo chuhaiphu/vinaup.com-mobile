@@ -30,6 +30,12 @@ export async function signSignatureApi(id: string) {
   });
 }
 
+export async function cancelSignatureApi(id: string) {
+  return wireApi<SignatureResponse>(`/signature/${id}/cancel`, {
+    method: 'POST',
+  });
+}
+
 export async function getSignaturesByDocumentIdApi(documentId: string) {
   return wireApi<SignatureResponse[]>(`/signature/document/${documentId}`, {
     method: 'GET',

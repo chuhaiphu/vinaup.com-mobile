@@ -4,6 +4,7 @@ import {
   UpdateTourRequest,
 } from '@/interfaces/tour-interfaces';
 import {
+  TourCalculationCancelLogResponse,
   TourCalculationResponse,
   UpdateTourCalculationRequest,
 } from '@/interfaces/tour-calculation-interfaces';
@@ -72,6 +73,17 @@ export async function getTourCalculationByTourIdApi(tourId: string) {
   return wireApi<TourCalculationResponse>(`/tour/tour-calculation/${tourId}`, {
     method: 'GET',
   });
+}
+
+export async function getTourCalculationLogsByTourCalculationIdApi(
+  tourCalculationId: string
+) {
+  return wireApi<TourCalculationCancelLogResponse[]>(
+    `/tour/tour-calculation/${tourCalculationId}/logs`,
+    {
+      method: 'GET',
+    }
+  );
 }
 
 export async function getTourImplementationByTourIdApi(tourId: string) {
