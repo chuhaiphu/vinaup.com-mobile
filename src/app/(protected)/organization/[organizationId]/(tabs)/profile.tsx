@@ -1,14 +1,18 @@
 import { useSafeRouter } from '@/hooks/use-safe-router';
 import { AuthContext } from '@/providers/auth-provider';
+import { OwnerModeContext } from '@/providers/owner-mode-provider';
 import { useContext } from 'react';
 import { Text, View, Button, StyleSheet } from 'react-native';
 
 export default function OrganizationProfileScreen() {
   const { performLogout } = useContext(AuthContext);
+  const { setOwnerMode } = useContext(OwnerModeContext);
+
   const safeRouter = useSafeRouter();
 
   const handleLogout = () => {
     performLogout();
+    setOwnerMode('personal');
     safeRouter.safeReplace('/login');
   };
 

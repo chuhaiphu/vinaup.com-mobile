@@ -24,7 +24,20 @@ export interface UpdateTourCalculationRequest {
 }
 
 export interface TourCalculationCancelLogSnapshotData {
-  tourCalculation: Record<string, unknown>;
+  tourCalculation: {
+    id?: string;
+    adultTicketCount?: number;
+    childTicketCount?: number;
+    adultTicketPrice?: number;
+    childTicketPrice?: number;
+    taxRate?: number;
+    createdByUserId?: string;
+    tourId?: string;
+    createdBy?: UserResponse;
+    tour?: TourResponse;
+    receiptPayments?: ReceiptPaymentResponse[];
+    [key: string]: unknown;
+  };
   signatures: SignatureResponse[];
 }
 

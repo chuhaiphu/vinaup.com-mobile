@@ -29,8 +29,12 @@ import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
+import { useState } from 'react';
+import { TourCalculationSignatureInfoPopover } from '@/components/popovers/tour-calculation-signature-info-popover';
 
 export default function TourCalculationScreen() {
+  const [isSignatureInfoPopoverVisible, setIsSignatureInfoPopoverVisible] =
+    useState(false);
   const { tourId } = useLocalSearchParams<{ tourId: string }>();
   const fetchTourFn = () => getTourByIdApi(tourId);
   const {
@@ -225,11 +229,21 @@ export default function TourCalculationScreen() {
           }
         />
       </ScrollView>
-      <View style={styles.tourCalculationSignatureContainer}>
-        <TourCalculationSignatureContent
-          organizationId={tour?.organization?.id || ''}
-          tourCalculationId={tour?.tourCalculation?.id || ''}
+      <View style={styles.tourCalculationSignatureWrapper}>
+        <TourCalculationSignatureInfoPopover
+          isVisible={isSignatureInfoPopoverVisible}
+          onClose={() => setIsSignatureInfoPopoverVisible(false)}
+          containerStyle={styles.signatureInfoPopoverContainer}
         />
+        <View style={styles.tourCalculationSignatureContainer}>
+          <TourCalculationSignatureContent
+            organizationId={tour?.organization?.id || ''}
+            tourCalculationId={tour?.tourCalculation?.id || ''}
+            onOpenSignatureInfoPopover={() =>
+              setIsSignatureInfoPopoverVisible(true)
+            }
+          />
+        </View>
       </View>
     </View>
   );
@@ -260,6 +274,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollContainer: {},
+  tourCalculationSignatureWrapper: {
+    overflow: 'visible',
+  },
+  signatureInfoPopoverContainer: {
+    position: 'relative',
+    top: 0,
+    left: 0,
+    right: 0,
+    marginHorizontal: 8,
+    marginBottom: 8,
+  },
   tourCalculationSignatureContainer: {
     backgroundColor: COLORS.vinaupLightGreen,
     paddingHorizontal: 8,

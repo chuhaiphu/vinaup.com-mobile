@@ -1,4 +1,5 @@
 import {
+  cancelSignatureApi,
   getSignaturesByDocumentIdApi,
   manageReceiverSignaturesApi,
   signSignatureApi,
@@ -7,8 +8,7 @@ import { useFetchFn, useMutationFn } from 'fetchwire';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import SignatureEntityContent from '../signature/signature-entity-content';
-import VinaupUnlock from '@/components/icons/vinaup-unlock.native';
-import { Feather, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { COLORS } from '@/constants/style-constant';
 import { AuthContext } from '@/providers/auth-provider';
@@ -18,18 +18,23 @@ import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { getOrganizationMembersByOrganizationIdApi } from '@/apis/organization-apis';
 import { ConfirmModal } from '@/components/modals/confirm-modal/confirm-modal';
+import { Button } from '@/components/primitives/button';
+import { TourCalculationCancelLogModal } from '@/components/modals/tour-calculation-cancel-log-modal/tour-calculation-cancel-log-modal';
 
 interface TourCalculationSignatureContentProps {
   organizationId: string;
   tourCalculationId: string;
+  onOpenSignatureInfoPopover?: () => void;
 }
 
 export default function TourCalculationSignatureContent({
   organizationId,
   tourCalculationId,
+  onOpenSignatureInfoPopover,
 }: TourCalculationSignatureContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSignConfirmVisible, setIsSignConfirmVisible] = useState(false);
+  const [isCancelConfirmVisible, setIsCancelConfirmVisible] = useState(false);
   const [selectedSignatureId, setSelectedSignatureId] = useState<string | null>(
     null
   );
@@ -38,8 +43,12 @@ export default function TourCalculationSignatureContent({
     setIsExpanded((prev) => !prev);
   };
   const modalRef = useRef<SlideSheetRef | null>(null);
+  const cancelLogModalRef = useRef<SlideSheetRef | null>(null);
   const handleOpenSignerSelectModal = () => {
     modalRef.current?.open();
+  };
+  const handleOpenCancelLogModal = () => {
+    cancelLogModalRef.current?.open();
   };
 
   const { currentUser } = useContext(AuthContext);
@@ -76,6 +85,7 @@ export default function TourCalculationSignatureContent({
     });
 
   const signTourCalculationFn = (id: string) => signSignatureApi(id);
+  const cancelTourCalculationFn = (id: string) => cancelSignatureApi(id);
 
   const {
     executeMutationFn: manageReceiverSignatures,
@@ -89,6 +99,16 @@ export default function TourCalculationSignatureContent({
     isMutating: isSigningTourCalculation,
   } = useMutationFn(signTourCalculationFn, {
     invalidatesTags: ['signature-list-in-tour-calculation'],
+  });
+
+  const {
+    executeMutationFn: cancelTourCalculation,
+    isMutating: isCancelingTourCalculation,
+  } = useMutationFn(cancelTourCalculationFn, {
+    invalidatesTags: [
+      'signature-list-in-tour-calculation',
+      'tour-calculation-cancel-logs',
+    ],
   });
 
   const handleConfirmSelectedOrganizationMembers = (
@@ -115,14 +135,28 @@ export default function TourCalculationSignatureContent({
     });
   };
 
-  const handleOpenSignConfirmModal = (signatureId?: string) => {
-    if (!signatureId) return;
+  const handleOpenSignConfirmModal = (
+    signatureId?: string,
+    isAllowToSign: boolean = true
+  ) => {
+    if (!signatureId || !isAllowToSign) return;
     setSelectedSignatureId(signatureId);
     setIsSignConfirmVisible(true);
   };
 
   const handleCloseSignConfirmModal = () => {
     setIsSignConfirmVisible(false);
+    setSelectedSignatureId(null);
+  };
+
+  const handleOpenCancelConfirmModal = (signatureId?: string) => {
+    if (!signatureId) return;
+    setSelectedSignatureId(signatureId);
+    setIsCancelConfirmVisible(true);
+  };
+
+  const handleCloseCancelConfirmModal = () => {
+    setIsCancelConfirmVisible(false);
     setSelectedSignatureId(null);
   };
 
@@ -139,12 +173,29 @@ export default function TourCalculationSignatureContent({
     });
   };
 
+  const handleConfirmCancelTourCalculation = () => {
+    if (!selectedSignatureId) return;
+
+    cancelTourCalculation(selectedSignatureId, {
+      onSuccess: () => {
+        handleCloseCancelConfirmModal();
+      },
+      onError: (error) => {
+        console.error('Error canceling signature:', error);
+      },
+    });
+  };
+
   const sender = tourCalculationSignatures?.find(
     (s) => s.signatureRole === 'SENDER'
   );
   const receivers = tourCalculationSignatures?.filter(
     (s) => s.signatureRole === 'RECEIVER'
   );
+  const hasUnsignedSender =
+    tourCalculationSignatures?.some(
+      (signature) => signature.signatureRole === 'SENDER' && !signature.isSigned
+    ) ?? false;
 
   const isTourCalculationPrivate = receivers?.length === 0;
   return (
@@ -160,11 +211,20 @@ export default function TourCalculationSignatureContent({
           </Pressable>
           <View style={styles.leftContent}>
             <Text style={styles.titleUnderline}>Ký tên</Text>
-            <Ionicons
-              name="information-circle-sharp"
-              size={24}
-              color={COLORS.vinaupYellow}
-            />
+            <PressableOpacity onPress={onOpenSignatureInfoPopover} hitSlop={8}>
+              <Ionicons
+                name="information-circle-sharp"
+                size={24}
+                color={COLORS.vinaupYellow}
+              />
+            </PressableOpacity>
+            <Button
+              style={styles.logButton}
+              onPress={handleOpenCancelLogModal}
+              disabled={!tourCalculationId}
+            >
+              <Text style={styles.logButtonText}>Nhật ký</Text>
+            </Button>
           </View>
         </View>
         <View style={styles.headerRight}>
@@ -175,11 +235,7 @@ export default function TourCalculationSignatureContent({
             onPress={handleOpenSignerSelectModal}
             disabled={isLoading || isManagingReceiverSignatures}
           >
-            <Feather
-              name={receivers && receivers.length > 0 ? 'user-minus' : 'user-plus'}
-              size={24}
-              color={COLORS.vinaupTeal}
-            />
+            <Feather name={'user-plus'} size={24} color={COLORS.vinaupTeal} />
           </PressableOpacity>
         </View>
       </View>
@@ -190,12 +246,16 @@ export default function TourCalculationSignatureContent({
             <Text style={styles.roleText}>Người tạo</Text>
             <SignatureEntityContent
               isSigned={sender?.isSigned}
+              isAllowToSign={true}
               signatureTargetUserId={sender?.targetUserId}
               currentUserId={currentUser?.id}
               role="SENDER"
-              isLoading={isLoading || isSigningTourCalculation}
+              isLoading={
+                isLoading || isSigningTourCalculation || isCancelingTourCalculation
+              }
               alignment="left"
-              onSign={() => handleOpenSignConfirmModal(sender?.id)}
+              onSign={() => handleOpenSignConfirmModal(sender?.id, true)}
+              onCancel={() => handleOpenCancelConfirmModal(sender?.id)}
             />
             <Text style={styles.nameText}>{sender?.targetUser?.name}</Text>
             {sender?.isSigned && (
@@ -211,12 +271,20 @@ export default function TourCalculationSignatureContent({
               <View key={receiver.id}>
                 <SignatureEntityContent
                   isSigned={receiver.isSigned}
+                  isAllowToSign={!hasUnsignedSender}
                   signatureTargetUserId={receiver.targetUserId}
                   currentUserId={currentUser?.id}
                   role="RECEIVER"
-                  isLoading={isLoading || isSigningTourCalculation}
+                  isLoading={
+                    isLoading ||
+                    isSigningTourCalculation ||
+                    isCancelingTourCalculation
+                  }
                   alignment="right"
-                  onSign={() => handleOpenSignConfirmModal(receiver?.id)}
+                  onSign={() =>
+                    handleOpenSignConfirmModal(receiver?.id, !hasUnsignedSender)
+                  }
+                  onCancel={() => handleOpenCancelConfirmModal(receiver?.id)}
                 />
                 <Text style={styles.nameText}>{receiver?.targetUser?.name}</Text>
                 {receiver.isSigned && (
@@ -253,6 +321,19 @@ export default function TourCalculationSignatureContent({
         onClose={handleCloseSignConfirmModal}
         onConfirm={handleConfirmSignTourCalculation}
       />
+      <ConfirmModal
+        visible={isCancelConfirmVisible}
+        headerTitle="Xác nhận huỷ ký"
+        confirmText="Huỷ ký"
+        cancelText="Đóng"
+        isLoading={isCancelingTourCalculation}
+        onClose={handleCloseCancelConfirmModal}
+        onConfirm={handleConfirmCancelTourCalculation}
+      />
+      <TourCalculationCancelLogModal
+        tourCalculationId={tourCalculationId}
+        modalRef={cancelLogModalRef}
+      />
     </View>
   );
 }
@@ -270,7 +351,7 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
   leftContent: {
     flexDirection: 'row',
@@ -280,6 +361,19 @@ const styles = StyleSheet.create({
   titleUnderline: {
     fontSize: 16,
     marginRight: 6,
+  },
+  logButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.vinaupLightGray,
+    backgroundColor: COLORS.vinaupWhite,
+  },
+  logButtonText: {
+    fontSize: 14,
+    color: COLORS.vinaupTeal,
+    fontWeight: '500',
   },
   iconLock: {
     marginRight: 4,
