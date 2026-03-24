@@ -13,7 +13,6 @@ import {
   OrganizationMemberResponse,
   UpdateOrganizationMemberRequest,
 } from '@/interfaces/organization-member-interfaces';
-import { OrganizationTypeResponse } from '@/interfaces/organization-type-interfaces';
 import { OrganizationIndustryResponse } from '@/interfaces/organization-industry-interfaces';
 import { OrganizationRoleResponse } from '@/interfaces/organization-role-interfaces';
 import { wireApi } from 'fetchwire';
@@ -26,12 +25,6 @@ export async function getOrganizationsOfCurrentUserApi() {
 
 export async function getOrganizationByIdApi(id: string) {
   return wireApi<OrganizationResponse>(`/organization/${id}`, {
-    method: 'GET',
-  });
-}
-
-export async function getOrganizationTypesApi() {
-  return wireApi<OrganizationTypeResponse[]>('/organization/types', {
     method: 'GET',
   });
 }

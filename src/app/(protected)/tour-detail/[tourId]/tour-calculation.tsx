@@ -227,6 +227,7 @@ export default function TourCalculationScreen() {
       </ScrollView>
       <View style={styles.tourCalculationSignatureContainer}>
         <TourCalculationSignatureContent
+          organizationId={tour?.organization?.id || ''}
           tourCalculationId={tour?.tourCalculation?.id || ''}
         />
       </View>
@@ -262,6 +263,14 @@ const styles = StyleSheet.create({
   tourCalculationSignatureContainer: {
     backgroundColor: COLORS.vinaupLightGreen,
     paddingHorizontal: 8,
-    borderColor: COLORS.vinaupTeal,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 6,
   },
 });

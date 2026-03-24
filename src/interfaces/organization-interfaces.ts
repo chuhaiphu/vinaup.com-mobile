@@ -1,6 +1,5 @@
-import { OrganizationIndustryResponse } from "./organization-industry-interfaces";
-import { OrganizationTypeResponse } from "./organization-type-interfaces";
-import { UserResponse } from "./user-interfaces";
+import { OrganizationIndustryResponse } from './organization-industry-interfaces';
+import { UserResponse } from './user-interfaces';
 
 export interface CreateOrganizationRequest {
   name: string;
@@ -10,13 +9,12 @@ export interface CreateOrganizationRequest {
   province: string;
   website?: string;
   avatarUrl?: string;
-  organizationTypeId: string;
   organizationIndustryId: string;
 }
 
 export type UpdateOrganizationRequest = Partial<CreateOrganizationRequest> & {
   description?: string;
-}
+};
 
 export interface OrganizationResponse {
   id: string;
@@ -32,7 +30,6 @@ export interface OrganizationResponse {
   updatedAt: Date;
   createdBy: UserResponse;
   createdByUserId: string;
-  organizationType: OrganizationTypeResponse;
   organizationIndustry: OrganizationIndustryResponse;
   memberCount?: number;
   memberLinkedCount?: number;

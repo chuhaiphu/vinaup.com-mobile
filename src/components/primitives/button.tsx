@@ -1,6 +1,7 @@
 import { COLORS } from '@/constants/style-constant';
 import React from 'react';
-import { Pressable, ActivityIndicator, PressableProps, View } from 'react-native';
+import { ActivityIndicator, PressableProps, View } from 'react-native';
+import { PressableOpacity } from './pressable-opacity';
 
 interface ButtonProps extends PressableProps {
   isLoading?: boolean;
@@ -18,7 +19,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <Pressable {...props} disabled={isLoading || disabled}>
+    <PressableOpacity {...props} disabled={isLoading || disabled}>
       {isLoading ? (
         <View>
           <ActivityIndicator
@@ -29,6 +30,6 @@ export function Button({
       ) : (
         children
       )}
-    </Pressable>
+    </PressableOpacity>
   );
 }

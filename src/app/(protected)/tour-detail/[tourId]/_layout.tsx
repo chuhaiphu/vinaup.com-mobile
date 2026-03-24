@@ -5,11 +5,10 @@ import { useEffect } from 'react';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
 import { COLORS } from '@/constants/style-constant';
 import { useSafeRouter } from '@/hooks/use-safe-router';
-import { getTourByIdApi, updateTourApi } from '@/apis/tour-apis';
+import { deleteTourApi, getTourByIdApi } from '@/apis/tour-apis';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { OrganizationTourDetailTabListContent } from '@/components/contents/tour/organization-tour-detail-tab-list-content';
-import { UpdateTourRequest } from '@/interfaces/tour-interfaces';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TourDetailLayout() {
@@ -25,8 +24,6 @@ export default function TourDetailLayout() {
   const fetchTourFn = () => getTourByIdApi(tourId);
   const {
     data: tourData,
-    isLoading: isLoadingTour,
-    isRefreshing: isRefreshingTour,
     executeFetchFn: fetchTour,
     refreshFetchFn: refreshTour,
   } = useFetchFn(fetchTourFn);
@@ -37,28 +34,34 @@ export default function TourDetailLayout() {
     }
   }, [tourId, fetchTour]);
 
-  const updateTourFn = (updatedFields: UpdateTourRequest) =>
-    updateTourApi(tourId, updatedFields);
+  const deleteTourFn = () => deleteTourApi(tourId);
 
-  const { executeMutationFn: updateTour, isMutating: isUpdatingTour } =
-    useMutationFn(updateTourFn, {
+  const { executeMutationFn: deleteTour, isMutating: isDeleting } = useMutationFn(
+    deleteTourFn,
+    {
       invalidatesTags: ['organization-tour-list'],
-    });
+    }
+  );
 
-  const handleUpdateTour = (
-    updatedFields: UpdateTourRequest,
-    onSuccessCallback?: () => void
-  ) => {
-    if (!tourData) return;
-    updateTour(updatedFields, {
-      onSuccess: () => {
-        refreshTour();
-        onSuccessCallback?.();
+  const handleDelete = () => {
+    if (!tourId) return;
+    Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
+      { text: 'Huỷ', style: 'cancel' },
+      {
+        text: 'OK',
+        style: 'destructive',
+        onPress: () => {
+          deleteTour({
+            onSuccess: () => {
+              safeRouter.safeBack();
+            },
+            onError: (error: ApiError) => {
+              Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
+            },
+          });
+        },
       },
-      onError: (error: ApiError) => {
-        Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật.');
-      },
-    });
+    ]);
   };
 
   const handleSaveAndExit = () => {
@@ -95,8 +98,8 @@ export default function TourDetailLayout() {
         saveIcon={
           <VinaupSaveAndExit width={32} height={24} color={COLORS.vinaupTeal} />
         }
-        onDelete={() => {}}
-        isDeleting={false}
+        onDelete={handleDelete}
+        isDeleting={isDeleting}
         onSave={handleSaveAndExit}
         styles={{
           container: styles.headerContainer,

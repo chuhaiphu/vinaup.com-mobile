@@ -260,16 +260,15 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.vinaupMediumDarkGray,
+    fontWeight: '500',
+    color: COLORS.vinaupTeal,
   },
   confirmButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontWeight: '500',
+    color: COLORS.vinaupWhite,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
 });
-

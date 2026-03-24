@@ -9,7 +9,7 @@ export const useSafeRouter = (options?: UseSafeRouterOptions) => {
   const router = useRouter();
 
   const isNavigating = useRef(false);
-  const TIMEOUT = options?.timeout ?? 300;
+  const TIMEOUT = options?.timeout ?? 50;
 
   const wrapSafeAction = (action: (href: Href) => void) => {
     // Debounce logic to prevent multiple rapid navigations

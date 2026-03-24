@@ -2,12 +2,11 @@ import { UserResponse } from './user-interfaces';
 import { OrganizationResponse } from './organization-interfaces';
 import { DocumentType, SignatureRole } from '@/constants/signature-contants';
 
-export interface CreateSignatureRequest {
+export interface ManageReceiverSignaturesRequest {
   documentId: string;
   documentType: DocumentType;
-  signatureRole: SignatureRole;
-  targetUserId: string;
   organizationId: string;
+  targetUserIds: string[];
 }
 
 export interface UpdateSignatureUrlRequest {

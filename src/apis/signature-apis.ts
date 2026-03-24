@@ -1,7 +1,7 @@
 import {
+  ManageReceiverSignaturesRequest,
   UpdateSignatureUrlRequest,
   SignatureResponse,
-  CreateSignatureRequest,
 } from '@/interfaces/signature-interfaces';
 import { wireApi } from 'fetchwire';
 
@@ -15,8 +15,10 @@ export async function updateSignatureUrlApi(
   });
 }
 
-export async function createSignatureApi(data: CreateSignatureRequest) {
-  return wireApi<SignatureResponse>('/signature', {
+export async function manageReceiverSignaturesApi(
+  data: ManageReceiverSignaturesRequest
+) {
+  return wireApi<SignatureResponse[]>('/signature/manage-receiver-signatures', {
     method: 'POST',
     body: JSON.stringify(data),
   });

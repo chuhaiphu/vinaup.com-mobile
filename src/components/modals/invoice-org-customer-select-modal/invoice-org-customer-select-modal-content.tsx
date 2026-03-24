@@ -110,11 +110,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     paddingBottom: 28,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.vinaupWhite,
   },
   title: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '500',
     color: COLORS.vinaupBlack,
     marginBottom: 12,
   },

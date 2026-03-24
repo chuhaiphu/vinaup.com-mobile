@@ -1,9 +1,8 @@
 import React from 'react';
-import { Pressable, ViewStyle, StyleProp, PressableProps } from 'react-native';
+import { Pressable, PressableProps } from 'react-native';
 
 interface PressableOpacityProps extends PressableProps {
   activeOpacity?: number;
-  style?: StyleProp<ViewStyle>;
 }
 
 export function PressableOpacity({
@@ -15,7 +14,14 @@ export function PressableOpacity({
   return (
     <Pressable
       {...props}
-      style={({ pressed }) => [style, { opacity: pressed ? activeOpacity : 1 }]}
+      style={(state) => [
+        // Below is the type of PressableProps.style, which can be an object or a function
+        // style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+        // So we need to check the style prop passing to PressableOpacity,
+        // if it's a function, we call it with the state, otherwise we use it directly
+        typeof style === 'function' ? style(state) : style,
+        { opacity: state.pressed ? activeOpacity : 1 },
+      ]}
     >
       {children}
     </Pressable>

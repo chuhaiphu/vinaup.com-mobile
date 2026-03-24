@@ -24,7 +24,7 @@ export default function SignatureEntityContent({
   currentUserId,
   role = 'SENDER',
   isLoading = false,
-  unsignedText = 'Chưa ký',
+  unsignedText = 'Chờ ký',
   signedText = 'Đã ký',
   alignment = 'left',
   onSign,
@@ -45,7 +45,9 @@ export default function SignatureEntityContent({
   const LockBlock = isSigned ? <VinaupLock /> : <VinaupUnlock />;
 
   const TextBlock = (
-    <Text style={styles.text}>{isSigned ? signedText : unsignedText}</Text>
+    <Text style={[styles.text, isSigned && { color: COLORS.vinaupRed }]}>
+      {isSigned ? signedText : unsignedText}
+    </Text>
   );
 
   const renderContent = () => {
