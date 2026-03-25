@@ -7,7 +7,6 @@ import {
   View,
   Text,
 } from 'react-native';
-import { useEffect } from 'react';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
 import {
   getTourByIdApi,
@@ -29,7 +28,7 @@ import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TourCalculationSignatureInfoPopover } from '@/components/popovers/tour-calculation-signature-info-popover';
 
 export default function TourCalculationScreen() {
@@ -236,13 +235,14 @@ export default function TourCalculationScreen() {
           containerStyle={styles.signatureInfoPopoverContainer}
         />
         <View style={styles.tourCalculationSignatureContainer}>
-          <TourCalculationSignatureContent
-            organizationId={tour?.organization?.id || ''}
-            tourCalculationId={tour?.tourCalculation?.id || ''}
-            onOpenSignatureInfoPopover={() =>
-              setIsSignatureInfoPopoverVisible(true)
-            }
-          />
+          {tour && (
+            <TourCalculationSignatureContent
+              tourData={tour}
+              onOpenSignatureInfoPopover={() =>
+                setIsSignatureInfoPopoverVisible(true)
+              }
+            />
+          )}
         </View>
       </View>
     </View>

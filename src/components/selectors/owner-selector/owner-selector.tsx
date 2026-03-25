@@ -19,7 +19,7 @@ export const OwnerSelector = () => {
   const { currentUser } = useContext(AuthContext);
   const { organizations } = useContext(OrganizationContext);
   const { ownerMode, setOwnerMode } = useContext(OwnerModeContext);
-  console.log('owner mode', ownerMode, 'current org id', currentOrgId);
+
   const getSortedOwners = () => {
     if (!currentUser) return [];
     // If the current owner is personal(main user), place user on top of the list

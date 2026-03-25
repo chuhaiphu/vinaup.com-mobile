@@ -20,16 +20,15 @@ import { getOrganizationMembersByOrganizationIdApi } from '@/apis/organization-a
 import { ConfirmModal } from '@/components/modals/confirm-modal/confirm-modal';
 import { Button } from '@/components/primitives/button';
 import { TourCalculationCancelLogModal } from '@/components/modals/tour-calculation-cancel-log-modal/tour-calculation-cancel-log-modal';
+import { TourResponse } from '@/interfaces/tour-interfaces';
 
 interface TourCalculationSignatureContentProps {
-  organizationId: string;
-  tourCalculationId: string;
+  tourData: TourResponse;
   onOpenSignatureInfoPopover?: () => void;
 }
 
 export default function TourCalculationSignatureContent({
-  organizationId,
-  tourCalculationId,
+  tourData,
   onOpenSignatureInfoPopover,
 }: TourCalculationSignatureContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -56,31 +55,33 @@ export default function TourCalculationSignatureContent({
     data: tourCalculationSignatures,
     isLoading,
     executeFetchFn: fetchSignatures,
-  } = useFetchFn(() => getSignaturesByDocumentIdApi(tourCalculationId), {
-    tags: ['signature-list-in-tour-calculation'],
-  });
+  } = useFetchFn(
+    () => getSignaturesByDocumentIdApi(tourData.tourCalculation?.id || ''),
+    {
+      tags: ['signature-list-in-tour-calculation'],
+    }
+  );
 
   const { data: organizationMembers, executeFetchFn: fetchOrganizationMembers } =
-    useFetchFn(() => getOrganizationMembersByOrganizationIdApi(organizationId), {
-      tags: ['organization-members'],
-    });
+    useFetchFn(
+      () =>
+        getOrganizationMembersByOrganizationIdApi(tourData.organization?.id || ''),
+      {
+        tags: ['organization-members'],
+      }
+    );
 
   useEffect(() => {
-    if (!tourCalculationId) return;
+    if (!tourData.tourCalculation?.id) return;
     fetchSignatures();
     fetchOrganizationMembers();
-  }, [
-    tourCalculationId,
-    organizationId,
-    fetchSignatures,
-    fetchOrganizationMembers,
-  ]);
+  }, [tourData.tourCalculation?.id, fetchSignatures, fetchOrganizationMembers]);
 
   const manageReceiverSignaturesFn = (targetUserIds: string[]) =>
     manageReceiverSignaturesApi({
-      documentId: tourCalculationId,
+      documentId: tourData.tourCalculation?.id || '',
       documentType: 'TOUR_CALCULATION',
-      organizationId,
+      organizationId: tourData.organization?.id || '',
       targetUserIds,
     });
 
@@ -221,7 +222,7 @@ export default function TourCalculationSignatureContent({
             <Button
               style={styles.logButton}
               onPress={handleOpenCancelLogModal}
-              disabled={!tourCalculationId}
+              disabled={!tourData.tourCalculation?.id}
             >
               <Text style={styles.logButtonText}>Nhật ký</Text>
             </Button>
@@ -331,7 +332,7 @@ export default function TourCalculationSignatureContent({
         onConfirm={handleConfirmCancelTourCalculation}
       />
       <TourCalculationCancelLogModal
-        tourCalculationId={tourCalculationId}
+        tourData={tourData}
         modalRef={cancelLogModalRef}
       />
     </View>
