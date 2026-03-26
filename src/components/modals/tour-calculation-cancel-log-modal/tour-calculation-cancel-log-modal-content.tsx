@@ -58,8 +58,12 @@ export function TourCalculationCancelLogModalContent({
   const handlePressLog = (log: TourCalculationCancelLogResponse) => {
     router.push({
       pathname:
-        '/(protected)/tour-caculation-cancel-log-detail/[tourCalculationId]',
-      params: { tourCalculationId: log.id },
+        '/(protected)/tour-calculation-cancel-log-detail/[tourCalculationCancelLogId]',
+      params: {
+        tourCalculationId: log.tourCalculationId,
+        tourCalculationCancelLogId: log.id,
+        organizationId: tourData.organization?.id,
+      },
     });
   };
 

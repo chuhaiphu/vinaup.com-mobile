@@ -86,6 +86,15 @@ export async function getTourCalculationLogsByTourCalculationIdApi(
   );
 }
 
+export async function getTourCalculationCancelLogByIdApi(id: string) {
+  return wireApi<TourCalculationCancelLogResponse>(
+    `/tour/tour-calculation-cancel-logs/${id}`,
+    {
+      method: 'GET',
+    }
+  );
+}
+
 export async function getTourImplementationByTourIdApi(tourId: string) {
   return wireApi<TourImplementationResponse>(
     `/tour/tour-implementation/${tourId}`,
