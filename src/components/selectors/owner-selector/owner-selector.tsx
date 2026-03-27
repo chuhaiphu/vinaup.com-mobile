@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '@/providers/auth-provider';
-import { OrganizationContext } from '@/providers/organization-provider';
-import { OwnerModeContext } from '@/providers/owner-mode-provider';
+import React from 'react';
+import { useAuthContext } from '@/providers/auth-provider';
+import { useOrganizationContext } from '@/providers/organization-provider';
+import { useOwnerModeContext } from '@/providers/owner-mode-provider';
 import { useLocalSearchParams } from 'expo-router';
 import { Avatar } from '@/components/primitives/avatar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -16,9 +16,9 @@ export const OwnerSelector = () => {
   const { organizationId: currentOrgId } = useLocalSearchParams<{
     organizationId: string;
   }>();
-  const { currentUser } = useContext(AuthContext);
-  const { organizations } = useContext(OrganizationContext);
-  const { ownerMode, setOwnerMode } = useContext(OwnerModeContext);
+  const { currentUser } = useAuthContext();
+  const { organizations } = useOrganizationContext();
+  const { ownerMode, setOwnerMode } = useOwnerModeContext();
 
   const getSortedOwners = () => {
     if (!currentUser) return [];

@@ -1,10 +1,9 @@
 import { useSafeRouter } from '@/hooks/use-safe-router';
-import { AuthContext } from '@/providers/auth-provider';
-import { useContext } from 'react';
+import { useAuthContext } from '@/providers/auth-provider';
 import { Text, View, Button, StyleSheet } from 'react-native';
 
 export default function PersonalProfileScreen() {
-  const { performLogout } = useContext(AuthContext);
+  const { performLogout } = useAuthContext();
   const safeRouter = useSafeRouter();
 
   const handleLogout = () => {

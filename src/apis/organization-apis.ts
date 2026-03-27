@@ -6,6 +6,7 @@ import {
 import {
   CreateOrganizationCustomerRequest,
   OrganizationCustomerResponse,
+  UpdateOrganizationCustomerRequest,
 } from '@/interfaces/organization-customer-interfaces';
 import {
   CreateOrganizationMemberRequest,
@@ -25,6 +26,12 @@ export async function getOrganizationsOfCurrentUserApi() {
 
 export async function getOrganizationByIdApi(id: string) {
   return wireApi<OrganizationResponse>(`/organization/${id}`, {
+    method: 'GET',
+  });
+}
+
+export async function getAllOrganizationsApi() {
+  return wireApi<OrganizationResponse[]>('/organization/all', {
     method: 'GET',
   });
 }
@@ -61,6 +68,20 @@ export async function getOrganizationCustomersByOrganizationIdApi(
     `/organization/organization-customer/${organizationId}`,
     {
       method: 'GET',
+    }
+  );
+}
+
+export async function updateOrganizationCustomerApi(
+  id: string,
+  data: UpdateOrganizationCustomerRequest
+) {
+  console.log('data', data);
+  return wireApi<OrganizationCustomerResponse>(
+    `/organization/organization-customer/${id}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(data),
     }
   );
 }

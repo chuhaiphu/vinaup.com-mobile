@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { Button } from '../../primitives/button';
@@ -8,7 +8,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from 'fetchwire';
 import { createInvoiceApi } from '@/apis/invoice-apis';
-import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 
 const InvoiceHeaderBottom = () => {
   const router = useRouter();
@@ -18,7 +18,7 @@ const InvoiceHeaderBottom = () => {
   }>();
   const currentCode = params.invoiceTypeCode || 'BUY';
 
-  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
+  const { getInvoiceTypeByCode } = useInvoiceTypeContext();
 
   const createInvoiceFn = () => {
     const invoiceType = getInvoiceTypeByCode(currentCode || '');

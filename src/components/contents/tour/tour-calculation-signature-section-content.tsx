@@ -5,13 +5,13 @@ import {
   signSignatureApi,
 } from '@/apis/signature-apis';
 import { useFetchFn, useMutationFn } from 'fetchwire';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import SignatureEntityContent from '../signature/signature-entity-content';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { COLORS } from '@/constants/style-constant';
-import { AuthContext } from '@/providers/auth-provider';
+import { useAuthContext } from '@/providers/auth-provider';
 import VinaupExpand from '@/components/icons/vinaup-expand.native';
 import { SignerSelectModal } from '@/components/modals/signer-select-modal/signer-select-modal';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
@@ -50,7 +50,7 @@ export default function TourCalculationSignatureContent({
     cancelLogModalRef.current?.open();
   };
 
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useAuthContext();
   const {
     data: tourCalculationSignatures,
     isLoading,

@@ -1,8 +1,8 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { getInvoiceTypesApi } from '@/apis/invoice-apis';
 import { InvoiceTypeResponse } from '@/interfaces/invoice-type-interfaces';
 
-export interface InvoiceTypeContextType {
+interface InvoiceTypeContextType {
   invoiceTypes: InvoiceTypeResponse[];
   loading: boolean;
   refresh: () => void;
@@ -10,13 +10,17 @@ export interface InvoiceTypeContextType {
   getInvoiceTypeById: (id: string) => InvoiceTypeResponse | undefined;
 }
 
-export const InvoiceTypeContext = createContext<InvoiceTypeContextType>({
+const InvoiceTypeContext = createContext<InvoiceTypeContextType>({
   invoiceTypes: [],
   loading: false,
   refresh: () => {},
   getInvoiceTypeByCode: () => undefined,
   getInvoiceTypeById: () => undefined,
 });
+
+export function useInvoiceTypeContext() {
+  return useContext(InvoiceTypeContext);
+}
 
 export const InvoiceTypeProvider = ({
   children,
@@ -25,7 +29,6 @@ export const InvoiceTypeProvider = ({
 }) => {
   const [invoiceTypes, setInvoiceTypes] = useState<InvoiceTypeResponse[]>([]);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     fetchInvoiceTypes();
   }, []);

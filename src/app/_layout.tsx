@@ -1,4 +1,5 @@
 import { AuthProvider } from '@/providers/auth-provider';
+import { AllOrganizationsProvider } from '@/providers/all-organizations-provider';
 import { InvoiceTypeProvider } from '@/providers/invoice-type-provider';
 import { OrganizationProvider } from '@/providers/organization-provider';
 import { OwnerModeProvider } from '@/providers/owner-mode-provider';
@@ -32,14 +33,16 @@ export default function RootLayout() {
   });
   return (
     <AuthProvider>
-      <OrganizationProvider>
-        <InvoiceTypeProvider>
-          <OwnerModeProvider>
-            <StatusBar barStyle="dark-content" />
-            <Stack screenOptions={{ headerShown: false }} />
-          </OwnerModeProvider>
-        </InvoiceTypeProvider>
-      </OrganizationProvider>
+      <AllOrganizationsProvider>
+        <OrganizationProvider>
+          <InvoiceTypeProvider>
+            <OwnerModeProvider>
+              <StatusBar barStyle="dark-content" />
+              <Stack screenOptions={{ headerShown: false }} />
+            </OwnerModeProvider>
+          </InvoiceTypeProvider>
+        </OrganizationProvider>
+      </AllOrganizationsProvider>
     </AuthProvider>
   );
 }

@@ -1,12 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { OrganizationContext } from '@/providers/organization-provider';
+import { useOrganizationContext } from '@/providers/organization-provider';
 import { useLocalSearchParams } from 'expo-router';
 import { COLORS } from '@/constants/style-constant';
 
 const OrganizationIndexHeaderBottom = () => {
   const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
-  const { organizations } = useContext(OrganizationContext);
+  const { organizations } = useOrganizationContext();
   const currentOrg = organizations.find((org) => org.id === organizationId);
 
   return (

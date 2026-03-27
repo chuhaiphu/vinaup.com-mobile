@@ -1,11 +1,11 @@
-import { AuthContext } from '@/providers/auth-provider';
-import { useContext, useEffect } from 'react';
+import { useAuthContext } from '@/providers/auth-provider';
+import { useEffect } from 'react';
 import { Redirect, SplashScreen, Stack } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function ProtectedLayout() {
-  const { isLoading, currentUser } = useContext(AuthContext);
+  const { isLoading, currentUser } = useAuthContext();
 
   useEffect(() => {
     if (!isLoading) {

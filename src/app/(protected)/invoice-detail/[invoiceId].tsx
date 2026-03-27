@@ -1,16 +1,6 @@
-import { View, StyleSheet, Alert, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
-import { useEffect } from 'react';
-import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
-import { UpdateInvoiceRequest } from '@/interfaces/invoice-interfaces';
-import {
-  deleteInvoiceApi,
-  getInvoiceByIdApi,
-  updateInvoiceApi,
-} from '@/apis/invoice-apis';
-import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
-import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
 import { InvoiceDetailHeaderContent } from '@/components/contents/invoice/invoice-detail-header-content';
 import { ReceiptPaymentInvoiceListContent } from '@/components/contents/invoice/receipt-payment-invoice-list-content';
 import Loader from '@/components/primitives/loader';
@@ -18,114 +8,43 @@ import { Select } from '@/components/primitives/select';
 import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { InvoiceDetailFooterContent } from '@/components/contents/invoice/invoice-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
+import { InvoiceDetailProvider, useInvoiceDetailContext } from '@/providers/invoice-detail-provider';
 
 export default function InvoiceDetailScreen() {
-  const safeRouter = useSafeRouter();
   const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
 
-  const fetchInvoiceFn = () => getInvoiceByIdApi(invoiceId);
+  return (
+    <InvoiceDetailProvider invoiceId={invoiceId}>
+      <InvoiceDetailScreenContent />
+    </InvoiceDetailProvider>
+  );
+}
+
+function InvoiceDetailScreenContent() {
   const {
-    data: invoice,
-    isLoading: isLoadingInvoice,
-    isRefreshing: isRefreshingInvoice,
-    executeFetchFn: fetchInvoice,
-    refreshFetchFn: refreshInvoice,
-  } = useFetchFn(fetchInvoiceFn);
-
-  const updateInvoiceFn = (updatedFields: UpdateInvoiceRequest) =>
-    updateInvoiceApi(invoiceId, updatedFields);
-
-  const { executeMutationFn: updateInvoice, isMutating: isUpdatingInvoice } =
-    useMutationFn(updateInvoiceFn, {
-      invalidatesTags: ['organization-invoice-list'],
-    });
-
-  const deleteInvoiceFn = () => deleteInvoiceApi(invoiceId);
-  const {
-    executeMutationFn: deleteInvoiceMutation,
-    isMutating: isDeletingInvoice,
-  } = useMutationFn(deleteInvoiceFn, {
-    invalidatesTags: ['organization-invoice-list'],
-  });
-
-  const fetchReceiptPaymentsFn = () => getReceiptPaymentsByInvoiceIdApi(invoiceId);
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPayments,
-    refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn(fetchReceiptPaymentsFn, {
-    tags: ['organization-receipt-payment-list-in-invoice'],
-  });
-
-  const fetchOrganizationCustomersFn = () =>
-    getOrganizationCustomersByOrganizationIdApi(invoice?.organization?.id || '');
-  const {
-    data: organizationCustomers,
-    executeFetchFn: fetchOrganizationCustomers,
-  } = useFetchFn(fetchOrganizationCustomersFn);
-
-  useEffect(() => {
-    if (invoiceId) {
-      fetchInvoice();
-      fetchReceiptPayments();
-    }
-  }, [invoiceId, fetchInvoice, fetchReceiptPayments]);
-
-  useEffect(() => {
-    if (invoice?.organization?.id) {
-      fetchOrganizationCustomers();
-    }
-  }, [invoice?.organization?.id, fetchOrganizationCustomers]);
-
-  const handleUpdateInvoice = (
-    updatedFields: UpdateInvoiceRequest,
-    onSuccessCallback?: () => void
-  ) => {
-    if (!invoice) return;
-    updateInvoice(updatedFields, {
-      onSuccess: () => {
-        refreshInvoice();
-        onSuccessCallback?.();
-      },
-      onError: (error: ApiError) => {
-        Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật.');
-      },
-    });
-  };
-
-  const handleDelete = () => {
-    if (!invoiceId) return;
-    Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
-      { text: 'Huỷ', style: 'cancel' },
-      {
-        text: 'OK',
-        style: 'destructive',
-        onPress: () => {
-          deleteInvoiceMutation({
-            onSuccess: () => {
-              safeRouter.safeBack();
-            },
-            onError: (error: ApiError) => {
-              Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
-            },
-          });
-        },
-      },
-    ]);
-  };
+    invoice,
+    isLoadingInvoice,
+    isUpdatingInvoice,
+    isRefreshingInvoice,
+    isDeletingInvoice,
+    receiptPayments,
+    isLoadingReceiptPayments,
+    isRefreshingReceiptPayments,
+    invoiceId,
+    handleUpdateInvoice,
+    handleDelete,
+    refreshInvoice,
+    refreshReceiptPayments,
+  } = useInvoiceDetailContext();
 
   const handleSaveAndExit = () => {
     if (!invoice) return;
     refreshInvoice();
     refreshReceiptPayments();
-    safeRouter.safeBack();
   };
 
   if (isLoadingInvoice) {
@@ -139,7 +58,11 @@ export default function InvoiceDetailScreen() {
   return (
     <>
       <StackWithHeader
-        title={'Chi tiết' + ' ' + invoice?.invoiceType.description}
+        title={
+          'Chi tiết' +
+          ' ' +
+          (invoice?.invoiceType.description ? invoice?.invoiceType.description : '')
+        }
         onDelete={handleDelete}
         onSave={handleSaveAndExit}
         isDeleting={isDeletingInvoice}
@@ -187,20 +110,14 @@ export default function InvoiceDetailScreen() {
             </PressableOpacity>
           </View>
         </View>
-        <InvoiceDetailHeaderContent
-          invoice={invoice ?? undefined}
-          isLoading={isUpdatingInvoice || isRefreshingInvoice}
-          onConfirm={(data, onSuccessCallback) =>
-            handleUpdateInvoice(data, onSuccessCallback)
-          }
-        />
+        <InvoiceDetailHeaderContent />
         {invoice && (
           <ReceiptPaymentInvoiceListContent
             onRefresh={() => {
               refreshInvoice();
               refreshReceiptPayments();
             }}
-            receiptPayments={receiptPayments ?? []}
+            receiptPayments={receiptPayments}
             startDate={invoice.startDate}
             endDate={invoice.endDate}
             loading={isLoadingReceiptPayments}
@@ -210,33 +127,7 @@ export default function InvoiceDetailScreen() {
             invoiceTypeId={invoice.invoiceType.id}
           />
         )}
-        <InvoiceDetailFooterContent
-          invoice={invoice ?? undefined}
-          organizationCustomers={organizationCustomers ?? []}
-          onNoteConfirm={(note, onSuccessCallback) =>
-            handleUpdateInvoice({ note }, onSuccessCallback)
-          }
-          onSelectCustomer={(type, customerId, onSuccessCallback) => {
-            if (type === 'external') {
-              handleUpdateInvoice(
-                {
-                  externalCustomerName: 'Khách lẻ',
-                  organizationCustomerId: null,
-                },
-                onSuccessCallback
-              );
-            } else {
-              handleUpdateInvoice(
-                {
-                  organizationCustomerId: customerId,
-                  externalCustomerName: null,
-                },
-                onSuccessCallback
-              );
-            }
-          }}
-          isLoading={isUpdatingInvoice}
-        />
+        <InvoiceDetailFooterContent />
       </View>
     </>
   );

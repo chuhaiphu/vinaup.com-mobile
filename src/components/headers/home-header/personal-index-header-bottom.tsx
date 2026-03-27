@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Text, StyleSheet } from 'react-native';
-import { AuthContext } from '@/providers/auth-provider';
+import { useAuthContext } from '@/providers/auth-provider';
 import { COLORS } from '@/constants/style-constant';
 
 const PersonalIndexHeaderBottom = () => {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useAuthContext();
   return (
     <>
       <Text style={styles.text}>

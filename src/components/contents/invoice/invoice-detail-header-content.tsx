@@ -1,32 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { useRef } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
 import { InvoiceInfoModal } from '@/components/modals/invoice-info-modal/invoice-info-modal';
 import VinaupPenLineVariant from '../../icons/vinaup-pen-line-variant.native';
+import { useInvoiceDetailContext } from '@/providers/invoice-detail-provider';
 
-interface InvoiceDetailHeaderContentProps {
-  invoice?: InvoiceResponse;
-  isLoading?: boolean;
-  onConfirm?: (
-    data: {
-      description: string;
-      startDate: Date;
-      endDate: Date;
-      code?: string;
-    },
-    onSuccessCallback?: () => void
-  ) => void;
-}
-
-export function InvoiceDetailHeaderContent({
-  invoice,
-  isLoading,
-  onConfirm,
-}: InvoiceDetailHeaderContentProps) {
+export function InvoiceDetailHeaderContent() {
+  const { invoice, isUpdatingInvoice, isRefreshingInvoice, handleUpdateInvoice } =
+    useInvoiceDetailContext();
   const modalRef = useRef<SlideSheetRef>(null);
 
   if (!invoice) {
@@ -84,9 +68,9 @@ export function InvoiceDetailHeaderContent({
       </PressableCard>
       <InvoiceInfoModal
         invoice={invoice}
-        isLoading={isLoading}
+        isLoading={isUpdatingInvoice || isRefreshingInvoice}
         modalRef={modalRef}
-        onConfirm={onConfirm}
+        onConfirm={handleUpdateInvoice}
       />
     </>
   );

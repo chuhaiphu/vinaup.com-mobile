@@ -3,7 +3,7 @@ import { usePersonalUtilitiesStore } from '@/hooks/use-personal-utility-store';
 import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
 import { UserResponse } from '@/interfaces/user-interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthContextType {
   isLoading: boolean;
@@ -13,13 +13,17 @@ interface AuthContextType {
   performSync: (user: UserResponse) => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType>({
+const AuthContext = createContext<AuthContextType>({
   isLoading: false,
   currentUser: null,
   performLogin: async () => {},
   performLogout: async () => {},
   performSync: async () => {},
 });
+
+export function useAuthContext() {
+  return useContext(AuthContext);
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserResponse | null>(null);

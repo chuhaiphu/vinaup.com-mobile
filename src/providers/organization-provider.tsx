@@ -1,22 +1,26 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { AuthContext } from "./auth-provider";
+import { useAuthContext } from "./auth-provider";
 import { getOrganizationsOfCurrentUserApi } from "@/apis/organization-apis";
 import { OrganizationResponse } from "@/interfaces/organization-interfaces";
 
-export interface OrganizationContextType {
+interface OrganizationContextType {
   organizations: OrganizationResponse[];
   loading: boolean;
   refresh: () => void;
 }
 
-export const OrganizationContext = createContext<OrganizationContextType>({
+const OrganizationContext = createContext<OrganizationContextType>({
   organizations: [],
   loading: false,
   refresh: () => { },
 });
 
+export function useOrganizationContext() {
+  return useContext(OrganizationContext);
+}
+
 export const OrganizationProvider = ({ children }: { children: React.ReactNode }) => {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser } = useAuthContext();
   const [organizations, setOrganizations] = useState<OrganizationResponse[]>([]);
   const [loading, setLoading] = useState(false);
 

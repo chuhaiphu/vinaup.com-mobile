@@ -1,7 +1,7 @@
 import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
 import { useFetchFn } from 'fetchwire';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -17,7 +17,7 @@ import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
-import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 
 export default function OrganizationInvoiceScreen() {
@@ -32,7 +32,7 @@ export default function OrganizationInvoiceScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
+  const { getInvoiceTypeByCode } = useInvoiceTypeContext();
 
   const fetchInvoicesFn = () => {
     const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);

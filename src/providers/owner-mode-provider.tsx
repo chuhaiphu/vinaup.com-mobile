@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 type OwnerMode = 'personal' | 'organization';
 
@@ -7,10 +7,14 @@ interface OwnerModeContextType {
   setOwnerMode: (ownerMode: OwnerMode) => void;
 }
 
-export const OwnerModeContext = createContext<OwnerModeContextType>({
+const OwnerModeContext = createContext<OwnerModeContextType>({
   ownerMode: 'personal',
   setOwnerMode: () => { },
 });
+
+export function useOwnerModeContext() {
+  return useContext(OwnerModeContext);
+}
 
 export const OwnerModeProvider = ({ children }: { children: React.ReactNode }) => {
   const [ownerMode, setOwnerMode] = useState<OwnerMode>('personal');

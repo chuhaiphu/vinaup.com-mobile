@@ -1,13 +1,16 @@
-import { OrganizationResponse } from "./organization-interfaces";
-import { UserResponse } from "./user-interfaces";
+import { OrganizationResponse } from './organization-interfaces';
+import { UserResponse } from './user-interfaces';
 
 export interface OrganizationCustomerResponse {
   id: string;
   organizationId: string;
+  clientUserId: string | null;
+  clientOrganizationId: string | null;
   name: string;
   phone: string;
   email: string | null;
   status: string;
+  isSystemDefault: boolean;
   joinedAt: Date;
   createdBy: UserResponse;
   clientUser: UserResponse | null;
@@ -26,4 +29,10 @@ export interface CreateOrganizationCustomerRequest {
   clientOrganizationId?: string;
 }
 
-export type UpdateOrganizationCustomerRequest = Partial<CreateOrganizationCustomerRequest>;
+export type UpdateOrganizationCustomerRequest = Omit<
+  Partial<CreateOrganizationCustomerRequest>,
+  'clientUserId' | 'clientOrganizationId'
+> & {
+  clientUserId?: string | null;
+  clientOrganizationId: string | null;
+};

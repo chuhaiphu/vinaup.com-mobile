@@ -2,7 +2,7 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByInvoiceIdsApi } from '@/apis/receipt-payment-apis';
 import { useFetchFn } from 'fetchwire';
 import { MultiSelect } from '@/components/primitives/multiple-select';
@@ -14,7 +14,7 @@ import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import { OrganizationHomeIndexSummary } from '@/components/summaries/organization-home-index-summary';
 import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
-import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import { useSafeRouter } from '@/hooks/use-safe-router';
@@ -24,7 +24,7 @@ export default function OrganizationIndexScreen() {
   const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
   const { getSelectedUtilities, setUtilities } = useOrganizationUtilitiesStore();
   const selectedUtilities = getSelectedUtilities(organizationId);
-  const { getInvoiceTypeByCode } = useContext(InvoiceTypeContext);
+  const { getInvoiceTypeByCode } = useInvoiceTypeContext();
 
   const [selectedDate, setSelectedDate] = useState(dayjs());
 

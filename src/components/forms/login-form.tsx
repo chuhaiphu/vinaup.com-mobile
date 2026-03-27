@@ -1,10 +1,10 @@
 import { loginApi } from '@/apis/auth-apis';
 import { COLORS } from '@/constants/style-constant';
-import { AuthContext } from '@/providers/auth-provider';
+import { useAuthContext } from '@/providers/auth-provider';
 import { ApiError } from 'fetchwire';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Keyboard,
@@ -21,7 +21,7 @@ import { Button } from '@/components/primitives/button';
 import { Image } from 'expo-image';
 
 const LoginForm = () => {
-  const { isLoading, performLogin } = useContext(AuthContext);
+  const { isLoading, performLogin } = useAuthContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

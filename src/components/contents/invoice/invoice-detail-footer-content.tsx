@@ -1,54 +1,26 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
-import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
-import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { SimpleTextInputModal } from '../../modals/simple-text-input-modal/simple-text-input-modal';
 import { InvoiceOrgCustomerSelectModal } from '@/components/modals/invoice-org-customer-select-modal/invoice-org-customer-select-modal';
-import { CreateOrganizationCustomerModal } from '@/components/modals/create-organization-customer-modal/create-organization-customer-modal';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
+import { useInvoiceDetailContext } from '@/providers/invoice-detail-provider';
 
-interface InvoiceDetailFooterContentProps {
-  invoice?: InvoiceResponse;
-  organizationCustomers: OrganizationCustomerResponse[];
-  onSelectCustomer?: (
-    type: 'external' | 'organization',
-    customerId?: string,
-    onSuccessCallback?: () => void
-  ) => void;
-  onNoteConfirm?: (note: string, onSuccessCallback?: () => void) => void;
-  isLoading?: boolean;
-}
+export function InvoiceDetailFooterContent() {
+  const { invoice, isUpdatingInvoice, isRefreshingInvoice, handleUpdateInvoice } =
+    useInvoiceDetailContext();
 
-export function InvoiceDetailFooterContent({
-  invoice,
-  organizationCustomers,
-  onSelectCustomer,
-  onNoteConfirm,
-  isLoading = false,
-}: InvoiceDetailFooterContentProps) {
+  const isLoading = isUpdatingInvoice || isRefreshingInvoice;
   const organizationName = invoice?.organization?.name ?? '';
-  const customerName =
-    invoice?.organizationCustomer?.name ?? invoice?.externalCustomerName ?? '';
-  const currentCustomerId = invoice?.externalCustomerName
-    ? 'EXTERNAL'
-    : (invoice?.organizationCustomer?.id ?? '');
+  const customerName = invoice?.organizationCustomer?.name ?? '';
   const note = invoice?.note ?? '';
 
   const noteModalRef = useRef<SlideSheetRef>(null);
   const selectCustomerModalRef = useRef<SlideSheetRef>(null);
-  const createCustomerModalRef = useRef<SlideSheetRef>(null);
-
-  const [localCustomers, setLocalCustomers] =
-    useState<OrganizationCustomerResponse[]>(organizationCustomers);
-
-  useEffect(() => {
-    setLocalCustomers(organizationCustomers);
-  }, [organizationCustomers]);
 
   const canEditCustomer = useMemo(
     () => Boolean(invoice?.organization?.id) && !isLoading,
@@ -74,6 +46,7 @@ export function InvoiceDetailFooterContent({
           container: styles.cardContainer,
           card: styles.card,
         }}
+        onPress={() => selectCustomerModalRef.current?.open()}
       >
         <View style={styles.rowsNew}>
           <View style={styles.orgCol}>
@@ -85,20 +58,6 @@ export function InvoiceDetailFooterContent({
           <View style={styles.customerCol}>
             <View style={styles.customerRow}>
               <Text style={styles.label}>Khách hàng:</Text>
-              <Pressable
-                style={styles.customerIconButton}
-                onPress={() => createCustomerModalRef.current?.open()}
-                disabled={!canEditCustomer}
-                hitSlop={8}
-              >
-                <Feather
-                  name="user-plus"
-                  size={18}
-                  color={
-                    canEditCustomer ? COLORS.vinaupTeal : COLORS.vinaupMediumGray
-                  }
-                />
-              </Pressable>
             </View>
             <View style={styles.customerRow}>
               <Text
@@ -127,29 +86,14 @@ export function InvoiceDetailFooterContent({
         </View>
       </PressableCard>
 
-      <InvoiceOrgCustomerSelectModal
-        organizationCustomers={localCustomers}
-        currentCustomerId={currentCustomerId}
-        isLoading={isLoading}
-        modalRef={selectCustomerModalRef}
-        onSelectCustomer={onSelectCustomer}
-      />
-
-      <CreateOrganizationCustomerModal
-        organizationId={invoice?.organization?.id}
-        modalRef={createCustomerModalRef}
-        onCreated={(created) => {
-          setLocalCustomers((prev) => [...prev, created]);
-          onSelectCustomer?.('organization', created.id);
-        }}
-      />
+      <InvoiceOrgCustomerSelectModal modalRef={selectCustomerModalRef} />
 
       <SimpleTextInputModal
         value={note}
         isLoading={isLoading}
         modalRef={noteModalRef}
         onConfirm={(noteValue: string, onSuccessClose?: () => void) => {
-          onNoteConfirm?.(noteValue, onSuccessClose);
+          handleUpdateInvoice({ note: noteValue }, onSuccessClose);
         }}
       />
     </>
@@ -199,7 +143,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: COLORS.vinaupMediumGray,
+    color: COLORS.vinaupMediumDarkGray,
   },
   valueLeft: {
     textAlign: 'left',

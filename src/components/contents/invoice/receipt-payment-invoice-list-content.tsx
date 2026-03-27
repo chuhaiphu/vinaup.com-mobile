@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import {
   Pressable,
   RefreshControl,
@@ -14,7 +14,7 @@ import { generateDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
 import Loader from '@/components/primitives/loader';
 import { useSafeRouter } from '@/hooks/use-safe-router';
-import { InvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
 
 interface ReceiptPaymentInvoiceListContentProps {
@@ -48,7 +48,7 @@ export function ReceiptPaymentInvoiceListContent({
 }: ReceiptPaymentInvoiceListContentProps) {
   const safeRouter = useSafeRouter();
   const dateRange = generateDateRange(startDate, endDate);
-  const { getInvoiceTypeById } = useContext(InvoiceTypeContext);
+  const { getInvoiceTypeById } = useInvoiceTypeContext();
   const invoiceType = getInvoiceTypeById(invoiceTypeId || '');
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
     const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
