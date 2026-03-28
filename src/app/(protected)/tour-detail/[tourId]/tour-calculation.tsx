@@ -1,19 +1,15 @@
 import { useLocalSearchParams } from 'expo-router';
 import {
-  Alert,
   StyleSheet,
   ScrollView,
   RefreshControl,
   View,
   Text,
 } from 'react-native';
-import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
+import { useFetchFn } from 'fetchwire';
 import {
-  getTourByIdApi,
   getTourCalculationByTourIdApi,
-  updateTourApi,
 } from '@/apis/tour-apis';
-import { UpdateTourRequest } from '@/interfaces/tour-interfaces';
 import { TourCalculationTicketSummary } from '@/components/summaries/tour-calculation-ticket-summary';
 import { getReceiptPaymentsByTourCalculationIdApi } from '@/apis/receipt-payment-apis';
 import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
@@ -30,19 +26,22 @@ import { Entypo, FontAwesome5 } from '@expo/vector-icons';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
 import { useEffect, useState } from 'react';
 import { TourCalculationSignatureInfoPopover } from '@/components/popovers/tour-calculation-signature-info-popover';
+import { TourCalculationProvider, useTourCalculationContext } from '@/providers/tour-calculation-provider';
+import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 
-export default function TourCalculationScreen() {
+function TourCalculationScreenContent() {
   const [isSignatureInfoPopoverVisible, setIsSignatureInfoPopoverVisible] =
     useState(false);
-  const { tourId } = useLocalSearchParams<{ tourId: string }>();
-  const fetchTourFn = () => getTourByIdApi(tourId);
+
   const {
-    data: tour,
-    isLoading: isLoadingTour,
-    isRefreshing: isRefreshingTour,
-    executeFetchFn: fetchTour,
-    refreshFetchFn: refreshTour,
-  } = useFetchFn(fetchTourFn);
+    tour,
+    isRefreshingTour,
+    isUpdatingTour,
+    handleUpdateTour,
+    refreshTour,
+  } = useTourCalculationContext();
+
+  const { tourId } = useLocalSearchParams<{ tourId: string }>();
 
   const fetchTourCalculationFn = () => getTourCalculationByTourIdApi(tourId);
   const {
@@ -67,14 +66,6 @@ export default function TourCalculationScreen() {
     tags: ['organization-receipt-payment-list-in-tour-calculation'],
   });
 
-  const updateTourFn = (updatedFields: UpdateTourRequest) =>
-    updateTourApi(tourId, updatedFields);
-
-  const { executeMutationFn: updateTour, isMutating: isUpdatingTour } =
-    useMutationFn(updateTourFn, {
-      invalidatesTags: ['organization-tour-list'],
-    });
-
   const tourTicketSummaryData = calculateTourTicketSummaries(
     receiptPayments || [],
     tourCalculation || null
@@ -82,7 +73,6 @@ export default function TourCalculationScreen() {
 
   useEffect(() => {
     if (tourId) {
-      fetchTour();
       fetchTourCalculation();
 
       if (tourCalculation?.id) {
@@ -92,160 +82,149 @@ export default function TourCalculationScreen() {
   }, [
     tourId,
     tourCalculation?.id,
-    fetchTour,
     fetchTourCalculation,
     fetchReceiptPaymentsByTourCalculation,
   ]);
 
-  const handleUpdateTour = (
-    updatedFields: UpdateTourRequest,
-    onSuccessCallback?: () => void
-  ) => {
-    if (!tour) return;
-    updateTour(updatedFields, {
-      onSuccess: () => {
-        refreshTour();
-        onSuccessCallback?.();
-      },
-      onError: (error: ApiError) => {
-        Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi cập nhật.');
-      },
-    });
-  };
-
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={
-              isRefreshingTour ||
-              isRefreshingTourCalculation ||
-              isRefreshingReceiptPayments
-            }
-            onRefresh={() => {
-              refreshTour();
-              refreshTourCalculation();
-              refreshReceiptPaymentsByTourCalculation();
-            }}
-            colors={[COLORS.vinaupTeal]}
-            tintColor={COLORS.vinaupTeal}
-          />
-        }
-      >
-        <View style={styles.actionContainer}>
-          <View style={styles.statusFilter}>
-            <Select
-              renderTrigger={(option) => (
-                <>
-                  <VinaupVerticalExpandArrow width={16} height={16} />
-                  <Text style={{ color: COLORS.vinaupTeal }}>
-                    {option.label || 'Trạng thái'}
-                  </Text>
-                </>
-              )}
-              isLoading={isUpdatingTour || isRefreshingTour}
-              options={TourStatusOptions}
-              value={tour?.status || ''}
-              onChange={(value) =>
-                handleUpdateTour({ status: value as TourStatus })
+    <OrganizationCustomerProvider organizationId={tour?.organization?.id}>
+      <View style={styles.container}>
+        <ScrollView
+          style={styles.scrollContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={
+                isRefreshingTour ||
+                isRefreshingTourCalculation ||
+                isRefreshingReceiptPayments
               }
-              placeholder="Trạng thái"
-              style={{
-                triggerText: {
-                  fontSize: 16,
-                  color: COLORS.vinaupTeal,
-                },
+              onRefresh={() => {
+                refreshTour();
+                refreshTourCalculation();
+                refreshReceiptPaymentsByTourCalculation();
               }}
+              colors={[COLORS.vinaupTeal]}
+              tintColor={COLORS.vinaupTeal}
             />
-          </View>
-          <View style={styles.actionButton}>
-            <PressableOpacity style={styles.actionButtonItem}>
-              <Text style={styles.actionButtonItemText}>Tour</Text>
-            </PressableOpacity>
-            <PressableOpacity style={styles.actionButtonItem}>
-              <FontAwesome5 name="copy" size={18} color={COLORS.vinaupTeal} />
-            </PressableOpacity>
-            <PressableOpacity style={styles.actionButtonItem}>
-              <Entypo
-                name="dots-three-horizontal"
-                size={18}
-                color={COLORS.vinaupTeal}
+          }
+        >
+          <View style={styles.actionContainer}>
+            <View style={styles.statusFilter}>
+              <Select
+                renderTrigger={(option) => (
+                  <>
+                    <VinaupVerticalExpandArrow width={16} height={16} />
+                    <Text style={{ color: COLORS.vinaupTeal }}>
+                      {option.label || 'Trạng thái'}
+                    </Text>
+                  </>
+                )}
+                isLoading={isUpdatingTour || isRefreshingTour}
+                options={TourStatusOptions}
+                value={tour?.status || ''}
+                onChange={(value) =>
+                  handleUpdateTour({ status: value as TourStatus })
+                }
+                placeholder="Trạng thái"
+                style={{
+                  triggerText: {
+                    fontSize: 16,
+                    color: COLORS.vinaupTeal,
+                  },
+                }}
               />
-            </PressableOpacity>
+            </View>
+            <View style={styles.actionButton}>
+              <PressableOpacity style={styles.actionButtonItem}>
+                <Text style={styles.actionButtonItemText}>Tour</Text>
+              </PressableOpacity>
+              <PressableOpacity style={styles.actionButtonItem}>
+                <FontAwesome5 name="copy" size={18} color={COLORS.vinaupTeal} />
+              </PressableOpacity>
+              <PressableOpacity style={styles.actionButtonItem}>
+                <Entypo
+                  name="dots-three-horizontal"
+                  size={18}
+                  color={COLORS.vinaupTeal}
+                />
+              </PressableOpacity>
+            </View>
           </View>
-        </View>
-        <TourDetailHeaderContent
-          tour={tour ?? undefined}
-          isLoading={isUpdatingTour || isRefreshingTour || isLoadingTour}
-          onConfirm={(data, onSuccessCallback) =>
-            handleUpdateTour(data, onSuccessCallback)
-          }
-        />
-        <TourCalculationTicketSummary
-          id={tourCalculation?.id || ''}
-          adultTicketCount={tourCalculation?.adultTicketCount}
-          childTicketCount={tourCalculation?.childTicketCount}
-          adultTicketPrice={tourCalculation?.adultTicketPrice}
-          childTicketPrice={tourCalculation?.childTicketPrice}
-          taxRate={tourCalculation?.taxRate}
-          totalReceipt={generateLocalePriceFormat(
-            tourTicketSummaryData.totalReceipt
-          )}
-          totalPayment={generateLocalePriceFormat(
-            tourTicketSummaryData.totalPayment
-          )}
-          totalTaxPay={generateLocalePriceFormat(tourTicketSummaryData.totalTaxPay)}
-          netProfitBeforeTaxPay={generateLocalePriceFormat(
-            tourTicketSummaryData.netProfitBeforeTaxPay
-          )}
-          netProfitAfterTaxPay={generateLocalePriceFormat(
-            tourTicketSummaryData.netProfitAfterTaxPay
-          )}
-          profitMarginBeforeTaxPay={generateLocalePriceFormat(
-            tourTicketSummaryData.profitMarginBeforeTaxPay
-          )}
-          profitMarginAfterTaxPay={generateLocalePriceFormat(
-            tourTicketSummaryData.profitMarginAfterTaxPay
-          )}
-        />
-        {tour && tourCalculation && (
-          <ReceiptPaymentTourCalculationListContent
-            receiptPayments={receiptPayments ?? []}
-            startDate={tour?.startDate}
-            endDate={tour?.endDate}
-            loading={isLoadingReceiptPayments}
-            tourCalculationId={tourCalculation.id}
-            organizationId={tour.organization?.id}
+          <TourDetailHeaderContent
+            tour={tour ?? undefined}
+            isLoading={isUpdatingTour || isRefreshingTour}
+            onConfirm={(data, onSuccessCallback) =>
+              handleUpdateTour(data, onSuccessCallback)
+            }
           />
-        )}
-        <TourDetailFooterContent
-          tour={tour ?? undefined}
-          isLoading={isLoadingTour}
-          onConfirm={(data, onSuccessCallback) =>
-            handleUpdateTour(data, onSuccessCallback)
-          }
-        />
-      </ScrollView>
-      <View style={styles.tourCalculationSignatureWrapper}>
-        <TourCalculationSignatureInfoPopover
-          isVisible={isSignatureInfoPopoverVisible}
-          onClose={() => setIsSignatureInfoPopoverVisible(false)}
-          containerStyle={styles.signatureInfoPopoverContainer}
-        />
-        <View style={styles.tourCalculationSignatureContainer}>
-          {tour && (
-            <TourCalculationSignatureContent
-              tourData={tour}
-              onOpenSignatureInfoPopover={() =>
-                setIsSignatureInfoPopoverVisible(true)
-              }
+          <TourCalculationTicketSummary
+            id={tourCalculation?.id || ''}
+            adultTicketCount={tourCalculation?.adultTicketCount}
+            childTicketCount={tourCalculation?.childTicketCount}
+            adultTicketPrice={tourCalculation?.adultTicketPrice}
+            childTicketPrice={tourCalculation?.childTicketPrice}
+            taxRate={tourCalculation?.taxRate}
+            totalReceipt={generateLocalePriceFormat(
+              tourTicketSummaryData.totalReceipt
+            )}
+            totalPayment={generateLocalePriceFormat(
+              tourTicketSummaryData.totalPayment
+            )}
+            totalTaxPay={generateLocalePriceFormat(tourTicketSummaryData.totalTaxPay)}
+            netProfitBeforeTaxPay={generateLocalePriceFormat(
+              tourTicketSummaryData.netProfitBeforeTaxPay
+            )}
+            netProfitAfterTaxPay={generateLocalePriceFormat(
+              tourTicketSummaryData.netProfitAfterTaxPay
+            )}
+            profitMarginBeforeTaxPay={generateLocalePriceFormat(
+              tourTicketSummaryData.profitMarginBeforeTaxPay
+            )}
+            profitMarginAfterTaxPay={generateLocalePriceFormat(
+              tourTicketSummaryData.profitMarginAfterTaxPay
+            )}
+          />
+          {tour && tourCalculation && (
+            <ReceiptPaymentTourCalculationListContent
+              receiptPayments={receiptPayments ?? []}
+              startDate={tour?.startDate}
+              endDate={tour?.endDate}
+              loading={isLoadingReceiptPayments}
+              tourCalculationId={tourCalculation.id}
+              organizationId={tour.organization?.id}
             />
           )}
+          <TourDetailFooterContent />
+        </ScrollView>
+        <View style={styles.tourCalculationSignatureWrapper}>
+          <TourCalculationSignatureInfoPopover
+            isVisible={isSignatureInfoPopoverVisible}
+            onClose={() => setIsSignatureInfoPopoverVisible(false)}
+            containerStyle={styles.signatureInfoPopoverContainer}
+          />
+          <View style={styles.tourCalculationSignatureContainer}>
+            {tour && (
+              <TourCalculationSignatureContent
+                tourData={tour}
+                onOpenSignatureInfoPopover={() =>
+                  setIsSignatureInfoPopoverVisible(true)
+                }
+              />
+            )}
+          </View>
         </View>
       </View>
-    </View>
+    </OrganizationCustomerProvider>
+  );
+}
+
+export default function TourCalculationScreen() {
+  const { tourId } = useLocalSearchParams<{ tourId: string }>();
+
+  return (
+    <TourCalculationProvider tourId={tourId}>
+      <TourCalculationScreenContent />
+    </TourCalculationProvider>
   );
 }
 

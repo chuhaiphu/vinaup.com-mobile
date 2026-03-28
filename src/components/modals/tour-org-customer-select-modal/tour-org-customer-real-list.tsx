@@ -2,47 +2,52 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
-import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
+import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 
-interface InvoiceOrgCustomerInternalListProps {
-  customers: OrganizationCustomerResponse[];
+interface TourOrgCustomerRealListProps {
+  realOrganizations: OrganizationResponse[];
   selectedKey: string;
   isBusy: boolean;
-  onChooseInternal: (customerId: string) => void;
+  onChooseReal: (organizationId: string) => void;
 }
 
-export function InvoiceOrgCustomerInternalList({
-  customers,
+export function TourOrgCustomerRealList({
+  realOrganizations,
   selectedKey,
   isBusy,
-  onChooseInternal,
-}: InvoiceOrgCustomerInternalListProps) {
+  onChooseReal,
+}: TourOrgCustomerRealListProps) {
   return (
     <ScrollView contentContainerStyle={styles.listContent}>
-      {customers.map((customer) => {
-        const key = `internal:${customer.id}`;
+      {realOrganizations.map((organization) => {
+        const key = `real:${organization.id}`;
         const isSelected = key === selectedKey;
 
         return (
           <Pressable
-            key={customer.id}
+            key={organization.id}
             style={({ pressed }) => [
               styles.optionRow,
               (pressed || isSelected) && styles.optionRowActive,
             ]}
-            onPress={() => onChooseInternal(customer.id)}
+            onPress={() => onChooseReal(organization.id)}
             disabled={isBusy}
           >
             <View style={styles.leadingAvatar}>
-              <Ionicons name="person-outline" size={18} color={COLORS.vinaupTeal} />
+              <Ionicons
+                name="business-outline"
+                size={18}
+                color={COLORS.vinaupTeal}
+              />
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.optionLabel} numberOfLines={1}>
-                {customer.name}
+                {organization.name}
               </Text>
               <Text style={styles.optionSubLabel} numberOfLines={1}>
-                {[customer.phone, customer.email].filter(Boolean).join(' - ') ||
-                  'Không có thông tin liên hệ'}
+                {[organization.phone, organization.province]
+                  .filter(Boolean)
+                  .join(' - ') || 'Không có thông tin liên hệ'}
               </Text>
             </View>
             <Ionicons
@@ -54,8 +59,8 @@ export function InvoiceOrgCustomerInternalList({
         );
       })}
 
-      {customers.length === 0 ? (
-        <Text style={styles.emptyText}>Không có tổ chức nội bộ phù hợp.</Text>
+      {realOrganizations.length === 0 ? (
+        <Text style={styles.emptyText}>Không có tổ chức phù hợp.</Text>
       ) : null}
     </ScrollView>
   );
@@ -67,11 +72,11 @@ const styles = StyleSheet.create({
   },
   optionRow: {
     borderRadius: 12,
+    paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 2,
-    minHeight: 60,
   },
   optionRowActive: {
     backgroundColor: '#F2FBFA',

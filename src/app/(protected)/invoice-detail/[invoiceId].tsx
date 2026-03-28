@@ -12,7 +12,11 @@ import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
-import { InvoiceDetailProvider, useInvoiceDetailContext } from '@/providers/invoice-detail-provider';
+import {
+  InvoiceDetailProvider,
+  useInvoiceDetailContext,
+} from '@/providers/invoice-detail-provider';
+import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 
 export default function InvoiceDetailScreen() {
   const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
@@ -56,7 +60,7 @@ function InvoiceDetailScreenContent() {
   }
 
   return (
-    <>
+    <OrganizationCustomerProvider organizationId={invoice?.organization?.id}>
       <StackWithHeader
         title={
           'Chi tiết' +
@@ -129,7 +133,7 @@ function InvoiceDetailScreenContent() {
         )}
         <InvoiceDetailFooterContent />
       </View>
-    </>
+    </OrganizationCustomerProvider>
   );
 }
 

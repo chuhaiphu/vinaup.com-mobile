@@ -29,7 +29,6 @@ export function InvoiceOrgCustomerRealList({
             style={({ pressed }) => [
               styles.optionRow,
               (pressed || isSelected) && styles.optionRowActive,
-              styles.optionRowUnselected,
             ]}
             onPress={() => onChooseReal(organization.id)}
             disabled={isBusy}
@@ -51,13 +50,11 @@ export function InvoiceOrgCustomerRealList({
                   .join(' - ') || 'Không có thông tin liên hệ'}
               </Text>
             </View>
-            <View style={styles.trailing}>
-              {isSelected ? (
-                <View style={styles.checkBadge}>
-                  <Ionicons name="checkmark" size={16} color={COLORS.vinaupTeal} />
-                </View>
-              ) : null}
-            </View>
+            <Ionicons
+              name={isSelected ? 'radio-button-on-sharp' : 'radio-button-off-sharp'}
+              size={24}
+              color={isSelected ? COLORS.vinaupTeal : COLORS.vinaupLightGray}
+            />
           </Pressable>
         );
       })}
@@ -75,14 +72,11 @@ const styles = StyleSheet.create({
   },
   optionRow: {
     borderRadius: 12,
-    paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 2,
-  },
-  optionRowUnselected: {
-    opacity: 0.7,
+    minHeight: 60,
   },
   optionRowActive: {
     backgroundColor: '#F2FBFA',
@@ -112,20 +106,6 @@ const styles = StyleSheet.create({
     width: '100%',
     fontSize: 14,
     color: COLORS.vinaupBlack,
-  },
-  trailing: {
-    width: 42,
-    alignItems: 'flex-end',
-  },
-  checkBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: COLORS.vinaupLightGray,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.vinaupWhite,
   },
   emptyText: {
     paddingVertical: 12,

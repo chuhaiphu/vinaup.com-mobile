@@ -12,18 +12,18 @@ import Tabs from '@/components/primitives/tabs';
 import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { CreateOrganizationCustomerModal } from '@/components/modals/create-organization-customer-modal/create-organization-customer-modal';
 import { createOrganizationCustomerApi } from '@/apis/organization-apis';
-import { InvoiceOrgCustomerRealList } from '@/components/modals/invoice-org-customer-select-modal/invoice-org-customer-real-list';
-import { InvoiceOrgCustomerInternalList } from '@/components/modals/invoice-org-customer-select-modal/invoice-org-customer-internal-list';
+import { TourOrgCustomerRealList } from './tour-org-customer-real-list';
+import { TourOrgCustomerInternalList } from './tour-org-customer-internal-list';
 import { COLORS } from '@/constants/style-constant';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/primitives/button';
-import { useInvoiceDetailContext } from '@/providers/invoice-detail-provider';
+import { useTourCalculationContext } from '@/providers/tour-calculation-provider';
 import { useAllOrganizationsContext } from '@/providers/all-organizations-provider';
 import { useOrganizationCustomerContext } from '@/providers/organization-customer-provider';
 
-interface InvoiceOrgCustomerSelectModalProps {
+interface TourOrgCustomerSelectModalProps {
   modalRef: React.RefObject<SlideSheetRef | null>;
 }
 
@@ -34,17 +34,17 @@ type PendingSelection =
   | { type: 'internal'; customerId: string }
   | null;
 
-export function InvoiceOrgCustomerSelectModal({
+export function TourOrgCustomerSelectModal({
   modalRef,
-}: InvoiceOrgCustomerSelectModalProps) {
-  const { invoice, isUpdatingInvoice, handleUpdateInvoice } = useInvoiceDetailContext();
+}: TourOrgCustomerSelectModalProps) {
+  const { tour, isUpdatingTour, handleUpdateTour } = useTourCalculationContext();
   const { organizationCustomers, refreshOrganizationCustomers } =
     useOrganizationCustomerContext();
   const { allOrganizations: organizations } = useAllOrganizationsContext();
 
-  const organizationId = invoice?.organization?.id;
-  const currentCustomerId = invoice?.organizationCustomer?.id ?? '';
-  const isLoading = isUpdatingInvoice;
+  const organizationId = tour?.organization?.id;
+  const currentCustomerId = tour?.organizationCustomer?.id ?? '';
+  const isLoading = isUpdatingTour;
 
   const createCustomerModalRef = useRef<SlideSheetRef | null>(null);
 
@@ -162,7 +162,7 @@ export function InvoiceOrgCustomerSelectModal({
 
   const handleConfirm = () => {
     if (pendingSelection?.type === 'internal') {
-      handleUpdateInvoice({ organizationCustomerId: pendingSelection.customerId }, onCloseRequest);
+      handleUpdateTour({ organizationCustomerId: pendingSelection.customerId }, onCloseRequest);
       return;
     }
 
@@ -171,14 +171,14 @@ export function InvoiceOrgCustomerSelectModal({
 
     const existingCustomer = realOrganizationCustomers.get(selectedOrg.id);
     if (existingCustomer) {
-      handleUpdateInvoice({ organizationCustomerId: existingCustomer.id }, onCloseRequest);
+      handleUpdateTour({ organizationCustomerId: existingCustomer.id }, onCloseRequest);
       return;
     }
 
     createOrgCustomer(selectedOrg, {
       onSuccess: (created) => {
         refreshOrganizationCustomers();
-        handleUpdateInvoice({ organizationCustomerId: created.id }, onCloseRequest);
+        handleUpdateTour({ organizationCustomerId: created.id }, onCloseRequest);
       },
       onError: () => {
         Alert.alert('Lỗi', 'Không thể liên kết tổ chức cộng đồng.');
@@ -250,14 +250,14 @@ export function InvoiceOrgCustomerSelectModal({
         </View>
 
         {currentTab === 'real' ? (
-          <InvoiceOrgCustomerRealList
+          <TourOrgCustomerRealList
             realOrganizations={realOrganizations}
             selectedKey={pendingSelectedKey}
             isBusy={isBusy}
             onChooseReal={handleChooseReal}
           />
         ) : (
-          <InvoiceOrgCustomerInternalList
+          <TourOrgCustomerInternalList
             customers={filteredInternalOrgCustomers}
             selectedKey={pendingSelectedKey}
             isBusy={isBusy}

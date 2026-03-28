@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
@@ -9,6 +9,7 @@ import { InvoiceOrgCustomerSelectModal } from '@/components/modals/invoice-org-c
 import { Ionicons } from '@expo/vector-icons';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 import { useInvoiceDetailContext } from '@/providers/invoice-detail-provider';
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 export function InvoiceDetailFooterContent() {
   const { invoice, isUpdatingInvoice, isRefreshingInvoice, handleUpdateInvoice } =
@@ -21,11 +22,6 @@ export function InvoiceDetailFooterContent() {
 
   const noteModalRef = useRef<SlideSheetRef>(null);
   const selectCustomerModalRef = useRef<SlideSheetRef>(null);
-
-  const canEditCustomer = useMemo(
-    () => Boolean(invoice?.organization?.id) && !isLoading,
-    [invoice?.organization?.id, isLoading]
-  );
 
   return (
     <>
@@ -67,20 +63,18 @@ export function InvoiceDetailFooterContent() {
               >
                 {customerName || ''}
               </Text>
-              <Pressable
-                style={styles.customerIconButton}
+              <PressableOpacity
+                style={styles.searchCustomerButton}
                 onPress={() => selectCustomerModalRef.current?.open()}
-                disabled={!canEditCustomer}
+                disabled={isLoading}
                 hitSlop={8}
               >
                 <Ionicons
                   name="search"
                   size={18}
-                  color={
-                    canEditCustomer ? COLORS.vinaupTeal : COLORS.vinaupMediumGray
-                  }
+                  color={!isLoading ? COLORS.vinaupTeal : COLORS.vinaupMediumGray}
                 />
-              </Pressable>
+              </PressableOpacity>
             </View>
           </View>
         </View>
@@ -137,9 +131,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: 8,
   },
-  customerIconButton: {
+  searchCustomerButton: {
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.vinaupYellow,
+    borderRadius: 99,
+    padding: 3,
   },
   label: {
     fontSize: 16,

@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
-import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
 import {
   deleteInvoiceApi,
   getInvoiceByIdApi,
@@ -9,7 +8,6 @@ import {
 } from '@/apis/invoice-apis';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { InvoiceResponse, UpdateInvoiceRequest } from '@/interfaces/invoice-interfaces';
-import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useSafeRouter } from '@/hooks/use-safe-router';
 
@@ -23,12 +21,10 @@ interface InvoiceDetailContextType {
   receiptPayments: ReceiptPaymentResponse[];
   isLoadingReceiptPayments: boolean;
   isRefreshingReceiptPayments: boolean;
-  organizationCustomers: OrganizationCustomerResponse[];
   handleUpdateInvoice: (fields: UpdateInvoiceRequest, onSuccess?: () => void) => void;
   handleDelete: () => void;
   refreshInvoice: () => void;
   refreshReceiptPayments: () => void;
-  refreshOrganizationCustomers: () => void;
 }
 
 const InvoiceDetailContext = createContext<InvoiceDetailContextType | null>(null);
@@ -78,26 +74,12 @@ export function InvoiceDetailProvider({
     tags: ['organization-receipt-payment-list-in-invoice'],
   });
 
-  const {
-    data: organizationCustomers,
-    executeFetchFn: fetchOrganizationCustomers,
-    refreshFetchFn: refreshOrganizationCustomers,
-  } = useFetchFn(
-    () => getOrganizationCustomersByOrganizationIdApi(invoice?.organization?.id || '')
-  );
-
   useEffect(() => {
     if (invoiceId) {
       fetchInvoice();
       fetchReceiptPayments();
     }
   }, [invoiceId, fetchInvoice, fetchReceiptPayments]);
-
-  useEffect(() => {
-    if (invoice?.organization?.id) {
-      fetchOrganizationCustomers();
-    }
-  }, [invoice?.organization?.id, fetchOrganizationCustomers]);
 
   const handleUpdateInvoice = useCallback(
     (updatedFields: UpdateInvoiceRequest, onSuccessCallback?: () => void) => {
@@ -148,12 +130,10 @@ export function InvoiceDetailProvider({
         receiptPayments: receiptPayments ?? [],
         isLoadingReceiptPayments,
         isRefreshingReceiptPayments,
-        organizationCustomers: organizationCustomers ?? [],
         handleUpdateInvoice,
         handleDelete,
         refreshInvoice,
         refreshReceiptPayments,
-        refreshOrganizationCustomers,
       }}
     >
       {children}

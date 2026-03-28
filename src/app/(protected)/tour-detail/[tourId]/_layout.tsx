@@ -88,7 +88,7 @@ export default function TourDetailLayout() {
   return (
     <>
       <StackWithHeader
-        title={'Chi tiết tour'}
+        title={'Chi tiết Tour'}
         backIcon={
           <Ionicons name="chevron-back" size={28} color={COLORS.vinaupTeal} />
         }

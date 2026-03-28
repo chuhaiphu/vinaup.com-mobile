@@ -4,19 +4,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 
-interface InvoiceOrgCustomerInternalListProps {
+interface TourOrgCustomerInternalListProps {
   customers: OrganizationCustomerResponse[];
   selectedKey: string;
   isBusy: boolean;
   onChooseInternal: (customerId: string) => void;
 }
 
-export function InvoiceOrgCustomerInternalList({
+export function TourOrgCustomerInternalList({
   customers,
   selectedKey,
   isBusy,
   onChooseInternal,
-}: InvoiceOrgCustomerInternalListProps) {
+}: TourOrgCustomerInternalListProps) {
   return (
     <ScrollView contentContainerStyle={styles.listContent}>
       {customers.map((customer) => {
@@ -67,11 +67,11 @@ const styles = StyleSheet.create({
   },
   optionRow: {
     borderRadius: 12,
+    paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 2,
-    minHeight: 60,
   },
   optionRowActive: {
     backgroundColor: '#F2FBFA',

@@ -3,29 +3,25 @@ import { COLORS } from '@/constants/style-constant';
 import { useRef } from 'react';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableCard } from '@/components/primitives/pressable-card';
-import { ProjectOrgCustomerEditModal } from '@/components/modals/project-org-customer-edit-modal/project-org-customer-edit-modal';
-import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal/simple-text-input-modal';
 import VinaupInfoNote from '@/components/icons/vinaup-info-note.native';
-import { TourResponse, UpdateTourRequest } from '@/interfaces/tour-interfaces';
+import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal/simple-text-input-modal';
+import { TourOrgCustomerSelectModal } from '@/components/modals/tour-org-customer-select-modal/tour-org-customer-select-modal';
+import { Ionicons } from '@expo/vector-icons';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
+import { useTourCalculationContext } from '@/providers/tour-calculation-provider';
+import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
-interface TourDetailFooterContentProps {
-  tour?: TourResponse;
-  onConfirm?: (data: UpdateTourRequest, onSuccessCallback?: () => void) => void;
-  isLoading?: boolean;
-}
+export function TourDetailFooterContent() {
+  const { tour, isUpdatingTour, isRefreshingTour, handleUpdateTour } =
+    useTourCalculationContext();
 
-export function TourDetailFooterContent({
-  tour,
-  onConfirm,
-  isLoading = false,
-}: TourDetailFooterContentProps) {
-  const organizationName = tour?.externalOrganizationName ?? '';
-  const customerName = tour?.externalCustomerName ?? '';
+  const isLoading = isUpdatingTour || isRefreshingTour;
+  const organizationName = tour?.organization?.name ?? '';
+  const customerName = tour?.organizationCustomer?.name ?? '';
   const note = tour?.note ?? '';
 
-  const orgModalRef = useRef<SlideSheetRef | null>(null);
-  const noteModalRef = useRef<SlideSheetRef | null>(null);
+  const noteModalRef = useRef<SlideSheetRef>(null);
+  const selectCustomerModalRef = useRef<SlideSheetRef>(null);
 
   return (
     <>
@@ -42,12 +38,11 @@ export function TourDetailFooterContent({
       </Pressable>
 
       <PressableCard
-        onPress={() => orgModalRef.current?.open()}
-        disabled={isLoading}
         style={{
           container: styles.cardContainer,
           card: styles.card,
         }}
+        onPress={() => selectCustomerModalRef.current?.open()}
       >
         <View style={styles.rowsNew}>
           <View style={styles.orgCol}>
@@ -57,37 +52,42 @@ export function TourDetailFooterContent({
             </Text>
           </View>
           <View style={styles.customerCol}>
-            <Text style={styles.label}>Tên khách:</Text>
-            <Text
-              numberOfLines={2}
-              ellipsizeMode="tail"
-              style={[styles.value, styles.valueRight]}
-            >
-              {customerName || ''}
-            </Text>
+            <View style={styles.customerRow}>
+              <Text style={styles.label}>Khách hàng:</Text>
+              <PressableOpacity
+                style={styles.searchCustomerButton}
+                onPress={() => selectCustomerModalRef.current?.open()}
+                disabled={isLoading}
+                hitSlop={8}
+              >
+                <Ionicons
+                  name="search"
+                  size={16}
+                  color={!isLoading ? COLORS.vinaupTeal : COLORS.vinaupMediumGray}
+                />
+              </PressableOpacity>
+            </View>
+            <View style={styles.customerRow}>
+              <Text
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                style={[styles.value, styles.valueRight, styles.customerValue]}
+              >
+                {customerName || ''}
+              </Text>
+            </View>
           </View>
         </View>
       </PressableCard>
 
-      <ProjectOrgCustomerEditModal
-        organizationName={organizationName}
-        customerName={customerName}
-        isLoading={isLoading}
-        modalRef={orgModalRef}
-        onConfirm={(orgName, cusName, onSuccessClose) => {
-          onConfirm?.(
-            { externalOrganizationName: orgName, externalCustomerName: cusName },
-            onSuccessClose
-          );
-        }}
-      />
+      <TourOrgCustomerSelectModal modalRef={selectCustomerModalRef} />
 
       <SimpleTextInputModal
         value={note}
         isLoading={isLoading}
         modalRef={noteModalRef}
         onConfirm={(noteValue: string, onSuccessClose?: () => void) => {
-          onConfirm?.({ note: noteValue }, onSuccessClose);
+          handleUpdateTour({ note: noteValue }, onSuccessClose);
         }}
       />
     </>
@@ -95,12 +95,13 @@ export function TourDetailFooterContent({
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {},
+  cardContainer: {
+    marginBottom: 20,
+  },
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingTop: 4,
-    paddingBottom: 10,
+    paddingVertical: 4,
   },
   rowsNew: {
     flex: 1,
@@ -114,17 +115,33 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     paddingVertical: 6,
+    gap: 4,
   },
   customerCol: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
+    gap: 4,
     paddingVertical: 6,
+  },
+  customerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 8,
+  },
+  searchCustomerButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.vinaupYellow,
+    borderRadius: 99,
+    padding: 3,
   },
   label: {
     fontSize: 16,
-    color: COLORS.vinaupTeal,
+    color: COLORS.vinaupMediumDarkGray,
   },
   valueLeft: {
     textAlign: 'left',
@@ -137,12 +154,15 @@ const styles = StyleSheet.create({
     color: COLORS.vinaupBlack,
     marginTop: 2,
   },
+  customerValue: {
+    flexShrink: 1,
+  },
   noteContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 12,
-    gap: 8,
+    gap: 4,
   },
   noteValue: {
     flex: 1,
