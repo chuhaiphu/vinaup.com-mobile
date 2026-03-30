@@ -13,7 +13,7 @@ import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { generateDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
 import Loader from '@/components/primitives/loader';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { ReceiptPaymentSectionListHeader } from '../../headers/receipt-payment-section-list-header';
 
 interface ReceiptPaymentProjectListContentProps {
@@ -41,7 +41,7 @@ export function ReceiptPaymentProjectListContent({
   onRefresh,
   projectId,
 }: ReceiptPaymentProjectListContentProps) {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const dateRange = generateDateRange(startDate, endDate);
 
@@ -77,15 +77,14 @@ export function ReceiptPaymentProjectListContent({
     };
   })();
 
-  const navigateToFormScreen = async ({
+  const navigateToFormScreen = ({
     receiptPaymentId,
     dateKey,
   }: {
     receiptPaymentId?: string;
     dateKey?: string;
   }) => {
-    if (safeRouter.isNavigating) return;
-    safeRouter.safePush({
+    router.push({
       pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: receiptPaymentId || 'new',

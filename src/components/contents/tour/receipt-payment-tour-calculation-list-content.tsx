@@ -2,17 +2,11 @@ import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
 import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { generateDateRange } from '@/utils/generator-helpers';
 import dayjs from 'dayjs';
-import {
-  Pressable,
-  SectionList,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 interface ReceiptPaymentTourCalculationListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
@@ -37,7 +31,7 @@ export function ReceiptPaymentTourCalculationListContent({
   tourCalculationId,
   organizationId,
 }: ReceiptPaymentTourCalculationListContentProps) {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const dateRange = generateDateRange(startDate, endDate);
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
     const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
@@ -66,15 +60,14 @@ export function ReceiptPaymentTourCalculationListContent({
     };
   })();
 
-  const navigateToFormScreen = async ({
+  const navigateToFormScreen = ({
     receiptPaymentId,
     dateKey,
   }: {
     receiptPaymentId?: string;
     dateKey?: string;
   }) => {
-    if (safeRouter.isNavigating) return;
-    safeRouter.safePush({
+    router.push({
       pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: receiptPaymentId || 'new',

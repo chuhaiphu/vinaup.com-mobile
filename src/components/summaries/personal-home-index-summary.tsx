@@ -7,7 +7,7 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
 import { PressableOpacity } from '../primitives/pressable-opacity';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 
 interface PersonalHomeIndexSummaryProps {
   receiptPayments?: ReceiptPaymentResponse[] | null;
@@ -17,10 +17,10 @@ export function PersonalHomeIndexSummary({
   receiptPayments,
 }: PersonalHomeIndexSummaryProps) {
   const summary = calculateReceiptPaymentsSummary(receiptPayments);
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const handlePressFirstColumn = () => {
-    safeRouter.safePush('/(protected)/personal/(tabs)/receipt-payment');
+    router.push('/(protected)/personal/(tabs)/receipt-payment');
   };
 
   return (

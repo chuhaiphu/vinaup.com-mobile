@@ -13,7 +13,7 @@ import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { generateDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
 import Loader from '@/components/primitives/loader';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
 
@@ -46,7 +46,7 @@ export function ReceiptPaymentInvoiceListContent({
   organizationId,
   invoiceTypeId,
 }: ReceiptPaymentInvoiceListContentProps) {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const dateRange = generateDateRange(startDate, endDate);
   const { getInvoiceTypeById } = useInvoiceTypeContext();
   const invoiceType = getInvoiceTypeById(invoiceTypeId || '');
@@ -77,16 +77,15 @@ export function ReceiptPaymentInvoiceListContent({
     };
   })();
 
-  const navigateToFormScreen = async ({
+  const navigateToFormScreen = ({
     receiptPaymentId,
     dateKey,
   }: {
     receiptPaymentId?: string;
     dateKey?: string;
   }) => {
-    if (safeRouter.isNavigating) return;
     const receiptPaymentType = invoiceType?.code === 'BUY' ? 'PAYMENT' : 'RECEIPT';
-    safeRouter.safePush({
+    router.push({
       pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: receiptPaymentId || 'new',

@@ -1,14 +1,14 @@
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { useAuthContext } from '@/providers/auth-provider';
 import { Text, View, Button, StyleSheet } from 'react-native';
 
 export default function PersonalProfileScreen() {
   const { performLogout } = useAuthContext();
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const handleLogout = () => {
     performLogout();
-    safeRouter.safePush('/login');
+    router.replace('/login');
   };
 
   return (

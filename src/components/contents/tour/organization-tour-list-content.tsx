@@ -10,7 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { Select } from '@/components/primitives/select';
 import { TourStatusOptions } from '@/constants/tour-constants';
 import { getToursByOrganizationIdApi } from '@/apis/tour-apis';
@@ -24,7 +24,7 @@ type OrganizationTourListContentProps = {
 export function OrganizationTourListContent({
   organizationId,
 }: OrganizationTourListContentProps) {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const [tourStatusFilter, setTourStatusFilter] = useState('');
   const {
     data: tours,
@@ -46,14 +46,12 @@ export function OrganizationTourListContent({
     fetchTours();
   }, [fetchTours, organizationId, tourStatusFilter]);
 
-  const navigateToDetailScreen = async (id?: string) => {
-    if (safeRouter.isNavigating) return;
-    if (id) {
-      safeRouter.safePush({
-        pathname: '/(protected)/tour-detail/[tourId]',
-        params: { tourId: id },
-      });
-    }
+  const navigateToDetailScreen = (id?: string) => {
+    if (!id) return;
+    router.push({
+      pathname: '/(protected)/tour-detail/[tourId]',
+      params: { tourId: id },
+    });
   };
 
   return (

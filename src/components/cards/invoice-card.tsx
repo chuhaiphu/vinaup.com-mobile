@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { PressableOpacity } from '../primitives/pressable-opacity';
 
 interface InvoiceCardProps {
@@ -16,7 +16,7 @@ interface InvoiceCardProps {
 }
 
 export function InvoiceCard({ invoice }: InvoiceCardProps) {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const [isShowingPrice, setIsShowingPrice] = useState(false);
   const fetchReceiptPaymentsFn = () =>
@@ -59,8 +59,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
   };
 
   const navigateToDetail = (invoiceId: string) => {
-    if (safeRouter.isNavigating) return;
-    safeRouter.safePush({
+    router.push({
       pathname: '/(protected)/invoice-detail/[invoiceId]',
       params: { invoiceId, invoiceTypeCode: invoice?.invoiceType?.code },
     });

@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { PressableOpacity } from '../primitives/pressable-opacity';
 
 interface ProjectCardProps {
@@ -16,7 +16,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const [isShowingPrice, setIsShowingPrice] = useState(false);
   const fetchReceiptPaymentsFn = () =>
@@ -58,14 +58,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
     setIsShowingPrice(!isShowingPrice);
   };
 
-  const navigateToDetail = async (id?: string) => {
-    if (safeRouter.isNavigating) return;
-    if (id) {
-      safeRouter.safePush({
-        pathname: '/(protected)/project-detail/[projectId]',
-        params: { projectId: id },
-      });
-    }
+  const navigateToDetail = (id?: string) => {
+    if (!id) return;
+    router.push({
+      pathname: '/(protected)/project-detail/[projectId]',
+      params: { projectId: id },
+    });
   };
 
   if (!project) {

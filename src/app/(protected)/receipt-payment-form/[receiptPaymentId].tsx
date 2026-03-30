@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import dayjs, { Dayjs } from 'dayjs';
 import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -34,10 +34,9 @@ import {
   updateReceiptPaymentApi,
 } from '@/apis/receipt-payment-apis';
 import Loader from '@/components/primitives/loader';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 
 export default function ReceiptPaymentFormScreen() {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const params = useLocalSearchParams<{
     receiptPaymentId: string;
     groupCode?: 'FOR_DIRECTOR' | 'FOR_TOUR_GUIDE';
@@ -216,7 +215,7 @@ export default function ReceiptPaymentFormScreen() {
 
     createOrUpdateReceiptPayment({
       onSuccess: () => {
-        safeRouter.safeBack();
+        router.back();
       },
       onError: (error) => {
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi tạo thu/chi.');
@@ -234,7 +233,7 @@ export default function ReceiptPaymentFormScreen() {
         onPress: () => {
           deleteReceiptPayment({
             onSuccess: () => {
-              safeRouter.safeBack();
+              router.back();
             },
             onError: (error) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');

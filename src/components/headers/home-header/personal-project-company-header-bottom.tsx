@@ -5,10 +5,10 @@ import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { useMutationFn } from 'fetchwire';
 import { createProjectApi } from '@/apis/project-apis';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 
 const PersonalProjectCompanyHeaderBottom = () => {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const createProjectFn = () =>
     createProjectApi({
@@ -26,7 +26,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
   const handleAddNew = async () => {
     await createProject({
       onSuccess: (data) => {
-        safeRouter.safePush({
+        router.push({
           pathname: '/(protected)/project-detail/[projectId]',
           params: { projectId: data.id },
         });

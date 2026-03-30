@@ -3,13 +3,13 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 
 const PersonalReceiptPaymentHeaderBottom = () => {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const handleAddNew = () => {
-    safeRouter.safePush({
+    router.push({
       pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: 'new',

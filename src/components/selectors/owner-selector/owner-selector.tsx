@@ -2,17 +2,16 @@ import React from 'react';
 import { useAuthContext } from '@/providers/auth-provider';
 import { useOrganizationContext } from '@/providers/organization-provider';
 import { useOwnerModeContext } from '@/providers/owner-mode-provider';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Avatar } from '@/components/primitives/avatar';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { COLORS } from '@/constants/style-constant';
 import { Select, SelectOption } from '@/components/primitives/select';
 import { StyleSheet, Text } from 'react-native';
 import VinaupVerticalHalfArrow from '@/components/icons/vinaup-vertical-half-arrow.native';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 
 export const OwnerSelector = () => {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const { organizationId: currentOrgId } = useLocalSearchParams<{
     organizationId: string;
   }>();
@@ -63,21 +62,21 @@ export const OwnerSelector = () => {
   });
 
   const handleValueChange = (selectedValue: string) => {
+    if (selectedValue === getCurrentValue()) return;
     if (selectedValue === 'personal') {
       setOwnerMode('personal');
-      safeRouter.safeReplace('/personal');
+      router.replace('/personal');
     } else if (selectedValue.startsWith('organization')) {
       // remove the 'organization-' prefix and join the rest with '-'
       const orgId = selectedValue.split('-').slice(1).join('-');
 
       setOwnerMode('organization');
-      safeRouter.safeReplace(`/organization/${orgId}`);
+      router.replace(`/organization/${orgId}`);
     }
   };
 
   return (
     <Select
-      isLoading={safeRouter.isNavigating}
       options={profileOptions}
       value={getCurrentValue()}
       onChange={handleValueChange}

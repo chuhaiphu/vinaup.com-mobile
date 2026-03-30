@@ -7,7 +7,7 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
 import { PressableOpacity } from '../primitives/pressable-opacity';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 
 interface OrganizationHomeIndexSummaryProps {
   receiptPayments?: ReceiptPaymentResponse[] | null;
@@ -21,9 +21,9 @@ export function OrganizationHomeIndexSummary({
   const cashNet = summary.cashIn - summary.cashOut;
   const bankNet = summary.bankIn - summary.bankOut;
 
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const handlePressFirstColumn = () => {
-    safeRouter.safePush({
+    router.push({
       pathname: `/(protected)/organization/[organizationId]/(tabs)/invoice`,
       params: {
         organizationId,

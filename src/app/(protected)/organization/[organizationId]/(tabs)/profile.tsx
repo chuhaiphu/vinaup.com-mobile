@@ -1,4 +1,4 @@
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { useAuthContext } from '@/providers/auth-provider';
 import { useOwnerModeContext } from '@/providers/owner-mode-provider';
 import { Text, View, Button, StyleSheet } from 'react-native';
@@ -7,12 +7,12 @@ export default function OrganizationProfileScreen() {
   const { performLogout } = useAuthContext();
   const { setOwnerMode } = useOwnerModeContext();
 
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const handleLogout = () => {
     performLogout();
     setOwnerMode('personal');
-    safeRouter.safeReplace('/login');
+    router.replace('/login');
   };
 
   return (

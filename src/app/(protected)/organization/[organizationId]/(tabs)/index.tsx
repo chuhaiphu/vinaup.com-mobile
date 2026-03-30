@@ -8,7 +8,7 @@ import { useFetchFn } from 'fetchwire';
 import { MultiSelect } from '@/components/primitives/multiple-select';
 import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
 import { ORG_UTILITY_KEYS, type OrgUtilityKey } from '@/constants/app-constant';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import dayjs from 'dayjs';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
@@ -17,10 +17,9 @@ import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 
 export default function OrganizationIndexScreen() {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
   const { getSelectedUtilities, setUtilities } = useOrganizationUtilitiesStore();
   const selectedUtilities = getSelectedUtilities(organizationId);
@@ -88,7 +87,7 @@ export default function OrganizationIndexScreen() {
   const handlePress = (key: string) => {
     if (key === 'settings') return;
     if (organizationId) {
-      safeRouter.safePush({
+      router.push({
         pathname: `/(protected)/organization/[organizationId]/(tabs)/invoice`,
         params: {
           organizationId,

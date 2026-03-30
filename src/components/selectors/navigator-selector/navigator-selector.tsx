@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePathname, Route } from 'expo-router';
+import { usePathname, Route, useRouter } from 'expo-router';
 import { Select } from '@/components/primitives/select';
 import { COLORS } from '@/constants/style-constant';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
@@ -7,10 +7,9 @@ import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import VinaupSelector from '@/components/icons/vinaup-selector.native';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 
 export default function NavigatorSelector() {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const pathname = usePathname();
 
   const navItems = [
@@ -49,7 +48,7 @@ export default function NavigatorSelector() {
   ];
 
   const handleNavigation = (path: string) => {
-    safeRouter.safeNavigate(path as Route);
+    router.navigate(path as Route);
   };
 
   return (

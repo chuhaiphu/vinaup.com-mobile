@@ -1,5 +1,5 @@
 import { View, StyleSheet, Alert, Text } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
@@ -17,11 +17,10 @@ import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
 import { ProjectDetailFooterContent } from '@/components/contents/project/project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 
 export default function ProjectDetailScreen() {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
   const fetchProjectFn = () => getProjectByIdApi(projectId);
@@ -69,7 +68,7 @@ export default function ProjectDetailScreen() {
     if (!project) return;
     refreshProject();
     refreshReceiptPayments();
-    safeRouter.safeBack();
+    router.back();
   };
 
   const handleUpdateProject = (
@@ -98,7 +97,7 @@ export default function ProjectDetailScreen() {
         onPress: () => {
           deleteProject({
             onSuccess: () => {
-              safeRouter.safeBack();
+              router.back();
             },
             onError: (error: ApiError) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');

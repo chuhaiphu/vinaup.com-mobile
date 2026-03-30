@@ -1,10 +1,9 @@
 import { View, StyleSheet, Alert } from 'react-native';
-import { Slot, useLocalSearchParams, useSegments } from 'expo-router';
+import { Slot, useLocalSearchParams, useRouter, useSegments } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { useEffect } from 'react';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
 import { COLORS } from '@/constants/style-constant';
-import { useSafeRouter } from '@/hooks/use-safe-router';
 import { deleteTourApi, getTourByIdApi } from '@/apis/tour-apis';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
@@ -14,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function TourDetailLayout() {
   const insets = useSafeAreaInsets();
 
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const { tourId } = useLocalSearchParams<{
     tourId: string;
   }>();
@@ -53,7 +52,7 @@ export default function TourDetailLayout() {
         onPress: () => {
           deleteTour({
             onSuccess: () => {
-              safeRouter.safeBack();
+              router.back();
             },
             onError: (error: ApiError) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
@@ -67,7 +66,7 @@ export default function TourDetailLayout() {
   const handleSaveAndExit = () => {
     if (!tourData) return;
     refreshTour();
-    safeRouter.safeBack();
+    router.back();
   };
 
   // const getHeaderTitle = () => {

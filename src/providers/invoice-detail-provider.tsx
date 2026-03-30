@@ -7,9 +7,12 @@ import {
   updateInvoiceApi,
 } from '@/apis/invoice-apis';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
-import { InvoiceResponse, UpdateInvoiceRequest } from '@/interfaces/invoice-interfaces';
+import {
+  InvoiceResponse,
+  UpdateInvoiceRequest,
+} from '@/interfaces/invoice-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 
 interface InvoiceDetailContextType {
   invoiceId: string;
@@ -21,7 +24,10 @@ interface InvoiceDetailContextType {
   receiptPayments: ReceiptPaymentResponse[];
   isLoadingReceiptPayments: boolean;
   isRefreshingReceiptPayments: boolean;
-  handleUpdateInvoice: (fields: UpdateInvoiceRequest, onSuccess?: () => void) => void;
+  handleUpdateInvoice: (
+    fields: UpdateInvoiceRequest,
+    onSuccess?: () => void
+  ) => void;
   handleDelete: () => void;
   refreshInvoice: () => void;
   refreshReceiptPayments: () => void;
@@ -31,7 +37,10 @@ const InvoiceDetailContext = createContext<InvoiceDetailContextType | null>(null
 
 export function useInvoiceDetailContext() {
   const ctx = useContext(InvoiceDetailContext);
-  if (!ctx) throw new Error('useInvoiceDetailContext must be used within InvoiceDetailProvider');
+  if (!ctx)
+    throw new Error(
+      'useInvoiceDetailContext must be used within InvoiceDetailProvider'
+    );
   return ctx;
 }
 
@@ -42,7 +51,7 @@ export function InvoiceDetailProvider({
   invoiceId: string;
   children: React.ReactNode;
 }) {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
 
   const {
     data: invoice,
@@ -54,10 +63,12 @@ export function InvoiceDetailProvider({
     tags: [`organization-invoice-${invoiceId}`],
   });
 
-  const { executeMutationFn: updateInvoice, isMutating: isUpdatingInvoice } = useMutationFn(
-    (updatedFields: UpdateInvoiceRequest) => updateInvoiceApi(invoiceId, updatedFields),
-    { invalidatesTags: ['organization-invoice-list'] }
-  );
+  const { executeMutationFn: updateInvoice, isMutating: isUpdatingInvoice } =
+    useMutationFn(
+      (updatedFields: UpdateInvoiceRequest) =>
+        updateInvoiceApi(invoiceId, updatedFields),
+      { invalidatesTags: ['organization-invoice-list'] }
+    );
 
   const { executeMutationFn: deleteInvoice, isMutating: isDeletingInvoice } =
     useMutationFn(() => deleteInvoiceApi(invoiceId), {
@@ -107,7 +118,7 @@ export function InvoiceDetailProvider({
         onPress: () => {
           deleteInvoice({
             onSuccess: () => {
-              safeRouter.safeBack();
+              router.back();
             },
             onError: (error: ApiError) => {
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
@@ -116,7 +127,7 @@ export function InvoiceDetailProvider({
         },
       },
     ]);
-  }, [invoiceId, deleteInvoice, safeRouter]);
+  }, [invoiceId, deleteInvoice, router]);
 
   return (
     <InvoiceDetailContext

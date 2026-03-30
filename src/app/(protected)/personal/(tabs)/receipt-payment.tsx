@@ -11,14 +11,14 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useSafeRouter } from '@/hooks/use-safe-router';
+import { useRouter } from 'expo-router';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
 
 export default function PersonalReceiptPaymentScreen() {
-  const safeRouter = useSafeRouter();
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const {
     data: receiptPayments,
@@ -40,9 +40,8 @@ export default function PersonalReceiptPaymentScreen() {
     fetchReceiptPayments();
   }, [fetchReceiptPayments, selectedDate]);
 
-  const navigateToFormScreen = async (id?: string) => {
-    if (safeRouter.isNavigating) return;
-    safeRouter.safePush({
+  const navigateToFormScreen = (id?: string) => {
+    router.push({
       pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
         receiptPaymentId: id || 'new',
