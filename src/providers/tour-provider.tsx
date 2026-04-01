@@ -4,7 +4,7 @@ import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
 import { getTourByIdApi, updateTourApi } from '@/apis/tour-apis';
 import { TourResponse, UpdateTourRequest } from '@/interfaces/tour-interfaces';
 
-interface TourCalculationContextType {
+interface TourContextType {
   tourId: string;
   tour: TourResponse | undefined;
   isLoadingTour: boolean;
@@ -14,11 +14,12 @@ interface TourCalculationContextType {
   refreshTour: () => void;
 }
 
-const TourCalculationContext = createContext<TourCalculationContextType | null>(null);
+const TourContext = createContext<TourContextType | null>(null);
 
-export function useTourCalculationContext() {
-  const ctx = useContext(TourCalculationContext);
-  if (!ctx) throw new Error('useTourCalculationContext must be used within TourCalculationProvider');
+export function useTourContext() {
+  const ctx = useContext(TourContext);
+  if (!ctx)
+    throw new Error('useTourContext must be used within TourCalculationProvider');
   return ctx;
 }
 
@@ -39,10 +40,11 @@ export function TourCalculationProvider({
     tags: [`organization-tour-${tourId}`],
   });
 
-  const { executeMutationFn: updateTour, isMutating: isUpdatingTour } = useMutationFn(
-    (updatedFields: UpdateTourRequest) => updateTourApi(tourId, updatedFields),
-    { invalidatesTags: ['organization-tour-list'] }
-  );
+  const { executeMutationFn: updateTour, isMutating: isUpdatingTour } =
+    useMutationFn(
+      (updatedFields: UpdateTourRequest) => updateTourApi(tourId, updatedFields),
+      { invalidatesTags: ['organization-tour-list'] }
+    );
 
   useEffect(() => {
     if (tourId) {
@@ -67,7 +69,7 @@ export function TourCalculationProvider({
   );
 
   return (
-    <TourCalculationContext
+    <TourContext
       value={{
         tourId,
         tour: tour ?? undefined,
@@ -79,6 +81,6 @@ export function TourCalculationProvider({
       }}
     >
       {children}
-    </TourCalculationContext>
+    </TourContext>
   );
 }

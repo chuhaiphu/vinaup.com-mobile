@@ -32,7 +32,7 @@ export function InvoiceDetailFooterContent() {
       >
         <VinaupInfoNote width={22} height={22} color={COLORS.vinaupTeal} />
         <Text style={styles.noteValue} numberOfLines={2} ellipsizeMode="tail">
-          {note || 'Ghi chú...'}
+          {note || 'Ghi chú'}
         </Text>
         <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
       </Pressable>
@@ -107,23 +107,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    paddingVertical: 6,
   },
   orgCol: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    paddingVertical: 6,
     gap: 4,
   },
   customerCol: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
     gap: 4,
-    paddingVertical: 6,
   },
   customerRow: {
     flexDirection: 'row',
@@ -136,8 +128,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: COLORS.vinaupYellow,
-    borderRadius: 99,
-    padding: 3,
+    borderRadius: 12,
+    width: 26,
+    height: 26,
   },
   label: {
     fontSize: 16,

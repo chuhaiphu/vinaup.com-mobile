@@ -8,12 +8,12 @@ import { SimpleTextInputModal } from '@/components/modals/simple-text-input-moda
 import { TourOrgCustomerSelectModal } from '@/components/modals/tour-org-customer-select-modal/tour-org-customer-select-modal';
 import { Ionicons } from '@expo/vector-icons';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
-import { useTourCalculationContext } from '@/providers/tour-calculation-provider';
+import { useTourContext } from '@/providers/tour-provider';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 export function TourDetailFooterContent() {
   const { tour, isUpdatingTour, isRefreshingTour, handleUpdateTour } =
-    useTourCalculationContext();
+    useTourContext();
 
   const isLoading = isUpdatingTour || isRefreshingTour;
   const organizationName = tour?.organization?.name ?? '';
@@ -32,7 +32,7 @@ export function TourDetailFooterContent() {
       >
         <VinaupInfoNote width={22} height={22} color={COLORS.vinaupTeal} />
         <Text style={styles.noteValue} numberOfLines={2} ellipsizeMode="tail">
-          {note || 'Ghi chú...'}
+          {note || 'Ghi chú'}
         </Text>
         <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
       </Pressable>
@@ -107,23 +107,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    paddingVertical: 6,
   },
   orgCol: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    paddingVertical: 6,
     gap: 4,
   },
   customerCol: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
     gap: 4,
-    paddingVertical: 6,
   },
   customerRow: {
     flexDirection: 'row',
@@ -136,8 +128,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: COLORS.vinaupYellow,
-    borderRadius: 99,
-    padding: 3,
+    borderRadius: 12,
+    width: 26,
+    height: 26,
   },
   label: {
     fontSize: 16,

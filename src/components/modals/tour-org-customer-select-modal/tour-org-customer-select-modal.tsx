@@ -19,7 +19,7 @@ import { OrganizationCustomerResponse } from '@/interfaces/organization-customer
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/primitives/button';
-import { useTourCalculationContext } from '@/providers/tour-calculation-provider';
+import { useTourContext } from '@/providers/tour-provider';
 import { useAllOrganizationsContext } from '@/providers/all-organizations-provider';
 import { useOrganizationCustomerContext } from '@/providers/organization-customer-provider';
 
@@ -37,7 +37,7 @@ type PendingSelection =
 export function TourOrgCustomerSelectModal({
   modalRef,
 }: TourOrgCustomerSelectModalProps) {
-  const { tour, isUpdatingTour, handleUpdateTour } = useTourCalculationContext();
+  const { tour, isUpdatingTour, handleUpdateTour } = useTourContext();
   const { organizationCustomers, refreshOrganizationCustomers } =
     useOrganizationCustomerContext();
   const { allOrganizations: organizations } = useAllOrganizationsContext();
@@ -48,19 +48,20 @@ export function TourOrgCustomerSelectModal({
 
   const createCustomerModalRef = useRef<SlideSheetRef | null>(null);
 
-  const { executeMutationFn: createOrgCustomer, isMutating: isCreatingCustomer } = useMutationFn(
-    (org: OrganizationResponse) =>
-      createOrganizationCustomerApi({
-        organizationId: organizationId!,
-        name: org.name,
-        phone: org.phone,
-        email: org.email || undefined,
-        status: 'ACTIVE',
-        joinedAt: new Date(),
-        clientOrganizationId: org.id,
-      }),
-    { invalidatesTags: ['organization-customer-list'] }
-  );
+  const { executeMutationFn: createOrgCustomer, isMutating: isCreatingCustomer } =
+    useMutationFn(
+      (org: OrganizationResponse) =>
+        createOrganizationCustomerApi({
+          organizationId: organizationId!,
+          name: org.name,
+          phone: org.phone,
+          email: org.email || undefined,
+          status: 'ACTIVE',
+          joinedAt: new Date(),
+          clientOrganizationId: org.id,
+        }),
+      { invalidatesTags: ['organization-customer-list'] }
+    );
 
   const [currentTab, setCurrentTab] = useState<TabValue>('internal');
   const [searchQuery, setSearchQuery] = useState('');
@@ -162,16 +163,24 @@ export function TourOrgCustomerSelectModal({
 
   const handleConfirm = () => {
     if (pendingSelection?.type === 'internal') {
-      handleUpdateTour({ organizationCustomerId: pendingSelection.customerId }, onCloseRequest);
+      handleUpdateTour(
+        { organizationCustomerId: pendingSelection.customerId },
+        onCloseRequest
+      );
       return;
     }
 
-    const selectedOrg = organizations.find((o) => o.id === pendingSelection?.organizationId);
+    const selectedOrg = organizations.find(
+      (o) => o.id === pendingSelection?.organizationId
+    );
     if (!selectedOrg || !organizationId) return;
 
     const existingCustomer = realOrganizationCustomers.get(selectedOrg.id);
     if (existingCustomer) {
-      handleUpdateTour({ organizationCustomerId: existingCustomer.id }, onCloseRequest);
+      handleUpdateTour(
+        { organizationCustomerId: existingCustomer.id },
+        onCloseRequest
+      );
       return;
     }
 
@@ -246,7 +255,9 @@ export function TourOrgCustomerSelectModal({
             style={styles.searchInput}
             editable={!isBusy}
           />
-          {isBusy ? <ActivityIndicator size="small" color={COLORS.vinaupTeal} /> : null}
+          {isBusy ? (
+            <ActivityIndicator size="small" color={COLORS.vinaupTeal} />
+          ) : null}
         </View>
 
         {currentTab === 'real' ? (
@@ -265,10 +276,16 @@ export function TourOrgCustomerSelectModal({
           />
         )}
 
-        <Text style={styles.helperText}>*Kho dữ liệu của bạn để tái sử dụng khi cần</Text>
+        <Text style={styles.helperText}>
+          *Kho dữ liệu của bạn để tái sử dụng khi cần
+        </Text>
 
         <View style={styles.footerActions}>
-          <Button style={styles.cancelButton} onPress={onCloseRequest} disabled={isBusy}>
+          <Button
+            style={styles.cancelButton}
+            onPress={onCloseRequest}
+            disabled={isBusy}
+          >
             <Text style={styles.cancelButtonText}>Hủy</Text>
           </Button>
           <Button

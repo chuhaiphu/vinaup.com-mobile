@@ -7,7 +7,7 @@ import {
 import { useFetchFn, useMutationFn } from 'fetchwire';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import SignatureEntityContent from '../signature/signature-entity-content';
+import SignatureEntityContent from '../../signature/signature-entity-content';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { COLORS } from '@/constants/style-constant';

@@ -16,7 +16,7 @@ import { TourFilterParam } from '@/interfaces/_query-param.interfaces';
 import {
   TourImplementationResponse,
   UpdateTourImplementationRequest,
-  CreateMemberInChargeRequest,
+  ManageMembersInChargeRequest,
   CreateUserInvitedRequest,
   UpdateUserInvitedRequest,
   MemberInChargeTourImplementationResponse,
@@ -70,7 +70,7 @@ export async function deleteTourApi(id: string) {
 }
 
 export async function getTourCalculationByTourIdApi(tourId: string) {
-  return wireApi<TourCalculationResponse>(`/tour/tour-calculation/${tourId}`, {
+  return wireApi<TourCalculationResponse>(`/tour-calculation/by-tour/${tourId}`, {
     method: 'GET',
   });
 }
@@ -79,7 +79,7 @@ export async function getTourCalculationLogsByTourCalculationIdApi(
   tourCalculationId: string
 ) {
   return wireApi<TourCalculationCancelLogResponse[]>(
-    `/tour/tour-calculation/${tourCalculationId}/logs`,
+    `/tour-calculation/${tourCalculationId}/cancel-logs`,
     {
       method: 'GET',
     }
@@ -88,7 +88,7 @@ export async function getTourCalculationLogsByTourCalculationIdApi(
 
 export async function getTourCalculationCancelLogByIdApi(id: string) {
   return wireApi<TourCalculationCancelLogResponse>(
-    `/tour/tour-calculation-cancel-logs/${id}`,
+    `/tour-calculation/cancel-logs/${id}`,
     {
       method: 'GET',
     }
@@ -97,7 +97,7 @@ export async function getTourCalculationCancelLogByIdApi(id: string) {
 
 export async function getTourImplementationByTourIdApi(tourId: string) {
   return wireApi<TourImplementationResponse>(
-    `/tour/tour-implementation/${tourId}`,
+    `/tour-implementation/by-tour/${tourId}`,
     {
       method: 'GET',
     }
@@ -105,7 +105,7 @@ export async function getTourImplementationByTourIdApi(tourId: string) {
 }
 
 export async function getTourSettlementByTourIdApi(tourId: string) {
-  return wireApi<TourSettlementResponse>(`/tour/tour-settlement/${tourId}`, {
+  return wireApi<TourSettlementResponse>(`/tour-settlement/by-tour/${tourId}`, {
     method: 'GET',
   });
 }
@@ -115,7 +115,7 @@ export async function updateTourCalculationApi(
   data: UpdateTourCalculationRequest
 ) {
   return wireApi<TourCalculationResponse>(
-    `/tour/tour-calculation/${tourCalculationId}`,
+    `/tour-calculation/${tourCalculationId}`,
     {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -128,7 +128,7 @@ export async function updateTourImplementationApi(
   data: UpdateTourImplementationRequest
 ) {
   return wireApi<TourImplementationResponse>(
-    `/tour/tour-implementation/${tourImplementationId}`,
+    `/tour-implementation/${tourImplementationId}`,
     {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -141,7 +141,7 @@ export async function updateTourSettlementApi(
   data: UpdateTourSettlementRequest
 ) {
   return wireApi<TourSettlementResponse>(
-    `/tour/tour-settlement/${tourSettlementId}`,
+    `/tour-settlement/${tourSettlementId}`,
     {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -154,19 +154,19 @@ export async function getMembersInChargeByTourImplementationIdApi(
   tourImplementationId: string
 ) {
   return wireApi<MemberInChargeTourImplementationResponse[]>(
-    `/tour/tour-implementation/${tourImplementationId}/members-in-charge`,
+    `/tour-implementation/${tourImplementationId}/members-in-charge`,
     {
       method: 'GET',
     }
   );
 }
 
-export async function addMemberInChargeApi(
+export async function manageMembersInChargeApi(
   tourImplementationId: string,
-  data: CreateMemberInChargeRequest
+  data: ManageMembersInChargeRequest
 ) {
-  return wireApi<MemberInChargeTourImplementationResponse>(
-    `/tour/tour-implementation/${tourImplementationId}/members-in-charge`,
+  return wireApi<MemberInChargeTourImplementationResponse[]>(
+    `/tour-implementation/${tourImplementationId}/members-in-charge`,
     {
       method: 'POST',
       body: JSON.stringify(data),
@@ -174,19 +174,10 @@ export async function addMemberInChargeApi(
   );
 }
 
-export async function removeMemberInChargeApi(memberInChargeId: string) {
-  return wireApi<null>(
-    `/tour/tour-implementation/members-in-charge/${memberInChargeId}`,
-    {
-      method: 'DELETE',
-    }
-  );
-}
-
 // User Invited APIs
 export async function addUserInvitedApi(data: CreateUserInvitedRequest) {
   return wireApi<UserInvitedTourImplementationResponse>(
-    `/tour/tour-implementation/users-invited`,
+    `/tour-implementation/users-invited`,
     {
       method: 'POST',
       body: JSON.stringify(data),
@@ -199,7 +190,7 @@ export async function updateUserInvitedApi(
   data: UpdateUserInvitedRequest
 ) {
   return wireApi<UserInvitedTourImplementationResponse>(
-    `/tour/tour-implementation/users-invited/${userInvitedId}`,
+    `/tour-implementation/users-invited/${userInvitedId}`,
     {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -212,7 +203,7 @@ export async function getAdditionalDataByTourImplementationIdApi(
   tourImplementationId: string
 ) {
   return wireApi<TourImplementationAdditionalDataResponse[]>(
-    `/tour/tour-implementation/${tourImplementationId}/additional-data`,
+    `/tour-implementation/${tourImplementationId}/additional-data`,
     {
       method: 'GET',
     }
@@ -224,7 +215,7 @@ export async function createAdditionalDataApi(
   data: CreateTourImplementationAdditionalDataRequest
 ) {
   return wireApi<TourImplementationAdditionalDataResponse>(
-    `/tour/tour-implementation/${tourImplementationId}/additional-data`,
+    `/tour-implementation/${tourImplementationId}/additional-data`,
     {
       method: 'POST',
       body: JSON.stringify(data),
@@ -237,7 +228,7 @@ export async function updateAdditionalDataApi(
   data: UpdateTourImplementationAdditionalDataRequest
 ) {
   return wireApi<TourImplementationAdditionalDataResponse>(
-    `/tour/tour-implementation/additional-data/${additionalDataId}`,
+    `/tour-implementation/additional-data/${additionalDataId}`,
     {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -247,7 +238,7 @@ export async function updateAdditionalDataApi(
 
 export async function deleteAdditionalDataApi(additionalDataId: string) {
   return wireApi<null>(
-    `/tour/tour-implementation/additional-data/${additionalDataId}`,
+    `/tour-implementation/additional-data/${additionalDataId}`,
     {
       method: 'DELETE',
     }
@@ -255,7 +246,7 @@ export async function deleteAdditionalDataApi(additionalDataId: string) {
 }
 
 export async function removeUserInvitedApi(userInvitedId: string) {
-  return wireApi<null>(`/tour/tour-implementation/users-invited/${userInvitedId}`, {
+  return wireApi<null>(`/tour-implementation/users-invited/${userInvitedId}`, {
     method: 'DELETE',
   });
 }
@@ -264,7 +255,7 @@ export async function importReceiptPaymentFromTourCalculationToTourImplementatio
   tourId: string
 ) {
   return wireApi<null>(
-    `/tour/${tourId}/import-receipt-payment-from-tour-calculation-to-tour-implementation`,
+    `/tour/${tourId}/import-receipt-payments`,
     {
       method: 'POST',
     }

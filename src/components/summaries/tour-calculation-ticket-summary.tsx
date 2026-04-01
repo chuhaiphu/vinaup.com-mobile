@@ -14,6 +14,7 @@ import { TourCalculationTicketSummaryPopover } from '../popovers/tour-calculatio
 
 interface TourCalculationTicketSummaryProps {
   id: string;
+  tourId: string;
   adultTicketCount?: number;
   childTicketCount?: number;
   adultTicketPrice?: number;
@@ -30,6 +31,7 @@ interface TourCalculationTicketSummaryProps {
 
 export function TourCalculationTicketSummary({
   id,
+  tourId,
   adultTicketCount = 0,
   childTicketCount = 0,
   adultTicketPrice = 0,
@@ -68,7 +70,7 @@ export function TourCalculationTicketSummary({
     executeMutationFn: updateTourCalculation,
     isMutating: isUpdatingCalculation,
   } = useMutationFn(updateTourCalculationFn, {
-    invalidatesTags: ['tour-calculation'],
+    invalidatesTags: [`tour-calculation-${tourId}`],
   });
 
   const handleConfirmUpdateTourTicket = (
@@ -128,7 +130,7 @@ export function TourCalculationTicketSummary({
             <View style={styles.expandToggle}>
               <FontAwesome
                 name={isExpanded ? 'caret-down' : 'caret-up'}
-                size={20}
+                size={24}
                 color={COLORS.vinaupTeal}
                 style={isExpanded ? { marginTop: 0 } : { marginTop: -2 }}
               />
@@ -307,8 +309,8 @@ const styles = StyleSheet.create({
     color: COLORS.vinaupMediumDarkGray,
   },
   expandToggle: {
-    width: 24,
-    height: 24,
+    width: 26,
+    height: 26,
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: COLORS.vinaupYellow,
@@ -316,7 +318,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   headerActions: { flexDirection: 'row', gap: 16, alignItems: 'center' },
-  iconText: { fontSize: 18, color: '#007AFF' },
   contentContainer: { marginTop: 8 },
   row: { flexDirection: 'row', paddingVertical: 4 },
   leftColumn: {

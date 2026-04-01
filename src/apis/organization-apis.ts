@@ -53,7 +53,7 @@ export async function createOrganizationCustomerApi(
   data: CreateOrganizationCustomerRequest
 ) {
   return wireApi<OrganizationCustomerResponse>(
-    '/organization/organization-customer',
+    '/organization-customer',
     {
       method: 'POST',
       body: JSON.stringify(data),
@@ -65,7 +65,7 @@ export async function getOrganizationCustomersByOrganizationIdApi(
   organizationId: string
 ) {
   return wireApi<OrganizationCustomerResponse[]>(
-    `/organization/organization-customer/${organizationId}`,
+    `/organization-customer/by-organization/${organizationId}`,
     {
       method: 'GET',
     }
@@ -78,7 +78,7 @@ export async function updateOrganizationCustomerApi(
 ) {
   console.log('data', data);
   return wireApi<OrganizationCustomerResponse>(
-    `/organization/organization-customer/${id}`,
+    `/organization-customer/${id}`,
     {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -89,7 +89,7 @@ export async function updateOrganizationCustomerApi(
 export async function createOrganizationMemberApi(
   data: CreateOrganizationMemberRequest
 ) {
-  return wireApi<OrganizationMemberResponse>('/organization/organization-member', {
+  return wireApi<OrganizationMemberResponse>('/organization-member', {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -100,7 +100,7 @@ export async function updateOrganizationMemberApi(
   data: Partial<UpdateOrganizationMemberRequest>
 ) {
   return wireApi<OrganizationMemberResponse>(
-    `/organization/organization-member/${id}`,
+    `/organization-member/${id}`,
     {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -112,7 +112,7 @@ export async function deleteOrganizationMemberApi(
   id: string,
   data: DeleteOrganizationMemberRequest
 ) {
-  return wireApi<void>(`/organization/organization-member/${id}`, {
+  return wireApi<void>(`/organization-member/${id}`, {
     method: 'DELETE',
     body: JSON.stringify(data),
   });
@@ -122,7 +122,7 @@ export async function getOrganizationMembersByOrganizationIdApi(
   organizationId: string
 ) {
   return wireApi<OrganizationMemberResponse[]>(
-    `/organization/organization-member?organizationId=${organizationId}`,
+    `/organization-member?organizationId=${organizationId}`,
     {
       method: 'GET',
     }
@@ -133,7 +133,7 @@ export async function getOrganizationRolesByOrganizationIdApi(
   organizationId: string
 ) {
   return wireApi<OrganizationRoleResponse[]>(
-    `/organization/organization-role/${organizationId}`,
+    `/organization-role/by-organization/${organizationId}`,
     {
       method: 'GET',
     }
@@ -142,7 +142,7 @@ export async function getOrganizationRolesByOrganizationIdApi(
 
 export async function getOrganizationMemberByIdApi(id: string) {
   return wireApi<OrganizationMemberResponse>(
-    `/organization/organization-member/${id}`,
+    `/organization-member/${id}`,
     {
       method: 'GET',
     }

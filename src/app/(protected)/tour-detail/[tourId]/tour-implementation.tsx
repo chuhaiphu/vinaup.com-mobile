@@ -3,9 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import Tabs from '@/components/primitives/tabs';
 import { COLORS } from '@/constants/style-constant';
 import VinaupHome from '@/components/icons/vinaup-home.native';
+import { useTourContext } from '@/providers/tour-provider';
+import { TourImplementationHomeTabPanelContent } from '../../../../components/contents/tour/tour-implementation/tour-implementation-home-tab-panel-content';
+import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 
 export default function TourImplementationScreen() {
   const [currentTab, setCurrentTab] = useState('1');
+  const { tour } = useTourContext();
 
   const tabs = [
     { value: '1', label: 'Home', isIcon: true },
@@ -16,46 +20,62 @@ export default function TourImplementationScreen() {
   ];
 
   return (
-    <View style={styles.container}>
-      <Tabs.List styles={{ list: styles.tabList }} gap={12}>
-        {tabs.map((item) => (
-          <Tabs.Tab
-            key={item.value}
-            value={item.value}
+    <OrganizationCustomerProvider organizationId={tour?.organization?.id}>
+      <View style={styles.container}>
+        <Tabs.List styles={{ list: styles.tabList }} gap={12}>
+          {tabs.map((item) => (
+            <Tabs.Tab
+              key={item.value}
+              value={item.value}
+              currentValue={currentTab}
+              onPress={setCurrentTab}
+              styles={{
+                tab: [styles.tab, currentTab === item.value && styles.activeTab],
+                tabText: styles.tabText,
+                activeTabText: styles.activeTabText,
+                indicator: { height: 0 },
+              }}
+            >
+              {item.isIcon ? (
+                <VinaupHome
+                  width={18}
+                  height={18}
+                  color={
+                    currentTab === item.value
+                      ? COLORS.vinaupTeal
+                      : COLORS.vinaupMediumGray
+                  }
+                />
+              ) : (
+                item.label
+              )}
+            </Tabs.Tab>
+          ))}
+        </Tabs.List>
+
+        <View style={styles.content}>
+          <Tabs.Panel
+            value="1"
             currentValue={currentTab}
-            onPress={setCurrentTab}
             styles={{
-              tab: [styles.tab, currentTab === item.value && styles.activeTab],
-              tabText: styles.tabText,
-              activeTabText: styles.activeTabText,
-              indicator: { height: 0 },
+              panel: styles.panel,
             }}
           >
-            {item.isIcon ? (
-              <VinaupHome
-                width={18}
-                height={18}
-                color={
-                  currentTab === item.value
-                    ? COLORS.vinaupTeal
-                    : COLORS.vinaupMediumGray
-                }
-              />
-            ) : (
-              item.label
-            )}
-          </Tabs.Tab>
-        ))}
-      </Tabs.List>
-
-      <View style={styles.content}>
-        {tabs.map((item) => (
-          <Tabs.Panel key={item.value} value={item.value} currentValue={currentTab}>
-            <Text style={styles.text}>Nội dung Panel {item.value}</Text>
+            <TourImplementationHomeTabPanelContent tour={tour} />
           </Tabs.Panel>
-        ))}
+
+          {tabs.slice(1).map((item) => (
+            <Tabs.Panel
+              key={item.value}
+              value={item.value}
+              currentValue={currentTab}
+            >
+              <Text style={styles.text}>Nội dung Panel {item.value}</Text>
+            </Tabs.Panel>
+          ))}
+        </View>
       </View>
-    </View>
+    </OrganizationCustomerProvider>
   );
 }
 
@@ -71,7 +91,7 @@ const styles = StyleSheet.create({
   },
   tabList: {
     backgroundColor: COLORS.vinaupSoftGray,
-    padding: 4,
+    paddingHorizontal: 8,
     borderRadius: 8,
     flexDirection: 'row',
   },
@@ -94,5 +114,8 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: COLORS.vinaupTeal,
     fontWeight: '600',
+  },
+  panel: {
+    width: '100%',
   },
 });

@@ -39,7 +39,7 @@ export function ProjectDetailFooterContent({
       >
         <VinaupInfoNote width={22} height={22} color={COLORS.vinaupTeal} />
         <Text style={styles.noteValue} numberOfLines={2} ellipsizeMode="tail">
-          {note || 'Ghi chú...'}
+          {note || 'Ghi chú'}
         </Text>
         <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
       </Pressable>

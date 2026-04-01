@@ -34,6 +34,9 @@ export interface CreateMemberInChargeRequest {
   organizationMemberId: string;
   role: string;
 }
+export interface ManageMembersInChargeRequest {
+  organizationMemberIds: string[];
+}
 export interface MemberInChargeTourImplementationResponse {
   id: string;
   tourImplementationId: string | null;
