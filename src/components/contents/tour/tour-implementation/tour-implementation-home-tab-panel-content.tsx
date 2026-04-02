@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
+import { Avatar } from '@/components/primitives/avatar';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { OrgMemSelectModal } from '@/components/modals/organization-member-select-modal/org-mem-select-modal';
@@ -14,7 +15,6 @@ import {
 } from '@/apis/tour-apis';
 import { UpdateTourImplementationRequest } from '@/interfaces/tour-implementation-interfaces';
 import { useTourContext } from '@/providers/tour-provider';
-import { Image } from 'expo-image';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
 import { TourImplementationTicketCountModal } from '@/components/modals/tour-implementation-ticket-count-modal/tour-implementation-ticket-count-modal';
 import { TourImplementationTicketCountData } from '@/components/modals/tour-implementation-ticket-count-modal/tour-implementation-ticket-count-modal-content';
@@ -166,13 +166,7 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
             {tourImplementation?.membersInCharge?.length ? (
               tourImplementation.membersInCharge.map((m) => (
                 <View key={m.id} style={styles.memberRow}>
-                  <Image
-                    source={{
-                      uri:
-                        m.organizationMember?.avatarUrl || 'https://i.pravatar.cc',
-                    }}
-                    style={styles.memberAvatar}
-                  />
+                  <Avatar imgSrc={m.organizationMember?.avatarUrl} size={48} />
                   <View style={styles.memberInfo}>
                     <View style={styles.infoTop}>
                       <Text style={styles.memberName}>
@@ -335,12 +329,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 6,
     gap: 10,
-  },
-  memberAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.vinaupLightGray,
   },
   memberInfo: {
     flex: 1,

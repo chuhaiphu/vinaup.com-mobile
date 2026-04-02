@@ -12,7 +12,7 @@ import {
   UpdateTourImplementationAdditionalDataRequest,
   UpdateUserInvitedRequest,
 } from '@/interfaces/tour-implementation-interfaces';
-import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useMutationFn, type ApiError } from 'fetchwire';
@@ -21,6 +21,7 @@ import {
   AdditionalEditFormData,
 } from '@/components/modals/tour-implementation-additional-edit-modal/tour-implementation-additional-edit-modal';
 import { Avatar } from '@/components/primitives/avatar';
+import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 
 interface Props {
   tourImplementationId: string | undefined;
@@ -202,7 +203,7 @@ export default function TourImplementationAdditionalContent({
                       onPress={() => handleOpenEditModal(item)}
                       hitSlop={6}
                     >
-                      <AntDesign name="edit" size={20} color={COLORS.vinaupTeal} />
+                      <VinaupPenLine height={18} width={18} />
                     </PressableOpacity>
                     {renderUserRow(tourGuide, 'Hướng dẫn viên')}
                     {renderUserRow(driver, 'Tài xế')}
@@ -297,13 +298,13 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: COLORS.vinaupYellow,
+    borderColor: COLORS.vinaupTeal,
     alignItems: 'center',
     justifyContent: 'center',
   },
   positionText: {
     fontSize: 16,
-    color: COLORS.vinaupTeal,
+    color: COLORS.vinaupOrange,
     fontWeight: 'bold',
   },
   memberInfo: {},

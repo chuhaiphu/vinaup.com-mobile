@@ -44,7 +44,7 @@ export function TourImplementationAdditionalEditModal({
   if (!selectedItem) return null;
 
   return (
-    <SlideSheet ref={modalRef} heightPercentage={0.88}>
+    <SlideSheet ref={modalRef} heightPercentage={0.7}>
       <TourImplementationAdditionalEditModalContent
         selectedItem={selectedItem}
         allAdditionalData={allAdditionalData}

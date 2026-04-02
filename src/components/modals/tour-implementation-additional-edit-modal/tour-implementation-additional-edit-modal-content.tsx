@@ -10,10 +10,10 @@ import {
   View,
 } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
+import { Avatar } from '@/components/primitives/avatar';
 import { Button } from '@/components/primitives/button';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
-import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
-import { Image } from 'expo-image';
+import { AntDesign, Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { TourImplementationAdditionalDataResponse } from '@/interfaces/tour-implementation-interfaces';
 import { UserResponse } from '@/interfaces/user-interfaces';
 import { AdditionalEditFormData } from './tour-implementation-additional-edit-modal';
@@ -167,32 +167,37 @@ export function TourImplementationAdditionalEditModalContent({
         <FlatList
           data={allAdditionalData ?? []}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <PressableOpacity
-              style={[
-                styles.positionPickerItem,
-                item.position === selectedPosition &&
-                  styles.positionPickerItemSelected,
-              ]}
-              onPress={() => {
-                setSelectedPosition(item.position);
-                setShowPositionPicker(false);
-              }}
-            >
-              <Text
+          renderItem={({ item }) => {
+            const isSelected = item.position === selectedPosition;
+            return (
+              <PressableOpacity
                 style={[
-                  styles.positionPickerText,
-                  item.position === selectedPosition &&
-                    styles.positionPickerTextSelected,
+                  styles.positionPickerItem,
+                  isSelected && styles.positionPickerItemSelected,
                 ]}
+                onPress={() => {
+                  setSelectedPosition(item.position);
+                  setShowPositionPicker(false);
+                }}
               >
-                Xe {String(item.position).padStart(2, '0')}
-              </Text>
-              {item.position === selectedPosition && (
-                <AntDesign name="check" size={16} color={COLORS.vinaupTeal} />
-              )}
-            </PressableOpacity>
-          )}
+                <Text
+                  style={[
+                    styles.positionPickerText,
+                    isSelected && styles.positionPickerTextSelected,
+                  ]}
+                >
+                  {String(item.position).padStart(2, '0')}
+                </Text>
+                <Ionicons
+                  name={
+                    isSelected ? 'radio-button-on-sharp' : 'radio-button-off-sharp'
+                  }
+                  size={24}
+                  color={isSelected ? COLORS.vinaupTeal : COLORS.vinaupLightGray}
+                />
+              </PressableOpacity>
+            );
+          }}
         />
       </View>
     );
@@ -331,10 +336,7 @@ export function TourImplementationAdditionalEditModalContent({
                       style={styles.searchResultItem}
                       onPress={() => handleSelectTourGuideUser(user)}
                     >
-                      <Image
-                        source={{ uri: user.avatarUrl || 'https://i.pravatar.cc' }}
-                        style={styles.searchResultAvatar}
-                      />
+                      <Avatar imgSrc={user.avatarUrl} size={32} />
                       <View>
                         <Text style={styles.searchResultName}>{user.name}</Text>
                         <Text style={styles.searchResultPhone}>
@@ -455,28 +457,27 @@ export function TourImplementationAdditionalEditModalContent({
                 )}
               </PressableOpacity>
             </View>
-            {driverSearchResults && driverSearchResults.length > 0 && !driverUserId && (
-              <View style={styles.searchResults}>
-                {(driverSearchResults ?? []).slice(0, 5).map((user) => (
-                  <PressableOpacity
-                    key={user.id}
-                    style={styles.searchResultItem}
-                    onPress={() => handleSelectDriverUser(user)}
-                  >
-                    <Image
-                      source={{ uri: user.avatarUrl || 'https://i.pravatar.cc' }}
-                      style={styles.searchResultAvatar}
-                    />
-                    <View>
-                      <Text style={styles.searchResultName}>{user.name}</Text>
-                      <Text style={styles.searchResultPhone}>
-                        {user.phone ?? '—'}
-                      </Text>
-                    </View>
-                  </PressableOpacity>
-                ))}
-              </View>
-            )}
+            {driverSearchResults &&
+              driverSearchResults.length > 0 &&
+              !driverUserId && (
+                <View style={styles.searchResults}>
+                  {(driverSearchResults ?? []).slice(0, 5).map((user) => (
+                    <PressableOpacity
+                      key={user.id}
+                      style={styles.searchResultItem}
+                      onPress={() => handleSelectDriverUser(user)}
+                    >
+                      <Avatar imgSrc={user.avatarUrl} size={32} />
+                      <View>
+                        <Text style={styles.searchResultName}>{user.name}</Text>
+                        <Text style={styles.searchResultPhone}>
+                          {user.phone ?? '—'}
+                        </Text>
+                      </View>
+                    </PressableOpacity>
+                  ))}
+                </View>
+              )}
             {selectedDriverUser && driverUserId && (
               <View style={styles.inputRow}>
                 <Text style={styles.inputLabel}>Điện thoại</Text>
@@ -531,7 +532,7 @@ export function TourImplementationAdditionalEditModalContent({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingTop: 16,
   },
   header: {
@@ -553,10 +554,10 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   positionButtonLabel: {
-    fontSize: 16,
+    fontSize: 18,
   },
   positionButtonText: {
-    fontSize: 16,
+    fontSize: 18,
     color: COLORS.vinaupTeal,
     fontWeight: '500',
   },
@@ -587,7 +588,6 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     fontSize: 14,
-    color: COLORS.vinaupDarkGray,
   },
   inputRow: {
     flexDirection: 'row',
@@ -642,12 +642,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLORS.vinaupSoftGray,
   },
-  searchResultAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLORS.vinaupLightGray,
-  },
   searchResultName: {
     fontSize: 14,
     color: COLORS.vinaupBlack,
@@ -663,29 +657,28 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   pickerTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     color: COLORS.vinaupBlack,
   },
   positionPickerItem: {
+    borderRadius: 12,
+    padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.vinaupSoftGray,
+    marginBottom: 2,
   },
   positionPickerItemSelected: {
-    backgroundColor: COLORS.vinaupLightGreen,
+    backgroundColor: '#F2FBFA',
   },
   positionPickerText: {
-    fontSize: 15,
+    fontSize: 18,
     color: COLORS.vinaupBlack,
   },
   positionPickerTextSelected: {
     color: COLORS.vinaupTeal,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   buttonGroup: {
     flexDirection: 'row',

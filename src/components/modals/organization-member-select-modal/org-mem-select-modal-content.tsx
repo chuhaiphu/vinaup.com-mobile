@@ -1,10 +1,10 @@
 import VinaupDoubleCheck from '@/components/icons/vinaup-double-check.native';
+import { Avatar } from '@/components/primitives/avatar';
 import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
 import { MemberInChargeTourImplementationResponse } from '@/interfaces/tour-implementation-interfaces';
 import { OrganizationMemberResponse } from '@/interfaces/organization-member-interfaces';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -66,10 +66,7 @@ export function OrgMemSelectModalContent({
     const isSelected = selectedIds.includes(item.id);
     return (
       <Pressable style={styles.memberItem} onPress={() => handleToggle(item.id)}>
-        <Image
-          source={{ uri: item.avatarUrl || 'https://i.pravatar.cc' }}
-          style={styles.avatar}
-        />
+        <Avatar imgSrc={item.avatarUrl} size={40} />
         <View style={styles.memberInfo}>
           <Text style={styles.memberName}>{item.name}</Text>
           <Text style={styles.memberDetail}>
@@ -160,12 +157,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.vinaupLightGray,
   },
   memberInfo: {
     flex: 1,

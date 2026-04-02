@@ -1,11 +1,11 @@
 import VinaupDoubleCheck from '@/components/icons/vinaup-double-check.native';
+import { Avatar } from '@/components/primitives/avatar';
 import { Button } from '@/components/primitives/button';
 
 import { COLORS } from '@/constants/style-constant';
 import { OrganizationMemberResponse } from '@/interfaces/organization-member-interfaces';
 import { SignatureResponse } from '@/interfaces/signature-interfaces';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -70,10 +70,7 @@ export function SignerSelectModalContent({
           }
         }}
       >
-        <Image
-          source={{ uri: member?.avatarUrl || 'https://i.pravatar.cc' }}
-          style={styles.avatar}
-        />
+        <Avatar imgSrc={member?.avatarUrl} size={48} />
         <View style={styles.memberInfo}>
           <Text style={styles.memberName}>{member.name}</Text>
           <Text style={styles.memberDetail}>
@@ -183,12 +180,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.vinaupLightGray,
   },
   memberInfo: {
     flex: 1,
