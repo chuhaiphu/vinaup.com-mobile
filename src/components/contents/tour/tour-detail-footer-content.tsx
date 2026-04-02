@@ -96,7 +96,7 @@ export function TourDetailFooterContent() {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    marginBottom: 20,
+    marginVertical: 1,
   },
   card: {
     flexDirection: 'row',

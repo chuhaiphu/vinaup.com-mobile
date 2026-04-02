@@ -22,7 +22,6 @@ import {
   MemberInChargeTourImplementationResponse,
   UserInvitedTourImplementationResponse,
   TourImplementationAdditionalDataResponse,
-  CreateTourImplementationAdditionalDataRequest,
   UpdateTourImplementationAdditionalDataRequest,
 } from '@/interfaces/tour-implementation-interfaces';
 import { wireApi } from 'fetchwire';
@@ -210,16 +209,10 @@ export async function getAdditionalDataByTourImplementationIdApi(
   );
 }
 
-export async function createAdditionalDataApi(
-  tourImplementationId: string,
-  data: CreateTourImplementationAdditionalDataRequest
-) {
+export async function createAdditionalDataApi(tourImplementationId: string) {
   return wireApi<TourImplementationAdditionalDataResponse>(
     `/tour-implementation/${tourImplementationId}/additional-data`,
-    {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }
+    { method: 'POST' }
   );
 }
 

@@ -16,3 +16,18 @@ export const getCurrentUserApi = async () => {
   });
   return response;
 };
+
+export const searchUsersApi = async (params: {
+  name?: string;
+  phone?: string;
+  email?: string;
+}) => {
+  console.log('Searching users with params:', params);
+  const query = new URLSearchParams();
+  if (params.name) query.set('name', params.name);
+  if (params.phone) query.set('phone', params.phone);
+  if (params.email) query.set('email', params.email);
+  return wireApi<UserResponse[]>(`/user/search?${query.toString()}`, {
+    method: 'GET',
+  });
+};

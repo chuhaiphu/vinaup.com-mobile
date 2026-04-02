@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Tabs from '@/components/primitives/tabs';
 import { COLORS } from '@/constants/style-constant';
 import VinaupHome from '@/components/icons/vinaup-home.native';
@@ -21,7 +21,7 @@ export default function TourImplementationScreen() {
 
   return (
     <OrganizationCustomerProvider organizationId={tour?.organization?.id}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Tabs.List styles={{ list: styles.tabList }} gap={12}>
           {tabs.map((item) => (
             <Tabs.Tab
@@ -74,7 +74,7 @@ export default function TourImplementationScreen() {
             </Tabs.Panel>
           ))}
         </View>
-      </View>
+      </ScrollView>
     </OrganizationCustomerProvider>
   );
 }

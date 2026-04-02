@@ -22,6 +22,7 @@ import { TourResponse } from '@/interfaces/tour-interfaces';
 import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal/simple-text-input-modal';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 import { TourDetailFooterContent } from '../tour-detail-footer-content';
+import TourImplementationAdditionalContent from './tour-implementation-additional-content';
 
 interface Props {
   tour: TourResponse | undefined;
@@ -256,7 +257,11 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
         )}
       </View>
       <TourDetailFooterContent />
-
+      <TourImplementationAdditionalContent
+        tourImplementationId={tourImplementation?.id}
+        additionalData={tourImplementation?.additionalData}
+        onRefresh={refreshTourImplementation}
+      />
       {/* Modals */}
       <TourImplementationTicketCountModal
         initialData={{

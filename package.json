@@ -35,7 +35,7 @@
     "expo-symbols": "~55.0.5",
     "expo-system-ui": "~55.0.10",
     "expo-web-browser": "~55.0.10",
-    "fetchwire": "^2.2.0",
+    "fetchwire": "^2.3.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.2",
