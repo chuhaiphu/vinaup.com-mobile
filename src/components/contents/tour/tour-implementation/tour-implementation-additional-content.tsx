@@ -22,6 +22,7 @@ import {
 } from '@/components/modals/tour-implementation-additional-edit-modal/tour-implementation-additional-edit-modal';
 import { Avatar } from '@/components/primitives/avatar';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
+import { Button } from '@/components/primitives/button';
 
 interface Props {
   tourImplementationId: string | undefined;
@@ -171,9 +172,9 @@ export default function TourImplementationAdditionalContent({
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>HDV & Tài xế & Xe</Text>
         <View style={styles.sectionActions}>
-          <PressableOpacity onPress={handleAddGroup} hitSlop={4}>
+          <Button onPress={handleAddGroup} hitSlop={4} isLoading={isCreating}>
             <Feather name="user-plus" size={22} color={COLORS.vinaupTeal} />
-          </PressableOpacity>
+          </Button>
           <PressableOpacity onPress={() => setIsExpaned(!isExpaned)} hitSlop={4}>
             <View style={styles.expandToggle}>
               <FontAwesome
@@ -269,6 +270,7 @@ const styles = StyleSheet.create({
   sectionContent: {
     paddingVertical: 4,
     paddingHorizontal: 8,
+    backgroundColor: COLORS.vinaupWhite,
   },
   groupDivider: {
     height: 1,

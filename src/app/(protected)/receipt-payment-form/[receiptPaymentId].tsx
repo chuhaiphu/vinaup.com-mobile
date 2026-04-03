@@ -102,6 +102,10 @@ export default function ReceiptPaymentFormScreen() {
         return ['organization-receipt-payment-list-in-invoice'];
       case !!params.tourCalculationId:
         return ['organization-receipt-payment-list-in-tour-calculation'];
+      case !!params.tourImplementationId:
+        return ['organization-receipt-payment-list-in-tour-implementation'];
+      case !!params.tourSettlementId:
+        return ['organization-receipt-payment-list-in-tour-settlement'];
       default:
         return ['personal-receipt-payment-list'];
     }

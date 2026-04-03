@@ -45,7 +45,7 @@ const PersonalProjectSelfHeaderBottom = () => {
       <Button
         onPress={handleAddNew}
         isLoading={isMutating}
-        loaderStyle={{ size: 32 }}
+        loaderStyle={{ size: 30 }}
       >
         <VinaupAddNew width={30} height={30} />
       </Button>

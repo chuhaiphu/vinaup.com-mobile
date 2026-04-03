@@ -89,10 +89,12 @@ export async function getReceiptPaymentsByTourCalculationIdApi(
 }
 
 export async function getReceiptPaymentsByTourImplementationIdApi(
-  tourImplementationId: string
+  tourImplementationId: string,
+  groupCode?: string
 ) {
+  const query = groupCode ? `?groupCode=${encodeURIComponent(groupCode)}` : '';
   return wireApi<ReceiptPaymentResponse[]>(
-    `/receipt-payment/tour-implementation/${tourImplementationId}`,
+    `/receipt-payment/tour-implementation/${tourImplementationId}${query}`,
     {
       method: 'GET',
     }

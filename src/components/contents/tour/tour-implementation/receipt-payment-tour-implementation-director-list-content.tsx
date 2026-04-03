@@ -1,0 +1,176 @@
+import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
+import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
+import Loader from '@/components/primitives/loader';
+import { COLORS } from '@/constants/style-constant';
+import { useRouter } from 'expo-router';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { generateDateRange } from '@/utils/generator-helpers';
+import dayjs from 'dayjs';
+import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
+
+interface ReceiptPaymentTourImplementationDirectorListContentProps {
+  receiptPayments: ReceiptPaymentResponse[];
+  startDate: Date;
+  endDate: Date;
+  loading?: boolean;
+  tourImplementationId: string;
+  organizationId?: string;
+}
+
+interface ReceiptPaymentsSection {
+  title: string;
+  dateKey: string;
+  data: ReceiptPaymentResponse[];
+}
+
+export function ReceiptPaymentTourImplementationDirectorListContent({
+  receiptPayments,
+  startDate,
+  endDate,
+  loading,
+  tourImplementationId,
+  organizationId,
+}: ReceiptPaymentTourImplementationDirectorListContentProps) {
+  const router = useRouter();
+  const dateRange = generateDateRange(startDate, endDate);
+  const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
+    const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
+    dateRange.forEach((d) => {
+      const key = d.format('YYYY-MM-DD');
+      receiptPaymentsByDateMap[key] = {
+        title: d.format('DD/MM'),
+        dateKey: key,
+        data: [],
+      };
+    });
+
+    const outOfRangeItems: ReceiptPaymentResponse[] = [];
+    receiptPayments.forEach((item) => {
+      const key = dayjs(item.transactionDate).format('YYYY-MM-DD');
+      if (receiptPaymentsByDateMap[key]) {
+        receiptPaymentsByDateMap[key].data.push(item);
+      } else {
+        outOfRangeItems.push(item);
+      }
+    });
+
+    return {
+      receiptPaymentSections: Object.values(receiptPaymentsByDateMap),
+      outOfRangeReceiptPayments: outOfRangeItems,
+    };
+  })();
+
+  const navigateToFormScreen = ({
+    receiptPaymentId,
+    dateKey,
+  }: {
+    receiptPaymentId?: string;
+    dateKey?: string;
+  }) => {
+    router.push({
+      pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
+      params: {
+        receiptPaymentId: receiptPaymentId || 'new',
+        tourImplementationId,
+        organizationId,
+        groupCode: 'FOR_DIRECTOR',
+        lockDatePicker: 'false',
+        allowEditCategory: 'true',
+        transactionDate: dateKey || undefined,
+      },
+    });
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <Loader size={48} />
+      </View>
+    );
+  }
+
+  const renderOutOfRangeReceiptPaymentsSection = () => {
+    if (outOfRangeReceiptPayments.length === 0) return null;
+    return (
+      <View style={styles.outOfRangeContainer}>
+        <View style={styles.outOfRangeHeader}>
+          <Text style={styles.outOfRangeHeaderText}>
+            Thu chi bị sai ngày !!! (*Bạn sửa ngày hoặc xóa)
+          </Text>
+        </View>
+        {outOfRangeReceiptPayments.map((item) => (
+          <Pressable
+            key={item.id}
+            onPress={() => navigateToFormScreen({ receiptPaymentId: item.id })}
+          >
+            <ReceiptPaymentCard receiptPayment={item} />
+          </Pressable>
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <SectionList
+      scrollEnabled={false}
+      sections={receiptPaymentSections}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <Pressable
+          key={item.id}
+          onPress={() => navigateToFormScreen({ receiptPaymentId: item.id })}
+        >
+          <ReceiptPaymentCard receiptPayment={item} />
+        </Pressable>
+      )}
+      renderSectionHeader={({ section: { title, data, dateKey } }) => (
+        <ReceiptPaymentSectionListHeader
+          title={title}
+          receiptPayments={data}
+          onPressAddNew={() => navigateToFormScreen({ dateKey })}
+        />
+      )}
+      renderSectionFooter={({ section }) =>
+        section.data.length === 0 ? (
+          <View style={styles.emptyGroup}>
+            <Text style={styles.emptyGroupText}>Không có thu chi</Text>
+          </View>
+        ) : null
+      }
+      ListFooterComponent={renderOutOfRangeReceiptPaymentsSection}
+      contentContainerStyle={styles.listContent}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 24,
+  },
+  listContent: {
+    paddingBottom: 24,
+  },
+  emptyGroup: {
+    paddingHorizontal: 10,
+  },
+  emptyGroupText: {
+    fontSize: 14,
+    color: COLORS.vinaupMediumGray,
+    fontStyle: 'italic',
+  },
+  outOfRangeContainer: {
+    marginTop: 12,
+  },
+  outOfRangeHeader: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  outOfRangeHeaderText: {
+    fontSize: 16,
+    color: COLORS.vinaupRed,
+    fontWeight: '600',
+  },
+});

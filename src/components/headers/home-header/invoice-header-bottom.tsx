@@ -22,7 +22,8 @@ const InvoiceHeaderBottom = () => {
 
   const createInvoiceFn = () => {
     const invoiceType = getInvoiceTypeByCode(currentCode || '');
-    if (!invoiceType) return Promise.reject(new Error('Không tìm thấy loại hoá đơn'));
+    if (!invoiceType)
+      return Promise.reject(new Error('Không tìm thấy loại hoá đơn'));
     return createInvoiceApi({
       invoiceTypeId: invoiceType.id,
       description: currentCode === 'BUY' ? 'Mua hàng' : 'Bán hàng',
@@ -79,7 +80,7 @@ const InvoiceHeaderBottom = () => {
       <Button
         onPress={handleAddNew}
         isLoading={isMutating}
-        loaderStyle={{ size: 32 }}
+        loaderStyle={{ size: 30 }}
       >
         <VinaupAddNew width={30} height={30} />
       </Button>
