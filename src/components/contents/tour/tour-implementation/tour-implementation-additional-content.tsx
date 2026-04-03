@@ -14,7 +14,7 @@ import {
 } from '@/interfaces/tour-implementation-interfaces';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useMutationFn, type ApiError } from 'fetchwire';
 import {
   TourImplementationAdditionalEditModal,
@@ -25,15 +25,17 @@ import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 import { Button } from '@/components/primitives/button';
 
 interface Props {
+  scrollViewRef: React.RefObject<ScrollView | null>;
   tourImplementationId: string | undefined;
   additionalData: TourImplementationAdditionalDataResponse[] | undefined;
-  onRefresh: () => void;
+  onRefreshTourImplementation: () => void;
 }
 
 export default function TourImplementationAdditionalContent({
   tourImplementationId,
   additionalData,
-  onRefresh,
+  onRefreshTourImplementation,
+  scrollViewRef,
 }: Props) {
   const [isExpaned, setIsExpaned] = useState(true);
   const [selectedItem, setSelectedItem] =
@@ -81,7 +83,10 @@ export default function TourImplementationAdditionalContent({
   const handleAddGroup = () => {
     if (!tourImplementationId || isCreating) return;
     createAdditionalData({
-      onSuccess: () => onRefresh(),
+      onSuccess: () => {
+        onRefreshTourImplementation();
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      },
       onError: (error: ApiError) =>
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra.'),
     });
@@ -97,7 +102,7 @@ export default function TourImplementationAdditionalContent({
     const onEachSuccess = () => {
       successCount++;
       if (successCount === 3) {
-        onRefresh();
+        onRefreshTourImplementation();
         onClose();
       }
     };
@@ -169,7 +174,7 @@ export default function TourImplementationAdditionalContent({
 
   return (
     <>
-      <View style={styles.sectionHeader}>
+      <View style={[styles.sectionHeader, !isExpaned && styles.collapsedBorder]}>
         <Text style={styles.sectionTitle}>HDV & Tài xế & Xe</Text>
         <View style={styles.sectionActions}>
           <Button onPress={handleAddGroup} hitSlop={4} isLoading={isCreating}>
@@ -235,6 +240,7 @@ export default function TourImplementationAdditionalContent({
         allAdditionalData={additionalData}
         isLoading={isConfirming}
         onConfirm={handleConfirmEdit}
+        onRefreshTourImplementation={onRefreshTourImplementation}
       />
     </>
   );
@@ -327,5 +333,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.vinaupMediumGray,
     fontStyle: 'italic',
+  },
+  collapsedBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.vinaupLightGray,
   },
 });

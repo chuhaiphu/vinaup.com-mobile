@@ -1,4 +1,3 @@
-import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, ScrollView, RefreshControl, View } from 'react-native';
 import { useFetchFn } from 'fetchwire';
 import { getTourSettlementByTourIdApi } from '@/apis/tour-apis';
@@ -23,7 +22,7 @@ function TourSettlementScreenContent() {
   const { tour, isRefreshingTour, isUpdatingTour, handleUpdateTour, refreshTour } =
     useTourContext();
 
-  const { tourId } = useLocalSearchParams<{ tourId: string }>();
+  const tourId = tour?.id || '';
 
   const fetchTourSettlementFn = () => getTourSettlementByTourIdApi(tourId);
   const {

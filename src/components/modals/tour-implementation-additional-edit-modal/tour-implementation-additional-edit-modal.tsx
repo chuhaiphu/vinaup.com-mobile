@@ -28,6 +28,7 @@ interface Props {
   allAdditionalData: TourImplementationAdditionalDataResponse[] | undefined;
   isLoading?: boolean;
   onConfirm?: (data: AdditionalEditFormData, onClose: () => void) => void;
+  onRefreshTourImplementation: () => void;
 }
 
 export function TourImplementationAdditionalEditModal({
@@ -36,6 +37,7 @@ export function TourImplementationAdditionalEditModal({
   allAdditionalData,
   isLoading,
   onConfirm,
+  onRefreshTourImplementation,
 }: Props) {
   const handleClose = () => {
     modalRef.current?.close();
@@ -51,6 +53,7 @@ export function TourImplementationAdditionalEditModal({
         isLoading={isLoading}
         onCloseRequest={handleClose}
         onConfirm={(data) => onConfirm?.(data, handleClose)}
+        onRefreshTourImplementation={onRefreshTourImplementation}
       />
     </SlideSheet>
   );

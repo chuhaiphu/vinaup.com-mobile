@@ -1,17 +1,66 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Tabs from '@/components/primitives/tabs';
 import { COLORS } from '@/constants/style-constant';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import { useTourContext } from '@/providers/tour-provider';
 import { TourImplementationHomeTabPanelContent } from '../../../../components/contents/tour/tour-implementation/tour-implementation-home-tab-panel-content';
-import { TourImplementationDirectorTabPanelContent } from '../../../../components/contents/tour/tour-implementation/tour-implementation-director-tab-panel-content';
-import { TourImplementationTourGuideTabPanelContent } from '../../../../components/contents/tour/tour-implementation/tour-implementation-tour-guide-tab-panel-content';
+import { ReceiptPaymentTourImplementationDirectorListContent } from '../../../../components/contents/tour/tour-implementation/receipt-payment-tour-implementation-director-list-content';
+import { ReceiptPaymentTourImplementationTourGuideListContent } from '../../../../components/contents/tour/tour-implementation/receipt-payment-tour-implementation-tour-guide-list-content';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
+import { useFetchFn } from 'fetchwire';
+import { getTourImplementationByTourIdApi } from '@/apis/tour-apis';
+import { getReceiptPaymentsByTourImplementationIdApi } from '@/apis/receipt-payment-apis';
 
 export default function TourImplementationScreen() {
   const [currentTab, setCurrentTab] = useState('1');
   const { tour } = useTourContext();
+
+  const { data: tourImplementation, executeFetchFn: fetchTourImplementation } =
+    useFetchFn(() => getTourImplementationByTourIdApi(tour?.id || ''), {
+      tags: [`tour-implementation-${tour?.id}`],
+    });
+
+  const {
+    data: directorReceiptPayments,
+    isLoading: isLoadingDirector,
+    executeFetchFn: fetchDirectorReceiptPayments,
+  } = useFetchFn(
+    () =>
+      getReceiptPaymentsByTourImplementationIdApi(
+        tourImplementation?.id || '',
+        'FOR_DIRECTOR'
+      ),
+    { tags: ['receipt-payment-tour-implementation-director'] }
+  );
+
+  const {
+    data: tourGuideReceiptPayments,
+    isLoading: isLoadingTourGuide,
+    executeFetchFn: fetchTourGuideReceiptPayments,
+  } = useFetchFn(
+    () =>
+      getReceiptPaymentsByTourImplementationIdApi(
+        tourImplementation?.id || '',
+        'FOR_TOUR_GUIDE'
+      ),
+    { tags: ['receipt-payment-tour-implementation-tour-guide'] }
+  );
+
+  useEffect(() => {
+    if (tour?.id) fetchTourImplementation();
+  }, [tour?.id, fetchTourImplementation]);
+
+  useEffect(() => {
+    if (tourImplementation?.id) {
+      fetchDirectorReceiptPayments();
+      fetchTourGuideReceiptPayments();
+    }
+  }, [
+    tourImplementation?.id,
+    fetchDirectorReceiptPayments,
+    fetchTourGuideReceiptPayments,
+  ]);
 
   const tabs = [
     { value: '1', label: 'Home', isIcon: true },
@@ -26,9 +75,6 @@ export default function TourImplementationScreen() {
       <ScrollView
         ref={scrollViewRef}
         style={styles.container}
-        onContentSizeChange={() => {
-          scrollViewRef.current?.scrollToEnd({ animated: true });
-        }}
       >
         <Tabs.List styles={{ list: styles.tabList }} gap={12}>
           {tabs.map((item) => (
@@ -69,7 +115,7 @@ export default function TourImplementationScreen() {
               panel: styles.panel,
             }}
           >
-            <TourImplementationHomeTabPanelContent tour={tour} />
+            <TourImplementationHomeTabPanelContent tour={tour} scrollViewRef={scrollViewRef} />
           </Tabs.Panel>
 
           <Tabs.Panel
@@ -77,7 +123,16 @@ export default function TourImplementationScreen() {
             currentValue={currentTab}
             styles={{ panel: styles.panel }}
           >
-            <TourImplementationDirectorTabPanelContent tour={tour} />
+            {tour && tourImplementation && (
+              <ReceiptPaymentTourImplementationDirectorListContent
+                receiptPayments={directorReceiptPayments ?? []}
+                startDate={tour.startDate}
+                endDate={tour.endDate}
+                loading={isLoadingDirector}
+                tourImplementationId={tourImplementation.id}
+                organizationId={tour.organization?.id}
+              />
+            )}
           </Tabs.Panel>
 
           <Tabs.Panel
@@ -85,7 +140,16 @@ export default function TourImplementationScreen() {
             currentValue={currentTab}
             styles={{ panel: styles.panel }}
           >
-            <TourImplementationTourGuideTabPanelContent tour={tour} />
+            {tour && tourImplementation && (
+              <ReceiptPaymentTourImplementationTourGuideListContent
+                receiptPayments={tourGuideReceiptPayments ?? []}
+                startDate={tour.startDate}
+                endDate={tour.endDate}
+                loading={isLoadingTourGuide}
+                tourImplementationId={tourImplementation.id}
+                organizationId={tour.organization?.id}
+              />
+            )}
           </Tabs.Panel>
 
           {tabs.slice(3).map((item) => (

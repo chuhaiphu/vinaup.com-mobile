@@ -115,7 +115,7 @@ export function TourSettlementTicketSummary({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, !isExpanded && styles.collapsedBorder]}>
       {/* Header */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     padding: 8,
-    marginVertical: 2,
+    marginVertical: 1,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -340,4 +340,8 @@ const styles = StyleSheet.create({
   summaryValue: { fontSize: 16 },
   taxRateBadge: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   taxRateText: { fontSize: 16, fontWeight: '500' },
+  collapsedBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.vinaupLightGray,
+  },
 });

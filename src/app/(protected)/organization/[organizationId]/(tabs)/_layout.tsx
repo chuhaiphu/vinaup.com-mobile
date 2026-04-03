@@ -2,6 +2,7 @@ import { HomeHeader } from '@/components/headers/home-header/home-header';
 import VinaupCircleHorizontalHalfArrow from '@/components/icons/vinaup-circle-horizontal-half-arrow.native';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
+import VinaupSigningPenWithFrame from '@/components/icons/vinaup-signing-pen-with-frame.native';
 import { COLORS } from '@/constants/style-constant';
 import { Octicons } from '@expo/vector-icons';
 import { Tabs, useLocalSearchParams } from 'expo-router';
@@ -49,6 +50,19 @@ export default function OrganizationTabsLayout() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupCircleHorizontalHalfArrow
+              width={size * 1.15}
+              height={size * 1.15}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="booking"
+        initialParams={{ organizationId }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <VinaupSigningPenWithFrame
               width={size * 1.15}
               height={size * 1.15}
               color={color}

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import { Avatar } from '@/components/primitives/avatar';
@@ -26,9 +26,13 @@ import TourImplementationAdditionalContent from './tour-implementation-additiona
 
 interface Props {
   tour: TourResponse | undefined;
+  scrollViewRef: React.RefObject<ScrollView | null>;
 }
 
-export function TourImplementationHomeTabPanelContent({ tour }: Props) {
+export function TourImplementationHomeTabPanelContent({
+  tour,
+  scrollViewRef,
+}: Props) {
   const [isOrgMemExpanded, setIsOrgMemExpanded] = useState(true);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true);
   const memModalRef = useRef<SlideSheetRef>(null);
@@ -139,7 +143,12 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
 
   return (
     <>
-      <View style={styles.memInChargeSection}>
+      <View
+        style={[
+          styles.memInChargeSection,
+          !isOrgMemExpanded && styles.collapsedBorder,
+        ]}
+      >
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Nhân sự tổ chức</Text>
           <View style={styles.sectionActions}>
@@ -212,7 +221,12 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
           </PressableOpacity>
         </View>
       </View>
-      <View style={styles.descriptionSection}>
+      <View
+        style={[
+          styles.descriptionSection,
+          !isDescriptionExpanded && styles.collapsedBorder,
+        ]}
+      >
         <View style={styles.descriptionSectionHeader}>
           <Text style={styles.sectionTitle}>Nội dung bàn giao</Text>
           <View style={styles.sectionActions}>
@@ -252,9 +266,10 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
       </View>
       <TourDetailFooterContent />
       <TourImplementationAdditionalContent
+        scrollViewRef={scrollViewRef}
         tourImplementationId={tourImplementation?.id}
         additionalData={tourImplementation?.additionalData}
-        onRefresh={refreshTourImplementation}
+        onRefreshTourImplementation={refreshTourImplementation}
       />
       {/* Modals */}
       <TourImplementationTicketCountModal
@@ -292,7 +307,6 @@ const styles = StyleSheet.create({
   memInChargeSection: {
     backgroundColor: COLORS.vinaupWhite,
     marginTop: 8,
-    marginBottom: 1,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -386,5 +400,9 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 15,
     color: COLORS.vinaupBlack,
+  },
+  collapsedBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.vinaupLightGray,
   },
 });

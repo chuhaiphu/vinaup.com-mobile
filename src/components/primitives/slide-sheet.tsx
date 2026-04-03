@@ -1,6 +1,8 @@
-import { useImperativeHandle, useState } from 'react';
+import { useEffect, useImperativeHandle, useState } from 'react';
 import {
+  Keyboard,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -11,7 +13,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { KeyboardSafeAvoidingView } from './keyboard-safe-avoiding-view';
 import { scheduleOnRN } from 'react-native-worklets';
 
 export interface SlideSheetRef {
@@ -46,10 +47,32 @@ export function SlideSheet({
     : undefined;
   const animDistance = sheetHeight || screenHeight;
   const translateY = useSharedValue(animDistance);
+  const keyboardHeight = useSharedValue(0);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
+  useEffect(() => {
+    const showKeyboardEvent =
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideKeyboardEvent =
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showEventSubscription = Keyboard.addListener(showKeyboardEvent, (e) => {
+      keyboardHeight.value = withTiming(e.endCoordinates.height, { duration: 100 });
+    });
+    const hideEventSubscription = Keyboard.addListener(hideKeyboardEvent, () => {
+      keyboardHeight.value = withTiming(0, { duration: 100 });
+    });
+    return () => {
+      showEventSubscription.remove();
+      hideEventSubscription.remove();
+    };
+  }, [keyboardHeight]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      height: sheetHeight,
+      paddingBottom: keyboardHeight.value + 16, // add some spacing between keyboard and sheet content
+      transform: [{ translateY: translateY.value }],
+    };
+  });
 
   const handleClose = (onComplete?: () => void) => {
     if (!enableAnimation) {
@@ -98,17 +121,9 @@ export function SlideSheet({
     >
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={() => handleClose()} />
-        <KeyboardSafeAvoidingView>
-          <Animated.View
-            style={[
-              styles.sheetContent,
-              sheetHeight != null && { height: sheetHeight },
-              animatedStyle,
-            ]}
-          >
-            {shouldMountChildren ? children : null}
-          </Animated.View>
-        </KeyboardSafeAvoidingView>
+        <Animated.View style={[styles.sheetContent, animatedStyle]}>
+          {shouldMountChildren ? children : null}
+        </Animated.View>
       </View>
     </Modal>
   );

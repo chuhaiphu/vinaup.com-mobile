@@ -17,6 +17,7 @@ import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
+import VinaupSigningPenWithFrame from '@/components/icons/vinaup-signing-pen-with-frame.native';
 
 export default function OrganizationIndexScreen() {
   const router = useRouter();
@@ -43,6 +44,19 @@ export default function OrganizationIndexScreen() {
       leftSection: (
         <View style={styles.utilityOptionIcon}>
           <VinaupPlusMinus width={22} height={22} color={COLORS.vinaupTeal} />
+        </View>
+      ),
+    },
+    {
+      label: 'Booking',
+      value: ORG_UTILITY_KEYS.booking,
+      leftSection: (
+        <View style={styles.utilityOptionIcon}>
+          <VinaupSigningPenWithFrame
+            width={22}
+            height={22}
+            color={COLORS.vinaupTeal}
+          />
         </View>
       ),
     },
@@ -84,18 +98,25 @@ export default function OrganizationIndexScreen() {
     fetchReceiptPaymentsByInvoiceIds();
   }, [fetchReceiptPaymentsByInvoiceIds, organizationId, selectedDate, invoices]);
 
-  const handlePress = (key: string) => {
-    if (key === 'settings') return;
-    if (organizationId) {
+  const handlePress = (key: OrgUtilityKey | 'settings') => {
+    if (key === 'settings' || !organizationId) return;
+
+    if (key === ORG_UTILITY_KEYS.booking) {
       router.push({
-        pathname: `/(protected)/organization/[organizationId]/(tabs)/invoice`,
-        params: {
-          organizationId,
-          invoiceTypeCode:
-            key === ORG_UTILITY_KEYS.receiptPaymentReceipt ? 'SELL' : 'BUY',
-        },
+        pathname: '/(protected)/organization/[organizationId]/(tabs)/booking',
+        params: { organizationId },
       });
+      return;
     }
+
+    router.push({
+      pathname: '/(protected)/organization/[organizationId]/(tabs)/invoice',
+      params: {
+        organizationId,
+        invoiceTypeCode:
+          key === ORG_UTILITY_KEYS.receiptPaymentReceipt ? 'SELL' : 'BUY',
+      },
+    });
   };
 
   const allUtilities = [
@@ -108,6 +129,17 @@ export default function OrganizationIndexScreen() {
       key: ORG_UTILITY_KEYS.receiptPaymentPayment,
       label: 'Chi mua hàng',
       icon: <VinaupPlusMinus width={28} height={28} color={COLORS.vinaupTeal} />,
+    },
+    {
+      key: ORG_UTILITY_KEYS.booking,
+      label: 'Booking',
+      icon: (
+        <VinaupSigningPenWithFrame
+          width={28}
+          height={28}
+          color={COLORS.vinaupTeal}
+        />
+      ),
     },
   ];
 

@@ -16,13 +16,13 @@ export const PERSONAL_UTILITY_KEYS = {
 export type PersonalUtilityKey =
   (typeof PERSONAL_UTILITY_KEYS)[keyof typeof PERSONAL_UTILITY_KEYS];
 
-
 /**
  * Organization utilities
  */
 export const ORG_UTILITY_KEYS = {
   receiptPaymentReceipt: 'receipt-payment-receipt',
   receiptPaymentPayment: 'receipt-payment-payment',
+  booking: 'booking',
 } as const;
 
 export type OrgUtilityKey =
@@ -31,6 +31,7 @@ export type OrgUtilityKey =
 const GENERAL_UTILITIES: OrgUtilityKey[] = [
   ORG_UTILITY_KEYS.receiptPaymentReceipt,
   ORG_UTILITY_KEYS.receiptPaymentPayment,
+  ORG_UTILITY_KEYS.booking,
 ];
 
 export const UTILITIES_BY_INDUSTRY: Record<string, OrgUtilityKey[]> = {
