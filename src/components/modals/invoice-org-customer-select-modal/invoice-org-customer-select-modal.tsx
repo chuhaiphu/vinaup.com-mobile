@@ -265,8 +265,6 @@ export function InvoiceOrgCustomerSelectModal({
           />
         )}
 
-        <Text style={styles.helperText}>*Kho dữ liệu của bạn để tái sử dụng khi cần</Text>
-
         <View style={styles.footerActions}>
           <Button style={styles.cancelButton} onPress={onCloseRequest} disabled={isBusy}>
             <Text style={styles.cancelButtonText}>Hủy</Text>
@@ -355,12 +353,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.vinaupBlack,
     paddingVertical: 0,
-  },
-  helperText: {
-    fontSize: 16,
-    color: COLORS.vinaupBlack,
-    fontStyle: 'italic',
-    marginTop: 4,
   },
   footerActions: {
     flexDirection: 'row',

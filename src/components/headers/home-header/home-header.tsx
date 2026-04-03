@@ -10,9 +10,10 @@ import PersonalProjectSelfHeaderBottom from './personal-project-self-header-bott
 import PersonalProjectCompanyHeaderBottom from './personal-project-company-header-bottom';
 // import PersonalIndexHeaderBottom from './personal-index-header-bottom';
 // import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
-import InvoiceHeaderBottom from './invoice-header-bottom';
+import OrganizationInvoiceHeaderBottom from './organization-invoice-header-bottom';
 import OrganizationTourHeaderBottom from './organization-tour-header-bottom';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
+import OrganizationBookingHeaderBottom from './organization-booking-header-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
@@ -30,7 +31,9 @@ export const HomeHeader = () => {
         // return <PersonalIndexHeaderBottom />;
         return null;
       case pathname === `/organization/${params.organizationId}/invoice`:
-        return <InvoiceHeaderBottom />;
+        return <OrganizationInvoiceHeaderBottom />;
+      case pathname === `/organization/${params.organizationId}/booking`:
+        return <OrganizationBookingHeaderBottom />;
       case pathname === `/organization/${params.organizationId}`:
         // return <OrganizationIndexHeaderBottom />;
         return null;

@@ -9,7 +9,7 @@ export interface BookingResponse {
   id: string;
   code: string;
   description: string;
-  content: string;
+  content: string | null;
   startDate: Date;
   endDate: Date;
   status: BookingStatus;

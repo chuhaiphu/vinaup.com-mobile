@@ -57,6 +57,9 @@ export function InvoiceOrgCustomerInternalList({
       {customers.length === 0 ? (
         <Text style={styles.emptyText}>Không có tổ chức nội bộ phù hợp.</Text>
       ) : null}
+      <Text style={styles.helperText}>
+        *Kho dữ liệu của bạn để tái sử dụng khi cần
+      </Text>
     </ScrollView>
   );
 }
@@ -106,5 +109,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
     color: COLORS.vinaupMediumGray,
+  },
+  helperText: {
+    fontSize: 15,
+    color: COLORS.vinaupMediumGray,
+    fontStyle: 'italic',
+    marginTop: 4,
   },
 });

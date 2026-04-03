@@ -10,7 +10,7 @@ import { useMutationFn } from 'fetchwire';
 import { createInvoiceApi } from '@/apis/invoice-apis';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 
-const InvoiceHeaderBottom = () => {
+const OrganizationInvoiceHeaderBottom = () => {
   const router = useRouter();
   const params = useGlobalSearchParams<{
     organizationId: string;
@@ -99,4 +99,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InvoiceHeaderBottom;
+export default OrganizationInvoiceHeaderBottom;

@@ -100,6 +100,8 @@ export default function ReceiptPaymentFormScreen() {
         return ['personal-receipt-payment-list-in-project'];
       case !!params.invoiceId:
         return ['organization-receipt-payment-list-in-invoice'];
+      case !!params.bookingId:
+        return ['organization-receipt-payment-list-in-booking'];
       case !!params.tourCalculationId:
         return ['organization-receipt-payment-list-in-tour-calculation'];
       case !!params.tourImplementationId:
