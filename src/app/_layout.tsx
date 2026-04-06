@@ -4,7 +4,7 @@ import { StatusBar } from 'react-native';
 import { initWire } from 'fetchwire';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '@/constants/app-constant';
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export default function RootLayout() {
   initWire({
     baseUrl: process.env.EXPO_PUBLIC_API_URL || '',
@@ -28,9 +28,11 @@ export default function RootLayout() {
     },
   });
   return (
-    <AuthProvider>
-      <StatusBar barStyle="dark-content" />
-      <Stack screenOptions={{ headerShown: false }} />
-    </AuthProvider>
+    <GestureHandlerRootView>
+      <AuthProvider>
+        <StatusBar barStyle="dark-content" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

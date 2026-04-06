@@ -40,7 +40,7 @@ export function OrgMemSelectModalContent({
 
   const protectedMemberIds = new Set(
     membersInCharge
-      ?.filter((m) => m.role === 'CREATOR' || m.role === 'OWNER')
+      ?.filter((m) => m.role === 'CREATOR')
       .map((m) => m.organizationMemberId) ?? []
   );
 
@@ -83,7 +83,7 @@ export function OrgMemSelectModalContent({
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      <Text style={styles.title}>Nhân sự tổ chức</Text>
+      <Text style={styles.title}>Điều hành</Text>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color={COLORS.vinaupTeal} />
         <TextInput

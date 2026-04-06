@@ -12,9 +12,10 @@ import {
   UpdateTourImplementationAdditionalDataRequest,
   UpdateUserInvitedRequest,
 } from '@/interfaces/tour-implementation-interfaces';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import VinaupExpand from '@/components/icons/vinaup-expand.native';
 import { useRef, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useMutationFn, type ApiError } from 'fetchwire';
 import {
   TourImplementationAdditionalEditModal,
@@ -25,7 +26,6 @@ import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 import { Button } from '@/components/primitives/button';
 
 interface Props {
-  scrollViewRef: React.RefObject<ScrollView | null>;
   tourImplementationId: string | undefined;
   additionalData: TourImplementationAdditionalDataResponse[] | undefined;
   onRefreshTourImplementation: () => void;
@@ -35,7 +35,6 @@ export default function TourImplementationAdditionalContent({
   tourImplementationId,
   additionalData,
   onRefreshTourImplementation,
-  scrollViewRef,
 }: Props) {
   const [isExpaned, setIsExpaned] = useState(true);
   const [selectedItem, setSelectedItem] =
@@ -83,9 +82,10 @@ export default function TourImplementationAdditionalContent({
   const handleAddGroup = () => {
     if (!tourImplementationId || isCreating) return;
     createAdditionalData({
-      onSuccess: () => {
+      onSuccess: (newItem) => {
         onRefreshTourImplementation();
-        scrollViewRef.current?.scrollToEnd({ animated: true });
+        setSelectedItem(newItem);
+        editModalRef.current?.open();
       },
       onError: (error: ApiError) =>
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra.'),
@@ -174,23 +174,20 @@ export default function TourImplementationAdditionalContent({
 
   return (
     <>
-      <View style={[styles.sectionHeader, !isExpaned && styles.collapsedBorder]}>
-        <Text style={styles.sectionTitle}>HDV & Tài xế & Xe</Text>
-        <View style={styles.sectionActions}>
-          <Button onPress={handleAddGroup} hitSlop={4} isLoading={isCreating}>
-            <Feather name="user-plus" size={22} color={COLORS.vinaupTeal} />
-          </Button>
-          <PressableOpacity onPress={() => setIsExpaned(!isExpaned)} hitSlop={4}>
-            <View style={styles.expandToggle}>
-              <FontAwesome
-                name={isExpaned ? 'caret-up' : 'caret-down'}
-                size={24}
-                color={COLORS.vinaupTeal}
-                style={isExpaned ? { marginTop: -2 } : { marginTop: 0 }}
-              />
-            </View>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <PressableOpacity onPress={() => setIsExpaned(!isExpaned)} hitSlop={8}>
+            <VinaupExpand
+              width={16}
+              height={16}
+              color={isExpaned ? 'gray' : COLORS.vinaupTeal}
+            />
           </PressableOpacity>
+          <Text style={styles.sectionTitle}>HDV & Tài xế & Xe</Text>
         </View>
+        <Button onPress={handleAddGroup} hitSlop={4} isLoading={isCreating}>
+          <Feather name="user-plus" size={22} color={COLORS.vinaupTeal} />
+        </Button>
       </View>
       {isExpaned && (
         <View style={styles.sectionContent}>
@@ -247,13 +244,17 @@ export default function TourImplementationAdditionalContent({
 }
 
 const styles = StyleSheet.create({
-  sectionHeader: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.vinaupLightGreen,
     paddingHorizontal: 8,
     paddingVertical: 10,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   sectionTitle: {
     fontSize: 17,

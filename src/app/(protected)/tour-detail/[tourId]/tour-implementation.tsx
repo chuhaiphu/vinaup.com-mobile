@@ -11,15 +11,19 @@ import { OrganizationCustomerProvider } from '@/providers/organization-customer-
 import { useFetchFn } from 'fetchwire';
 import { getTourImplementationByTourIdApi } from '@/apis/tour-apis';
 import { getReceiptPaymentsByTourImplementationIdApi } from '@/apis/receipt-payment-apis';
+import TourImplementationAdditionalContent from '../../../../components/contents/tour/tour-implementation/tour-implementation-additional-content';
 
 export default function TourImplementationScreen() {
   const [currentTab, setCurrentTab] = useState('1');
   const { tour } = useTourContext();
 
-  const { data: tourImplementation, executeFetchFn: fetchTourImplementation } =
-    useFetchFn(() => getTourImplementationByTourIdApi(tour?.id || ''), {
-      tags: [`tour-implementation-${tour?.id}`],
-    });
+  const {
+    data: tourImplementation,
+    executeFetchFn: fetchTourImplementation,
+    refreshFetchFn: refreshTourImplementation,
+  } = useFetchFn(() => getTourImplementationByTourIdApi(tour?.id || ''), {
+    tags: [`tour-implementation-${tour?.id}`],
+  });
 
   const {
     data: directorReceiptPayments,
@@ -72,6 +76,7 @@ export default function TourImplementationScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   return (
     <OrganizationCustomerProvider organizationId={tour?.organization?.id}>
+      <View style={styles.screen}>
       <ScrollView
         ref={scrollViewRef}
         style={styles.container}
@@ -115,7 +120,7 @@ export default function TourImplementationScreen() {
               panel: styles.panel,
             }}
           >
-            <TourImplementationHomeTabPanelContent tour={tour} scrollViewRef={scrollViewRef} />
+            <TourImplementationHomeTabPanelContent tour={tour} />
           </Tabs.Panel>
 
           <Tabs.Panel
@@ -163,11 +168,24 @@ export default function TourImplementationScreen() {
           ))}
         </View>
       </ScrollView>
+      {currentTab === '1' && (
+        <View style={styles.additionalContentWrapper}>
+          <TourImplementationAdditionalContent
+            tourImplementationId={tourImplementation?.id}
+            additionalData={tourImplementation?.additionalData}
+            onRefreshTourImplementation={refreshTourImplementation}
+          />
+        </View>
+      )}
+      </View>
     </OrganizationCustomerProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {},
   content: {
     justifyContent: 'center',
@@ -205,5 +223,13 @@ const styles = StyleSheet.create({
   },
   panel: {
     width: '100%',
+  },
+  additionalContentWrapper: {
+    backgroundColor: COLORS.vinaupLightGreen,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 6,
   },
 });

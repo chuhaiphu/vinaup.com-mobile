@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { AntDesign, Feather, FontAwesome } from '@expo/vector-icons';
 import { Avatar } from '@/components/primitives/avatar';
@@ -22,16 +22,13 @@ import { TourResponse } from '@/interfaces/tour-interfaces';
 import { SimpleTextInputModal } from '@/components/modals/simple-text-input-modal/simple-text-input-modal';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 import { TourDetailFooterContent } from '../tour-detail-footer-content';
-import TourImplementationAdditionalContent from './tour-implementation-additional-content';
 
 interface Props {
   tour: TourResponse | undefined;
-  scrollViewRef: React.RefObject<ScrollView | null>;
 }
 
 export function TourImplementationHomeTabPanelContent({
   tour,
-  scrollViewRef,
 }: Props) {
   const [isOrgMemExpanded, setIsOrgMemExpanded] = useState(true);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true);
@@ -150,7 +147,7 @@ export function TourImplementationHomeTabPanelContent({
         ]}
       >
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Nhân sự tổ chức</Text>
+          <Text style={styles.sectionTitle}>Điều hành</Text>
           <View style={styles.sectionActions}>
             <PressableOpacity onPress={handleOpenMemModal} hitSlop={4}>
               <Feather name="user-plus" size={22} color={COLORS.vinaupTeal} />
@@ -184,8 +181,8 @@ export function TourImplementationHomeTabPanelContent({
                       <Text style={styles.memberRole}>
                         {m.role === 'CREATOR'
                           ? 'Người tạo'
-                          : m.role === 'OWNER'
-                            ? 'Chủ sở hữu'
+                          : m.role === 'DIRECTOR'
+                            ? 'Điều hành'
                             : 'Thành viên'}
                       </Text>
                     </View>
@@ -265,12 +262,6 @@ export function TourImplementationHomeTabPanelContent({
         )}
       </View>
       <TourDetailFooterContent />
-      <TourImplementationAdditionalContent
-        scrollViewRef={scrollViewRef}
-        tourImplementationId={tourImplementation?.id}
-        additionalData={tourImplementation?.additionalData}
-        onRefreshTourImplementation={refreshTourImplementation}
-      />
       {/* Modals */}
       <TourImplementationTicketCountModal
         initialData={{

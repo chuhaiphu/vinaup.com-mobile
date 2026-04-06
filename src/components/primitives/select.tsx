@@ -31,6 +31,13 @@ interface SelectProps {
   placeholder?: string;
   disabled?: boolean;
   heightPercentage?: number;
+  renderHeader?: () => React.ReactNode;
+  renderFooter?: () => React.ReactNode;
+  renderOption?: (
+    option: SelectOption,
+    isSelected: boolean,
+    onSelect: () => void
+  ) => React.ReactNode;
   renderTrigger?: (option: SelectOption) => React.ReactNode;
   searchable?: boolean;
   style?: {
@@ -47,6 +54,9 @@ export function Select({
   placeholder = 'Chọn...',
   disabled = false,
   heightPercentage = 0.8,
+  renderOption,
+  renderHeader,
+  renderFooter,
   renderTrigger,
   searchable = false,
   style,
@@ -103,9 +113,13 @@ export function Select({
         enableAnimation={enableAnimation}
         heightPercentage={heightPercentage}
       >
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>{placeholder}</Text>
-        </View>
+        {renderHeader ? (
+          renderHeader()
+        ) : (
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>{placeholder}</Text>
+          </View>
+        )}
         {searchable && (
           <View style={styles.searchContainer}>
             <Ionicons name="search" size={20} color={COLORS.vinaupTeal} />
@@ -122,6 +136,15 @@ export function Select({
         <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
           {filteredOptions.map((item) => {
             const isSelected = item.value === value;
+            if (renderOption) {
+              return (
+                <View key={item.value}>
+                  {renderOption(item, isSelected, () =>
+                    handleSelect(item.value || '')
+                  )}
+                </View>
+              );
+            }
             return (
               <PressableOpacity
                 key={item.value}
@@ -150,6 +173,7 @@ export function Select({
             );
           })}
         </ScrollView>
+        {renderFooter && renderFooter()}
         <SafeAreaView edges={['bottom']} />
       </SlideSheet>
     </>
@@ -211,7 +235,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   optionSelected: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: COLORS.vinaupSoftGray,
   },
   optionText: {
     fontSize: 18,

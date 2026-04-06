@@ -18,6 +18,7 @@ import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import VinaupSigningPenWithFrame from '@/components/icons/vinaup-signing-pen-with-frame.native';
+import { IndexUtilityGrid } from '@/components/grids/index-utility-grid';
 
 export default function OrganizationIndexScreen() {
   const router = useRouter();
@@ -98,7 +99,7 @@ export default function OrganizationIndexScreen() {
     fetchReceiptPaymentsByInvoiceIds();
   }, [fetchReceiptPaymentsByInvoiceIds, organizationId, selectedDate, invoices]);
 
-  const handlePress = (key: OrgUtilityKey | 'settings') => {
+  const handlePress = (key: string | 'settings') => {
     if (key === 'settings' || !organizationId) return;
 
     if (key === ORG_UTILITY_KEYS.booking) {
@@ -146,14 +147,6 @@ export default function OrganizationIndexScreen() {
   const visibleUtilities = allUtilities.filter((item) =>
     selectedUtilities.includes(item.key)
   );
-
-  const getGridDisplayUtilities = () => {
-    const gridDisplayItems = [...visibleUtilities];
-    while (gridDisplayItems.length < 3) {
-      gridDisplayItems.push(null as unknown as (typeof visibleUtilities)[0]);
-    }
-    return gridDisplayItems;
-  };
 
   return (
     <ScrollView
@@ -213,31 +206,7 @@ export default function OrganizationIndexScreen() {
         />
       </View>
 
-      <View style={styles.gridContainer}>
-        {getGridDisplayUtilities().map((item, index) => {
-          if (!item) {
-            return <View key={`placeholder-${index}`} style={styles.gridItem} />;
-          }
-          return (
-            <PressableOpacity
-              key={item.key}
-              style={styles.gridItem}
-              onPress={() => handlePress(item.key)}
-            >
-              <View style={styles.gridIconBox}>{item.icon}</View>
-              <View style={styles.gridTextBox}>
-                <Text
-                  style={styles.gridText}
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                >
-                  {item.label}
-                </Text>
-              </View>
-            </PressableOpacity>
-          );
-        })}
-      </View>
+      <IndexUtilityGrid items={visibleUtilities} onItemPress={handlePress} />
     </ScrollView>
   );
 }
@@ -281,35 +250,5 @@ const styles = StyleSheet.create({
     width: 28,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 8,
-    marginTop: 24,
-  },
-  gridItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  gridIconBox: {
-    marginBottom: 8,
-  },
-  gridTextBox: {
-    backgroundColor: COLORS.vinaupLightGreen,
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxHeight: 52,
-    height: 52,
-  },
-  gridText: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: COLORS.vinaupTeal,
   },
 });

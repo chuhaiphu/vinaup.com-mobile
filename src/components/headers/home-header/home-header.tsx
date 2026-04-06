@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { useLocalSearchParams, usePathname } from 'expo-router';
-import NavigatorSelector from '../../selectors/navigator-selector/navigator-selector';
+import PersonalNavigatorSelector from '../../selectors/navigator-selector/personal-navigator-selector';
 import PersonalReceiptPaymentHeaderBottom from './personal-receipt-payment-header-bottom';
 import PersonalProjectSelfHeaderBottom from './personal-project-self-header-bottom';
 import PersonalProjectCompanyHeaderBottom from './personal-project-company-header-bottom';
@@ -50,7 +50,7 @@ export const HomeHeader = () => {
     <SafeAreaView edges={['top']} style={styles.safeAreaView}>
       <View style={styles.headerContainer}>
         <View style={styles.headerLeft}>
-          <NavigatorSelector />
+          <PersonalNavigatorSelector />
           <OwnerSelector />
         </View>
         <View style={styles.headerRight}>

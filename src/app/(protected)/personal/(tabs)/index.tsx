@@ -3,7 +3,11 @@ import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
 import { useEffect, useState } from 'react';
-import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
+import {
+  getReceiptPaymentsByCurrentUserApi,
+  getReceiptPaymentsByProjectIdsApi,
+} from '@/apis/receipt-payment-apis';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useFetchFn } from 'fetchwire';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
@@ -22,6 +26,8 @@ import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { PersonalHomeIndexSummary } from '@/components/summaries/personal-home-index-summary';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import { useRouter } from 'expo-router';
+import { IndexUtilityGrid } from '@/components/grids/index-utility-grid';
+import Carousel from '@/components/primitives/carousel';
 
 export default function PersonalIndexScreen() {
   const router = useRouter();
@@ -102,6 +108,10 @@ export default function PersonalIndexScreen() {
     refreshFetchFn: refreshProjectsCompany,
   } = useFetchFn(fetchProjectsCompanyFn);
 
+  const [receiptPaymentsInProjectSelf, setReceiptPaymentsInProjectSelf] = useState<
+    ReceiptPaymentResponse[] | null
+  >(null);
+
   useEffect(() => {
     fetchReceiptPaymentsSelf();
   }, [fetchReceiptPaymentsSelf, selectedDate]);
@@ -114,16 +124,28 @@ export default function PersonalIndexScreen() {
     fetchProjectsCompany();
   }, [fetchProjectsCompany, selectedDate]);
 
-  const handlePress = (id: string) => {
-    if (id === PERSONAL_UTILITY_KEYS.projectSelf) {
+  useEffect(() => {
+    if (!projectsSelf) return;
+    const ids = projectsSelf.map((p) => p.id);
+    if (ids.length === 0) {
+      setReceiptPaymentsInProjectSelf([]);
+      return;
+    }
+    getReceiptPaymentsByProjectIdsApi(ids).then((res) => {
+      setReceiptPaymentsInProjectSelf(res.data ?? null);
+    });
+  }, [projectsSelf]);
+
+  const handlePress = (key: string) => {
+    if (key === PERSONAL_UTILITY_KEYS.projectSelf) {
       router.push('/(protected)/personal/(tabs)/project-self');
       return;
     }
-    if (id === PERSONAL_UTILITY_KEYS.projectCompany) {
+    if (key === PERSONAL_UTILITY_KEYS.projectCompany) {
       router.push('/(protected)/personal/(tabs)/project-company');
       return;
     }
-    if (id === PERSONAL_UTILITY_KEYS.receiptPayment) {
+    if (key === PERSONAL_UTILITY_KEYS.receiptPayment) {
       router.push('/(protected)/personal/(tabs)/receipt-payment');
     }
   };
@@ -145,13 +167,13 @@ export default function PersonalIndexScreen() {
       key: PERSONAL_UTILITY_KEYS.receiptPayment,
       label: 'Thu chi ngày',
       value: calculateReceiptPaymentsSummary(receiptPaymentsSelf).totalRemaining,
-      icon: <VinaupPlusMinus width={28} height={28} color={COLORS.vinaupTeal} />,
+      icon: <VinaupPlusMinus width={26} height={26} color={COLORS.vinaupTeal} />,
     },
     {
       key: PERSONAL_UTILITY_KEYS.projectSelf,
       label: 'Thu chi Tiền công',
       value: `(${projectsSelf?.length || 0})`,
-      icon: <VinaupCalendarIcon width={28} height={28} color={COLORS.vinaupTeal} />,
+      icon: <VinaupCalendarIcon width={26} height={26} color={COLORS.vinaupTeal} />,
     },
     {
       key: PERSONAL_UTILITY_KEYS.projectCompany,
@@ -159,8 +181,8 @@ export default function PersonalIndexScreen() {
       value: `(${projectsCompany?.length || 0})`,
       icon: (
         <VinaupPlusMinusMultiplyEqual
-          width={28}
-          height={28}
+          width={26}
+          height={26}
           color={COLORS.vinaupTeal}
         />
       ),
@@ -170,15 +192,6 @@ export default function PersonalIndexScreen() {
   const visibleUtilities = allUtilities.filter((item) =>
     selectedUtilities.includes(item.key)
   );
-
-  const getGridDisplayUtilities = () => {
-    const gridDisplayItems = [...visibleUtilities];
-    while (gridDisplayItems.length < 3) {
-      // push placeholder item to ensure 3 columns in the grid
-      gridDisplayItems.push(null as unknown as (typeof visibleUtilities)[0]);
-    }
-    return gridDisplayItems;
-  };
 
   return (
     <ScrollView
@@ -212,7 +225,7 @@ export default function PersonalIndexScreen() {
         </PressableOpacity>
       </View>
 
-      <PersonalHomeIndexSummary receiptPayments={receiptPaymentsSelf} />
+      <PersonalHomeIndexSummary receiptPayments={receiptPaymentsInProjectSelf} />
 
       <View style={styles.utilitiesRow}>
         <View style={styles.utilitiesLeft}>
@@ -235,32 +248,8 @@ export default function PersonalIndexScreen() {
         />
       </View>
 
-      <View style={styles.gridContainer}>
-        {getGridDisplayUtilities().map((item, index) => {
-          if (!item) {
-            return <View key={`placeholder-${index}`} style={styles.gridItem} />;
-          }
-          return (
-            <PressableOpacity
-              key={item.key}
-              style={[styles.gridItem]}
-              onPress={() => handlePress(item.key)}
-            >
-              <View style={styles.gridIconBox}>{item.icon}</View>
-
-              <View style={[styles.gridTextBox]}>
-                <Text
-                  style={styles.gridText}
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                >
-                  {item.label}
-                </Text>
-              </View>
-            </PressableOpacity>
-          );
-        })}
-      </View>
+      <IndexUtilityGrid items={visibleUtilities} onItemPress={handlePress} />
+      <Carousel />
     </ScrollView>
   );
 }
@@ -304,35 +293,5 @@ const styles = StyleSheet.create({
     width: 28,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: 8,
-    marginTop: 24,
-  },
-  gridItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  gridIconBox: {
-    marginBottom: 8,
-  },
-  gridTextBox: {
-    backgroundColor: COLORS.vinaupLightGreen,
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxHeight: 52,
-    height: 52,
-  },
-  gridText: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: COLORS.vinaupTeal,
   },
 });
