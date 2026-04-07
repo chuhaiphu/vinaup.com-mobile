@@ -184,13 +184,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.vinaupLightGreen,
     paddingHorizontal: 8,
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 6,
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
   },
 });

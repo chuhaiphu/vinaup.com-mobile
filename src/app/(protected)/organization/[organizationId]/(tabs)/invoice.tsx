@@ -1,7 +1,6 @@
-import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from 'fetchwire';
-import { useEffect, useState } from 'react';
+import { useFetch } from 'fetchwire';
+import { Suspense, useState } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -19,6 +18,57 @@ import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+
+interface InvoiceListSectionProps {
+  organizationId: string;
+  selectedDate: dayjs.Dayjs;
+  statusFilter: string;
+  invoiceTypeCode: string;
+}
+
+function InvoiceListSection({
+  organizationId,
+  selectedDate,
+  statusFilter,
+  invoiceTypeCode,
+}: InvoiceListSectionProps) {
+  const { getInvoiceTypeByCode } = useInvoiceTypeContext();
+
+  const fetchInvoicesFn = () => {
+    const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
+    return getInvoicesByOrganizationIdApi(organizationId, {
+      invoiceTypeId: invoiceType?.id,
+      status: statusFilter || undefined,
+      month: selectedDate.month() + 1,
+      year: selectedDate.year(),
+    });
+  };
+
+  const fetchKey = `org-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+
+  const { data: invoices, refreshFetch } = useFetch(fetchInvoicesFn, fetchKey, {
+    tags: ['organization-invoice-list'],
+  });
+
+  const normalizedInvoices = invoices ?? [];
+
+  return (
+    <FlatList
+      data={normalizedInvoices}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <InvoiceCard invoice={item} />}
+      refreshControl={
+        <RefreshControl
+          refreshing={false}
+          onRefresh={refreshFetch}
+          colors={[COLORS.vinaupTeal]}
+        />
+      }
+    />
+  );
+}
 
 export default function OrganizationInvoiceScreen() {
   const params = useLocalSearchParams<{
@@ -32,51 +82,7 @@ export default function OrganizationInvoiceScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const { getInvoiceTypeByCode } = useInvoiceTypeContext();
-
-  const fetchInvoicesFn = () => {
-    const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
-    if (!invoiceType) {
-      return getInvoicesByOrganizationIdApi(organizationId, {
-        invoiceTypeId: undefined,
-        status: statusFilter || undefined,
-        month: selectedDate.month() + 1,
-        year: selectedDate.year(),
-      });
-    }
-
-    return getInvoicesByOrganizationIdApi(organizationId, {
-      invoiceTypeId: invoiceType.id,
-      status: statusFilter || undefined,
-      month: selectedDate.month() + 1,
-      year: selectedDate.year(),
-    });
-  };
-
-  const {
-    data: invoices,
-    isLoading,
-    executeFetchFn: fetchInvoices,
-    isRefreshing,
-    refreshFetchFn: refreshInvoices,
-  } = useFetchFn(fetchInvoicesFn, {
-    tags: ['organization-invoice-list'],
-  });
-
-  useEffect(() => {
-    if (!organizationId) return;
-    const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
-    if (!invoiceType) return;
-
-    fetchInvoices();
-  }, [
-    fetchInvoices,
-    selectedDate,
-    organizationId,
-    invoiceTypeCode,
-    getInvoiceTypeByCode,
-    statusFilter,
-  ]);
+  const suspenseResetKey = `org-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -115,22 +121,15 @@ export default function OrganizationInvoiceScreen() {
           />
         </View>
       </View>
-      {!isLoading && (
-        <FlatList
-          data={invoices}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <InvoiceCard invoice={item} />}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={refreshInvoices}
-              colors={[COLORS.vinaupTeal]}
-            />
-          }
+      <Suspense fallback={<EntityListSectionSkeleton />}>
+        <InvoiceListSection
+          key={suspenseResetKey}
+          organizationId={organizationId}
+          selectedDate={selectedDate}
+          statusFilter={statusFilter}
+          invoiceTypeCode={invoiceTypeCode}
         />
-      )}
-      {isLoading && <Loader size={64} />}
+      </Suspense>
     </View>
   );
 }

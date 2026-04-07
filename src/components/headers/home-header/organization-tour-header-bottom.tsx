@@ -31,7 +31,7 @@ const OrganizationTourHeaderBottom = () => {
       onSuccess: (data) => {
         router.push({
           pathname: '/(protected)/tour-detail/[tourId]',
-          params: { tourId: data.id },
+          params: { tourId: data ? data.id : '' },
         });
       },
       onError: (error) =>

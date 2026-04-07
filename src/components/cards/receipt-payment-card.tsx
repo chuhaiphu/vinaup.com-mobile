@@ -38,9 +38,7 @@ export function ReceiptPaymentCard({ receiptPayment }: ReceiptPaymentCardProps) 
             <Text style={styles.multiplySign}>x</Text>
             <Text style={styles.quantityText}>{receiptPayment.quantity}</Text>
             <Text style={styles.multiplySign}>x</Text>
-            <Text style={styles.quantityText}>
-              {receiptPayment.frequency ?? 1}
-            </Text>
+            <Text style={styles.quantityText}>{receiptPayment.frequency ?? 1}</Text>
             <Text style={styles.equalSign}>=</Text>
           </View>
           <View style={styles.totalPriceContainer}>
@@ -66,13 +64,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 8,
-    // iOS Shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    // Android Shadow
-    elevation: 2,
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
   },
   topRow: {
     flexDirection: 'row',
@@ -84,11 +76,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   descriptionContainer: {},
-  descriptionText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.vinaupTeal,
-  },
   action: {},
   quantityContainer: {
     flex: 0.75,
@@ -100,23 +87,34 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
   },
-  unitPriceText: {
-    fontSize: 18,
-  },
   totalPriceContainer: {
     flex: 1,
     alignItems: 'flex-end',
   },
+  descriptionText: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '600',
+    color: COLORS.vinaupTeal,
+  },
+  unitPriceText: {
+    fontSize: 18,
+    lineHeight: 24,
+  },
   totalPriceText: {
     fontSize: 18,
+    lineHeight: 24,
   },
   multiplySign: {
     fontSize: 18,
+    lineHeight: 24,
   },
   quantityText: {
     fontSize: 18,
+    lineHeight: 24,
   },
   equalSign: {
     fontSize: 18,
+    lineHeight: 24,
   },
 });

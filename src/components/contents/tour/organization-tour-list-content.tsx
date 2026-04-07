@@ -1,7 +1,6 @@
-import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from 'fetchwire';
-import { useEffect, useState } from 'react';
+import { useFetch } from 'fetchwire';
+import { Suspense, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -16,35 +15,31 @@ import { TourStatusOptions } from '@/constants/tour-constants';
 import { getToursByOrganizationIdApi } from '@/apis/tour-apis';
 import { TourCard } from '@/components/cards/tour-card';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 
-type OrganizationTourListContentProps = {
+type TourListSectionProps = {
   organizationId: string;
+  tourStatusFilter: string;
 };
 
-export function OrganizationTourListContent({
+function TourListSection({
   organizationId,
-}: OrganizationTourListContentProps) {
+  tourStatusFilter,
+}: TourListSectionProps) {
   const router = useRouter();
-  const [tourStatusFilter, setTourStatusFilter] = useState('');
-  const {
-    data: tours,
-    isLoading,
-    executeFetchFn: fetchTours,
-    isRefreshing: isRefreshingTours,
-    refreshFetchFn: refreshTours,
-  } = useFetchFn(
-    () =>
-      getToursByOrganizationIdApi(organizationId, {
-        status: tourStatusFilter || undefined,
-      }),
-    {
-      tags: ['organization-tour-list', organizationId],
-    }
-  );
-  useEffect(() => {
-    if (!organizationId) return;
-    fetchTours();
-  }, [fetchTours, organizationId, tourStatusFilter]);
+
+  const fetchToursFn = () =>
+    getToursByOrganizationIdApi(organizationId, {
+      status: tourStatusFilter || undefined,
+    });
+
+  const fetchKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
+
+  const { data: tours, refreshFetch } = useFetch(fetchToursFn, fetchKey, {
+    tags: ['organization-tour-list', organizationId],
+  });
+
+  const normalizedTours = tours ?? [];
 
   const navigateToDetailScreen = (id?: string) => {
     if (!id) return;
@@ -53,6 +48,38 @@ export function OrganizationTourListContent({
       params: { tourId: id },
     });
   };
+
+  return (
+    <FlatList
+      data={normalizedTours}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <Pressable onPress={() => navigateToDetailScreen(item.id)}>
+          <TourCard tour={item} />
+        </Pressable>
+      )}
+      refreshControl={
+        <RefreshControl
+          refreshing={false}
+          onRefresh={refreshFetch}
+          colors={[COLORS.vinaupTeal]}
+        />
+      }
+    />
+  );
+}
+
+type OrganizationTourListContentProps = {
+  organizationId: string;
+};
+
+export function OrganizationTourListContent({
+  organizationId,
+}: OrganizationTourListContentProps) {
+  const [tourStatusFilter, setTourStatusFilter] = useState('');
+
+  const suspenseResetKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -74,26 +101,13 @@ export function OrganizationTourListContent({
           />
         </View>
       </View>
-      {!isLoading && (
-        <FlatList
-          data={tours}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => navigateToDetailScreen(item.id)}>
-              <TourCard tour={item} />
-            </Pressable>
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshingTours}
-              onRefresh={refreshTours}
-              colors={[COLORS.vinaupTeal]}
-            />
-          }
+      <Suspense fallback={<EntityListSectionSkeleton />}>
+        <TourListSection
+          key={suspenseResetKey}
+          organizationId={organizationId}
+          tourStatusFilter={tourStatusFilter}
         />
-      )}
-      {isLoading && <Loader size={64} />}
+      </Suspense>
     </View>
   );
 }

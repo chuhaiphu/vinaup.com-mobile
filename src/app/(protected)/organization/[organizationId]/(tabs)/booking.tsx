@@ -1,7 +1,6 @@
-import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from 'fetchwire';
-import { useEffect, useState } from 'react';
+import { useFetch } from 'fetchwire';
+import { Suspense, useState } from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -18,6 +17,50 @@ import { Select } from '@/components/primitives/select';
 import { BookingStatusOptions } from '@/constants/booking-constants';
 import { useLocalSearchParams } from 'expo-router';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+
+interface BookingListSectionProps {
+  organizationId: string;
+  selectedDate: dayjs.Dayjs;
+  statusFilter: string;
+}
+
+function BookingListSection({
+  organizationId,
+  selectedDate,
+  statusFilter,
+}: BookingListSectionProps) {
+  const fetchBookingsFn = () =>
+    getBookingsByOrganizationIdApi(organizationId, {
+      status: statusFilter || undefined,
+      month: selectedDate.month() + 1,
+      year: selectedDate.year(),
+    });
+
+  const fetchKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+
+  const { data: bookings, refreshFetch } = useFetch(fetchBookingsFn, fetchKey, {
+    tags: ['organization-booking-list'],
+  });
+
+  const normalizedBookings = bookings ?? [];
+
+  return (
+    <FlatList
+      data={normalizedBookings}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <BookingCard booking={item} />}
+      refreshControl={
+        <RefreshControl
+          refreshing={false}
+          onRefresh={refreshFetch}
+          colors={[COLORS.vinaupTeal]}
+        />
+      }
+    />
+  );
+}
 
 export default function OrganizationBookingScreen() {
   const params = useLocalSearchParams<{ organizationId: string }>();
@@ -26,27 +69,7 @@ export default function OrganizationBookingScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const fetchBookingsFn = () =>
-    getBookingsByOrganizationIdApi(organizationId, {
-      status: statusFilter || undefined,
-      month: selectedDate.month() + 1,
-      year: selectedDate.year(),
-    });
-
-  const {
-    data: bookings,
-    isLoading,
-    executeFetchFn: fetchBookings,
-    isRefreshing,
-    refreshFetchFn: refreshBookings,
-  } = useFetchFn(fetchBookingsFn, {
-    tags: ['organization-booking-list'],
-  });
-
-  useEffect(() => {
-    if (!organizationId) return;
-    fetchBookings();
-  }, [fetchBookings, selectedDate, organizationId, statusFilter]);
+  const suspenseResetKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -85,22 +108,14 @@ export default function OrganizationBookingScreen() {
           />
         </View>
       </View>
-      {!isLoading && (
-        <FlatList
-          data={bookings}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <BookingCard booking={item} />}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={refreshBookings}
-              colors={[COLORS.vinaupTeal]}
-            />
-          }
+      <Suspense fallback={<EntityListSectionSkeleton />}>
+        <BookingListSection
+          key={suspenseResetKey}
+          organizationId={organizationId}
+          selectedDate={selectedDate}
+          statusFilter={statusFilter}
         />
-      )}
-      {isLoading && <Loader size={64} />}
+      </Suspense>
     </View>
   );
 }

@@ -1,7 +1,6 @@
-import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from 'fetchwire';
-import { useEffect, useState } from 'react';
+import { useFetch } from 'fetchwire';
+import { Suspense, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -13,6 +12,72 @@ import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import { ProjectResponse } from '@/interfaces/project-interfaces';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+
+interface ProjectListSectionProps {
+  projectType: 'SELF' | 'COMPANY';
+  selectedDate: dayjs.Dayjs;
+  projectStatusFilter: string;
+}
+
+function ProjectListSection({
+  projectType,
+  selectedDate,
+  projectStatusFilter,
+}: ProjectListSectionProps) {
+  const fetchProjectsAndReceiptPaymentsFn = async () => {
+    const projectsRes = await getProjectsOfCurrentUserApi({
+      type: projectType,
+      status: projectStatusFilter,
+      month: selectedDate.month() + 1,
+      year: selectedDate.year(),
+    });
+
+    const projects = projectsRes.data ?? [];
+    const projectIds = projects.map((p) => p.id);
+
+    let allReceiptPayments: ReceiptPaymentResponse[] = [];
+    if (projectIds.length > 0) {
+      const rpRes = await getReceiptPaymentsByProjectIdsApi(projectIds);
+      allReceiptPayments = rpRes.data ?? [];
+    }
+
+    return { projects, allReceiptPayments };
+  };
+
+  const fetchKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
+
+  const { data, refreshFetch } = useFetch<{
+    projects: ProjectResponse[];
+    allReceiptPayments: ReceiptPaymentResponse[];
+  }>(fetchProjectsAndReceiptPaymentsFn, fetchKey, {
+    tags: ['personal-project-list'],
+  });
+
+  const projects = data?.projects ?? [];
+  const allReceiptPayments = data?.allReceiptPayments ?? [];
+
+  return (
+    <View style={styles.flex1}>
+      <FlatList
+        data={projects}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <ProjectCard project={item} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={refreshFetch}
+            colors={[COLORS.vinaupTeal]}
+          />
+        }
+      />
+      <ReceiptPaymentsSummary receiptPayments={allReceiptPayments} />
+    </View>
+  );
+}
 
 type PersonalProjectListContentProps = {
   projectType: 'SELF' | 'COMPANY';
@@ -24,41 +89,7 @@ export function PersonalProjectListContent({
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
-  const {
-    data: projects,
-    isLoading,
-    executeFetchFn: fetchProjects,
-    isRefreshing: isRefreshingProjects,
-    refreshFetchFn: refreshProjects,
-  } = useFetchFn(
-    () =>
-      getProjectsOfCurrentUserApi({
-        type: projectType,
-        status: projectStatusFilter,
-        month: selectedDate.month() + 1,
-        year: selectedDate.year(),
-      }),
-    {
-      tags: ['personal-project-list'],
-    }
-  );
-
-  const { data: allReceiptPayments, executeFetchFn: fetchAllReceiptPayments } =
-    useFetchFn(
-      () => getReceiptPaymentsByProjectIdsApi((projects || []).map((p) => p.id)),
-      {
-        tags: ['personal-receipt-payment-list-all-projects'],
-      }
-    );
-
-  useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects, selectedDate, projectType, projectStatusFilter]);
-
-  useEffect(() => {
-    if (!projects || projects.length === 0) return;
-    fetchAllReceiptPayments();
-  }, [projects, fetchAllReceiptPayments]);
+  const suspenseResetKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -97,26 +128,14 @@ export function PersonalProjectListContent({
           />
         </View>
       </View>
-      {!isLoading && (
-        <FlatList
-          data={projects}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <ProjectCard project={item} />}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshingProjects}
-              onRefresh={refreshProjects}
-              colors={[COLORS.vinaupTeal]}
-            />
-          }
+      <Suspense fallback={<EntityListSectionSkeleton />}>
+        <ProjectListSection
+          key={suspenseResetKey}
+          projectType={projectType}
+          selectedDate={selectedDate}
+          projectStatusFilter={projectStatusFilter}
         />
-      )}
-      {isLoading && <Loader size={64} />}
-
-      {!isLoading && (
-        <ReceiptPaymentsSummary receiptPayments={allReceiptPayments} />
-      )}
+      </Suspense>
     </View>
   );
 }
@@ -125,18 +144,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  left: {
-    fontSize: 18,
-  },
-  right: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.vinaupTeal,
-  },
-  createButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  flex1: {
+    flex: 1,
   },
   projectFilterContainer: {
     marginVertical: 12,

@@ -176,11 +176,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
   },
   topRow: {
     flexDirection: 'row',

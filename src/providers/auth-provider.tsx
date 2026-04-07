@@ -4,6 +4,7 @@ import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-
 import { UserResponse } from '@/interfaces/user-interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { promiseCacheMap } from 'fetchwire';
 
 interface AuthContextType {
   isLoading: boolean;
@@ -39,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // in organization provider which depends on currentUser to fetch organizations using token
       setCurrentUser(user);
     } catch (error) {
-      console.error('Error saving user', error);
+      console.error('Error performing login', error);
     } finally {
       setIsLoading(false);
     }
@@ -53,8 +54,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.removeItem(STORAGE_KEYS.accessToken);
       usePersonalUtilitiesStore.persist.clearStorage();
       useOrganizationUtilitiesStore.persist.clearStorage();
+      promiseCacheMap.clear();
     } catch (error) {
-      console.error('Error removing user', error);
+      console.error('Error performing logout', error);
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.setItem(STORAGE_KEYS.currentUser, jsonValue);
       setCurrentUser(user);
     } catch (error) {
-      console.error('Error updating user data', error);
+      console.error('Error performing sync', error);
     }
   };
 
@@ -77,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setCurrentUser(JSON.parse(savedUser));
       }
     } catch (error) {
-      console.error('Error loading user from storage', error);
+      console.error('Error loading storage data', error);
     } finally {
       setIsLoading(false);
     }

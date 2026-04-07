@@ -1,11 +1,11 @@
 import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
-import Loader from '@/components/primitives/loader';
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import { COLORS } from '@/constants/style-constant';
-import { useFetchFn } from 'fetchwire';
-import { useEffect, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import {
   FlatList,
+  ListRenderItemInfo,
   Pressable,
   RefreshControl,
   StyleSheet,
@@ -16,29 +16,32 @@ import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { useFetch } from 'fetchwire';
 
-export default function PersonalReceiptPaymentScreen() {
+interface ReceiptPaymentListSectionProps {
+  selectedDate: dayjs.Dayjs;
+}
+
+function ReceiptPaymentListSection({
+  selectedDate,
+}: ReceiptPaymentListSectionProps) {
   const router = useRouter();
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-  const {
-    data: receiptPayments,
-    isLoading,
-    executeFetchFn: fetchReceiptPayments,
-    isRefreshing,
-    refreshFetchFn,
-  } = useFetchFn(
-    () =>
-      getReceiptPaymentsByCurrentUserApi({
-        date: selectedDate.toDate(),
-      }),
-    {
-      tags: ['personal-receipt-payment-list'],
-    }
+
+  const fetchReceiptPaymentsFn = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return getReceiptPaymentsByCurrentUserApi({ date: selectedDate.toDate() });
+  };
+
+  const fetchKey = `personal-receipt-payment-list-${selectedDate.format('YYYY-MM-DD')}`;
+
+  const { data: receiptPayments, refreshFetch } = useFetch(
+    fetchReceiptPaymentsFn,
+    fetchKey,
+    { tags: ['personal-receipt-payment-list'] }
   );
 
-  useEffect(() => {
-    fetchReceiptPayments();
-  }, [fetchReceiptPayments, selectedDate]);
+  const normalizedReceiptPayments = receiptPayments ?? [];
 
   const navigateToFormScreen = (id?: string) => {
     router.push({
@@ -52,6 +55,36 @@ export default function PersonalReceiptPaymentScreen() {
     });
   };
 
+  const renderItem = ({ item }: ListRenderItemInfo<ReceiptPaymentResponse>) => (
+    <Pressable onPress={() => navigateToFormScreen(item.id)}>
+      <ReceiptPaymentCard receiptPayment={item} />
+    </Pressable>
+  );
+
+  return (
+    <View style={styles.flex1}>
+      <FlatList
+        data={normalizedReceiptPayments}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={refreshFetch}
+            colors={[COLORS.vinaupTeal]}
+          />
+        }
+      />
+      <ReceiptPaymentsSummary receiptPayments={normalizedReceiptPayments} />
+    </View>
+  );
+}
+
+export default function PersonalReceiptPaymentScreen() {
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const suspenseResetKey = selectedDate.format('YYYY-MM-DD');
+
   return (
     <View style={styles.container}>
       <View style={styles.dateTimePickerContainer}>
@@ -62,34 +95,15 @@ export default function PersonalReceiptPaymentScreen() {
           value={selectedDate}
           onChange={setSelectedDate}
           displayFormat="DD/MM"
-          style={{
-            dateText: styles.dateText,
-          }}
+          style={{ dateText: styles.dateText }}
         />
       </View>
-      {!isLoading && (
-        <FlatList
-          data={receiptPayments}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => navigateToFormScreen(item.id)}>
-              <ReceiptPaymentCard receiptPayment={item} />
-            </Pressable>
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={refreshFetchFn}
-              colors={[COLORS.vinaupTeal]}
-            />
-          }
+      <Suspense fallback={<EntityListSectionSkeleton />}>
+        <ReceiptPaymentListSection
+          key={suspenseResetKey}
+          selectedDate={selectedDate}
         />
-      )}
-
-      {isLoading && <Loader size={64} />}
-
-      {!isLoading && <ReceiptPaymentsSummary receiptPayments={receiptPayments} />}
+      </Suspense>
     </View>
   );
 }
@@ -97,19 +111,6 @@ export default function PersonalReceiptPaymentScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  left: {
-    fontSize: 18,
-  },
-  right: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.vinaupTeal,
-  },
-  createButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
   },
   dateTimePickerContainer: {
     marginVertical: 12,
@@ -121,5 +122,8 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 2,
+  },
+  flex1: {
+    flex: 1,
   },
 });
