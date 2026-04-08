@@ -54,7 +54,7 @@ export default function ProjectDetailScreen() {
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
   } = useFetchFn(fetchReceiptPaymentsFn, {
-    tags: ['personal-receipt-payment-list-in-project'],
+    tags: [`personal-receipt-payment-list-in-project-${projectId}`],
   });
 
   useEffect(() => {

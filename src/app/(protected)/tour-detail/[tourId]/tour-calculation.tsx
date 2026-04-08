@@ -1,71 +1,41 @@
 import { StyleSheet, ScrollView, RefreshControl, View } from 'react-native';
-import { useFetchFn } from 'fetchwire';
-import { getTourCalculationByTourIdApi } from '@/apis/tour-apis';
-import { TourCalculationTicketSummary } from '@/components/summaries/tour-calculation-ticket-summary';
-import { getReceiptPaymentsByTourCalculationIdApi } from '@/apis/receipt-payment-apis';
-import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { ReceiptPaymentTourCalculationListContent } from '@/components/contents/tour/receipt-payment-tour-calculation-list-content';
 import { COLORS } from '@/constants/style-constant';
 import { TourDetailFooterContent } from '@/components/contents/tour/tour-detail-footer-content';
 import TourCalculationSignatureContent from '@/components/contents/tour/tour-calculation/tour-calculation-signature-section-content';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
-import { useEffect, useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import { TourCalculationSignatureInfoPopover } from '@/components/popovers/tour-calculation-signature-info-popover';
-import { useTourContext } from '@/providers/tour-provider';
+import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
+import { TourCalculationTicketSummaryReceiptPaymentListContent } from '@/components/contents/tour/tour-calculation-ticket-summary-receipt-payment-list-content';
+import { WhitePaneSkeleton } from '@/components/skeletons/white-pane-skeleton';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 
 function TourCalculationScreenContent() {
   const [isSignatureInfoPopoverVisible, setIsSignatureInfoPopoverVisible] =
     useState(false);
 
-  const { tour, isRefreshingTour, isUpdatingTour, handleUpdateTour, refreshTour } =
-    useTourContext();
-
-  const tourId = tour?.id || '';
-
-  const fetchTourCalculationFn = () => getTourCalculationByTourIdApi(tourId);
   const {
-    data: tourCalculation,
-    isRefreshing: isRefreshingTourCalculation,
-    executeFetchFn: fetchTourCalculation,
-    refreshFetchFn: refreshTourCalculation,
-  } = useFetchFn(fetchTourCalculationFn, {
-    tags: [`tour-calculation-${tourId}`],
-  });
-
-  const fetchReceiptPaymentsByTourCalculationFn = () =>
-    getReceiptPaymentsByTourCalculationIdApi(tourCalculation?.id || '');
-
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPaymentsByTourCalculation,
-    refreshFetchFn: refreshReceiptPaymentsByTourCalculation,
-  } = useFetchFn(fetchReceiptPaymentsByTourCalculationFn, {
-    tags: ['organization-receipt-payment-list-in-tour-calculation'],
-  });
-
-  const tourTicketSummaryData = calculateTourTicketSummaries(
-    receiptPayments || [],
-    tourCalculation || null
-  );
-
-  useEffect(() => {
-    if (tourId) {
-      fetchTourCalculation();
-
-      if (tourCalculation?.id) {
-        fetchReceiptPaymentsByTourCalculation();
-      }
-    }
-  }, [
     tourId,
-    tourCalculation?.id,
-    fetchTourCalculation,
-    fetchReceiptPaymentsByTourCalculation,
-  ]);
+    tour,
+    isRefreshingTour,
+    isUpdatingTour,
+    handleUpdateTour,
+    refreshTour,
+  } = useTourDetailContext();
+
+  const tourCalculationTicketSummaryReceiptPaymentListContentRef = useRef<{
+    refreshData: {
+      refreshTourCalculation: () => void;
+      refreshReceiptPaymentsByTourCalculation: () => void;
+    };
+  }>(null);
+
+  const handleRefresh = () => {
+    refreshTour();
+    tourCalculationTicketSummaryReceiptPaymentListContentRef.current?.refreshData.refreshTourCalculation();
+    tourCalculationTicketSummaryReceiptPaymentListContentRef.current?.refreshData.refreshReceiptPaymentsByTourCalculation();
+  };
 
   return (
     <OrganizationCustomerProvider organizationId={tour?.organization?.id}>
@@ -74,16 +44,8 @@ function TourCalculationScreenContent() {
           style={styles.scrollContainer}
           refreshControl={
             <RefreshControl
-              refreshing={
-                isRefreshingTour ||
-                isRefreshingTourCalculation ||
-                isRefreshingReceiptPayments
-              }
-              onRefresh={() => {
-                refreshTour();
-                refreshTourCalculation();
-                refreshReceiptPaymentsByTourCalculation();
-              }}
+              refreshing={isRefreshingTour}
+              onRefresh={handleRefresh}
               colors={[COLORS.vinaupTeal]}
               tintColor={COLORS.vinaupTeal}
             />
@@ -96,47 +58,22 @@ function TourCalculationScreenContent() {
               handleUpdateTour(data, onSuccessCallback)
             }
           />
-          <TourCalculationTicketSummary
-            id={tourCalculation?.id || ''}
-            tourId={tourId}
-            adultTicketCount={tourCalculation?.adultTicketCount}
-            childTicketCount={tourCalculation?.childTicketCount}
-            adultTicketPrice={tourCalculation?.adultTicketPrice}
-            childTicketPrice={tourCalculation?.childTicketPrice}
-            taxRate={tourCalculation?.taxRate}
-            totalReceipt={generateLocalePriceFormat(
-              tourTicketSummaryData.totalReceipt
-            )}
-            totalPayment={generateLocalePriceFormat(
-              tourTicketSummaryData.totalPayment
-            )}
-            totalTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.totalTaxPay
-            )}
-            netProfitBeforeTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.netProfitBeforeTaxPay
-            )}
-            netProfitAfterTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.netProfitAfterTaxPay
-            )}
-            profitMarginBeforeTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.profitMarginBeforeTaxPay
-            )}
-            profitMarginAfterTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.profitMarginAfterTaxPay
-            )}
-          />
-          {tour && tourCalculation && (
-            <ReceiptPaymentTourCalculationListContent
-              receiptPayments={receiptPayments ?? []}
+          <Suspense
+            fallback={
+              <>
+                <WhitePaneSkeleton height={200} />
+                <EntityListSectionSkeleton />
+              </>
+            }
+          >
+            <TourCalculationTicketSummaryReceiptPaymentListContent
+              tourId={tourId}
               startDate={tour?.startDate}
               endDate={tour?.endDate}
-              loading={isLoadingReceiptPayments}
-              tourCalculationId={tourCalculation.id}
-              organizationId={tour.organization?.id}
+              organizationId={tour?.organization?.id}
             />
-          )}
-          <TourDetailFooterContent />
+            <TourDetailFooterContent />
+          </Suspense>
         </ScrollView>
         <View style={styles.tourCalculationSignatureWrapper}>
           <TourCalculationSignatureInfoPopover

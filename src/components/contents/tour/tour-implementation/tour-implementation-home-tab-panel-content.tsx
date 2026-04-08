@@ -14,7 +14,7 @@ import {
   updateTourImplementationApi,
 } from '@/apis/tour-apis';
 import { UpdateTourImplementationRequest } from '@/interfaces/tour-implementation-interfaces';
-import { useTourContext } from '@/providers/tour-provider';
+import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
 import { TourImplementationTicketCountModal } from '@/components/modals/tour-implementation-ticket-count-modal/tour-implementation-ticket-count-modal';
 import { TourImplementationTicketCountData } from '@/components/modals/tour-implementation-ticket-count-modal/tour-implementation-ticket-count-modal-content';
@@ -27,16 +27,15 @@ interface Props {
   tour: TourResponse | undefined;
 }
 
-export function TourImplementationHomeTabPanelContent({
-  tour,
-}: Props) {
+export function TourImplementationHomeTabPanelContent({ tour }: Props) {
   const [isOrgMemExpanded, setIsOrgMemExpanded] = useState(true);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(true);
   const memModalRef = useRef<SlideSheetRef>(null);
   const tourTicketModalRef = useRef<SlideSheetRef>(null);
   const descriptionModalRef = useRef<SlideSheetRef>(null);
 
-  const { isRefreshingTour, isUpdatingTour, handleUpdateTour } = useTourContext();
+  const { isRefreshingTour, isUpdatingTour, handleUpdateTour } =
+    useTourDetailContext();
 
   const {
     data: organizationMembers,

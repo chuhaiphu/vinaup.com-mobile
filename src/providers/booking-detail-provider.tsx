@@ -82,7 +82,7 @@ export function BookingDetailProvider({
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
   } = useFetchFn(() => getReceiptPaymentsByBookingIdApi(bookingId), {
-    tags: ['organization-receipt-payment-list-in-booking'],
+    tags: [`organization-receipt-payment-list-in-booking-${bookingId}`],
   });
 
   useEffect(() => {

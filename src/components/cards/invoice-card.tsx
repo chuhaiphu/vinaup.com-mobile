@@ -24,7 +24,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
 
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
     useFetchFn(fetchReceiptPaymentsFn, {
-      tags: ['organization-receipt-payment-list-in-invoice'],
+      tags: [`organization-receipt-payment-list-in-invoice-${invoice?.id}`],
     });
 
   useEffect(() => {

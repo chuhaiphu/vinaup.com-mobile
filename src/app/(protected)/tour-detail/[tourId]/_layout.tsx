@@ -8,7 +8,10 @@ import { Entypo, FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons'
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { OrganizationTourDetailTabListContent } from '@/components/contents/tour/organization-tour-detail-tab-list-content';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TourCalculationProvider, useTourContext } from '@/providers/tour-provider';
+import {
+  TourDetailProvider,
+  useTourDetailContext,
+} from '@/providers/tour-detail-provider';
 import { Select } from '@/components/primitives/select';
 import { TourStatus, TourStatusOptions } from '@/constants/tour-constants';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
@@ -21,8 +24,13 @@ function TourDetailLayoutContent() {
   const { tourId } = useLocalSearchParams<{
     tourId: string;
   }>();
-  const { tour, isRefreshingTour, isUpdatingTour, handleUpdateTour, refreshTour } =
-    useTourContext();
+  const {
+    tour,
+    isRefreshingTour,
+    isUpdatingTour,
+    handleUpdateTour,
+    refreshTour,
+  } = useTourDetailContext();
 
   const segments = useSegments();
   const tab = segments[segments.length - 1] as string;
@@ -154,9 +162,9 @@ export default function TourDetailLayout() {
   const { tourId } = useLocalSearchParams<{ tourId: string }>();
 
   return (
-    <TourCalculationProvider tourId={tourId}>
+    <TourDetailProvider tourId={tourId}>
       <TourDetailLayoutContent />
-    </TourCalculationProvider>
+    </TourDetailProvider>
   );
 }
 

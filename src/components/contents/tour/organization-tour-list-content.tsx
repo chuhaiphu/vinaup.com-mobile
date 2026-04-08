@@ -1,5 +1,5 @@
 import { COLORS } from '@/constants/style-constant';
-import { useFetch } from 'fetchwire';
+import { prefetch, useFetch } from 'fetchwire';
 import { Suspense, useState } from 'react';
 import {
   FlatList,
@@ -12,10 +12,11 @@ import {
 import { useRouter } from 'expo-router';
 import { Select } from '@/components/primitives/select';
 import { TourStatusOptions } from '@/constants/tour-constants';
-import { getToursByOrganizationIdApi } from '@/apis/tour-apis';
+import { getTourByIdApi, getToursByOrganizationIdApi } from '@/apis/tour-apis';
 import { TourCard } from '@/components/cards/tour-card';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import Loader from '@/components/primitives/loader';
 
 type TourListSectionProps = {
   organizationId: string;
@@ -32,41 +33,48 @@ function TourListSection({
     getToursByOrganizationIdApi(organizationId, {
       status: tourStatusFilter || undefined,
     });
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const fetchKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
 
-  const { data: tours, refreshFetch } = useFetch(fetchToursFn, fetchKey, {
+  const { data: tours, refreshFetch, isRefreshing } = useFetch(fetchToursFn, fetchKey, {
     tags: ['organization-tour-list', organizationId],
   });
 
   const normalizedTours = tours ?? [];
 
-  const navigateToDetailScreen = (id?: string) => {
+  const navigateToDetailScreen = async (id?: string) => {
     if (!id) return;
+    setIsNavigating(true);
+    await prefetch(`tour-detail-${id}`, () => getTourByIdApi(id));
     router.push({
       pathname: '/(protected)/tour-detail/[tourId]',
       params: { tourId: id },
     });
+    setIsNavigating(false);
   };
 
   return (
-    <FlatList
-      data={normalizedTours}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <Pressable onPress={() => navigateToDetailScreen(item.id)}>
-          <TourCard tour={item} />
-        </Pressable>
-      )}
-      refreshControl={
-        <RefreshControl
-          refreshing={false}
-          onRefresh={refreshFetch}
-          colors={[COLORS.vinaupTeal]}
-        />
-      }
-    />
+    <>
+      <FlatList
+        data={normalizedTours}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => navigateToDetailScreen(item.id)}>
+            <TourCard tour={item} />
+          </Pressable>
+        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refreshFetch}
+            colors={[COLORS.vinaupTeal]}
+          />
+        }
+      />
+      {isNavigating && <Loader withOverlay size={64} />}
+    </>
   );
 }
 

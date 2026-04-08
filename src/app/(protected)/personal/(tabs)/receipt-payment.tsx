@@ -35,7 +35,7 @@ function ReceiptPaymentListSection({
 
   const fetchKey = `personal-receipt-payment-list-${selectedDate.format('YYYY-MM-DD')}`;
 
-  const { data: receiptPayments, refreshFetch } = useFetch(
+  const { data: receiptPayments, refreshFetch, isRefreshing } = useFetch(
     fetchReceiptPaymentsFn,
     fetchKey,
     { tags: ['personal-receipt-payment-list'] }
@@ -70,7 +70,7 @@ function ReceiptPaymentListSection({
         renderItem={renderItem}
         refreshControl={
           <RefreshControl
-            refreshing={false}
+            refreshing={isRefreshing}
             onRefresh={refreshFetch}
             colors={[COLORS.vinaupTeal]}
           />

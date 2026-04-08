@@ -24,7 +24,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
     useFetchFn(fetchReceiptPaymentsFn, {
-      tags: ['personal-receipt-payment-list-in-project'],
+      tags: [`personal-receipt-payment-list-in-project-${project?.id}`],
     });
 
   useEffect(() => {

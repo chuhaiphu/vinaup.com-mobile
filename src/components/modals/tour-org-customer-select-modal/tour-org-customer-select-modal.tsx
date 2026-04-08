@@ -19,7 +19,7 @@ import { OrganizationCustomerResponse } from '@/interfaces/organization-customer
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/primitives/button';
-import { useTourContext } from '@/providers/tour-provider';
+import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { useAllOrganizationsContext } from '@/providers/all-organizations-provider';
 import { useOrganizationCustomerContext } from '@/providers/organization-customer-provider';
 
@@ -37,7 +37,7 @@ type PendingSelection =
 export function TourOrgCustomerSelectModal({
   modalRef,
 }: TourOrgCustomerSelectModalProps) {
-  const { tour, isUpdatingTour, handleUpdateTour } = useTourContext();
+  const { tour, isUpdatingTour, handleUpdateTour } = useTourDetailContext();
   const { organizationCustomers, refreshOrganizationCustomers } =
     useOrganizationCustomerContext();
   const { allOrganizations: organizations } = useAllOrganizationsContext();

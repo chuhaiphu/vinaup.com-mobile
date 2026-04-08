@@ -10,10 +10,10 @@ import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 interface ReceiptPaymentTourCalculationListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
-  startDate: Date;
-  endDate: Date;
+  startDate?: Date;
+  endDate?: Date;
   loading?: boolean;
-  tourCalculationId: string;
+  tourCalculationId?: string;
   organizationId?: string;
 }
 
@@ -32,7 +32,9 @@ export function ReceiptPaymentTourCalculationListContent({
   organizationId,
 }: ReceiptPaymentTourCalculationListContentProps) {
   const router = useRouter();
-  const dateRange = generateDateRange(startDate, endDate);
+
+  const dateRange =
+    startDate && endDate ? generateDateRange(startDate, endDate) : [];
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
     const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
     dateRange.forEach((d) => {

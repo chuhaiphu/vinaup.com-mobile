@@ -12,7 +12,7 @@ import TourSettlementSignatureContent from '@/components/contents/tour/tour-sett
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
 import { useEffect, useState } from 'react';
 import { TourCalculationSignatureInfoPopover } from '@/components/popovers/tour-calculation-signature-info-popover';
-import { useTourContext } from '@/providers/tour-provider';
+import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 
 function TourSettlementScreenContent() {
@@ -20,7 +20,7 @@ function TourSettlementScreenContent() {
     useState(false);
 
   const { tour, isRefreshingTour, isUpdatingTour, handleUpdateTour, refreshTour } =
-    useTourContext();
+    useTourDetailContext();
 
   const tourId = tour?.id || '';
 
@@ -44,7 +44,7 @@ function TourSettlementScreenContent() {
     executeFetchFn: fetchReceiptPaymentsByTourSettlement,
     refreshFetchFn: refreshReceiptPaymentsByTourSettlement,
   } = useFetchFn(fetchReceiptPaymentsByTourSettlementFn, {
-    tags: ['organization-receipt-payment-list-in-tour-settlement'],
+    tags: [`organization-receipt-payment-list-in-tour-settlement-${tourSettlement?.id}`],
   });
 
   const tourTicketSummaryData = calculateTourTicketSummaries(

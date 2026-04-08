@@ -8,12 +8,12 @@ import { SimpleTextInputModal } from '@/components/modals/simple-text-input-moda
 import { TourOrgCustomerSelectModal } from '@/components/modals/tour-org-customer-select-modal/tour-org-customer-select-modal';
 import { Ionicons } from '@expo/vector-icons';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
-import { useTourContext } from '@/providers/tour-provider';
+import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 export function TourDetailFooterContent() {
   const { tour, isUpdatingTour, isRefreshingTour, handleUpdateTour } =
-    useTourContext();
+    useTourDetailContext();
 
   const isLoading = isUpdatingTour || isRefreshingTour;
   const organizationName = tour?.organization?.name ?? '';

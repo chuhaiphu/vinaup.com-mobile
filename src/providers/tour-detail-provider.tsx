@@ -4,7 +4,7 @@ import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
 import { getTourByIdApi, updateTourApi } from '@/apis/tour-apis';
 import { TourResponse, UpdateTourRequest } from '@/interfaces/tour-interfaces';
 
-interface TourContextType {
+interface TourDetailContextType {
   tourId: string;
   tour: TourResponse | undefined;
   isLoadingTour: boolean;
@@ -14,16 +14,16 @@ interface TourContextType {
   refreshTour: () => void;
 }
 
-const TourContext = createContext<TourContextType | null>(null);
+const TourDetailContext = createContext<TourDetailContextType | null>(null);
 
-export function useTourContext() {
-  const ctx = useContext(TourContext);
+export function useTourDetailContext() {
+  const ctx = useContext(TourDetailContext);
   if (!ctx)
-    throw new Error('useTourContext must be used within TourCalculationProvider');
+    throw new Error('useTourDetailContext must be used within TourDetailProvider');
   return ctx;
 }
 
-export function TourCalculationProvider({
+export function TourDetailProvider({
   tourId,
   children,
 }: {
@@ -37,6 +37,7 @@ export function TourCalculationProvider({
     executeFetchFn: fetchTour,
     refreshFetchFn: refreshTour,
   } = useFetchFn(() => getTourByIdApi(tourId), {
+    fetchKey: `tour-detail-${tourId}`,
     tags: [`organization-tour-${tourId}`],
   });
 
@@ -69,7 +70,7 @@ export function TourCalculationProvider({
   );
 
   return (
-    <TourContext
+    <TourDetailContext
       value={{
         tourId,
         tour: tour ?? undefined,
@@ -81,6 +82,6 @@ export function TourCalculationProvider({
       }}
     >
       {children}
-    </TourContext>
+    </TourDetailContext>
   );
 }

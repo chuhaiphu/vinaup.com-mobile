@@ -39,7 +39,7 @@ function BookingListSection({
 
   const fetchKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
-  const { data: bookings, refreshFetch } = useFetch(fetchBookingsFn, fetchKey, {
+  const { data: bookings, refreshFetch, isRefreshing } = useFetch(fetchBookingsFn, fetchKey, {
     tags: ['organization-booking-list'],
   });
 
@@ -53,7 +53,7 @@ function BookingListSection({
       renderItem={({ item }) => <BookingCard booking={item} />}
       refreshControl={
         <RefreshControl
-          refreshing={false}
+          refreshing={isRefreshing}
           onRefresh={refreshFetch}
           colors={[COLORS.vinaupTeal]}
         />

@@ -80,6 +80,7 @@ export async function getReceiptPaymentsByInvoiceIdsApi(invoiceIds: string[]) {
 export async function getReceiptPaymentsByTourCalculationIdApi(
   tourCalculationId: string
 ) {
+  await new Promise<void>((resolve) => setTimeout(resolve, 2000));
   return wireApi<ReceiptPaymentResponse[]>(
     `/receipt-payment/tour-calculation/${tourCalculationId}`,
     {

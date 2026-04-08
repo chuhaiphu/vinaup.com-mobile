@@ -82,7 +82,7 @@ export function InvoiceDetailProvider({
     executeFetchFn: fetchReceiptPayments,
     refreshFetchFn: refreshReceiptPayments,
   } = useFetchFn(() => getReceiptPaymentsByInvoiceIdApi(invoiceId), {
-    tags: ['organization-receipt-payment-list-in-invoice'],
+    tags: [`organization-receipt-payment-list-in-invoice-${invoiceId}`],
   });
 
   useEffect(() => {

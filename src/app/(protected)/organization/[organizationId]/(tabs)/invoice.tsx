@@ -47,7 +47,7 @@ function InvoiceListSection({
 
   const fetchKey = `org-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
-  const { data: invoices, refreshFetch } = useFetch(fetchInvoicesFn, fetchKey, {
+  const { data: invoices, refreshFetch, isRefreshing } = useFetch(fetchInvoicesFn, fetchKey, {
     tags: ['organization-invoice-list'],
   });
 
@@ -61,7 +61,7 @@ function InvoiceListSection({
       renderItem={({ item }) => <InvoiceCard invoice={item} />}
       refreshControl={
         <RefreshControl
-          refreshing={false}
+          refreshing={isRefreshing}
           onRefresh={refreshFetch}
           colors={[COLORS.vinaupTeal]}
         />
