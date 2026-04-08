@@ -21,6 +21,7 @@ import { AdditionalEditFormData } from './tour-implementation-additional-edit-mo
 import { searchUsersApi } from '@/apis/user-apis';
 import { ApiError, useFetchFn, useMutationFn } from 'fetchwire';
 import { deleteAdditionalDataApi } from '@/apis/tour-apis';
+import VinaupDoubleCheck from '@/components/icons/vinaup-double-check.native';
 
 interface Props {
   selectedItem: TourImplementationAdditionalDataResponse;
@@ -77,6 +78,19 @@ export function TourImplementationAdditionalEditModalContent({
 
   // Car state
   const [carName, setCarName] = useState(selectedItem.carName ?? '');
+
+  // Permissions state
+  const [tourGuidePermissions, setTourGuidePermissions] = useState<string[]>(
+    tourGuide?.permissions ?? []
+  );
+
+  const togglePermission = (permission: string) => {
+    setTourGuidePermissions((prev) =>
+      prev.includes(permission)
+        ? prev.filter((p) => p !== permission)
+        : [...prev, permission]
+    );
+  };
 
   const {
     data: tourGuideSearchResults,
@@ -150,6 +164,7 @@ export function TourImplementationAdditionalEditModalContent({
         customUserName: tourGuideInputMode === 0 ? tourGuideName : '',
         customPhone: tourGuideInputMode === 0 ? tourGuidePhone : '',
         userId: tourGuideInputMode === 1 ? tourGuideUserId : null,
+        permissions: tourGuidePermissions,
       },
       driver: {
         id: driver.id,
@@ -390,6 +405,32 @@ export function TourImplementationAdditionalEditModalContent({
               </Text>
             </View>
           )}
+        </View>
+      )}
+
+      {/* Tour Guide Permissions - only visible in search mode */}
+      {tourGuideInputMode === 1 && (
+        <View style={styles.permissionsRow}>
+          <PressableOpacity
+            style={styles.permissionItem}
+            onPress={() => togglePermission('BOOKING_READ')}
+          >
+            <Text style={styles.permissionLabel}>Xem Booking</Text>
+            <View style={styles.checkbox}>
+              {tourGuidePermissions.includes('BOOKING_READ') && <VinaupDoubleCheck />}
+            </View>
+          </PressableOpacity>
+          <PressableOpacity
+            style={styles.permissionItem}
+            onPress={() => togglePermission('RECEIPT_PAYMENT_TOUR_READ')}
+          >
+            <Text style={styles.permissionLabel}>Xem Dự toán HDV</Text>
+            <View style={styles.checkbox}>
+              {tourGuidePermissions.includes('RECEIPT_PAYMENT_TOUR_READ') && (
+                <VinaupDoubleCheck />
+              )}
+            </View>
+          </PressableOpacity>
         </View>
       )}
 
@@ -754,5 +795,28 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.6,
+  },
+  permissionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 4,
+  },
+  permissionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  permissionLabel: {
+    fontSize: 14,
+    color: COLORS.vinaupTeal,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: COLORS.vinaupLightGray,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

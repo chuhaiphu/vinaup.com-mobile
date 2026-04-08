@@ -125,6 +125,7 @@ export default function TourImplementationAdditionalContent({
           customPhone: data.tourGuide.customPhone,
           userId: data.tourGuide.userId,
           currentOption: data.tourGuide.currentOption,
+          permissions: data.tourGuide.permissions,
         },
       },
       { onSuccess: onEachSuccess, onError: onEachError }

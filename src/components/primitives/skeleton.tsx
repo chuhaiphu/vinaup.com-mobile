@@ -21,14 +21,14 @@ export function Skeleton({ style, borderRadius }: SkeletonProps) {
   const onLayout = (e: LayoutChangeEvent) => {
     setWidth(e.nativeEvent.layout.width);
   };
-  const translateX = useSharedValue(0);
+  const translateX = useSharedValue(-9999);
   useEffect(() => {
     if (width === 0) return;
     translateX.value = -width;
     translateX.value = withRepeat(
       withTiming(width, {
-        duration: 2000,
-        easing: Easing.inOut(Easing.ease),
+        duration: 1000,
+        easing: Easing.linear,
       }),
       -1
     );
@@ -61,7 +61,7 @@ export function Skeleton({ style, borderRadius }: SkeletonProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ebebeb', // màu nền khi gradient chưa đến
-    overflow: 'hidden', // ← quan trọng: clip gradient ra ngoài biên
+    backgroundColor: '#ebebeb',
+    overflow: 'hidden',
   },
 });

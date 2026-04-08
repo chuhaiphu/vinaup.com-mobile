@@ -4,6 +4,7 @@ import Tabs from '@/components/primitives/tabs';
 import { COLORS } from '@/constants/style-constant';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import { useTourContext } from '@/providers/tour-provider';
+import { useAuthContext } from '@/providers/auth-provider';
 import { TourImplementationHomeTabPanelContent } from '../../../../components/contents/tour/tour-implementation/tour-implementation-home-tab-panel-content';
 import { ReceiptPaymentTourImplementationDirectorListContent } from '../../../../components/contents/tour/tour-implementation/receipt-payment-tour-implementation-director-list-content';
 import { ReceiptPaymentTourImplementationTourGuideListContent } from '../../../../components/contents/tour/tour-implementation/receipt-payment-tour-implementation-tour-guide-list-content';
@@ -16,6 +17,7 @@ import TourImplementationAdditionalContent from '../../../../components/contents
 export default function TourImplementationScreen() {
   const [currentTab, setCurrentTab] = useState('1');
   const { tour } = useTourContext();
+  const { currentUser } = useAuthContext();
 
   const {
     data: tourImplementation,
@@ -66,13 +68,22 @@ export default function TourImplementationScreen() {
     fetchTourGuideReceiptPayments,
   ]);
 
-  const tabs = [
+  const currentUserPermissions = (tourImplementation?.additionalData ?? [])
+    .flatMap((ad) => ad.usersInvited)
+    .filter((u) => u.userId === currentUser?.id)
+    .flatMap((u) => u.permissions);
+
+  const baseTabs: { value: string; label: string; isIcon?: boolean }[] = [
     { value: '1', label: 'Home', isIcon: true },
     { value: '2', label: 'Dự toán ĐH' },
-    { value: '3', label: 'Dự toán HDV' },
-    { value: '4', label: 'Tab 4' },
-    { value: '5', label: 'Tab 5' },
   ];
+  if (currentUserPermissions.includes('RECEIPT_PAYMENT_TOUR_READ')) {
+    baseTabs.push({ value: '3', label: 'Dự toán HDV' });
+  }
+  if (currentUserPermissions.includes('BOOKING_READ')) {
+    baseTabs.push({ value: 'booking', label: 'Booking' });
+  }
+  const tabs = baseTabs;
   const scrollViewRef = useRef<ScrollView>(null);
   return (
     <OrganizationCustomerProvider organizationId={tour?.organization?.id}>
@@ -140,32 +151,34 @@ export default function TourImplementationScreen() {
             )}
           </Tabs.Panel>
 
-          <Tabs.Panel
-            value="3"
-            currentValue={currentTab}
-            styles={{ panel: styles.panel }}
-          >
-            {tour && tourImplementation && (
-              <ReceiptPaymentTourImplementationTourGuideListContent
-                receiptPayments={tourGuideReceiptPayments ?? []}
-                startDate={tour.startDate}
-                endDate={tour.endDate}
-                loading={isLoadingTourGuide}
-                tourImplementationId={tourImplementation.id}
-                organizationId={tour.organization?.id}
-              />
-            )}
-          </Tabs.Panel>
-
-          {tabs.slice(3).map((item) => (
+          {currentUserPermissions.includes('RECEIPT_PAYMENT_TOUR_READ') && (
             <Tabs.Panel
-              key={item.value}
-              value={item.value}
+              value="3"
               currentValue={currentTab}
+              styles={{ panel: styles.panel }}
             >
-              <Text style={styles.text}>Nội dung Panel {item.value}</Text>
+              {tour && tourImplementation && (
+                <ReceiptPaymentTourImplementationTourGuideListContent
+                  receiptPayments={tourGuideReceiptPayments ?? []}
+                  startDate={tour.startDate}
+                  endDate={tour.endDate}
+                  loading={isLoadingTourGuide}
+                  tourImplementationId={tourImplementation.id}
+                  organizationId={tour.organization?.id}
+                />
+              )}
             </Tabs.Panel>
-          ))}
+          )}
+
+          {currentUserPermissions.includes('BOOKING_READ') && (
+            <Tabs.Panel
+              value="booking"
+              currentValue={currentTab}
+              styles={{ panel: styles.panel }}
+            >
+              <Text style={styles.text}>Booking content (TBD)</Text>
+            </Tabs.Panel>
+          )}
         </View>
       </ScrollView>
       {currentTab === '1' && (

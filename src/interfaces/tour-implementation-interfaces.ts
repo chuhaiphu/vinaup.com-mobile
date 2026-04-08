@@ -51,6 +51,7 @@ export interface CreateUserInvitedRequest {
   tourImplementationAdditionalDataId: string;
   customUserName?: string;
   customPhone?: string;
+  permissions?: string[];
 }
 export type UpdateUserInvitedRequest = Partial<CreateUserInvitedRequest> & {
   currentOption?: number;
@@ -64,6 +65,7 @@ export interface UserInvitedTourImplementationResponse {
   customUserName: string | null;
   customPhone: string | null;
   currentOption: number;
+  permissions: string[];
 }
 
 export interface UpdateTourImplementationAdditionalDataRequest {

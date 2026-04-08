@@ -12,6 +12,7 @@ export interface AdditionalEditFormData {
     customUserName: string;
     customPhone: string;
     userId: string | null;
+    permissions: string[];
   };
   driver: {
     id: string;
@@ -43,18 +44,18 @@ export function TourImplementationAdditionalEditModal({
     modalRef.current?.close();
   };
 
-  if (!selectedItem) return null;
-
   return (
     <SlideSheet ref={modalRef} heightPercentage={0.7}>
-      <TourImplementationAdditionalEditModalContent
-        selectedItem={selectedItem}
-        allAdditionalData={allAdditionalData}
-        isLoading={isLoading}
-        onCloseRequest={handleClose}
-        onConfirm={(data) => onConfirm?.(data, handleClose)}
-        onRefreshTourImplementation={onRefreshTourImplementation}
-      />
+      {selectedItem && (
+        <TourImplementationAdditionalEditModalContent
+          selectedItem={selectedItem}
+          allAdditionalData={allAdditionalData}
+          isLoading={isLoading}
+          onCloseRequest={handleClose}
+          onConfirm={(data) => onConfirm?.(data, handleClose)}
+          onRefreshTourImplementation={onRefreshTourImplementation}
+        />
+      )}
     </SlideSheet>
   );
 }
