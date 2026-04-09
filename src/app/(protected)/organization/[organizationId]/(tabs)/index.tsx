@@ -70,15 +70,21 @@ export default function OrganizationIndexScreen() {
       year: selectedDate.year(),
     });
 
-  const { data: invoices, executeFetchFn: fetchInvoices } = useFetchFn(
-    fetchInvoicesFn,
-    {
-      tags: ['organization-invoice-list'],
-    }
-  );
+  const invoicesFetchKey = `organization-invoice-list-${organizationId}-${selectedDate.format('YYYY-MM')}`;
+
+  const {
+    data: invoices,
+    executeFetchFn: fetchInvoices,
+    refreshFetchFn: refreshInvoices,
+  } = useFetchFn(fetchInvoicesFn, {
+    fetchKey: invoicesFetchKey,
+    tags: ['organization-invoice-list'],
+  });
 
   const fetchReceiptPaymentsByInvoiceIdsFn = () =>
     getReceiptPaymentsByInvoiceIdsApi((invoices || []).map((i) => i.id));
+
+  const rpFetchKey = `receipt-payment-list-in-invoice-${organizationId}-${selectedDate.format('YYYY-MM')}`;
 
   const {
     data: receiptPayments,
@@ -86,6 +92,7 @@ export default function OrganizationIndexScreen() {
     isRefreshing,
     refreshFetchFn: refreshReceiptPaymentsByInvoiceIds,
   } = useFetchFn(fetchReceiptPaymentsByInvoiceIdsFn, {
+    fetchKey: rpFetchKey,
     tags: ['receipt-payment-list-in-invoice'],
   });
 
@@ -154,7 +161,10 @@ export default function OrganizationIndexScreen() {
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
-          onRefresh={refreshReceiptPaymentsByInvoiceIds}
+          onRefresh={() => {
+            refreshInvoices();
+            refreshReceiptPaymentsByInvoiceIds();
+          }}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />

@@ -1,71 +1,41 @@
 import { StyleSheet, ScrollView, RefreshControl, View } from 'react-native';
-import { useFetchFn } from 'fetchwire';
-import { getTourSettlementByTourIdApi } from '@/apis/tour-apis';
-import { TourSettlementTicketSummary } from '@/components/summaries/tour-settlement-ticket-summary';
-import { getReceiptPaymentsByTourSettlementIdApi } from '@/apis/receipt-payment-apis';
-import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { ReceiptPaymentTourSettlementListContent } from '@/components/contents/tour/receipt-payment-tour-settlement-list-content';
 import { COLORS } from '@/constants/style-constant';
 import { TourDetailFooterContent } from '@/components/contents/tour/tour-detail-footer-content';
 import TourSettlementSignatureContent from '@/components/contents/tour/tour-settlement/tour-settlement-signature-section-content';
 import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
-import { useEffect, useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import { TourCalculationSignatureInfoPopover } from '@/components/popovers/tour-calculation-signature-info-popover';
 import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
+import { TourSettlementTicketSummaryReceiptPaymentListContent } from '@/components/contents/tour/tour-settlement-ticket-summary-receipt-payment-list-content';
+import { WhitePaneSkeleton } from '@/components/skeletons/white-pane-skeleton';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 
 function TourSettlementScreenContent() {
   const [isSignatureInfoPopoverVisible, setIsSignatureInfoPopoverVisible] =
     useState(false);
 
-  const { tour, isRefreshingTour, isUpdatingTour, handleUpdateTour, refreshTour } =
-    useTourDetailContext();
-
-  const tourId = tour?.id || '';
-
-  const fetchTourSettlementFn = () => getTourSettlementByTourIdApi(tourId);
   const {
-    data: tourSettlement,
-    isRefreshing: isRefreshingTourSettlement,
-    executeFetchFn: fetchTourSettlement,
-    refreshFetchFn: refreshTourSettlement,
-  } = useFetchFn(fetchTourSettlementFn, {
-    tags: [`tour-settlement-${tourId}`],
-  });
-
-  const fetchReceiptPaymentsByTourSettlementFn = () =>
-    getReceiptPaymentsByTourSettlementIdApi(tourSettlement?.id || '');
-
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPaymentsByTourSettlement,
-    refreshFetchFn: refreshReceiptPaymentsByTourSettlement,
-  } = useFetchFn(fetchReceiptPaymentsByTourSettlementFn, {
-    tags: [`organization-receipt-payment-list-in-tour-settlement-${tourSettlement?.id}`],
-  });
-
-  const tourTicketSummaryData = calculateTourTicketSummaries(
-    receiptPayments || [],
-    tourSettlement || null
-  );
-
-  useEffect(() => {
-    if (tourId) {
-      fetchTourSettlement();
-
-      if (tourSettlement?.id) {
-        fetchReceiptPaymentsByTourSettlement();
-      }
-    }
-  }, [
     tourId,
-    tourSettlement?.id,
-    fetchTourSettlement,
-    fetchReceiptPaymentsByTourSettlement,
-  ]);
+    tour,
+    isRefreshingTour,
+    isUpdatingTour,
+    handleUpdateTour,
+    refreshTour,
+  } = useTourDetailContext();
+
+  const tourSettlementTicketSummaryReceiptPaymentListContentRef = useRef<{
+    refreshData: {
+      refreshTourSettlement: () => void;
+      refreshReceiptPaymentsByTourSettlement: () => void;
+    };
+  }>(null);
+
+  const handleRefresh = () => {
+    refreshTour();
+    tourSettlementTicketSummaryReceiptPaymentListContentRef.current?.refreshData.refreshTourSettlement();
+    tourSettlementTicketSummaryReceiptPaymentListContentRef.current?.refreshData.refreshReceiptPaymentsByTourSettlement();
+  };
 
   return (
     <OrganizationCustomerProvider organizationId={tour?.organization?.id}>
@@ -74,16 +44,8 @@ function TourSettlementScreenContent() {
           style={styles.scrollContainer}
           refreshControl={
             <RefreshControl
-              refreshing={
-                isRefreshingTour ||
-                isRefreshingTourSettlement ||
-                isRefreshingReceiptPayments
-              }
-              onRefresh={() => {
-                refreshTour();
-                refreshTourSettlement();
-                refreshReceiptPaymentsByTourSettlement();
-              }}
+              refreshing={isRefreshingTour}
+              onRefresh={handleRefresh}
               colors={[COLORS.vinaupTeal]}
               tintColor={COLORS.vinaupTeal}
             />
@@ -96,47 +58,23 @@ function TourSettlementScreenContent() {
               handleUpdateTour(data, onSuccessCallback)
             }
           />
-          <TourSettlementTicketSummary
-            id={tourSettlement?.id || ''}
-            tourId={tourId}
-            adultTicketCount={tourSettlement?.adultTicketCount}
-            childTicketCount={tourSettlement?.childTicketCount}
-            adultTicketPrice={tourSettlement?.adultTicketPrice}
-            childTicketPrice={tourSettlement?.childTicketPrice}
-            taxRate={tourSettlement?.taxRate}
-            totalReceipt={generateLocalePriceFormat(
-              tourTicketSummaryData.totalReceipt
-            )}
-            totalPayment={generateLocalePriceFormat(
-              tourTicketSummaryData.totalPayment
-            )}
-            totalTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.totalTaxPay
-            )}
-            netProfitBeforeTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.netProfitBeforeTaxPay
-            )}
-            netProfitAfterTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.netProfitAfterTaxPay
-            )}
-            profitMarginBeforeTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.profitMarginBeforeTaxPay
-            )}
-            profitMarginAfterTaxPay={generateLocalePriceFormat(
-              tourTicketSummaryData.profitMarginAfterTaxPay
-            )}
-          />
-          {tour && tourSettlement && (
-            <ReceiptPaymentTourSettlementListContent
-              receiptPayments={receiptPayments ?? []}
+          <Suspense
+            fallback={
+              <>
+                <WhitePaneSkeleton height={200} />
+                <EntityListSectionSkeleton />
+              </>
+            }
+          >
+            <TourSettlementTicketSummaryReceiptPaymentListContent
+              ref={tourSettlementTicketSummaryReceiptPaymentListContentRef}
+              tourId={tourId}
               startDate={tour?.startDate}
               endDate={tour?.endDate}
-              loading={isLoadingReceiptPayments}
-              tourSettlementId={tourSettlement.id}
-              organizationId={tour.organization?.id}
+              organizationId={tour?.organization?.id}
             />
-          )}
-          <TourDetailFooterContent />
+            <TourDetailFooterContent />
+          </Suspense>
         </ScrollView>
         <View style={styles.tourSettlementSignatureWrapper}>
           <TourCalculationSignatureInfoPopover

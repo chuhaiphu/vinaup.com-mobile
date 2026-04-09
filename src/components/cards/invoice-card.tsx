@@ -24,6 +24,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
 
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
     useFetchFn(fetchReceiptPaymentsFn, {
+      fetchKey: `receipt-payment-list-in-invoice-${invoice?.id}`,
       tags: [`receipt-payment-list-in-invoice-${invoice?.id}`],
     });
 

@@ -38,7 +38,7 @@ export function OrganizationCustomerProvider({
     () => getOrganizationCustomersByOrganizationIdApi(organizationId!),
     {
       fetchKey: `organization-customers-${organizationId}`,
-      tags: [`organization-customers-${organizationId}`],
+      tags: ['organization-customer-list'],
     }
   );
 

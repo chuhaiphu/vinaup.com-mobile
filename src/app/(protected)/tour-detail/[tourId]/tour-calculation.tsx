@@ -67,6 +67,7 @@ function TourCalculationScreenContent() {
             }
           >
             <TourCalculationTicketSummaryReceiptPaymentListContent
+              ref={tourCalculationTicketSummaryReceiptPaymentListContentRef}
               tourId={tourId}
               startDate={tour?.startDate}
               endDate={tour?.endDate}

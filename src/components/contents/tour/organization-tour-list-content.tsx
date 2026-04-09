@@ -42,7 +42,7 @@ function TourListSection({
     refreshFetch,
     isRefreshing,
   } = useFetch(fetchToursFn, fetchKey, {
-    tags: ['organization-tour-list', organizationId],
+    tags: ['organization-tour-list'],
   });
 
   const normalizedTours = tours ?? [];

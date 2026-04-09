@@ -22,6 +22,7 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
 
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
     useFetchFn(fetchReceiptPaymentsFn, {
+      fetchKey: `receipt-payment-list-in-project-${project?.id}`,
       tags: [`receipt-payment-list-in-project-${project?.id}`],
     });
 
