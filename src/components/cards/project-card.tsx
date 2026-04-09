@@ -59,10 +59,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
   };
 
   const navigateToDetail = (id?: string) => {
-    if (!id) return;
+    if (!id || !project) return;
     router.push({
       pathname: '/(protected)/project-detail/[projectId]',
-      params: { projectId: id },
+      params: { projectId: id, type: project.type },
     });
   };
 

@@ -28,7 +28,7 @@ const PersonalProjectSelfHeaderBottom = () => {
       onSuccess: (data) => {
         router.push({
           pathname: '/(protected)/project-detail/[projectId]',
-          params: { projectId: data.id },
+          params: { projectId: data.id, type: data.type },
         });
       },
       onError: (error) =>

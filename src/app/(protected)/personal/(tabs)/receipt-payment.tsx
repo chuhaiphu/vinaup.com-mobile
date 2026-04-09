@@ -29,7 +29,6 @@ function ReceiptPaymentListSection({
   const router = useRouter();
 
   const fetchReceiptPaymentsFn = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
     return getReceiptPaymentsByCurrentUserApi({ date: selectedDate.toDate() });
   };
 

@@ -249,7 +249,7 @@ export default function PersonalIndexScreen() {
       </View>
 
       <IndexUtilityGrid items={visibleUtilities} onItemPress={handlePress} />
-      <Carousel />
+      {/* <Carousel /> */}
     </ScrollView>
   );
 }

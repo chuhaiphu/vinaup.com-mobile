@@ -73,7 +73,7 @@ function TourListSection({
           />
         }
       />
-      {isNavigating && <Loader withOverlay size={64} />}
+      {isNavigating && <Loader withOverlay size={96} />}
     </>
   );
 }

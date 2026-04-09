@@ -11,6 +11,10 @@ export default function RootLayout() {
     headers: {
       'x-request-platform': 'mobile',
     },
+    interceptors: {
+      onRequest: async (config) =>
+        await new Promise<void>((resolve) => setTimeout(resolve, 1000)),
+    },
     getToken: async () => {
       return await AsyncStorage.getItem(STORAGE_KEYS.accessToken);
     },
