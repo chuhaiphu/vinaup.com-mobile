@@ -1,10 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
+import { useFetchFn } from 'fetchwire';
 import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 
 interface OrganizationCustomerContextType {
   organizationCustomers: OrganizationCustomerResponse[];
   isLoadingOrganizationCustomers: boolean;
+  isRefreshingOrganizationCustomers: boolean;
   refreshOrganizationCustomers: () => void;
 }
 
@@ -26,39 +28,33 @@ export function OrganizationCustomerProvider({
   organizationId: string | undefined;
   children: React.ReactNode;
 }) {
-  const [organizationCustomers, setOrganizationCustomers] = useState<
-    OrganizationCustomerResponse[]
-  >([]);
-  const [isLoadingOrganizationCustomers, setIsLoadingOrganizationCustomers] = useState(false);
-
-  const fetchOrganizationCustomers = useCallback(async () => {
-    if (!organizationId) {
-      setOrganizationCustomers([]);
-      return;
+  const {
+    data: organizationCustomers,
+    isLoading: isLoadingOrganizationCustomers,
+    isRefreshing: isRefreshingOrganizationCustomers,
+    executeFetchFn: fetchOrganizationCustomers,
+    refreshFetchFn: refreshOrganizationCustomers,
+  } = useFetchFn(
+    () => getOrganizationCustomersByOrganizationIdApi(organizationId!),
+    {
+      fetchKey: `organization-customers-${organizationId}`,
+      tags: [`organization-customers-${organizationId}`],
     }
-    setIsLoadingOrganizationCustomers(true);
-    try {
-      const response = await getOrganizationCustomersByOrganizationIdApi(organizationId);
-      if (response.data) {
-        setOrganizationCustomers(response.data);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy danh sách khách hàng tổ chức:', error);
-    } finally {
-      setIsLoadingOrganizationCustomers(false);
-    }
-  }, [organizationId]);
+  );
 
   useEffect(() => {
-    fetchOrganizationCustomers();
-  }, [fetchOrganizationCustomers]);
+    if (organizationId) {
+      fetchOrganizationCustomers();
+    }
+  }, [organizationId, fetchOrganizationCustomers]);
 
   return (
     <OrganizationCustomerContext
       value={{
-        organizationCustomers,
+        organizationCustomers: organizationCustomers ?? [],
         isLoadingOrganizationCustomers,
-        refreshOrganizationCustomers: fetchOrganizationCustomers,
+        isRefreshingOrganizationCustomers,
+        refreshOrganizationCustomers,
       }}
     >
       {children}

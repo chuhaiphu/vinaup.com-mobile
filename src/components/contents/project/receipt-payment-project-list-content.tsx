@@ -12,18 +12,16 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { generateDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
-import Loader from '@/components/primitives/loader';
 import { useRouter } from 'expo-router';
 import { ReceiptPaymentSectionListHeader } from '../../headers/receipt-payment-section-list-header';
+import { useFetch } from 'fetchwire';
+import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 
 interface ReceiptPaymentProjectListContentProps {
-  receiptPayments: ReceiptPaymentResponse[];
+  projectId: string;
   startDate: Date;
   endDate: Date;
-  loading?: boolean;
-  refreshing?: boolean;
-  onRefresh: () => void;
-  projectId: string;
+  onRefresh?: () => void;
 }
 
 interface ReceiptPaymentsSection {
@@ -33,15 +31,20 @@ interface ReceiptPaymentsSection {
 }
 
 export function ReceiptPaymentProjectListContent({
-  receiptPayments,
+  projectId,
   startDate,
   endDate,
-  loading,
-  refreshing,
   onRefresh,
-  projectId,
 }: ReceiptPaymentProjectListContentProps) {
   const router = useRouter();
+
+  const fetchKey = `receipt-payment-list-in-project-${projectId}`;
+  const { data, refreshFetch, isRefreshing } = useFetch(
+    () => getReceiptPaymentsByProjectIdApi(projectId),
+    fetchKey,
+    { tags: [`receipt-payment-list-in-project-${projectId}`] }
+  );
+  const receiptPayments = data ?? [];
 
   const dateRange = generateDateRange(startDate, endDate);
 
@@ -97,14 +100,6 @@ export function ReceiptPaymentProjectListContent({
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <Loader size={48} />
-      </View>
-    );
-  }
-
   const renderOutOfRangeReceiptPaymentsSection = () => {
     if (outOfRangeReceiptPayments.length === 0) return null;
     return (
@@ -132,8 +127,11 @@ export function ReceiptPaymentProjectListContent({
       keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl
-          refreshing={refreshing ?? false}
-          onRefresh={onRefresh}
+          refreshing={isRefreshing}
+          onRefresh={() => {
+            refreshFetch();
+            onRefresh?.();
+          }}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />
@@ -172,12 +170,6 @@ export function ReceiptPaymentProjectListContent({
 }
 
 const styles = StyleSheet.create({
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
   listContent: {
     paddingBottom: 24,
   },

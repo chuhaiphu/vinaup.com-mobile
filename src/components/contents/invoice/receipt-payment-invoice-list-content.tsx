@@ -12,19 +12,17 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { generateDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
-import Loader from '@/components/primitives/loader';
 import { useRouter } from 'expo-router';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
+import { useFetch } from 'fetchwire';
+import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 
 interface ReceiptPaymentInvoiceListContentProps {
-  receiptPayments: ReceiptPaymentResponse[];
+  invoiceId: string;
   startDate: Date;
   endDate: Date;
-  loading?: boolean;
-  refreshing?: boolean;
-  onRefresh: () => void;
-  invoiceId: string;
+  onRefresh?: () => void;
   organizationId?: string;
   invoiceTypeId?: string;
 }
@@ -36,17 +34,24 @@ interface ReceiptPaymentsSection {
 }
 
 export function ReceiptPaymentInvoiceListContent({
-  receiptPayments,
+  invoiceId,
   startDate,
   endDate,
-  loading,
-  refreshing,
   onRefresh,
-  invoiceId,
   organizationId,
   invoiceTypeId,
 }: ReceiptPaymentInvoiceListContentProps) {
   const router = useRouter();
+  const fetchKey = `receipt-payment-list-in-invoice-${invoiceId}`;
+  const { data, refreshFetch, isRefreshing } = useFetch(
+    () => getReceiptPaymentsByInvoiceIdApi(invoiceId),
+    fetchKey,
+    {
+      tags: [`receipt-payment-list-in-invoice-${invoiceId}`],
+    }
+  );
+  const receiptPayments = data ?? [];
+
   const dateRange = generateDateRange(startDate, endDate);
   const { getInvoiceTypeById } = useInvoiceTypeContext();
   const invoiceType = getInvoiceTypeById(invoiceTypeId || '');
@@ -99,14 +104,6 @@ export function ReceiptPaymentInvoiceListContent({
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <Loader size={48} />
-      </View>
-    );
-  }
-
   const renderOutOfRangeReceiptPaymentsSection = () => {
     if (outOfRangeReceiptPayments.length === 0) return null;
     return (
@@ -134,8 +131,11 @@ export function ReceiptPaymentInvoiceListContent({
       keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl
-          refreshing={refreshing ?? false}
-          onRefresh={onRefresh}
+          refreshing={isRefreshing}
+          onRefresh={() => {
+            refreshFetch();
+            onRefresh?.();
+          }}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />
@@ -169,12 +169,6 @@ export function ReceiptPaymentInvoiceListContent({
 }
 
 const styles = StyleSheet.create({
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
   listContent: {
     paddingBottom: 24,
   },

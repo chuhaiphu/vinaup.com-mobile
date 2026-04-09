@@ -1,49 +1,35 @@
+import { Suspense } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { ProjectDetailHeaderContent } from './project-detail-header-content';
 import { ReceiptPaymentProjectListContent } from './receipt-payment-project-list-content';
-import { ProjectDetailSkeleton } from '@/components/skeletons/project-detail-skeleton';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
 import { ProjectDetailFooterContent } from './project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { useSelfProjectDetailContext } from '@/providers/self-project-detail-provider';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 
 export function SelfProjectDetailContent() {
   const {
     projectId,
     project,
-    isLoadingProject,
     isUpdatingProject,
     isRefreshingProject,
     isDeletingProject,
-    receiptPayments,
-    isLoadingReceiptPayments,
-    isRefreshingReceiptPayments,
     handleUpdateProject,
     handleDelete,
     refreshProject,
-    refreshReceiptPayments,
   } = useSelfProjectDetailContext();
   const router = useRouter();
 
   const handleSaveAndExit = () => {
     if (!project) return;
     refreshProject();
-    refreshReceiptPayments();
     router.back();
   };
-
-  if (isLoadingProject) {
-    return (
-      <>
-        <StackWithHeader title="Chi tiết Tiền công" />
-        <ProjectDetailSkeleton />
-      </>
-    );
-  }
 
   return (
     <>
@@ -89,18 +75,15 @@ export function SelfProjectDetailContent() {
           }
         />
         {project && (
-          <ReceiptPaymentProjectListContent
-            onRefresh={() => {
-              refreshProject();
-              refreshReceiptPayments();
-            }}
-            receiptPayments={receiptPayments}
-            startDate={project.startDate}
-            endDate={project.endDate}
-            loading={isLoadingReceiptPayments}
-            refreshing={isRefreshingReceiptPayments}
-            projectId={projectId}
-          />
+          <Suspense fallback={<EntityListSectionSkeleton />}>
+            <ReceiptPaymentProjectListContent
+              key={`receipt-payment-list-in-project-${projectId}`}
+              projectId={projectId}
+              startDate={project.startDate}
+              endDate={project.endDate}
+              onRefresh={refreshProject}
+            />
+          </Suspense>
         )}
         <ProjectDetailFooterContent
           project={project ?? undefined}

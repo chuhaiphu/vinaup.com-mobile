@@ -6,12 +6,10 @@ import {
   getProjectByIdApi,
   updateProjectApi,
 } from '@/apis/project-apis';
-import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import {
   ProjectResponse,
   UpdateProjectRequest,
 } from '@/interfaces/project-interfaces';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
 
 interface SelfProjectDetailContextType {
@@ -21,16 +19,12 @@ interface SelfProjectDetailContextType {
   isRefreshingProject: boolean;
   isUpdatingProject: boolean;
   isDeletingProject: boolean;
-  receiptPayments: ReceiptPaymentResponse[];
-  isLoadingReceiptPayments: boolean;
-  isRefreshingReceiptPayments: boolean;
   handleUpdateProject: (
     fields: UpdateProjectRequest,
     onSuccess?: () => void
   ) => void;
   handleDelete: () => void;
   refreshProject: () => void;
-  refreshReceiptPayments: () => void;
 }
 
 const SelfProjectDetailContext = createContext<SelfProjectDetailContextType | null>(
@@ -62,8 +56,8 @@ export function SelfProjectDetailProvider({
     executeFetchFn: fetchProject,
     refreshFetchFn: refreshProject,
   } = useFetchFn(() => getProjectByIdApi(projectId), {
-    fetchKey: `project-${projectId}`,
-    tags: [`project-self-${projectId}`],
+    fetchKey: `personal-project-self-${projectId}`,
+    tags: [`personal-project-self-${projectId}`],
   });
 
   const { executeMutationFn: updateProject, isMutating: isUpdatingProject } =
@@ -78,22 +72,11 @@ export function SelfProjectDetailProvider({
       invalidatesTags: ['personal-project-list'],
     });
 
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPayments,
-    refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn(() => getReceiptPaymentsByProjectIdApi(projectId), {
-    tags: [`receipt-payment-list-in-project-${projectId}`],
-  });
-
   useEffect(() => {
     if (projectId) {
       fetchProject();
-      fetchReceiptPayments();
     }
-  }, [projectId, fetchProject, fetchReceiptPayments]);
+  }, [projectId, fetchProject]);
 
   const handleUpdateProject = useCallback(
     (updatedFields: UpdateProjectRequest, onSuccessCallback?: () => void) => {
@@ -141,13 +124,9 @@ export function SelfProjectDetailProvider({
         isRefreshingProject,
         isUpdatingProject,
         isDeletingProject,
-        receiptPayments: receiptPayments ?? [],
-        isLoadingReceiptPayments,
-        isRefreshingReceiptPayments,
         handleUpdateProject,
         handleDelete,
         refreshProject,
-        refreshReceiptPayments,
       }}
     >
       {children}

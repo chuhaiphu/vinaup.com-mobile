@@ -1,9 +1,9 @@
+import { Suspense } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { ProjectDetailHeaderContent } from './project-detail-header-content';
 import { ReceiptPaymentProjectListContent } from './receipt-payment-project-list-content';
-import { ProjectDetailSkeleton } from '@/components/skeletons/project-detail-skeleton';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
 import { ProjectDetailFooterContent } from './project-detail-footer-content';
@@ -12,40 +12,26 @@ import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand
 import { useOrganizationProjectDetailContext } from '@/providers/organization-project-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 import { UpdateProjectRequest } from '@/interfaces/project-interfaces';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 
 export function OrganizationProjectDetailContent() {
   const {
     projectId,
     project,
-    isLoadingProject,
     isUpdatingProject,
     isRefreshingProject,
     isDeletingProject,
-    receiptPayments,
-    isLoadingReceiptPayments,
-    isRefreshingReceiptPayments,
     handleUpdateProject,
     handleDelete,
     refreshProject,
-    refreshReceiptPayments,
   } = useOrganizationProjectDetailContext();
   const router = useRouter();
 
   const handleSaveAndExit = () => {
     if (!project) return;
     refreshProject();
-    refreshReceiptPayments();
     router.back();
   };
-
-  if (isLoadingProject) {
-    return (
-      <>
-        <StackWithHeader title="Chi tiết Dự án" />
-        <ProjectDetailSkeleton />
-      </>
-    );
-  }
 
   return (
     <OrganizationCustomerProvider organizationId={project?.organization?.id}>
@@ -91,18 +77,15 @@ export function OrganizationProjectDetailContent() {
           }
         />
         {project && (
-          <ReceiptPaymentProjectListContent
-            onRefresh={() => {
-              refreshProject();
-              refreshReceiptPayments();
-            }}
-            receiptPayments={receiptPayments}
-            startDate={project.startDate}
-            endDate={project.endDate}
-            loading={isLoadingReceiptPayments}
-            refreshing={isRefreshingReceiptPayments}
-            projectId={projectId}
-          />
+          <Suspense fallback={<EntityListSectionSkeleton />}>
+            <ReceiptPaymentProjectListContent
+              key={`receipt-payment-list-in-project-${projectId}`}
+              projectId={projectId}
+              startDate={project.startDate}
+              endDate={project.endDate}
+              onRefresh={refreshProject}
+            />
+          </Suspense>
         )}
         <ProjectDetailFooterContent
           project={project ?? undefined}

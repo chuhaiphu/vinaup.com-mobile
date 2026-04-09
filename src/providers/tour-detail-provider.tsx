@@ -37,7 +37,7 @@ export function TourDetailProvider({
     executeFetchFn: fetchTour,
     refreshFetchFn: refreshTour,
   } = useFetchFn(() => getTourByIdApi(tourId), {
-    fetchKey: `tour-detail-${tourId}`,
+    fetchKey: `organization-tour-${tourId}`,
     tags: [`organization-tour-${tourId}`],
   });
 

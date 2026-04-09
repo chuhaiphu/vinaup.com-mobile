@@ -6,12 +6,10 @@ import {
   getInvoiceByIdApi,
   updateInvoiceApi,
 } from '@/apis/invoice-apis';
-import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 import {
   InvoiceResponse,
   UpdateInvoiceRequest,
 } from '@/interfaces/invoice-interfaces';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
 
 interface InvoiceDetailContextType {
@@ -21,16 +19,12 @@ interface InvoiceDetailContextType {
   isRefreshingInvoice: boolean;
   isUpdatingInvoice: boolean;
   isDeletingInvoice: boolean;
-  receiptPayments: ReceiptPaymentResponse[];
-  isLoadingReceiptPayments: boolean;
-  isRefreshingReceiptPayments: boolean;
   handleUpdateInvoice: (
     fields: UpdateInvoiceRequest,
     onSuccess?: () => void
   ) => void;
   handleDelete: () => void;
   refreshInvoice: () => void;
-  refreshReceiptPayments: () => void;
 }
 
 const InvoiceDetailContext = createContext<InvoiceDetailContextType | null>(null);
@@ -60,6 +54,7 @@ export function InvoiceDetailProvider({
     executeFetchFn: fetchInvoice,
     refreshFetchFn: refreshInvoice,
   } = useFetchFn(() => getInvoiceByIdApi(invoiceId), {
+    fetchKey: `organization-invoice-${invoiceId}`,
     tags: [`organization-invoice-${invoiceId}`],
   });
 
@@ -75,22 +70,11 @@ export function InvoiceDetailProvider({
       invalidatesTags: ['organization-invoice-list'],
     });
 
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPayments,
-    refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn(() => getReceiptPaymentsByInvoiceIdApi(invoiceId), {
-    tags: [`organization-receipt-payment-list-in-invoice-${invoiceId}`],
-  });
-
   useEffect(() => {
     if (invoiceId) {
       fetchInvoice();
-      fetchReceiptPayments();
     }
-  }, [invoiceId, fetchInvoice, fetchReceiptPayments]);
+  }, [invoiceId, fetchInvoice]);
 
   const handleUpdateInvoice = useCallback(
     (updatedFields: UpdateInvoiceRequest, onSuccessCallback?: () => void) => {
@@ -138,13 +122,9 @@ export function InvoiceDetailProvider({
         isRefreshingInvoice,
         isUpdatingInvoice,
         isDeletingInvoice,
-        receiptPayments: receiptPayments ?? [],
-        isLoadingReceiptPayments,
-        isRefreshingReceiptPayments,
         handleUpdateInvoice,
         handleDelete,
         refreshInvoice,
-        refreshReceiptPayments,
       }}
     >
       {children}

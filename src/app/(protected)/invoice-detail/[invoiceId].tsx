@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { InvoiceDetailHeaderContent } from '@/components/contents/invoice/invoice-detail-header-content';
 import { ReceiptPaymentInvoiceListContent } from '@/components/contents/invoice/receipt-payment-invoice-list-content';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import Loader from '@/components/primitives/loader';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatus, InvoiceStatusOptions } from '@/constants/invoice-constants';
@@ -35,20 +37,15 @@ function InvoiceDetailScreenContent() {
     isUpdatingInvoice,
     isRefreshingInvoice,
     isDeletingInvoice,
-    receiptPayments,
-    isLoadingReceiptPayments,
-    isRefreshingReceiptPayments,
     invoiceId,
     handleUpdateInvoice,
     handleDelete,
     refreshInvoice,
-    refreshReceiptPayments,
   } = useInvoiceDetailContext();
 
   const handleSaveAndExit = () => {
     if (!invoice) return;
     refreshInvoice();
-    refreshReceiptPayments();
   };
 
   if (isLoadingInvoice) {
@@ -116,20 +113,17 @@ function InvoiceDetailScreenContent() {
         </View>
         <InvoiceDetailHeaderContent />
         {invoice && (
-          <ReceiptPaymentInvoiceListContent
-            onRefresh={() => {
-              refreshInvoice();
-              refreshReceiptPayments();
-            }}
-            receiptPayments={receiptPayments}
-            startDate={invoice.startDate}
-            endDate={invoice.endDate}
-            loading={isLoadingReceiptPayments}
-            refreshing={isRefreshingReceiptPayments}
-            invoiceId={invoiceId}
-            organizationId={invoice.organization?.id}
-            invoiceTypeId={invoice.invoiceType.id}
-          />
+          <Suspense fallback={<EntityListSectionSkeleton />}>
+            <ReceiptPaymentInvoiceListContent
+              key={`receipt-payment-list-in-invoice-${invoiceId}`}
+              onRefresh={refreshInvoice}
+              startDate={invoice.startDate}
+              endDate={invoice.endDate}
+              invoiceId={invoiceId}
+              organizationId={invoice.organization?.id}
+              invoiceTypeId={invoice.invoiceType.id}
+            />
+          </Suspense>
         )}
         <InvoiceDetailFooterContent />
       </View>

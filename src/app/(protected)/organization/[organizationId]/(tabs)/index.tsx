@@ -86,7 +86,7 @@ export default function OrganizationIndexScreen() {
     isRefreshing,
     refreshFetchFn: refreshReceiptPaymentsByInvoiceIds,
   } = useFetchFn(fetchReceiptPaymentsByInvoiceIdsFn, {
-    tags: ['organization-receipt-payment-list-in-invoice'],
+    tags: ['receipt-payment-list-in-invoice'],
   });
 
   useEffect(() => {

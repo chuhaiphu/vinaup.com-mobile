@@ -37,7 +37,11 @@ function TourListSection({
 
   const fetchKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
 
-  const { data: tours, refreshFetch, isRefreshing } = useFetch(fetchToursFn, fetchKey, {
+  const {
+    data: tours,
+    refreshFetch,
+    isRefreshing,
+  } = useFetch(fetchToursFn, fetchKey, {
     tags: ['organization-tour-list', organizationId],
   });
 
@@ -46,7 +50,7 @@ function TourListSection({
   const navigateToDetailScreen = async (id?: string) => {
     if (!id) return;
     setIsNavigating(true);
-    await prefetch(`tour-detail-${id}`, () => getTourByIdApi(id));
+    await prefetch(`organization-tour-${id}`, () => getTourByIdApi(id));
     router.push({
       pathname: '/(protected)/tour-detail/[tourId]',
       params: { tourId: id },

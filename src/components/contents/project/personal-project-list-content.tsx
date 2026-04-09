@@ -1,10 +1,13 @@
 import { COLORS } from '@/constants/style-constant';
-import { useFetch } from 'fetchwire';
+import { prefetch, useFetch } from 'fetchwire';
 import { Suspense, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
+import {
+  getProjectByIdApi,
+  getProjectsOfCurrentUserApi,
+} from '@/apis/project-apis';
 import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment-apis';
 import { ProjectCard } from '@/components/cards/project-card';
 import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
@@ -15,6 +18,8 @@ import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { useRouter } from 'expo-router';
+import Loader from '@/components/primitives/loader';
 
 interface ProjectListSectionProps {
   projectType: 'SELF' | 'COMPANY';
@@ -27,6 +32,25 @@ function ProjectListSection({
   selectedDate,
   projectStatusFilter,
 }: ProjectListSectionProps) {
+  const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const navigateToDetail = async (project: ProjectResponse) => {
+    setIsNavigating(true);
+    const fetchKeyMap: Record<string, string> = {
+      SELF: `personal-project-self-${project.id}`,
+      COMPANY: `personal-project-company-${project.id}`,
+    };
+    const fetchKey =
+      fetchKeyMap[project.type] ?? `organization-project-${project.id}`;
+    await prefetch(fetchKey, () => getProjectByIdApi(project.id));
+    router.push({
+      pathname: '/(protected)/project-detail/[projectId]',
+      params: { projectId: project.id, type: project.type },
+    });
+    setIsNavigating(false);
+  };
+
   const fetchProjectsAndReceiptPaymentsFn = async () => {
     const projectsRes = await getProjectsOfCurrentUserApi({
       type: projectType,
@@ -65,7 +89,9 @@ function ProjectListSection({
         data={projects}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ProjectCard project={item} />}
+        renderItem={({ item }) => (
+          <ProjectCard project={item} onPress={() => navigateToDetail(item)} />
+        )}
         refreshControl={
           <RefreshControl
             refreshing={false}
@@ -75,6 +101,7 @@ function ProjectListSection({
         }
       />
       <ReceiptPaymentsSummary receiptPayments={allReceiptPayments} />
+      {isNavigating && <Loader withOverlay size={96} />}
     </View>
   );
 }

@@ -1,54 +1,57 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useAuthContext } from "./auth-provider";
-import { getOrganizationsOfCurrentUserApi } from "@/apis/organization-apis";
-import { OrganizationResponse } from "@/interfaces/organization-interfaces";
+import { createContext, useContext, useEffect } from 'react';
+import { useFetchFn } from 'fetchwire';
+import { useAuthContext } from './auth-provider';
+import { getOrganizationsOfCurrentUserApi } from '@/apis/organization-apis';
+import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 
 interface OrganizationContextType {
   organizations: OrganizationResponse[];
-  loading: boolean;
-  refresh: () => void;
+  isLoadingOrganizations: boolean;
+  isRefreshingOrganizations: boolean;
+  refreshOrganizations: () => void;
 }
 
-const OrganizationContext = createContext<OrganizationContextType>({
-  organizations: [],
-  loading: false,
-  refresh: () => { },
-});
+const OrganizationContext = createContext<OrganizationContextType | null>(null);
 
 export function useOrganizationContext() {
-  return useContext(OrganizationContext);
+  const ctx = useContext(OrganizationContext);
+  if (!ctx)
+    throw new Error(
+      'useOrganizationContext must be used within OrganizationProvider'
+    );
+  return ctx;
 }
 
-export const OrganizationProvider = ({ children }: { children: React.ReactNode }) => {
+export function OrganizationProvider({ children }: { children: React.ReactNode }) {
   const { currentUser } = useAuthContext();
-  const [organizations, setOrganizations] = useState<OrganizationResponse[]>([]);
-  const [loading, setLoading] = useState(false);
+
+  const {
+    data: organizations,
+    isLoading: isLoadingOrganizations,
+    isRefreshing: isRefreshingOrganizations,
+    executeFetchFn: fetchOrganizations,
+    refreshFetchFn: refreshOrganizations,
+  } = useFetchFn(() => getOrganizationsOfCurrentUserApi(), {
+    fetchKey: 'organizations',
+    tags: ['organizations'],
+  });
 
   useEffect(() => {
     if (currentUser?.id) {
-      getOrganizationsOfCurrentUser();
-    } else {
-      setOrganizations([]);
+      fetchOrganizations();
     }
-  }, [currentUser?.id]);
-
-  const getOrganizationsOfCurrentUser = async () => {
-    setLoading(true);
-    try {
-      const response = await getOrganizationsOfCurrentUserApi();
-      if (response.data) {
-        setOrganizations(response.data);
-      }
-    } catch (error) {
-      console.error("Lỗi khi lấy danh sách tổ chức:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [currentUser?.id, fetchOrganizations]);
 
   return (
-    <OrganizationContext value={{ organizations, loading, refresh: getOrganizationsOfCurrentUser }}>
+    <OrganizationContext
+      value={{
+        organizations: organizations ?? [],
+        isLoadingOrganizations,
+        isRefreshingOrganizations,
+        refreshOrganizations,
+      }}
+    >
       {children}
     </OrganizationContext>
   );
-};
+}

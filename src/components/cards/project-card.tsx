@@ -8,23 +8,21 @@ import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { useRouter } from 'expo-router';
 import { PressableOpacity } from '../primitives/pressable-opacity';
 
 interface ProjectCardProps {
   project?: ProjectResponse;
+  onPress?: () => void;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
-  const router = useRouter();
-
+export function ProjectCard({ project, onPress }: ProjectCardProps) {
   const [isShowingPrice, setIsShowingPrice] = useState(false);
   const fetchReceiptPaymentsFn = () =>
     getReceiptPaymentsByProjectIdApi(project?.id || '');
 
   const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
     useFetchFn(fetchReceiptPaymentsFn, {
-      tags: [`personal-receipt-payment-list-in-project-${project?.id}`],
+      tags: [`receipt-payment-list-in-project-${project?.id}`],
     });
 
   useEffect(() => {
@@ -56,14 +54,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   const togglePrice = () => {
     setIsShowingPrice(!isShowingPrice);
-  };
-
-  const navigateToDetail = (id?: string) => {
-    if (!id || !project) return;
-    router.push({
-      pathname: '/(protected)/project-detail/[projectId]',
-      params: { projectId: id, type: project.type },
-    });
   };
 
   if (!project) {
@@ -108,7 +98,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </Text>
         </View>
       </View>
-      <Pressable onPress={() => navigateToDetail(project.id)}>
+      <Pressable onPress={onPress}>
         <View style={styles.content}>
           <View style={styles.topRow}>
             <View style={styles.descriptionContainer}>

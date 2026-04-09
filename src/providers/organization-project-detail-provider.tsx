@@ -6,12 +6,10 @@ import {
   getProjectByIdApi,
   updateProjectApi,
 } from '@/apis/project-apis';
-import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 import {
   ProjectResponse,
   UpdateProjectRequest,
 } from '@/interfaces/project-interfaces';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
 
 interface OrganizationProjectDetailContextType {
@@ -21,16 +19,12 @@ interface OrganizationProjectDetailContextType {
   isRefreshingProject: boolean;
   isUpdatingProject: boolean;
   isDeletingProject: boolean;
-  receiptPayments: ReceiptPaymentResponse[];
-  isLoadingReceiptPayments: boolean;
-  isRefreshingReceiptPayments: boolean;
   handleUpdateProject: (
     fields: UpdateProjectRequest,
     onSuccess?: () => void
   ) => void;
   handleDelete: () => void;
   refreshProject: () => void;
-  refreshReceiptPayments: () => void;
 }
 
 const OrganizationProjectDetailContext =
@@ -61,7 +55,8 @@ export function OrganizationProjectDetailProvider({
     executeFetchFn: fetchProject,
     refreshFetchFn: refreshProject,
   } = useFetchFn(() => getProjectByIdApi(projectId), {
-    tags: [`project-org-${projectId}`],
+    fetchKey: `organization-project-${projectId}`,
+    tags: [`organization-project-${projectId}`],
   });
 
   const { executeMutationFn: updateProject, isMutating: isUpdatingProject } =
@@ -76,22 +71,11 @@ export function OrganizationProjectDetailProvider({
       invalidatesTags: ['organization-project-list'],
     });
 
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPayments,
-    refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn(() => getReceiptPaymentsByProjectIdApi(projectId), {
-    tags: [`receipt-payment-list-in-project-${projectId}`],
-  });
-
   useEffect(() => {
     if (projectId) {
       fetchProject();
-      fetchReceiptPayments();
     }
-  }, [projectId, fetchProject, fetchReceiptPayments]);
+  }, [projectId, fetchProject]);
 
   const handleUpdateProject = useCallback(
     (updatedFields: UpdateProjectRequest, onSuccessCallback?: () => void) => {
@@ -139,13 +123,9 @@ export function OrganizationProjectDetailProvider({
         isRefreshingProject,
         isUpdatingProject,
         isDeletingProject,
-        receiptPayments: receiptPayments ?? [],
-        isLoadingReceiptPayments,
-        isRefreshingReceiptPayments,
         handleUpdateProject,
         handleDelete,
         refreshProject,
-        refreshReceiptPayments,
       }}
     >
       {children}

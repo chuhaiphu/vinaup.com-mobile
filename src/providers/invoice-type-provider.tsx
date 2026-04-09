@@ -1,68 +1,65 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect } from 'react';
+import { useFetchFn } from 'fetchwire';
 import { getInvoiceTypesApi } from '@/apis/invoice-apis';
 import { InvoiceTypeResponse } from '@/interfaces/invoice-type-interfaces';
 
 interface InvoiceTypeContextType {
   invoiceTypes: InvoiceTypeResponse[];
-  loading: boolean;
-  refresh: () => void;
+  isLoadingInvoiceTypes: boolean;
+  isRefreshingInvoiceTypes: boolean;
+  refreshInvoiceTypes: () => void;
   getInvoiceTypeByCode: (code: string) => InvoiceTypeResponse | undefined;
   getInvoiceTypeById: (id: string) => InvoiceTypeResponse | undefined;
 }
 
-const InvoiceTypeContext = createContext<InvoiceTypeContextType>({
-  invoiceTypes: [],
-  loading: false,
-  refresh: () => {},
-  getInvoiceTypeByCode: () => undefined,
-  getInvoiceTypeById: () => undefined,
-});
+const InvoiceTypeContext = createContext<InvoiceTypeContextType | null>(null);
 
 export function useInvoiceTypeContext() {
-  return useContext(InvoiceTypeContext);
+  const ctx = useContext(InvoiceTypeContext);
+  if (!ctx)
+    throw new Error(
+      'useInvoiceTypeContext must be used within InvoiceTypeProvider'
+    );
+  return ctx;
 }
 
-export const InvoiceTypeProvider = ({
+export function InvoiceTypeProvider({
   children,
 }: {
   children: React.ReactNode;
-}) => {
-  const [invoiceTypes, setInvoiceTypes] = useState<InvoiceTypeResponse[]>([]);
-  const [loading, setLoading] = useState(false);
+}) {
+  const {
+    data: invoiceTypes,
+    isLoading: isLoadingInvoiceTypes,
+    isRefreshing: isRefreshingInvoiceTypes,
+    executeFetchFn: fetchInvoiceTypes,
+    refreshFetchFn: refreshInvoiceTypes,
+  } = useFetchFn(() => getInvoiceTypesApi(), {
+    fetchKey: 'invoice-types',
+    tags: ['invoice-types'],
+  });
+
   useEffect(() => {
     fetchInvoiceTypes();
-  }, []);
-
-  const fetchInvoiceTypes = async () => {
-    setLoading(true);
-    try {
-      const response = await getInvoiceTypesApi();
-      if (response.data) {
-        setInvoiceTypes(response.data);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy danh sách loại hoá đơn:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchInvoiceTypes]);
 
   const getInvoiceTypeByCode = useCallback(
-    (code: string) => invoiceTypes.find((t) => t.code === code),
+    (code: string) => invoiceTypes?.find((t) => t.code === code),
     [invoiceTypes]
   );
 
   const getInvoiceTypeById = useCallback(
-    (id: string) => invoiceTypes.find((t) => t.id === id),
+    (id: string) => invoiceTypes?.find((t) => t.id === id),
     [invoiceTypes]
   );
 
   return (
     <InvoiceTypeContext
       value={{
-        invoiceTypes,
-        loading,
-        refresh: fetchInvoiceTypes,
+        invoiceTypes: invoiceTypes ?? [],
+        isLoadingInvoiceTypes,
+        isRefreshingInvoiceTypes,
+        refreshInvoiceTypes,
         getInvoiceTypeByCode,
         getInvoiceTypeById,
       }}
@@ -70,4 +67,4 @@ export const InvoiceTypeProvider = ({
       {children}
     </InvoiceTypeContext>
   );
-};
+}

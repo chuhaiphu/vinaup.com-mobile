@@ -97,29 +97,37 @@ export default function ReceiptPaymentFormScreen() {
   const formInvalidatesTags = (() => {
     switch (true) {
       case !!params.projectId:
-        return [`personal-receipt-payment-list-in-project-${params.projectId}`];
+        return [`receipt-payment-list-in-project-${params.projectId}`];
       case !!params.invoiceId:
         return [
-          `organization-receipt-payment-list-in-invoice-${params.invoiceId}`,
-          'organization-receipt-payment-list-in-invoice',
+          `receipt-payment-list-in-invoice-${params.invoiceId}`,
+          'receipt-payment-list-in-invoice',
         ];
       case !!params.bookingId:
         return [`organization-receipt-payment-list-in-booking-${params.bookingId}`];
       case !!params.tourCalculationId:
-        return [`organization-receipt-payment-list-in-tour-calculation-${params.tourCalculationId}`];
+        return [
+          `organization-receipt-payment-list-in-tour-calculation-${params.tourCalculationId}`,
+        ];
       case !!params.tourImplementationId:
         if (params.groupCode === 'FOR_DIRECTOR') {
-          return [`receipt-payment-tour-implementation-director-${params.tourImplementationId}`];
+          return [
+            `receipt-payment-tour-implementation-director-${params.tourImplementationId}`,
+          ];
         }
         if (params.groupCode === 'FOR_TOUR_GUIDE') {
-          return [`receipt-payment-tour-implementation-tour-guide-${params.tourImplementationId}`];
+          return [
+            `receipt-payment-tour-implementation-tour-guide-${params.tourImplementationId}`,
+          ];
         }
         return [
           `receipt-payment-tour-implementation-director-${params.tourImplementationId}`,
           `receipt-payment-tour-implementation-tour-guide-${params.tourImplementationId}`,
         ];
       case !!params.tourSettlementId:
-        return [`organization-receipt-payment-list-in-tour-settlement-${params.tourSettlementId}`];
+        return [
+          `organization-receipt-payment-list-in-tour-settlement-${params.tourSettlementId}`,
+        ];
       default:
         return ['personal-receipt-payment-list'];
     }

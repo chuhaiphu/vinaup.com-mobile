@@ -34,11 +34,13 @@ function ReceiptPaymentListSection({
 
   const fetchKey = `personal-receipt-payment-list-${selectedDate.format('YYYY-MM-DD')}`;
 
-  const { data: receiptPayments, refreshFetch, isRefreshing } = useFetch(
-    fetchReceiptPaymentsFn,
-    fetchKey,
-    { tags: ['personal-receipt-payment-list'] }
-  );
+  const {
+    data: receiptPayments,
+    refreshFetch,
+    isRefreshing,
+  } = useFetch(fetchReceiptPaymentsFn, fetchKey, {
+    tags: ['personal-receipt-payment-list'],
+  });
 
   const normalizedReceiptPayments = receiptPayments ?? [];
 

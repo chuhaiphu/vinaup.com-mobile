@@ -1,54 +1,55 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
+import { useFetchFn } from 'fetchwire';
 import { useAuthContext } from './auth-provider';
 import { getAllOrganizationsApi } from '@/apis/organization-apis';
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 
 interface AllOrganizationsContextType {
   allOrganizations: OrganizationResponse[];
-  loading: boolean;
-  refresh: () => void;
+  isLoadingAllOrganizations: boolean;
+  isRefreshingAllOrganizations: boolean;
+  refreshAllOrganizations: () => void;
 }
 
-const AllOrganizationsContext = createContext<AllOrganizationsContextType>({
-  allOrganizations: [],
-  loading: false,
-  refresh: () => {},
-});
+const AllOrganizationsContext = createContext<AllOrganizationsContextType | null>(null);
 
 export function useAllOrganizationsContext() {
-  return useContext(AllOrganizationsContext);
+  const ctx = useContext(AllOrganizationsContext);
+  if (!ctx)
+    throw new Error(
+      'useAllOrganizationsContext must be used within AllOrganizationsProvider'
+    );
+  return ctx;
 }
 
 export function AllOrganizationsProvider({ children }: { children: React.ReactNode }) {
   const { currentUser } = useAuthContext();
-  const [allOrganizations, setAllOrganizations] = useState<OrganizationResponse[]>([]);
-  const [loading, setLoading] = useState(false);
+
+  const {
+    data: allOrganizations,
+    isLoading: isLoadingAllOrganizations,
+    isRefreshing: isRefreshingAllOrganizations,
+    executeFetchFn: fetchAllOrganizations,
+    refreshFetchFn: refreshAllOrganizations,
+  } = useFetchFn(() => getAllOrganizationsApi(), {
+    fetchKey: 'all-organizations',
+    tags: ['all-organizations'],
+  });
 
   useEffect(() => {
     if (currentUser?.id) {
       fetchAllOrganizations();
-    } else {
-      setAllOrganizations([]);
     }
-  }, [currentUser?.id]);
-
-  const fetchAllOrganizations = async () => {
-    setLoading(true);
-    try {
-      const response = await getAllOrganizationsApi();
-      if (response.data) {
-        setAllOrganizations(response.data);
-      }
-    } catch (error) {
-      console.error('Lỗi khi lấy danh sách tất cả tổ chức:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [currentUser?.id, fetchAllOrganizations]);
 
   return (
     <AllOrganizationsContext
-      value={{ allOrganizations, loading, refresh: fetchAllOrganizations }}
+      value={{
+        allOrganizations: allOrganizations ?? [],
+        isLoadingAllOrganizations,
+        isRefreshingAllOrganizations,
+        refreshAllOrganizations,
+      }}
     >
       {children}
     </AllOrganizationsContext>
