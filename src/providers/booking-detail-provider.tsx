@@ -60,6 +60,7 @@ export function BookingDetailProvider({
     executeFetchFn: fetchBooking,
     refreshFetchFn: refreshBooking,
   } = useFetchFn(() => getBookingByIdApi(bookingId), {
+    fetchKey: `organization-booking-${bookingId}`,
     tags: [`organization-booking-${bookingId}`],
   });
 

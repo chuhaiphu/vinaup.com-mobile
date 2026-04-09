@@ -42,6 +42,7 @@ export function TourCalculationTicketSummaryReceiptPaymentListContent({
   const {
     data: receiptPayments,
     refreshFetch: refreshReceiptPaymentsByTourCalculation,
+    isRefreshing: isRefreshingReceiptPaymentsByTourCalculation,
   } = useFetch(
     fetchReceiptPaymentsByTourCalculationFn,
     `organization-receipt-payment-list-in-tour-calculation-${tourCalculation?.id}`,
@@ -92,6 +93,7 @@ export function TourCalculationTicketSummaryReceiptPaymentListContent({
       />
 
       <ReceiptPaymentTourCalculationListContent
+        isRefreshing={isRefreshingReceiptPaymentsByTourCalculation}
         receiptPayments={receiptPayments ?? []}
         startDate={startDate}
         endDate={endDate}

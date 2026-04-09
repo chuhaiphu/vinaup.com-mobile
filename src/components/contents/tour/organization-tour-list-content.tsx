@@ -16,7 +16,7 @@ import { getTourByIdApi, getToursByOrganizationIdApi } from '@/apis/tour-apis';
 import { TourCard } from '@/components/cards/tour-card';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-import Loader from '@/components/primitives/loader';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 type TourListSectionProps = {
   organizationId: string;
@@ -28,12 +28,12 @@ function TourListSection({
   tourStatusFilter,
 }: TourListSectionProps) {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
 
   const fetchToursFn = () =>
     getToursByOrganizationIdApi(organizationId, {
       status: tourStatusFilter || undefined,
     });
-  const [isNavigating, setIsNavigating] = useState(false);
 
   const fetchKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
 
@@ -50,12 +50,19 @@ function TourListSection({
   const navigateToDetailScreen = async (id?: string) => {
     if (!id) return;
     setIsNavigating(true);
-    await prefetch(`organization-tour-${id}`, () => getTourByIdApi(id));
-    router.push({
-      pathname: '/(protected)/tour-detail/[tourId]',
-      params: { tourId: id },
-    });
-    setIsNavigating(false);
+    try {
+      try {
+        await prefetch(`organization-tour-${id}`, () => getTourByIdApi(id));
+      } catch {
+        // Fallback to normal navigation if prefetch fails.
+      }
+      router.push({
+        pathname: '/(protected)/tour-detail/[tourId]',
+        params: { tourId: id },
+      });
+    } finally {
+      setIsNavigating(false);
+    }
   };
 
   return (
@@ -77,7 +84,6 @@ function TourListSection({
           />
         }
       />
-      {isNavigating && <Loader withOverlay size={96} />}
     </>
   );
 }

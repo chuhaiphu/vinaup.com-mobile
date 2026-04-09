@@ -8,6 +8,9 @@ import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
 import { PressableOpacity } from '../primitives/pressable-opacity';
 import { useRouter } from 'expo-router';
+import { prefetch } from 'fetchwire';
+import { getBookingByIdApi } from '@/apis/booking-apis';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface BookingCardProps {
   booking?: BookingResponse;
@@ -15,6 +18,7 @@ interface BookingCardProps {
 
 export function BookingCard({ booking }: BookingCardProps) {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
   const [isShowingPrice, setIsShowingPrice] = useState(false);
 
   const getDateRangeText = () => {
@@ -42,11 +46,23 @@ export function BookingCard({ booking }: BookingCardProps) {
     setIsShowingPrice(!isShowingPrice);
   };
 
-  const navigateToDetail = (bookingId: string) => {
-    router.push({
-      pathname: '/(protected)/booking-detail/[bookingId]',
-      params: { bookingId },
-    });
+  const navigateToDetail = async (bookingId: string) => {
+    setIsNavigating(true);
+    try {
+      try {
+        await prefetch(`organization-booking-${bookingId}`, () =>
+          getBookingByIdApi(bookingId)
+        );
+      } catch {
+        // Fallback to normal navigation if prefetch fails.
+      }
+      router.push({
+        pathname: '/(protected)/booking-detail/[bookingId]',
+        params: { bookingId },
+      });
+    } finally {
+      setIsNavigating(false);
+    }
   };
 
   if (!booking) {

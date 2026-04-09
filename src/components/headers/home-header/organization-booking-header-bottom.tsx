@@ -32,7 +32,7 @@ const OrganizationBookingHeaderBottom = () => {
       onSuccess: (data) => {
         router.push({
           pathname: '/(protected)/booking-detail/[bookingId]',
-          params: { bookingId: data.id },
+          params: { bookingId: data?.id || '' },
         });
       },
       onError: (error) =>
@@ -43,9 +43,7 @@ const OrganizationBookingHeaderBottom = () => {
   return (
     <>
       <View style={styles.titleWrapper}>
-        <Text style={styles.titleLeft}>
-          Booking
-        </Text>
+        <Text style={styles.titleLeft}>Booking</Text>
       </View>
       <Button
         onPress={handleAddNew}

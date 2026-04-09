@@ -19,7 +19,7 @@ import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-se
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
-import Loader from '@/components/primitives/loader';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface ProjectListSectionProps {
   projectType: 'SELF' | 'COMPANY';
@@ -33,7 +33,7 @@ function ProjectListSection({
   projectStatusFilter,
 }: ProjectListSectionProps) {
   const router = useRouter();
-  const [isNavigating, setIsNavigating] = useState(false);
+  const { setIsNavigating } = useNavigationStore();
 
   const navigateToDetail = async (project: ProjectResponse) => {
     setIsNavigating(true);
@@ -43,12 +43,19 @@ function ProjectListSection({
     };
     const fetchKey =
       fetchKeyMap[project.type] ?? `organization-project-${project.id}`;
-    await prefetch(fetchKey, () => getProjectByIdApi(project.id));
-    router.push({
-      pathname: '/(protected)/project-detail/[projectId]',
-      params: { projectId: project.id, type: project.type },
-    });
-    setIsNavigating(false);
+    try {
+      try {
+        await prefetch(fetchKey, () => getProjectByIdApi(project.id));
+      } catch {
+        // Fallback to normal navigation if prefetch fails.
+      }
+      router.push({
+        pathname: '/(protected)/project-detail/[projectId]',
+        params: { projectId: project.id, type: project.type },
+      });
+    } finally {
+      setIsNavigating(false);
+    }
   };
 
   const fetchProjectsAndReceiptPaymentsFn = async () => {
@@ -73,7 +80,7 @@ function ProjectListSection({
 
   const fetchKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
 
-  const { data, refreshFetch } = useFetch<{
+  const { data, refreshFetch, isRefreshing } = useFetch<{
     projects: ProjectResponse[];
     allReceiptPayments: ReceiptPaymentResponse[];
   }>(fetchProjectsAndReceiptPaymentsFn, fetchKey, {
@@ -94,14 +101,13 @@ function ProjectListSection({
         )}
         refreshControl={
           <RefreshControl
-            refreshing={false}
+            refreshing={isRefreshing}
             onRefresh={refreshFetch}
             colors={[COLORS.vinaupTeal]}
           />
         }
       />
       <ReceiptPaymentsSummary receiptPayments={allReceiptPayments} />
-      {isNavigating && <Loader withOverlay size={96} />}
     </View>
   );
 }

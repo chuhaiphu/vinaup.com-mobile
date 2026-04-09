@@ -53,6 +53,29 @@ export default function ReceiptPaymentFormScreen() {
     transactionDate?: string;
   }>();
 
+  const [description, setDescription] = useState('');
+  const [unitPrice, setUnitPrice] = useState<string>('');
+  const [quantity, setQuantity] = useState<string>('1');
+  const [frequency, setFrequency] = useState<string>('1');
+  const [type, setType] = useState<ReceiptPaymentType>(
+    params.receiptPaymentType || 'PAYMENT'
+  );
+  const [vatRate, setVatRate] = useState<string>('');
+  const [transactionType, setTransactionType] =
+    useState<ReceiptPaymentTransactionType>('CASH');
+  const [note, setNote] = useState('');
+  const [transactionDate, setTransactionDate] = useState<Dayjs>(
+    params.transactionDate ? dayjs(params.transactionDate) : dayjs()
+  );
+
+  const [isDescriptionSelectMode, setIsDescriptionSelectMode] = useState(false);
+
+  // Validation state
+  const [inputErrors, setInputErrors] = useState<{
+    description?: boolean;
+    unitPrice?: boolean;
+  }>({});
+
   const { receiptPaymentId } = params;
   const isUpdateMode = receiptPaymentId !== 'new';
 
@@ -67,11 +90,11 @@ export default function ReceiptPaymentFormScreen() {
   useEffect(() => {
     if (existingReceiptPayment) {
       setDescription(existingReceiptPayment.description || '');
-      setUnitPrice(existingReceiptPayment.unitPrice);
-      setQuantity(existingReceiptPayment.quantity);
-      setFrequency(existingReceiptPayment.frequency ?? 1);
+      setUnitPrice(existingReceiptPayment.unitPrice.toString());
+      setQuantity(existingReceiptPayment.quantity.toString());
+      setFrequency(existingReceiptPayment.frequency.toString());
       setType(existingReceiptPayment.type);
-      setVatRate(existingReceiptPayment.vatRate || 0);
+      setVatRate(existingReceiptPayment.vatRate.toString());
       setTransactionType(existingReceiptPayment.transactionType);
       setNote(existingReceiptPayment.note || '');
       setTransactionDate(dayjs(existingReceiptPayment.transactionDate));
@@ -136,11 +159,11 @@ export default function ReceiptPaymentFormScreen() {
   const createOrUpdateReceiptPaymentFn = () => {
     const submitData: CreateReceiptPaymentRequest = {
       description,
-      unitPrice,
-      quantity,
-      frequency,
+      unitPrice: Number(unitPrice),
+      quantity: Number(quantity),
+      frequency: Number(frequency),
       type,
-      vatRate,
+      vatRate: Number(vatRate),
       transactionType,
       note,
       transactionDate: transactionDate.toDate(),
@@ -191,30 +214,9 @@ export default function ReceiptPaymentFormScreen() {
     }
   }, [defaultCategoryOption]);
 
-  const [description, setDescription] = useState('');
-  const [unitPrice, setUnitPrice] = useState<number>(1);
-  const [quantity, setQuantity] = useState<number>(1);
-  const [frequency, setFrequency] = useState<number>(1);
-  const [type, setType] = useState<ReceiptPaymentType>(
-    params.receiptPaymentType || 'PAYMENT'
-  );
-  const [vatRate, setVatRate] = useState<number>(0);
-  const [transactionType, setTransactionType] =
-    useState<ReceiptPaymentTransactionType>('CASH');
-  const [note, setNote] = useState('');
-  const [transactionDate, setTransactionDate] = useState<Dayjs>(
-    params.transactionDate ? dayjs(params.transactionDate) : dayjs()
-  );
   const [selectedCategory, setSelectedCategory] = useState(
     defaultCategoryOption?.id || ''
   );
-  const [isDescriptionSelectMode, setIsDescriptionSelectMode] = useState(false);
-
-  // Validation state
-  const [inputErrors, setInputErrors] = useState<{
-    description?: boolean;
-    unitPrice?: boolean;
-  }>({});
 
   const validateByInputField = (
     input: 'description' | 'unitPrice',
@@ -231,10 +233,10 @@ export default function ReceiptPaymentFormScreen() {
   };
 
   const handleSaveAndExit = () => {
-    if (!description.trim() || unitPrice <= 0) {
+    if (!description.trim() || Number(unitPrice) <= 0) {
       setInputErrors({
         description: !description.trim(),
-        unitPrice: unitPrice <= 0,
+        unitPrice: Number(unitPrice) <= 0,
       });
       return;
     }
@@ -375,10 +377,10 @@ export default function ReceiptPaymentFormScreen() {
                 <View style={styles.separator} />
                 <TextInput
                   style={[styles.inputNative, { flex: 1 }]}
-                  value={String(unitPrice)}
+                  value={unitPrice}
                   keyboardType="numeric"
                   onChangeText={(val) => {
-                    setUnitPrice(Number(val));
+                    setUnitPrice(val);
                     setInputErrors((prev) => ({
                       ...prev,
                       unitPrice: validateByInputField('unitPrice', val),
@@ -400,9 +402,9 @@ export default function ReceiptPaymentFormScreen() {
                 <View style={styles.separator} />
                 <TextInput
                   style={[styles.inputNative, { flex: 1 }]}
-                  value={String(quantity)}
+                  value={quantity.toString()}
                   keyboardType="numeric"
-                  onChangeText={(val) => setQuantity(Number(val))}
+                  onChangeText={(val) => setQuantity(val)}
                 />
                 <View style={styles.segmentMini}>
                   <Pressable
@@ -487,9 +489,9 @@ export default function ReceiptPaymentFormScreen() {
                   <View style={styles.separator} />
                   <TextInput
                     style={[styles.inputNative, { flex: 1 }]}
-                    value={String(frequency)}
+                    value={frequency.toString()}
                     keyboardType="numeric"
-                    onChangeText={(val) => setFrequency(Number(val))}
+                    onChangeText={(val) => setFrequency(val)}
                   />
                 </View>
               </View>
@@ -501,10 +503,11 @@ export default function ReceiptPaymentFormScreen() {
                   </View>
                   <View style={styles.separator} />
                   <TextInput
+                    placeholder="0"
                     style={styles.inputNative}
-                    value={String(vatRate)}
+                    value={vatRate.toString()}
                     keyboardType="numeric"
-                    onChangeText={(val) => setVatRate(Number(val))}
+                    onChangeText={(val) => setVatRate(val)}
                   />
                   <Text style={styles.unitText}>%</Text>
                 </View>

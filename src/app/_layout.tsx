@@ -5,7 +5,10 @@ import { initWire } from 'fetchwire';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '@/constants/app-constant';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
+import Loader from '@/components/primitives/loader';
 export default function RootLayout() {
+  const { isNavigating } = useNavigationStore();
   initWire({
     baseUrl: process.env.EXPO_PUBLIC_API_URL || '',
     headers: {
@@ -37,6 +40,7 @@ export default function RootLayout() {
         <StatusBar barStyle="dark-content" />
         <Stack screenOptions={{ headerShown: false }} />
       </AuthProvider>
+      {isNavigating && <Loader withOverlay size={96} />}
     </GestureHandlerRootView>
   );
 }

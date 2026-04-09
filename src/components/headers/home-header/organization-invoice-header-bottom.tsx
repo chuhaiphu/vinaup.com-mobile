@@ -48,7 +48,7 @@ const OrganizationInvoiceHeaderBottom = () => {
       onSuccess: (data) => {
         router.push({
           pathname: '/(protected)/invoice-detail/[invoiceId]',
-          params: { invoiceId: data.id },
+          params: { invoiceId: data?.id || '' },
         });
       },
       onError: (error) =>

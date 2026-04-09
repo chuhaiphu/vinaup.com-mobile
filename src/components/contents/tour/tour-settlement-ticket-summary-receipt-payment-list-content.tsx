@@ -38,6 +38,7 @@ export function TourSettlementTicketSummaryReceiptPaymentListContent({
   const {
     data: receiptPayments,
     refreshFetch: refreshReceiptPaymentsByTourSettlement,
+    isRefreshing: isRefreshingReceiptPaymentsByTourSettlement,
   } = useFetch(
     () => getReceiptPaymentsByTourSettlementIdApi(tourSettlement?.id || ''),
     `organization-receipt-payment-list-in-tour-settlement-${tourSettlement?.id}`,
@@ -87,6 +88,7 @@ export function TourSettlementTicketSummaryReceiptPaymentListContent({
         )}
       />
       <ReceiptPaymentTourSettlementListContent
+        isRefreshing={isRefreshingReceiptPaymentsByTourSettlement}
         receiptPayments={receiptPayments ?? []}
         startDate={startDate}
         endDate={endDate}

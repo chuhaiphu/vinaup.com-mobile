@@ -7,6 +7,7 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { generateDateRange } from '@/utils/generator-helpers';
 import dayjs from 'dayjs';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 interface ReceiptPaymentTourCalculationListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
@@ -15,6 +16,7 @@ interface ReceiptPaymentTourCalculationListContentProps {
   loading?: boolean;
   tourCalculationId?: string;
   organizationId?: string;
+  isRefreshing: boolean;
 }
 
 interface ReceiptPaymentsSection {
@@ -30,6 +32,7 @@ export function ReceiptPaymentTourCalculationListContent({
   loading,
   tourCalculationId,
   organizationId,
+  isRefreshing,
 }: ReceiptPaymentTourCalculationListContentProps) {
   const router = useRouter();
 
@@ -113,6 +116,9 @@ export function ReceiptPaymentTourCalculationListContent({
 
   return (
     <SectionList
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} colors={[COLORS.vinaupTeal]} />
+      }
       scrollEnabled={false}
       sections={receiptPaymentSections}
       keyExtractor={(item) => item.id}

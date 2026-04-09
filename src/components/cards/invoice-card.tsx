@@ -3,13 +3,15 @@ import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import dayjs from 'dayjs';
 import { InvoiceStatusDisplay } from '@/constants/invoice-constants';
-import { useFetchFn } from 'fetchwire';
+import { prefetch, useFetchFn } from 'fetchwire';
 import { useEffect, useState } from 'react';
 import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
+import { getInvoiceByIdApi } from '@/apis/invoice-apis';
 import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
 import { useRouter } from 'expo-router';
 import { PressableOpacity } from '../primitives/pressable-opacity';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface InvoiceCardProps {
   invoice?: InvoiceResponse;
@@ -17,6 +19,7 @@ interface InvoiceCardProps {
 
 export function InvoiceCard({ invoice }: InvoiceCardProps) {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
 
   const [isShowingPrice, setIsShowingPrice] = useState(false);
   const fetchReceiptPaymentsFn = () =>
@@ -59,11 +62,23 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
     setIsShowingPrice(!isShowingPrice);
   };
 
-  const navigateToDetail = (invoiceId: string) => {
-    router.push({
-      pathname: '/(protected)/invoice-detail/[invoiceId]',
-      params: { invoiceId, invoiceTypeCode: invoice?.invoiceType?.code },
-    });
+  const navigateToDetail = async (invoiceId: string) => {
+    setIsNavigating(true);
+    try {
+      try {
+        await prefetch(`organization-invoice-${invoiceId}`, () =>
+          getInvoiceByIdApi(invoiceId)
+        );
+      } catch {
+        // Fallback to normal navigation if prefetch fails.
+      }
+      router.push({
+        pathname: '/(protected)/invoice-detail/[invoiceId]',
+        params: { invoiceId, invoiceTypeCode: invoice?.invoiceType?.code },
+      });
+    } finally {
+      setIsNavigating(false);
+    }
   };
 
   if (!invoice) {

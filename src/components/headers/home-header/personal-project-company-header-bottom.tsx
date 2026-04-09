@@ -28,7 +28,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
       onSuccess: (data) => {
         router.push({
           pathname: '/(protected)/project-detail/[projectId]',
-          params: { projectId: data.id, type: data.type },
+          params: { projectId: data?.id || '', type: data?.type },
         });
       },
       onError: (error) =>
