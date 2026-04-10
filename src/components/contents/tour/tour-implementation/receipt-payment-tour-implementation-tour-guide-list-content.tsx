@@ -17,12 +17,6 @@ interface ReceiptPaymentTourImplementationTourGuideListContentProps {
   organizationId?: string;
 }
 
-interface ReceiptPaymentsSection {
-  title: string;
-  dateKey: string;
-  data: ReceiptPaymentResponse[];
-}
-
 export function ReceiptPaymentTourImplementationTourGuideListContent({
   receiptPayments,
   startDate,
@@ -33,32 +27,41 @@ export function ReceiptPaymentTourImplementationTourGuideListContent({
 }: ReceiptPaymentTourImplementationTourGuideListContentProps) {
   const router = useRouter();
   const dateRange = generateDayJsDateRange(startDate, endDate);
-  const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
-    const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
-    dateRange.forEach((d) => {
-      const key = d.format('YYYY-MM-DD');
-      receiptPaymentsByDateMap[key] = {
-        title: d.format('DD/MM'),
-        dateKey: key,
-        data: [],
-      };
-    });
-
-    const outOfRangeReceiptPayments: ReceiptPaymentResponse[] = [];
-    receiptPayments.forEach((item) => {
-      const key = dayjs(item.transactionDate).format('YYYY-MM-DD');
-      if (receiptPaymentsByDateMap[key]) {
-        receiptPaymentsByDateMap[key].data.push(item);
-      } else {
-        outOfRangeReceiptPayments.push(item);
+  const dateKeysInRange = new Set(dateRange.map((d) => d.format('YYYY-MM-DD')));
+  const { receiptPaymentsInRange, receiptPaymentsOutOfRange } =
+    receiptPayments.reduce(
+      (acc, rp) => {
+        const key = dayjs(rp.transactionDate).format('YYYY-MM-DD');
+        if (dateKeysInRange.has(key)) {
+          acc.receiptPaymentsInRange.push(rp);
+        } else {
+          acc.receiptPaymentsOutOfRange.push(rp);
+        }
+        return acc;
+      },
+      {
+        receiptPaymentsInRange: [] as ReceiptPaymentResponse[],
+        receiptPaymentsOutOfRange: [] as ReceiptPaymentResponse[],
       }
-    });
+    );
 
+  const receiptPaymentsInRangeMap = receiptPaymentsInRange.reduce(
+    (map, rp) => {
+      const dateKey = dayjs(rp.transactionDate).format('YYYY-MM-DD');
+      if (!map[dateKey]) map[dateKey] = [];
+      map[dateKey].push(rp);
+      return map;
+    },
+    {} as Record<string, ReceiptPaymentResponse[]>
+  );
+  const receiptPaymentInRangeSections = dateRange.map((d) => {
+    const key = d.format('YYYY-MM-DD');
     return {
-      receiptPaymentSections: Object.values(receiptPaymentsByDateMap),
-      outOfRangeReceiptPayments: outOfRangeReceiptPayments,
+      title: d.format('DD/MM'),
+      dateKey: key,
+      data: receiptPaymentsInRangeMap[key] || [],
     };
-  })();
+  });
 
   const navigateToFormScreen = ({
     receiptPaymentId,
@@ -90,7 +93,7 @@ export function ReceiptPaymentTourImplementationTourGuideListContent({
   }
 
   const renderOutOfRangeReceiptPaymentsSection = () => {
-    if (outOfRangeReceiptPayments.length === 0) return null;
+    if (receiptPaymentsOutOfRange.length === 0) return null;
     return (
       <View style={styles.outOfRangeContainer}>
         <View style={styles.outOfRangeHeader}>
@@ -98,7 +101,7 @@ export function ReceiptPaymentTourImplementationTourGuideListContent({
             Thu chi bị sai ngày !!! (*Bạn sửa ngày hoặc xóa)
           </Text>
         </View>
-        {outOfRangeReceiptPayments.map((item) => (
+        {receiptPaymentsOutOfRange.map((item) => (
           <Pressable
             key={item.id}
             onPress={() => navigateToFormScreen({ receiptPaymentId: item.id })}
@@ -113,7 +116,7 @@ export function ReceiptPaymentTourImplementationTourGuideListContent({
   return (
     <SectionList
       scrollEnabled={false}
-      sections={receiptPaymentSections}
+      sections={receiptPaymentInRangeSections}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <Pressable

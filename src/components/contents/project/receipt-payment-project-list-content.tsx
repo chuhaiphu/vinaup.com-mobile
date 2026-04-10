@@ -24,12 +24,6 @@ interface ReceiptPaymentProjectListContentProps {
   onRefresh?: () => void;
 }
 
-interface ReceiptPaymentsSection {
-  title: string;
-  dateKey: string;
-  data: ReceiptPaymentResponse[];
-}
-
 export function ReceiptPaymentProjectListContent({
   projectId,
   startDate,
@@ -48,37 +42,41 @@ export function ReceiptPaymentProjectListContent({
 
   const dateRange = generateDayJsDateRange(startDate, endDate);
 
-  const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
-    // To avoid O(n^2) complexity with array group by (for each receipt payment, find the corresponding section with O(n) search),
-    // We can use map to group receipt payments by date with O(1) access
-    // Initialize map with key is date string and value is the section object
-    const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
-    // Fill the map with date range
-    dateRange.forEach((d) => {
-      const key = d.format('YYYY-MM-DD');
-      receiptPaymentsByDateMap[key] = {
-        title: d.format('DD/MM'),
-        dateKey: key,
-        data: [],
-      };
-    });
-
-    const outOfRangeReceiptPayments: ReceiptPaymentResponse[] = [];
-    // Group receipt payments by date using map for O(1) access and avoid O(n) search with array
-    receiptPayments.forEach((item) => {
-      const key = dayjs(item.transactionDate).format('YYYY-MM-DD');
-      if (receiptPaymentsByDateMap[key]) {
-        receiptPaymentsByDateMap[key].data.push(item);
-      } else {
-        outOfRangeReceiptPayments.push(item);
+  const dateKeysInRange = new Set(dateRange.map((d) => d.format('YYYY-MM-DD')));
+  const { receiptPaymentsInRange, receiptPaymentsOutOfRange } =
+    receiptPayments.reduce(
+      (acc, rp) => {
+        const key = dayjs(rp.transactionDate).format('YYYY-MM-DD');
+        if (dateKeysInRange.has(key)) {
+          acc.receiptPaymentsInRange.push(rp);
+        } else {
+          acc.receiptPaymentsOutOfRange.push(rp);
+        }
+        return acc;
+      },
+      {
+        receiptPaymentsInRange: [] as ReceiptPaymentResponse[],
+        receiptPaymentsOutOfRange: [] as ReceiptPaymentResponse[],
       }
-    });
+    );
 
+  const receiptPaymentsInRangeMap = receiptPaymentsInRange.reduce(
+    (map, rp) => {
+      const dateKey = dayjs(rp.transactionDate).format('YYYY-MM-DD');
+      if (!map[dateKey]) map[dateKey] = [];
+      map[dateKey].push(rp);
+      return map;
+    },
+    {} as Record<string, ReceiptPaymentResponse[]>
+  );
+  const receiptPaymentInRangeSections = dateRange.map((d) => {
+    const key = d.format('YYYY-MM-DD');
     return {
-      receiptPaymentSections: Object.values(receiptPaymentsByDateMap),
-      outOfRangeReceiptPayments: outOfRangeReceiptPayments,
+      title: d.format('DD/MM'),
+      dateKey: key,
+      data: receiptPaymentsInRangeMap[key] || [],
     };
-  })();
+  });
 
   const navigateToFormScreen = ({
     receiptPaymentId,
@@ -101,7 +99,7 @@ export function ReceiptPaymentProjectListContent({
   };
 
   const renderOutOfRangeReceiptPaymentsSection = () => {
-    if (outOfRangeReceiptPayments.length === 0) return null;
+    if (receiptPaymentsOutOfRange.length === 0) return null;
     return (
       <View style={styles.outOfRangeContainer}>
         <View style={styles.outOfRangeHeader}>
@@ -109,7 +107,7 @@ export function ReceiptPaymentProjectListContent({
             Thu chi bị sai ngày !!! (*Bạn sửa ngày hoặc xóa)
           </Text>
         </View>
-        {outOfRangeReceiptPayments.map((item) => (
+        {receiptPaymentsOutOfRange.map((item) => (
           <Pressable
             key={item.id}
             onPress={() => navigateToFormScreen({ receiptPaymentId: item.id })}
@@ -123,7 +121,7 @@ export function ReceiptPaymentProjectListContent({
 
   return (
     <SectionList
-      sections={receiptPaymentSections}
+      sections={receiptPaymentInRangeSections}
       keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl
