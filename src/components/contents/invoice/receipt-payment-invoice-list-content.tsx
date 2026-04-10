@@ -10,7 +10,7 @@ import {
 import dayjs from 'dayjs';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
-import { generateDateRange } from '@/utils/generator-helpers';
+import { generateDayJsDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
@@ -52,7 +52,7 @@ export function ReceiptPaymentInvoiceListContent({
   );
   const receiptPayments = data ?? [];
 
-  const dateRange = generateDateRange(startDate, endDate);
+  const dateRange = generateDayJsDateRange(startDate, endDate);
   const { getInvoiceTypeById } = useInvoiceTypeContext();
   const invoiceType = getInvoiceTypeById(invoiceTypeId || '');
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
@@ -66,19 +66,19 @@ export function ReceiptPaymentInvoiceListContent({
       };
     });
 
-    const outOfRangeItems: ReceiptPaymentResponse[] = [];
+    const outOfRangeReceiptPayments: ReceiptPaymentResponse[] = [];
     receiptPayments.forEach((item) => {
       const key = dayjs(item.transactionDate).format('YYYY-MM-DD');
       if (receiptPaymentsByDateMap[key]) {
         receiptPaymentsByDateMap[key].data.push(item);
       } else {
-        outOfRangeItems.push(item);
+        outOfRangeReceiptPayments.push(item);
       }
     });
 
     return {
       receiptPaymentSections: Object.values(receiptPaymentsByDateMap),
-      outOfRangeReceiptPayments: outOfRangeItems,
+      outOfRangeReceiptPayments: outOfRangeReceiptPayments,
     };
   })();
 

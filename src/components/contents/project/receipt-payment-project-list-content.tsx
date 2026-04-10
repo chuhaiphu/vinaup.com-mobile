@@ -10,7 +10,7 @@ import {
 import dayjs from 'dayjs';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
-import { generateDateRange } from '@/utils/generator-helpers';
+import { generateDayJsDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
 import { ReceiptPaymentSectionListHeader } from '../../headers/receipt-payment-section-list-header';
@@ -46,7 +46,7 @@ export function ReceiptPaymentProjectListContent({
   );
   const receiptPayments = data ?? [];
 
-  const dateRange = generateDateRange(startDate, endDate);
+  const dateRange = generateDayJsDateRange(startDate, endDate);
 
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
     // To avoid O(n^2) complexity with array group by (for each receipt payment, find the corresponding section with O(n) search),
@@ -63,20 +63,20 @@ export function ReceiptPaymentProjectListContent({
       };
     });
 
-    const outOfRangeItems: ReceiptPaymentResponse[] = [];
+    const outOfRangeReceiptPayments: ReceiptPaymentResponse[] = [];
     // Group receipt payments by date using map for O(1) access and avoid O(n) search with array
     receiptPayments.forEach((item) => {
       const key = dayjs(item.transactionDate).format('YYYY-MM-DD');
       if (receiptPaymentsByDateMap[key]) {
         receiptPaymentsByDateMap[key].data.push(item);
       } else {
-        outOfRangeItems.push(item);
+        outOfRangeReceiptPayments.push(item);
       }
     });
 
     return {
       receiptPaymentSections: Object.values(receiptPaymentsByDateMap),
-      outOfRangeReceiptPayments: outOfRangeItems,
+      outOfRangeReceiptPayments: outOfRangeReceiptPayments,
     };
   })();
 

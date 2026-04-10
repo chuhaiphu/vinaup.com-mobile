@@ -1,6 +1,17 @@
 import dayjs from 'dayjs';
 
-export function generateDateRange(start: Date, end: Date): dayjs.Dayjs[] {
+/**
+ *
+ * @param start Start date.
+ * @param end End date.
+ * @returns {dayjs.Dayjs[]} Array of Dayjs objects including both start and end dates.
+ * @example
+ * const dates = generateDayJsDateRange(new Date('2026-04-10'), new Date('2026-04-13'));
+ * // dates: [Dayjs(2026-04-10), Dayjs(2026-04-11), Dayjs(2026-04-12), Dayjs(2026-04-13)]
+ * const output = dates.map((d) => d.format('YYYY-MM-DD'));
+ * // output: ['2026-04-10', '2026-04-11', '2026-04-12', '2026-04-13']
+ */
+export function generateDayJsDateRange(start: Date, end: Date): dayjs.Dayjs[] {
   const result: dayjs.Dayjs[] = [];
   let current = dayjs(start);
 

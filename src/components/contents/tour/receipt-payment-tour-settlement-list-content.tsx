@@ -4,7 +4,7 @@ import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { generateDateRange } from '@/utils/generator-helpers';
+import { generateDayJsDateRange } from '@/utils/generator-helpers';
 import dayjs from 'dayjs';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { RefreshControl } from 'react-native-gesture-handler';
@@ -36,7 +36,8 @@ export function ReceiptPaymentTourSettlementListContent({
 }: ReceiptPaymentTourSettlementListContentProps) {
   const router = useRouter();
   const dateRange =
-    startDate && endDate ? generateDateRange(startDate, endDate) : [];
+    startDate && endDate ? generateDayJsDateRange(startDate, endDate) : [];
+
   const { receiptPaymentSections, outOfRangeReceiptPayments } = (() => {
     const receiptPaymentsByDateMap: Record<string, ReceiptPaymentsSection> = {};
     dateRange.forEach((d) => {
@@ -48,19 +49,19 @@ export function ReceiptPaymentTourSettlementListContent({
       };
     });
 
-    const outOfRangeItems: ReceiptPaymentResponse[] = [];
+    const outOfRangeReceiptPayments: ReceiptPaymentResponse[] = [];
     receiptPayments.forEach((item) => {
       const key = dayjs(item.transactionDate).format('YYYY-MM-DD');
       if (receiptPaymentsByDateMap[key]) {
         receiptPaymentsByDateMap[key].data.push(item);
       } else {
-        outOfRangeItems.push(item);
+        outOfRangeReceiptPayments.push(item);
       }
     });
 
     return {
       receiptPaymentSections: Object.values(receiptPaymentsByDateMap),
-      outOfRangeReceiptPayments: outOfRangeItems,
+      outOfRangeReceiptPayments: outOfRangeReceiptPayments,
     };
   })();
 
