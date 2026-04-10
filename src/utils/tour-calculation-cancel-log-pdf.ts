@@ -6,7 +6,10 @@ import dayjs from 'dayjs';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { File } from 'expo-file-system';
-import { generateLocalePriceFormat } from './generator-helpers';
+import {
+  generateBase64FromUrl,
+  generateLocalePriceFormat,
+} from './generator-helpers';
 
 interface SnapshotTour {
   tour?: {
@@ -90,7 +93,10 @@ function buildReceiptPaymentRows(items: ReceiptPaymentResponse[]): string {
     .join('');
 }
 
-function buildHtml(input: TourCalculationCancelLogPdfInput): string {
+function buildHtml(
+  input: TourCalculationCancelLogPdfInput,
+  avatarBase64?: string
+): string {
   const {
     cancelLog,
     organization,
@@ -104,9 +110,8 @@ function buildHtml(input: TourCalculationCancelLogPdfInput): string {
     pageSize = 'A4',
   } = input;
 
-  const avatarUrl = organization?.avatarUrl || '';
-  const avatarBlock = avatarUrl
-    ? `<img class="avatar" src="${escapeHtml(avatarUrl)}" alt="avatar" />`
+  const avatarBlock = avatarBase64
+    ? `<img class="avatar" src="${avatarBase64}" alt="avatar" />`
     : '<div class="avatar-fallback">👥</div>';
 
   const receiptGroupsBlock =
@@ -632,7 +637,8 @@ function buildHtml(input: TourCalculationCancelLogPdfInput): string {
 export async function createAndShareTourCalculationCancelLogPdf(
   input: TourCalculationCancelLogPdfInput
 ): Promise<void> {
-  const html = buildHtml(input);
+  const avatarBase64 = await generateBase64FromUrl(input.organization?.avatarUrl);
+  const html = buildHtml(input, avatarBase64);
 
   const { uri } = await Print.printToFileAsync({ html });
   try {
@@ -646,7 +652,6 @@ export async function createAndShareTourCalculationCancelLogPdf(
       dialogTitle: 'Lưu hoặc chia sẻ file PDF',
       UTI: 'com.adobe.pdf',
     });
-
   } catch (error) {
     throw error instanceof Error ? error : new Error('Lỗi không xác định');
   } finally {

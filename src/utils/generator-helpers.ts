@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { ImageManipulator } from 'expo-image-manipulator';
 
 /**
  *
@@ -28,3 +29,21 @@ export const generateLocalePriceFormat = (
 ): string => {
   return price.toLocaleString(locale);
 };
+
+export async function generateBase64FromUrl(url?: string | null): Promise<string> {
+  if (!url) return '';
+
+  const context = ImageManipulator.manipulate(url);
+  try {
+    const imageRef = await context.renderAsync();
+    const result = await imageRef.saveAsync({
+      compress: 0.8,
+      base64: true,
+    });
+
+    return `data:image/jpeg;base64,${result.base64}`;
+  } catch (error) {
+    console.warn('Loi khi convert image sang base64', error);
+    return '';
+  }
+}
