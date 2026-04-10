@@ -15,6 +15,7 @@ import { TourCalculationTicketSummaryPopover } from '../popovers/tour-calculatio
 interface TourSettlementTicketSummaryProps {
   id: string;
   tourId: string;
+  onUpdated?: () => void;
   adultTicketCount?: number;
   childTicketCount?: number;
   adultTicketPrice?: number;
@@ -32,6 +33,7 @@ interface TourSettlementTicketSummaryProps {
 export function TourSettlementTicketSummary({
   id,
   tourId,
+  onUpdated,
   adultTicketCount = 0,
   childTicketCount = 0,
   adultTicketPrice = 0,
@@ -69,9 +71,7 @@ export function TourSettlementTicketSummary({
   const {
     executeMutationFn: updateTourSettlement,
     isMutating: isUpdatingSettlement,
-  } = useMutationFn(updateTourSettlementFn, {
-    invalidatesTags: [`tour-settlement-${tourId}`],
-  });
+  } = useMutationFn(updateTourSettlementFn);
 
   const handleConfirmUpdateTourTicket = (
     data: {
@@ -91,6 +91,7 @@ export function TourSettlementTicketSummary({
       },
       {
         onSuccess: () => {
+          onUpdated?.();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -105,6 +106,7 @@ export function TourSettlementTicketSummary({
       { taxRate: newTaxRate },
       {
         onSuccess: () => {
+          onUpdated?.();
           onSuccess();
         },
         onError: (error: ApiError) => {

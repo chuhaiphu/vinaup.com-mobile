@@ -66,6 +66,7 @@ export function TourSettlementTicketSummaryReceiptPaymentListContent({
       <TourSettlementTicketSummary
         id={tourSettlement?.id || ''}
         tourId={tourId}
+        onUpdated={refreshTourSettlement}
         adultTicketCount={tourSettlement?.adultTicketCount}
         childTicketCount={tourSettlement?.childTicketCount}
         adultTicketPrice={tourSettlement?.adultTicketPrice}

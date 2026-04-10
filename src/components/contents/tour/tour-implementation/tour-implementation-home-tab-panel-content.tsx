@@ -55,21 +55,17 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
   });
 
   const { executeMutationFn: manageMembersInCharge, isMutating: isConfirming } =
-    useMutationFn(
-      (organizationMemberIds: string[]) =>
-        manageMembersInChargeApi(tourImplementation?.id || '', {
-          organizationMemberIds,
-        }),
-      { invalidatesTags: [`tour-implementation-${tour?.id}`] }
+    useMutationFn((organizationMemberIds: string[]) =>
+      manageMembersInChargeApi(tourImplementation?.id || '', {
+        organizationMemberIds,
+      })
     );
 
   const {
     executeMutationFn: updateTourImplementation,
     isMutating: isUpdatingImplementation,
-  } = useMutationFn(
-    (data: UpdateTourImplementationRequest) =>
-      updateTourImplementationApi(tourImplementation?.id || '', data),
-    { invalidatesTags: [`tour-implementation-${tour?.id}`] }
+  } = useMutationFn((data: UpdateTourImplementationRequest) =>
+    updateTourImplementationApi(tourImplementation?.id || '', data)
   );
 
   useEffect(() => {
@@ -98,6 +94,7 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
       },
       {
         onSuccess: () => {
+          refreshTourImplementation();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -128,6 +125,7 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
       { description: value },
       {
         onSuccess: () => {
+          refreshTourImplementation();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {

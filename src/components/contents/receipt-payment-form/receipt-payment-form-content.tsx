@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useImperativeHandle } from 'react';
 import {
   View,
   Text,
@@ -36,7 +36,15 @@ type ReceiptPaymentFormParams = {
   transactionDate?: string;
 };
 
-export function ReceiptPaymentFormContent() {
+export type ReceiptPaymentFormContentRef = {
+  refreshDetail: () => void;
+};
+
+type ReceiptPaymentFormContentProps = {
+  ref?: React.Ref<ReceiptPaymentFormContentRef>;
+};
+
+export function ReceiptPaymentFormContent({ ref }: ReceiptPaymentFormContentProps) {
   const params = useLocalSearchParams<ReceiptPaymentFormParams>();
   const initializeForm = useReceiptPaymentFormStore(
     (state) => state.initializeForm
@@ -108,6 +116,14 @@ export function ReceiptPaymentFormContent() {
     {
       tags: [receiptDetailFetchKey],
     }
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      refreshDetail: refreshFetch,
+    }),
+    [refreshFetch]
   );
 
   const normalizedCategories = categories ?? [];

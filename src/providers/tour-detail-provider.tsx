@@ -57,8 +57,8 @@ export function TourDetailProvider({
     (updatedFields: UpdateTourRequest, onSuccessCallback?: () => void) => {
       if (!tour) return;
       updateTour(updatedFields, {
-        onSuccess: () => {
-          refreshTour();
+        onSuccess: async () => {
+          await refreshTour();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {

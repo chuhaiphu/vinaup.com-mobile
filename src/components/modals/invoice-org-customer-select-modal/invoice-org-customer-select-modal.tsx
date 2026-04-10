@@ -178,7 +178,7 @@ export function InvoiceOrgCustomerSelectModal({
     createOrgCustomer(selectedOrg, {
       onSuccess: (created) => {
         refreshOrganizationCustomers();
-        handleUpdateInvoice({ organizationCustomerId: created.id }, onCloseRequest);
+        handleUpdateInvoice({ organizationCustomerId: created?.id }, onCloseRequest);
       },
       onError: () => {
         Alert.alert('Lỗi', 'Không thể liên kết tổ chức cộng đồng.');

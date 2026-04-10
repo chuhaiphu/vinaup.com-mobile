@@ -15,6 +15,7 @@ import { TourCalculationTicketSummaryPopover } from '../popovers/tour-calculatio
 interface TourCalculationTicketSummaryProps {
   id: string;
   tourId: string;
+  onUpdated?: () => void;
   adultTicketCount?: number;
   childTicketCount?: number;
   adultTicketPrice?: number;
@@ -32,6 +33,7 @@ interface TourCalculationTicketSummaryProps {
 export function TourCalculationTicketSummary({
   id,
   tourId,
+  onUpdated,
   adultTicketCount = 0,
   childTicketCount = 0,
   adultTicketPrice = 0,
@@ -46,7 +48,7 @@ export function TourCalculationTicketSummary({
   profitMarginAfterTaxPay,
 }: TourCalculationTicketSummaryProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isAfterTax, setIsAfterTax] = useState(true);
+  const [isAfterTax] = useState(true);
 
   const totalTickets = adultTicketCount + childTicketCount;
 
@@ -69,9 +71,7 @@ export function TourCalculationTicketSummary({
   const {
     executeMutationFn: updateTourCalculation,
     isMutating: isUpdatingCalculation,
-  } = useMutationFn(updateTourCalculationFn, {
-    invalidatesTags: [`tour-calculation-${tourId}`],
-  });
+  } = useMutationFn(updateTourCalculationFn);
 
   const handleConfirmUpdateTourTicket = (
     data: {
@@ -91,6 +91,7 @@ export function TourCalculationTicketSummary({
       },
       {
         onSuccess: () => {
+          onUpdated?.();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -105,6 +106,7 @@ export function TourCalculationTicketSummary({
       { taxRate: newTaxRate },
       {
         onSuccess: () => {
+          onUpdated?.();
           onSuccess();
         },
         onError: (error: ApiError) => {

@@ -1,7 +1,10 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useRef } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ReceiptPaymentFormContent } from '@/components/contents/receipt-payment-form/receipt-payment-form-content';
+import {
+  ReceiptPaymentFormContent,
+  type ReceiptPaymentFormContentRef,
+} from '@/components/contents/receipt-payment-form/receipt-payment-form-content';
 import { FormInputListSkeleton } from '@/components/skeletons/form-input-list-skeleton';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { ReceiptPaymentType } from '@/constants/receipt-payment-constants';
@@ -33,6 +36,7 @@ type ReceiptPaymentFormParams = {
 
 export default function ReceiptPaymentFormScreen() {
   const router = useRouter();
+  const formContentRef = useRef<ReceiptPaymentFormContentRef>(null);
   const params = useLocalSearchParams<ReceiptPaymentFormParams>();
   const { receiptPaymentId } = params;
   const isUpdateMode = receiptPaymentId !== 'new';
@@ -41,52 +45,42 @@ export default function ReceiptPaymentFormScreen() {
   );
 
   const formInvalidatesTags = (() => {
-    const baseInvalidatesTags = (() => {
-      switch (true) {
-        case !!params.projectId:
-          return [`receipt-payment-list-in-project-${params.projectId}`];
-        case !!params.invoiceId:
-          return [
-            `receipt-payment-list-in-invoice-${params.invoiceId}`,
-            'receipt-payment-list-in-invoice',
-          ];
-        case !!params.bookingId:
-          return [
-            `organization-receipt-payment-list-in-booking-${params.bookingId}`,
-          ];
-        case !!params.tourCalculationId:
-          return [
-            `organization-receipt-payment-list-in-tour-calculation-${params.tourCalculationId}`,
-          ];
-        case !!params.tourImplementationId:
-          if (params.groupCode === 'FOR_DIRECTOR') {
-            return [
-              `receipt-payment-tour-implementation-director-${params.tourImplementationId}`,
-            ];
-          }
-          if (params.groupCode === 'FOR_TOUR_GUIDE') {
-            return [
-              `receipt-payment-tour-implementation-tour-guide-${params.tourImplementationId}`,
-            ];
-          }
+    switch (true) {
+      case !!params.projectId:
+        return [`receipt-payment-list-in-project-${params.projectId}`];
+      case !!params.invoiceId:
+        return [
+          `receipt-payment-list-in-invoice-${params.invoiceId}`,
+          'receipt-payment-list-in-invoice',
+        ];
+      case !!params.bookingId:
+        return [`organization-receipt-payment-list-in-booking-${params.bookingId}`];
+      case !!params.tourCalculationId:
+        return [
+          `organization-receipt-payment-list-in-tour-calculation-${params.tourCalculationId}`,
+        ];
+      case !!params.tourImplementationId:
+        if (params.groupCode === 'FOR_DIRECTOR') {
           return [
             `receipt-payment-tour-implementation-director-${params.tourImplementationId}`,
+          ];
+        }
+        if (params.groupCode === 'FOR_TOUR_GUIDE') {
+          return [
             `receipt-payment-tour-implementation-tour-guide-${params.tourImplementationId}`,
           ];
-        case !!params.tourSettlementId:
-          return [
-            `organization-receipt-payment-list-in-tour-settlement-${params.tourSettlementId}`,
-          ];
-        default:
-          return ['personal-receipt-payment-list'];
-      }
-    })();
-
-    if (!isUpdateMode) {
-      return baseInvalidatesTags;
+        }
+        return [
+          `receipt-payment-tour-implementation-director-${params.tourImplementationId}`,
+          `receipt-payment-tour-implementation-tour-guide-${params.tourImplementationId}`,
+        ];
+      case !!params.tourSettlementId:
+        return [
+          `organization-receipt-payment-list-in-tour-settlement-${params.tourSettlementId}`,
+        ];
+      default:
+        return ['personal-receipt-payment-list'];
     }
-
-    return [...baseInvalidatesTags, `receipt-payment-detail-${receiptPaymentId}`];
   })();
 
   const createOrUpdateReceiptPaymentFn = () => {
@@ -139,6 +133,9 @@ export default function ReceiptPaymentFormScreen() {
 
     createOrUpdateReceiptPayment({
       onSuccess: () => {
+        if (isUpdateMode) {
+          formContentRef.current?.refreshDetail();
+        }
         router.back();
       },
       onError: (error) => {
@@ -182,7 +179,7 @@ export default function ReceiptPaymentFormScreen() {
       />
 
       <Suspense fallback={<FormInputListSkeleton />}>
-        <ReceiptPaymentFormContent />
+        <ReceiptPaymentFormContent ref={formContentRef} />
       </Suspense>
     </KeyboardAvoidingView>
   );

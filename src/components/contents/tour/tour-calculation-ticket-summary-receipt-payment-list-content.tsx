@@ -70,6 +70,7 @@ export function TourCalculationTicketSummaryReceiptPaymentListContent({
       <TourCalculationTicketSummary
         id={tourCalculation?.id || ''}
         tourId={tourId}
+        onUpdated={refreshTourCalculation}
         adultTicketCount={tourCalculation?.adultTicketCount}
         childTicketCount={tourCalculation?.childTicketCount}
         adultTicketPrice={tourCalculation?.adultTicketPrice}

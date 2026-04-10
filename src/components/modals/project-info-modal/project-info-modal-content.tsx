@@ -244,6 +244,7 @@ export function ProjectInfoModalContent({
           onPress={handleConfirm}
           disabled={isLoading}
           isLoading={isLoading}
+          loaderStyle={{ color: COLORS.vinaupWhite }}
         >
           <Text style={styles.confirmButtonText}>Xác nhận</Text>
         </Button>

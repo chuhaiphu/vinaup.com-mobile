@@ -80,8 +80,8 @@ export function InvoiceDetailProvider({
     (updatedFields: UpdateInvoiceRequest, onSuccessCallback?: () => void) => {
       if (!invoice) return;
       updateInvoice(updatedFields, {
-        onSuccess: () => {
-          refreshInvoice();
+        onSuccess: async () => {
+          await refreshInvoice();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {

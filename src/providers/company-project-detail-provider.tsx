@@ -81,8 +81,8 @@ export function CompanyProjectDetailProvider({
     (updatedFields: UpdateProjectRequest, onSuccessCallback?: () => void) => {
       if (!project) return;
       updateProject(updatedFields, {
-        onSuccess: () => {
-          refreshProject();
+        onSuccess: async () => {
+          await refreshProject();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
