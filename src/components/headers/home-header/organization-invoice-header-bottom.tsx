@@ -6,12 +6,14 @@ import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { TextSwitcher } from '../../primitives/text-switcher';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
-import { useMutationFn } from 'fetchwire';
-import { createInvoiceApi } from '@/apis/invoice-apis';
+import { prefetch, useMutationFn } from 'fetchwire';
+import { createInvoiceApi, getInvoiceByIdApi } from '@/apis/invoice-apis';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationInvoiceHeaderBottom = () => {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
   const params = useGlobalSearchParams<{
     organizationId: string;
     invoiceTypeCode?: string;
@@ -45,7 +47,16 @@ const OrganizationInvoiceHeaderBottom = () => {
       return;
     }
     await createInvoice({
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
+        setIsNavigating(true);
+        try {
+          await prefetch(`organization-invoice-${data?.id}`, () =>
+            getInvoiceByIdApi(data?.id || '')
+          );
+        } catch {
+          // Fallback to normal navigation if prefetch fails.
+        }
+        setIsNavigating(false);
         router.push({
           pathname: '/(protected)/invoice-detail/[invoiceId]',
           params: { invoiceId: data?.id || '' },

@@ -49,20 +49,17 @@ export function BookingCard({ booking }: BookingCardProps) {
   const navigateToDetail = async (bookingId: string) => {
     setIsNavigating(true);
     try {
-      try {
-        await prefetch(`organization-booking-${bookingId}`, () =>
-          getBookingByIdApi(bookingId)
-        );
-      } catch {
-        // Fallback to normal navigation if prefetch fails.
-      }
-      router.push({
-        pathname: '/(protected)/booking-detail/[bookingId]',
-        params: { bookingId },
-      });
-    } finally {
-      setIsNavigating(false);
+      await prefetch(`organization-booking-${bookingId}`, () =>
+        getBookingByIdApi(bookingId)
+      );
+    } catch {
+      // Fallback to normal navigation if prefetch fails.
     }
+    router.push({
+      pathname: '/(protected)/booking-detail/[bookingId]',
+      params: { bookingId },
+    });
+    setIsNavigating(false);
   };
 
   if (!booking) {

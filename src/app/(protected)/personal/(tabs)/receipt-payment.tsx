@@ -29,9 +29,11 @@ function ReceiptPaymentListSection({
   const router = useRouter();
 
   const fetchReceiptPaymentsFn = async () => {
-    return getReceiptPaymentsByCurrentUserApi({ date: selectedDate.toDate() });
+    return getReceiptPaymentsByCurrentUserApi({
+      startDate: selectedDate.startOf('day').toISOString(),
+      endDate: selectedDate.endOf('day').toISOString(),
+    });
   };
-
   const fetchKey = `personal-receipt-payment-list-${selectedDate.format('YYYY-MM-DD')}`;
 
   const {

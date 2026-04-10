@@ -76,7 +76,6 @@ export async function updateOrganizationCustomerApi(
   id: string,
   data: UpdateOrganizationCustomerRequest
 ) {
-  console.log('data', data);
   return wireApi<OrganizationCustomerResponse>(
     `/organization-customer/${id}`,
     {

@@ -1,8 +1,6 @@
 export interface DateFilterParam {
-  date?: Date;
-  month?: number;
-  quarter?: number;
-  year?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface ProjectFilterParam extends DateFilterParam {

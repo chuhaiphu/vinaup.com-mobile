@@ -3,12 +3,14 @@ import { View, Text, Alert, StyleSheet } from 'react-native';
 import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
-import { useMutationFn } from 'fetchwire';
-import { createProjectApi } from '@/apis/project-apis';
+import { prefetch, useMutationFn } from 'fetchwire';
+import { createProjectApi, getProjectByIdApi } from '@/apis/project-apis';
 import { useRouter } from 'expo-router';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const PersonalProjectSelfHeaderBottom = () => {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
 
   const createProjectFn = () =>
     createProjectApi({
@@ -25,7 +27,16 @@ const PersonalProjectSelfHeaderBottom = () => {
 
   const handleAddNew = async () => {
     await createProject({
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
+        setIsNavigating(true);
+        try {
+          await prefetch(`personal-project-self-${data?.id}`, () =>
+            getProjectByIdApi(data?.id || '')
+          );
+        } catch {
+          // Fallback to normal navigation if prefetch fails.
+        }
+        setIsNavigating(false);
         router.push({
           pathname: '/(protected)/project-detail/[projectId]',
           params: { projectId: data?.id || '', type: data?.type },

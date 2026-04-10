@@ -65,20 +65,17 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
   const navigateToDetail = async (invoiceId: string) => {
     setIsNavigating(true);
     try {
-      try {
-        await prefetch(`organization-invoice-${invoiceId}`, () =>
-          getInvoiceByIdApi(invoiceId)
-        );
-      } catch {
-        // Fallback to normal navigation if prefetch fails.
-      }
-      router.push({
-        pathname: '/(protected)/invoice-detail/[invoiceId]',
-        params: { invoiceId, invoiceTypeCode: invoice?.invoiceType?.code },
-      });
-    } finally {
-      setIsNavigating(false);
+      await prefetch(`organization-invoice-${invoiceId}`, () =>
+        getInvoiceByIdApi(invoiceId)
+      );
+    } catch {
+      // Fallback to normal navigation if prefetch fails.
     }
+    router.push({
+      pathname: '/(protected)/invoice-detail/[invoiceId]',
+      params: { invoiceId, invoiceTypeCode: invoice?.invoiceType?.code },
+    });
+    setIsNavigating(false);
   };
 
   if (!invoice) {

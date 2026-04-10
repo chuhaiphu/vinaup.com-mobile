@@ -66,8 +66,8 @@ export default function OrganizationIndexScreen() {
   const fetchInvoicesFn = () =>
     getInvoicesByOrganizationIdApi(organizationId, {
       invoiceTypeId: getInvoiceTypeByCode('SELL')?.id,
-      month: selectedDate.month() + 1,
-      year: selectedDate.year(),
+      startDate: selectedDate.startOf('month').toISOString(),
+      endDate: selectedDate.endOf('month').toISOString(),
     });
 
   const invoicesFetchKey = `organization-invoice-list-${organizationId}-${selectedDate.format('YYYY-MM')}`;

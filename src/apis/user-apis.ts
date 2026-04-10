@@ -22,7 +22,6 @@ export const searchUsersApi = async (params: {
   phone?: string;
   email?: string;
 }) => {
-  console.log('Searching users with params:', params);
   const query = new URLSearchParams();
   if (params.name) query.set('name', params.name);
   if (params.phone) query.set('phone', params.phone);

@@ -51,18 +51,15 @@ function TourListSection({
     if (!id) return;
     setIsNavigating(true);
     try {
-      try {
-        await prefetch(`organization-tour-${id}`, () => getTourByIdApi(id));
-      } catch {
-        // Fallback to normal navigation if prefetch fails.
-      }
-      router.push({
-        pathname: '/(protected)/tour-detail/[tourId]',
-        params: { tourId: id },
-      });
-    } finally {
-      setIsNavigating(false);
+      await prefetch(`organization-tour-${id}`, () => getTourByIdApi(id));
+    } catch {
+      // Fallback to normal navigation if prefetch fails.
     }
+    router.push({
+      pathname: '/(protected)/tour-detail/[tourId]',
+      params: { tourId: id },
+    });
+    setIsNavigating(false);
   };
 
   return (

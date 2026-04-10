@@ -4,13 +4,15 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
-import { useMutationFn } from 'fetchwire';
-import { createTourApi } from '@/apis/tour-apis';
+import { prefetch, useMutationFn } from 'fetchwire';
+import { createTourApi, getTourByIdApi } from '@/apis/tour-apis';
 import dayjs from 'dayjs';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationTourHeaderBottom = () => {
   const router = useRouter();
   const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
+  const { setIsNavigating } = useNavigationStore();
 
   const createTourFn = () =>
     createTourApi({
@@ -28,7 +30,16 @@ const OrganizationTourHeaderBottom = () => {
 
   const handleAddNew = async () => {
     await createTour({
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
+        setIsNavigating(true);
+        try {
+          await prefetch(`organization-tour-${data?.id}`, () =>
+            getTourByIdApi(data?.id || '')
+          );
+        } catch {
+          // Fallback to normal navigation if prefetch fails.
+        }
+        setIsNavigating(false);
         router.push({
           pathname: '/(protected)/tour-detail/[tourId]',
           params: { tourId: data ? data.id : '' },

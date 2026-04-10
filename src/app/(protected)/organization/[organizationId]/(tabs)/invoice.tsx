@@ -40,8 +40,8 @@ function InvoiceListSection({
     return getInvoicesByOrganizationIdApi(organizationId, {
       invoiceTypeId: invoiceType?.id,
       status: statusFilter || undefined,
-      month: selectedDate.month() + 1,
-      year: selectedDate.year(),
+      startDate: selectedDate.startOf('month').toISOString(),
+      endDate: selectedDate.endOf('month').toISOString(),
     });
   };
 

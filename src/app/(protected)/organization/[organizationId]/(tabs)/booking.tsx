@@ -33,8 +33,8 @@ function BookingListSection({
   const fetchBookingsFn = () =>
     getBookingsByOrganizationIdApi(organizationId, {
       status: statusFilter || undefined,
-      month: selectedDate.month() + 1,
-      year: selectedDate.year(),
+      startDate: selectedDate.startOf('month').toISOString(),
+      endDate: selectedDate.endOf('month').toISOString(),
     });
 
   const fetchKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;

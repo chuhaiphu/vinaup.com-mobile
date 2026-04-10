@@ -8,6 +8,7 @@ import {
 import { buildFilterQueryString } from '@/utils/api-helpers';
 
 export async function createReceiptPaymentApi(data: CreateReceiptPaymentRequest) {
+  console.log('Creating receipt/payment with data:', data.transactionDate);
   return wireApi<ReceiptPaymentResponse>('/receipt-payment', {
     method: 'POST',
     body: JSON.stringify(data),

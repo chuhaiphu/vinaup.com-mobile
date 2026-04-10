@@ -1,31 +1,12 @@
 import { DateFilterParam } from '@/interfaces/_query-param.interfaces';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-dayjs.extend(utc);
-// Helper function to build date filter params
-// Return URLSearchParams object contains date filter parameters
-//
-// Example:
-// Input: { date: new Date('2024-01-15') }
-// Output: URLSearchParams object
-//   - params.get('date') === '2024-01-15'
-//   - params.toString() === 'date=2024-01-15'
-//
-// Input: { month: 3, year: 2024 }
-// Output: URLSearchParams object
-//   - params.get('month') === '3'
-//   - params.get('year') === '2024'
-//   - params.toString() === 'month=3&year=2024'
+
 function buildDateFilterParams(
   filter?: DateFilterParam,
   params: URLSearchParams = new URLSearchParams()
 ): URLSearchParams {
   if (filter) {
-    if (filter.date)
-      params.append('date', dayjs(filter.date).utc().format('YYYY-MM-DD'));
-    if (filter.month) params.append('month', filter.month.toString());
-    if (filter.quarter) params.append('quarter', filter.quarter.toString());
-    if (filter.year) params.append('year', filter.year.toString());
+    if (filter.startDate) params.append('startDate', filter.startDate);
+    if (filter.endDate) params.append('endDate', filter.endDate);
   }
   return params;
 }
@@ -34,12 +15,11 @@ function buildDateFilterParams(
 // Return query string in the form "?key=value&key2=value2" to use in URL
 //
 // Example:
-// Input: { date: new Date('2024-01-15') }
-// Output: "?date=2024-01-15"
+// Input: { startDate: '2026-03-31T17:00:00.000Z', endDate: '2026-04-30T16:59:59.999Z' }
+// Output: "?startDate=2026-03-31T17%3A00%3A00.000Z&endDate=2026-04-30T16%3A59%3A59.999Z"
 //
-// Input: { month: 3, year: 2024 }, { status: 'ACTIVE', type: 'RECEIPT' }
-
-// Output: "?month=3&year=2024&status=ACTIVE&type=RECEIPT"
+// Input: { startDate: '...', endDate: '...' }, { status: 'ACTIVE', type: 'RECEIPT' }
+// Output: "?startDate=...&endDate=...&status=ACTIVE&type=RECEIPT"
 export function buildFilterQueryString(
   filter?: DateFilterParam,
   additionalParams?: Record<string, string | undefined>

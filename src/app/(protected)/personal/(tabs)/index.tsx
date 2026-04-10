@@ -70,7 +70,8 @@ export default function PersonalIndexScreen() {
 
   const fetchReceiptPaymentsSelfFn = () =>
     getReceiptPaymentsByCurrentUserApi({
-      date: selectedDate.toDate(),
+      startDate: selectedDate.startOf('day').toISOString(),
+      endDate: selectedDate.endOf('day').toISOString(),
     });
 
   const {
@@ -85,7 +86,8 @@ export default function PersonalIndexScreen() {
   const fetchProjectsSelfFn = () =>
     getProjectsOfCurrentUserApi({
       type: 'SELF',
-      date: selectedDate.toDate(),
+      startDate: selectedDate.startOf('day').toISOString(),
+      endDate: selectedDate.endOf('day').toISOString(),
     });
 
   const {
@@ -98,7 +100,8 @@ export default function PersonalIndexScreen() {
   const fetchProjectsCompanyFn = () =>
     getProjectsOfCurrentUserApi({
       type: 'COMPANY',
-      date: selectedDate.toDate(),
+      startDate: selectedDate.startOf('day').toISOString(),
+      endDate: selectedDate.endOf('day').toISOString(),
     });
 
   const {

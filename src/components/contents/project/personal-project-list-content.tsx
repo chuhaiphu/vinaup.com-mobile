@@ -44,26 +44,23 @@ function ProjectListSection({
     const fetchKey =
       fetchKeyMap[project.type] ?? `organization-project-${project.id}`;
     try {
-      try {
-        await prefetch(fetchKey, () => getProjectByIdApi(project.id));
-      } catch {
-        // Fallback to normal navigation if prefetch fails.
-      }
-      router.push({
-        pathname: '/(protected)/project-detail/[projectId]',
-        params: { projectId: project.id, type: project.type },
-      });
-    } finally {
-      setIsNavigating(false);
+      await prefetch(fetchKey, () => getProjectByIdApi(project.id));
+    } catch {
+      // Fallback to normal navigation if prefetch fails.
     }
+    router.push({
+      pathname: '/(protected)/project-detail/[projectId]',
+      params: { projectId: project.id, type: project.type },
+    });
+    setIsNavigating(false);
   };
 
   const fetchProjectsAndReceiptPaymentsFn = async () => {
     const projectsRes = await getProjectsOfCurrentUserApi({
       type: projectType,
       status: projectStatusFilter,
-      month: selectedDate.month() + 1,
-      year: selectedDate.year(),
+      startDate: selectedDate.startOf('month').toISOString(),
+      endDate: selectedDate.endOf('month').toISOString(),
     });
 
     const projects = projectsRes.data ?? [];

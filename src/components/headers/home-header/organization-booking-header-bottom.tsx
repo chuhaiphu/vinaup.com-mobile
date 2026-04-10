@@ -4,11 +4,13 @@ import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { Button } from '../../primitives/button';
 import VinaupAddNew from '../../icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
-import { useMutationFn } from 'fetchwire';
-import { createBookingApi } from '@/apis/booking-apis';
+import { prefetch, useMutationFn } from 'fetchwire';
+import { createBookingApi, getBookingByIdApi } from '@/apis/booking-apis';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationBookingHeaderBottom = () => {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
   const params = useGlobalSearchParams<{
     organizationId: string;
   }>();
@@ -29,7 +31,16 @@ const OrganizationBookingHeaderBottom = () => {
 
   const handleAddNew = async () => {
     await createBooking({
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
+        setIsNavigating(true);
+        try {
+          await prefetch(`organization-booking-${data?.id}`, () =>
+            getBookingByIdApi(data?.id || '')
+          );
+        } catch {
+          // Fallback to normal navigation if prefetch fails.
+        }
+        setIsNavigating(false);
         router.push({
           pathname: '/(protected)/booking-detail/[bookingId]',
           params: { bookingId: data?.id || '' },

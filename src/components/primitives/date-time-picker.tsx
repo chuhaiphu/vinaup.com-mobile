@@ -43,10 +43,9 @@ export function DateTimePicker({
   style,
 }: DateTimePickerProps) {
   const [showDatePicker, setShowDatePicker] = useState(false);
-
   const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (selectedDate) {
-      onChange?.(dayjs(selectedDate));
+      onChange?.(dayjs(selectedDate).startOf('day'));
     }
     if (Platform.OS === 'ios') {
       setShowDatePicker(false);
@@ -69,7 +68,6 @@ export function DateTimePicker({
   };
 
   const isDisabled = isLocked || disabled;
-
   return (
     <>
       <PressableOpacity
