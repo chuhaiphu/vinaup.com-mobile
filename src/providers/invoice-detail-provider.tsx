@@ -11,6 +11,7 @@ import {
   UpdateInvoiceRequest,
 } from '@/interfaces/invoice-interfaces';
 import { useRouter } from 'expo-router';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface InvoiceDetailContextType {
   invoiceId: string;
@@ -46,6 +47,7 @@ export function InvoiceDetailProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
 
   const {
     data: invoice,
@@ -100,18 +102,21 @@ export function InvoiceDetailProvider({
         text: 'OK',
         style: 'destructive',
         onPress: () => {
+          setIsNavigating(true);
           deleteInvoice({
             onSuccess: () => {
+              setIsNavigating(false);
               router.back();
             },
             onError: (error: ApiError) => {
+              setIsNavigating(false);
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });
         },
       },
     ]);
-  }, [invoiceId, deleteInvoice, router]);
+  }, [invoiceId, deleteInvoice, router, setIsNavigating]);
 
   return (
     <InvoiceDetailContext

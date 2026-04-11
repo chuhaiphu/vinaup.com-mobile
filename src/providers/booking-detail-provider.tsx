@@ -13,6 +13,7 @@ import {
 } from '@/interfaces/booking-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface BookingDetailContextType {
   bookingId: string;
@@ -52,6 +53,7 @@ export function BookingDetailProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
 
   const {
     data: booking,
@@ -117,18 +119,21 @@ export function BookingDetailProvider({
         text: 'OK',
         style: 'destructive',
         onPress: () => {
+          setIsNavigating(true);
           deleteBooking({
             onSuccess: () => {
+              setIsNavigating(false);
               router.back();
             },
             onError: (error: ApiError) => {
+              setIsNavigating(false);
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });
         },
       },
     ]);
-  }, [bookingId, deleteBooking, router]);
+  }, [bookingId, deleteBooking, router, setIsNavigating]);
 
   return (
     <BookingDetailContext

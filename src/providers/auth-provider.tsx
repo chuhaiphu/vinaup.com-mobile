@@ -4,7 +4,7 @@ import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-
 import { UserResponse } from '@/interfaces/user-interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { promiseCacheMap } from 'fetchwire';
+import { promiseCacheMap, updateWireConfig } from 'fetchwire';
 
 interface AuthContextType {
   isLoading: boolean;
@@ -61,6 +61,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    updateWireConfig({
+      interceptors: {
+        onError: async (error) => {
+          if (error.errorCode === 'TOKEN_INVALID') {
+            await performLogout();
+          }
+        },
+      },
+    });
+  }, []);
 
   const performSync = async (user: UserResponse) => {
     try {

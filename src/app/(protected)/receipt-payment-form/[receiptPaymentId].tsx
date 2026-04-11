@@ -16,6 +16,7 @@ import {
 } from '@/apis/receipt-payment-apis';
 import { useMutationFn } from 'fetchwire';
 import { useReceiptPaymentFormStore } from '@/hooks/use-receipt-payment-form-store';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 import { COLORS } from '@/constants/style-constant';
 
 type ReceiptPaymentFormParams = {
@@ -36,6 +37,7 @@ type ReceiptPaymentFormParams = {
 
 export default function ReceiptPaymentFormScreen() {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
   const formContentRef = useRef<ReceiptPaymentFormContentRef>(null);
   const params = useLocalSearchParams<ReceiptPaymentFormParams>();
   const { receiptPaymentId } = params;
@@ -131,14 +133,17 @@ export default function ReceiptPaymentFormScreen() {
       return;
     }
 
+    setIsNavigating(true);
     createOrUpdateReceiptPayment({
       onSuccess: () => {
         if (isUpdateMode) {
           formContentRef.current?.refreshDetail();
         }
+        setIsNavigating(false);
         router.back();
       },
       onError: (error) => {
+        setIsNavigating(false);
         Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi tạo thu/chi.');
       },
     });
@@ -152,11 +157,14 @@ export default function ReceiptPaymentFormScreen() {
         text: 'OK',
         style: 'destructive',
         onPress: () => {
+          setIsNavigating(true);
           deleteReceiptPayment({
             onSuccess: () => {
+              setIsNavigating(false);
               router.back();
             },
             onError: (error) => {
+              setIsNavigating(false);
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });

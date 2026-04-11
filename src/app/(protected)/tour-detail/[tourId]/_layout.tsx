@@ -16,11 +16,13 @@ import { Select } from '@/components/primitives/select';
 import { TourStatus, TourStatusOptions } from '@/constants/tour-constants';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 function TourDetailLayoutContent() {
   const insets = useSafeAreaInsets();
 
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
   const { tourId } = useLocalSearchParams<{
     tourId: string;
   }>();
@@ -52,11 +54,14 @@ function TourDetailLayoutContent() {
         text: 'OK',
         style: 'destructive',
         onPress: () => {
+          setIsNavigating(true);
           deleteTour({
             onSuccess: () => {
+              setIsNavigating(false);
               router.back();
             },
             onError: (error: ApiError) => {
+              setIsNavigating(false);
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });

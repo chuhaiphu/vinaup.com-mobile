@@ -11,6 +11,7 @@ import {
   UpdateProjectRequest,
 } from '@/interfaces/project-interfaces';
 import { useRouter } from 'expo-router';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface CompanyProjectDetailContextType {
   projectId: string;
@@ -47,6 +48,7 @@ export function CompanyProjectDetailProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
 
   const {
     data: project,
@@ -101,18 +103,21 @@ export function CompanyProjectDetailProvider({
         text: 'OK',
         style: 'destructive',
         onPress: () => {
+          setIsNavigating(true);
           deleteProject({
             onSuccess: () => {
+              setIsNavigating(false);
               router.back();
             },
             onError: (error: ApiError) => {
+              setIsNavigating(false);
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });
         },
       },
     ]);
-  }, [projectId, deleteProject, router]);
+  }, [projectId, deleteProject, router, setIsNavigating]);
 
   return (
     <CompanyProjectDetailContext
