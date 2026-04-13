@@ -2,6 +2,7 @@ import { HomeHeader } from '@/components/headers/home-header/home-header';
 import VinaupCircleHorizontalHalfArrow from '@/components/icons/vinaup-circle-horizontal-half-arrow.native';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
+import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import VinaupSigningPenWithFrame from '@/components/icons/vinaup-signing-pen-with-frame.native';
 import { COLORS } from '@/constants/style-constant';
 import { Octicons } from '@expo/vector-icons';
@@ -41,6 +42,19 @@ export default function OrganizationTabsLayout() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupPlusMinus width={size} height={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="project"
+        initialParams={{ organizationId }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <VinaupPlusMinusMultiplyEqual
+              width={size}
+              height={size}
+              color={color}
+            />
           ),
         }}
       />

@@ -2,17 +2,16 @@ import { Suspense } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
-import { ProjectDetailHeaderContent } from './project-detail-header-content';
 import { ReceiptPaymentProjectListContent } from './receipt-payment-project-list-content';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constants';
-import { ProjectDetailFooterContent } from './project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { useOrganizationProjectDetailContext } from '@/providers/organization-project-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
-import { UpdateProjectRequest } from '@/interfaces/project-interfaces';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import { OrganizationProjectDetailHeaderContent } from './organization-project-detail-header-content';
+import { OrganizationProjectDetailFooterContent } from './organization-project-detail-footer-content';
 
 export function OrganizationProjectDetailContent() {
   const {
@@ -69,13 +68,7 @@ export function OrganizationProjectDetailContent() {
             />
           </View>
         </View>
-        <ProjectDetailHeaderContent
-          project={project ?? undefined}
-          isLoading={isUpdatingProject || isRefreshingProject}
-          onConfirm={(data, onSuccessCallback) =>
-            handleUpdateProject(data, onSuccessCallback)
-          }
-        />
+        <OrganizationProjectDetailHeaderContent />
         {project && (
           <Suspense fallback={<EntityListSectionSkeleton />}>
             <ReceiptPaymentProjectListContent
@@ -87,13 +80,7 @@ export function OrganizationProjectDetailContent() {
             />
           </Suspense>
         )}
-        <ProjectDetailFooterContent
-          project={project ?? undefined}
-          onConfirm={(data: UpdateProjectRequest, onSuccessCallback) =>
-            handleUpdateProject(data, onSuccessCallback)
-          }
-          isLoading={isUpdatingProject || isRefreshingProject}
-        />
+        <OrganizationProjectDetailFooterContent />
       </View>
     </OrganizationCustomerProvider>
   );

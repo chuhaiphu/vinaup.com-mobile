@@ -14,6 +14,7 @@ import OrganizationInvoiceHeaderBottom from './organization-invoice-header-botto
 import OrganizationTourHeaderBottom from './organization-tour-header-bottom';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import OrganizationBookingHeaderBottom from './organization-booking-header-bottom';
+import OrganizationProjectHeaderBottom from './organization-project-header-bottom';
 
 export const HomeHeader = () => {
   const pathname = usePathname();
@@ -39,6 +40,8 @@ export const HomeHeader = () => {
         return null;
       case pathname.includes(`/organization/${params.organizationId}/tour`):
         return <OrganizationTourHeaderBottom />;
+      case pathname === `/organization/${params.organizationId}/project`:
+        return <OrganizationProjectHeaderBottom />;
       default:
         return null;
     }
