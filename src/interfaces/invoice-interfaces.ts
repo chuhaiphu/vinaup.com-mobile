@@ -9,8 +9,8 @@ export interface InvoiceResponse {
   invoiceType: InvoiceTypeResponse;
   code: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   discountAmount: number;
   vatRate: number;
   discountRate: number;
@@ -18,7 +18,7 @@ export interface InvoiceResponse {
   surchargeAmount: number;
   status: InvoiceStatus;
   note: string | null;
-  createdAt: Date;
+  createdAt: string;
   createdBy: UserResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
@@ -29,8 +29,8 @@ export interface InvoiceResponse {
 export interface CreateInvoiceRequest {
   invoiceTypeId: string;
   description: string;
-  endDate: Date;
-  startDate?: Date;
+  endDate: string;
+  startDate?: string;
   note?: string;
   organizationId?: string;
   organizationCustomerId?: string | null;

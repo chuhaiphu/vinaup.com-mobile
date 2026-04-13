@@ -57,7 +57,7 @@ export function TourOrgCustomerSelectModal({
           phone: org.phone,
           email: org.email || undefined,
           status: 'ACTIVE',
-          joinedAt: new Date(),
+          joinedAt: new Date().toISOString(),
           clientOrganizationId: org.id,
         }),
       { invalidatesTags: ['organization-customer-list'] }
@@ -187,7 +187,9 @@ export function TourOrgCustomerSelectModal({
     createOrgCustomer(selectedOrg, {
       onSuccess: (created) => {
         refreshOrganizationCustomers();
-        handleUpdateTour({ organizationCustomerId: created.id }, onCloseRequest);
+        if (created) {
+          handleUpdateTour({ organizationCustomerId: created.id }, onCloseRequest);
+        }
       },
       onError: () => {
         Alert.alert('Lỗi', 'Không thể liên kết tổ chức cộng đồng.');

@@ -19,8 +19,8 @@ const OrganizationTourHeaderBottom = () => {
       description: 'Tiêu đề tour',
       organizationId,
       externalCustomerName: 'Khách lẻ',
-      startDate: dayjs().toDate(),
-      endDate: dayjs().add(3, 'day').toDate(),
+      startDate: dayjs().toISOString(),
+      endDate: dayjs().add(3, 'day').toISOString(),
     });
 
   const { executeMutationFn: createTour, isMutating } = useMutationFn(

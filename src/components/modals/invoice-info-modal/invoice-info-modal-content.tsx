@@ -8,12 +8,12 @@ import dayjs, { Dayjs } from 'dayjs';
 interface InvoiceInfoModalContentProps {
   invDescription?: string;
   invCode?: string;
-  invStartDate?: Date;
+  invStartDate?: string;
   isLoading?: boolean;
   onConfirm?: (data: {
     description: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: string;
+    endDate: string;
     code?: string;
   }) => void;
   onCloseRequest?: () => void;
@@ -44,8 +44,8 @@ export function InvoiceInfoModalContent({
 
     onConfirm?.({
       description,
-      startDate: startDate.toDate(),
-      endDate: startDate.hour(23).minute(59).toDate(),
+      startDate: startDate.toISOString(),
+      endDate: startDate.hour(23).minute(59).toISOString(),
       code: code.trim() || undefined,
     });
   };

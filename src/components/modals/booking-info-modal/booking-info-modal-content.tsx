@@ -9,13 +9,13 @@ import VinaupLeftRightArrows from '@/components/icons/vinaup-left-right-arrows.n
 
 interface BookingInfoModalContentProps {
   bookingDescription?: string;
-  bookingStartDate?: Date;
-  bookingEndDate?: Date;
+  bookingStartDate?: string;
+  bookingEndDate?: string;
   isLoading?: boolean;
   onConfirm?: (data: {
     description: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: string;
+    endDate: string;
   }) => void;
   onCloseRequest?: () => void;
 }
@@ -46,8 +46,8 @@ export function BookingInfoModalContent({
 
     onConfirm?.({
       description,
-      startDate: startDate.toDate(),
-      endDate: endDate.toDate(),
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
     });
   };
 

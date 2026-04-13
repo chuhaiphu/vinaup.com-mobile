@@ -36,9 +36,7 @@ export function TourSettlementCancelLogModalContent({
     executeFetchFn: fetchCancelLogs,
   } = useFetchFn(
     () =>
-      getTourSettlementLogsByTourSettlementIdApi(
-        tourData.tourSettlement?.id || ''
-      ),
+      getTourSettlementLogsByTourSettlementIdApi(tourData.tourSettlement?.id || ''),
     {
       tags: ['tour-settlement-cancel-logs'],
     }
@@ -123,7 +121,7 @@ export function TourSettlementCancelLogModalContent({
       <View style={styles.footerContainer}>
         <View>
           <Text style={styles.creatorText}>
-            Người tạo: {tourData.createdBy.name}
+            Người tạo: {tourData.createdBy?.name || '---'}
           </Text>
         </View>
         <View style={styles.doubleLineSeparator} />

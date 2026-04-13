@@ -123,7 +123,7 @@ export function TourCalculationCancelLogModalContent({
       <View style={styles.footerContainer}>
         <View>
           <Text style={styles.creatorText}>
-            Người tạo: {tourData.createdBy.name}
+            Người tạo: {tourData.createdBy?.name || '---'}
           </Text>
         </View>
         <View style={styles.doubleLineSeparator} />

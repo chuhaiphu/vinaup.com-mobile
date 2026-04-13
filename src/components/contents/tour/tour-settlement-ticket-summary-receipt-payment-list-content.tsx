@@ -9,8 +9,8 @@ import { useImperativeHandle } from 'react';
 
 interface TourSettlementTicketSummaryReceiptPaymentListContentProps {
   tourId: string;
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string;
   organizationId?: string;
   ref?: React.Ref<{
     refreshData: {

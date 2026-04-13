@@ -10,8 +10,8 @@ import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 interface ReceiptPaymentTourImplementationTourGuideListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   loading?: boolean;
   tourImplementationId: string;
   organizationId?: string;

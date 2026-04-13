@@ -6,6 +6,6 @@ export interface UserResponse {
   avatarUrl: string | null;
   createdAt: string;
   updatedAt: string;
-  organizationOwnedCount: number;
-  organizationLinkedCount: number;
+  organizationOwnedCount?: number;
+  organizationLinkedCount?: number;
 }

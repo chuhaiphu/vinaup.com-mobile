@@ -18,8 +18,8 @@ const OrganizationBookingHeaderBottom = () => {
   const createBookingFn = () => {
     return createBookingApi({
       description: 'Booking mới',
-      endDate: new Date(),
-      startDate: new Date(),
+      endDate: new Date().toISOString(),
+      startDate: new Date().toISOString(),
       organizationId: params.organizationId,
     });
   };

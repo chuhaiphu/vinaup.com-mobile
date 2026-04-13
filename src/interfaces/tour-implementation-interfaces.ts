@@ -76,7 +76,7 @@ export interface TourImplementationAdditionalDataResponse {
   id: string;
   tourImplementationId: string;
   carName: string | null;
-  createdAt: Date;
+  createdAt: string;
   usersInvited: UserInvitedTourImplementationResponse[];
   position: number;
 }

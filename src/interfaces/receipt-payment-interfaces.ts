@@ -17,7 +17,7 @@ export interface ReceiptPaymentResponse {
   unitPrice: number;
   currency: string;
   transactionType: ReceiptPaymentTransactionType;
-  transactionDate: Date;
+  transactionDate: string;
   quantity: number;
   frequency: number;
   vatRate: number;

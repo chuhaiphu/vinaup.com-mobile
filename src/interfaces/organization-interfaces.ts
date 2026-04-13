@@ -26,8 +26,8 @@ export interface OrganizationResponse {
   website: string | null;
   avatarUrl: string | null;
   province: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   createdBy: UserResponse | null;
   organizationIndustry: OrganizationIndustryResponse;
   memberCount?: number;

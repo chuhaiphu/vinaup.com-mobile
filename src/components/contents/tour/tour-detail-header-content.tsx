@@ -14,8 +14,8 @@ interface TourDetailHeaderContentProps {
   onConfirm?: (
     data: {
       description: string;
-      startDate: Date;
-      endDate: Date;
+      startDate: string;
+      endDate: string;
     },
     onSuccessCallback?: () => void
   ) => void;

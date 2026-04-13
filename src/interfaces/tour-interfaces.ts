@@ -10,11 +10,11 @@ export interface TourResponse {
   id: string;
   code: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   status: TourStatus;
   note: string | null;
-  createdAt: Date;
+  createdAt: string;
   createdBy: UserResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
@@ -27,8 +27,8 @@ export interface TourResponse {
 
 export interface CreateTourRequest {
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   note?: string;
   organizationId: string;
   organizationCustomerId?: string;

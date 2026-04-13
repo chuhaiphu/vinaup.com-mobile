@@ -8,8 +8,8 @@ export interface ProjectResponse {
   type: ProjectType;
   code: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   status: ProjectStatus;
   note: string | null;
   createdBy: UserResponse | null;
@@ -22,8 +22,8 @@ export interface ProjectResponse {
 export interface CreateProjectRequest {
   type: ProjectType;
   description: string;
-  endDate: Date;
-  startDate?: Date;
+  endDate: string;
+  startDate?: string;
   note?: string;
   organizationId?: string;
   organizationCustomerId?: string | null;

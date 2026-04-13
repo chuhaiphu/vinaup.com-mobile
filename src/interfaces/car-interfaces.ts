@@ -17,8 +17,8 @@ export interface CarResponse {
   videoUrl: string | null;
   videoThumbnailUrl: string | null;
   additionalImageUrls: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   createdBy: UserResponse | null;
   organization: OrganizationResponse;
   carAssignments?: CarAssignmentResponse[];
@@ -31,12 +31,12 @@ export interface CarAssignmentResponse {
   car: CarResponse;
   organizationMemberId: string | null;
   organizationMember: OrganizationMemberResponse | null;
-  startTime: Date;
-  endTime: Date | null;
+  startTime: string;
+  endTime: string | null;
   status: CarAssignmentStatus;
   note: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Car Request
@@ -61,8 +61,8 @@ export type UpdateCarRequest = Partial<Omit<CreateCarRequest, 'organizationId'>>
 export interface CreateCarAssignmentRequest {
   carId: string;
   organizationMemberId: string;
-  startTime?: Date;
-  endTime?: Date;
+  startTime?: string;
+  endTime?: string;
   note?: string;
 }
 

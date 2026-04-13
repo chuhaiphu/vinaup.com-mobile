@@ -13,7 +13,7 @@ export interface OrganizationMemberResponse {
   avatarUrl: string | null;
   address: string | null;
   status: OrganizationMemberStatus;
-  joinedAt: Date;
+  joinedAt: string;
   organizationRoleId: string;
   createdBy: UserResponse | null;
   user: UserResponse | null;
@@ -30,7 +30,7 @@ export interface CreateOrganizationMemberRequest {
   avatarUrl?: string;
   address?: string;
   status: OrganizationMemberStatus;
-  joinedAt: Date;
+  joinedAt: string;
   organizationRoleId: string;
   userId?: string | null;
 }

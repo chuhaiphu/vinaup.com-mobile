@@ -10,12 +10,12 @@ export interface BookingResponse {
   code: string;
   description: string;
   content: string | null;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   status: BookingStatus;
   note: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   createdBy: UserResponse | null;
   organization: OrganizationResponse;
   organizationCustomer: OrganizationCustomerResponse | null;
@@ -31,8 +31,8 @@ export interface BookingResponse {
 export interface CreateBookingRequest {
   description: string;
   content?: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   note?: string;
   organizationId: string;
   organizationCustomerId?: string;

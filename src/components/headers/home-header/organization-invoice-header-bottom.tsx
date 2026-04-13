@@ -29,8 +29,8 @@ const OrganizationInvoiceHeaderBottom = () => {
     return createInvoiceApi({
       invoiceTypeId: invoiceType.id,
       description: currentCode === 'BUY' ? 'Mua hàng' : 'Bán hàng',
-      endDate: new Date(),
-      startDate: new Date(),
+      endDate: new Date().toISOString(),
+      startDate: new Date().toISOString(),
       organizationId: params.organizationId,
     });
   };

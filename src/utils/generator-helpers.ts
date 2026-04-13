@@ -12,7 +12,10 @@ import { ImageManipulator } from 'expo-image-manipulator';
  * const output = dates.map((d) => d.format('YYYY-MM-DD'));
  * // output: ['2026-04-10', '2026-04-11', '2026-04-12', '2026-04-13']
  */
-export function generateDayJsDateRange(start: Date, end: Date): dayjs.Dayjs[] {
+export function generateDayJsDateRange(
+  start: Date | string,
+  end: Date | string
+): dayjs.Dayjs[] {
   const result: dayjs.Dayjs[] = [];
   let current = dayjs(start);
 

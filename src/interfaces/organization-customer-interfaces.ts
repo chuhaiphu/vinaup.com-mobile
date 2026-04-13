@@ -11,7 +11,7 @@ export interface OrganizationCustomerResponse {
   email: string | null;
   status: string;
   isSystemDefault: boolean;
-  joinedAt: Date;
+  joinedAt: string;
   createdBy: UserResponse | null;
   clientUser: UserResponse | null;
   clientOrganization: OrganizationResponse | null;
@@ -24,7 +24,7 @@ export interface CreateOrganizationCustomerRequest {
   phone: string;
   email?: string;
   status: string;
-  joinedAt: Date;
+  joinedAt: string;
   clientUserId?: string;
   clientOrganizationId?: string;
 }

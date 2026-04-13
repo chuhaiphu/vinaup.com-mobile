@@ -18,8 +18,8 @@ import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-pa
 
 interface ReceiptPaymentBookingListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   loading?: boolean;
   refreshing?: boolean;
   onRefresh: () => void;

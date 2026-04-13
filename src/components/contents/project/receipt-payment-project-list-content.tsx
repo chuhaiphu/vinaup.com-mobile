@@ -19,8 +19,8 @@ import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
 
 interface ReceiptPaymentProjectListContentProps {
   projectId: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   onRefresh?: () => void;
 }
 

@@ -7,13 +7,13 @@ import dayjs, { Dayjs } from 'dayjs';
 
 interface TourInfoModalContentProps {
   tourDescription?: string;
-  tourStartDate?: Date;
-  tourEndDate?: Date;
+  tourStartDate?: string;
+  tourEndDate?: string;
   isLoading?: boolean;
   onConfirm?: (data: {
     description: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: string;
+    endDate: string;
   }) => void;
   onCloseRequest?: () => void;
 }
@@ -49,8 +49,8 @@ export function TourInfoModalContent({
 
     onConfirm?.({
       description,
-      startDate: startDate.toDate(),
-      endDate: endDate.toDate(),
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
     });
   };
 

@@ -28,7 +28,7 @@ export interface SignatureResponse {
   signedByUserId?: string | null;
   signedByUser?: UserResponse | null;
   signedByName?: string | null;
-  signedAt?: Date | null;
+  signedAt?: string | null;
 
-  updatedAt: Date;
+  updatedAt: string;
 }

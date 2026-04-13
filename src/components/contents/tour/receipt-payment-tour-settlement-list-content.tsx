@@ -11,8 +11,8 @@ import { RefreshControl } from 'react-native-gesture-handler';
 
 interface ReceiptPaymentTourSettlementListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string;
   loading?: boolean;
   tourSettlementId: string;
   organizationId?: string;

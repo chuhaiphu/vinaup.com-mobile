@@ -20,8 +20,8 @@ import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
 
 interface ReceiptPaymentInvoiceListContentProps {
   invoiceId: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   onRefresh?: () => void;
   organizationId?: string;
   invoiceTypeId?: string;

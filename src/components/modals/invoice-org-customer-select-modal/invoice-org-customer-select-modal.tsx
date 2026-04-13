@@ -56,7 +56,7 @@ export function InvoiceOrgCustomerSelectModal({
         phone: org.phone,
         email: org.email || undefined,
         status: 'ACTIVE',
-        joinedAt: new Date(),
+        joinedAt: new Date().toISOString(),
         clientOrganizationId: org.id,
       }),
     { invalidatesTags: ['organization-customer-list'] }

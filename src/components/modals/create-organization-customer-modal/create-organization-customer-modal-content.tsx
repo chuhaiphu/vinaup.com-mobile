@@ -32,7 +32,7 @@ export function CreateOrganizationCustomerModalContent({
       phone: phone.trim(),
       email: email.trim().length > 0 ? email.trim() : undefined,
       status: 'ACTIVE',
-      joinedAt: new Date(),
+      joinedAt: new Date().toISOString(),
     });
 
   const { executeMutationFn: createOrganizationCustomer, isMutating } =
@@ -73,7 +73,9 @@ export function CreateOrganizationCustomerModalContent({
 
     createOrganizationCustomer({
       onSuccess: (created) => {
-        onCreated?.(created);
+        if (created) {
+          onCreated?.(created);
+        }
         setName('');
         setPhone('');
         setEmail('');

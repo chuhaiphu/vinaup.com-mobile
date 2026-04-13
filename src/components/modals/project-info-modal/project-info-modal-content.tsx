@@ -10,13 +10,13 @@ import VinaupLeftRightArrows from '@/components/icons/vinaup-left-right-arrows.n
 interface ProjectInfoModalContentProps {
   prjDescription?: string;
   prjCode?: string;
-  prjStartDate?: Date;
-  prjEndDate?: Date;
+  prjStartDate?: string;
+  prjEndDate?: string;
   isLoading?: boolean;
   onConfirm?: (data: {
     description: string;
-    startDate: Date;
-    endDate: Date;
+    startDate: string;
+    endDate: string;
     code?: string;
   }) => void;
   onCloseRequest?: () => void;
@@ -52,8 +52,8 @@ export function ProjectInfoModalContent({
 
     onConfirm?.({
       description,
-      startDate: startDate.toDate(),
-      endDate: endDate.toDate(),
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
       code: code.trim() || undefined,
     });
   };

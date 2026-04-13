@@ -14,8 +14,8 @@ interface ProjectDetailHeaderContentProps {
   onConfirm?: (
     data: {
       description: string;
-      startDate: Date;
-      endDate: Date;
+      startDate: string;
+      endDate: string;
       code?: string;
     },
     onSuccessCallback?: () => void

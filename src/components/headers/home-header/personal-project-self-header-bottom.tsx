@@ -16,8 +16,8 @@ const PersonalProjectSelfHeaderBottom = () => {
     createProjectApi({
       description: 'Tiền công',
       type: 'SELF',
-      endDate: new Date(),
-      startDate: new Date(),
+      endDate: new Date().toISOString(),
+      startDate: new Date().toISOString(),
     });
 
   const { executeMutationFn: createProject, isMutating } = useMutationFn(

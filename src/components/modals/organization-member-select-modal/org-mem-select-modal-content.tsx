@@ -34,7 +34,10 @@ export function OrgMemSelectModalContent({
 }: OrgMemSelectModalContentProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    () => membersInCharge?.map((m) => m.organizationMemberId) ?? []
+    () =>
+      (membersInCharge
+        ?.map((m) => m.organizationMemberId)
+        .filter((id) => id !== null && id !== undefined) as string[]) ?? []
   );
   const insets = useSafeAreaInsets();
 
@@ -53,7 +56,9 @@ export function OrgMemSelectModalContent({
 
   const handleToggle = (memberId: string) => {
     setSelectedIds((prev) =>
-      prev.includes(memberId) ? prev.filter((id) => id !== memberId) : [...prev, memberId]
+      prev.includes(memberId)
+        ? prev.filter((id) => id !== memberId)
+        : [...prev, memberId]
     );
   };
 
