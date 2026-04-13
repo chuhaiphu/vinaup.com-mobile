@@ -10,7 +10,7 @@ export interface TourSettlementResponse {
   adultTicketPrice: number;
   childTicketPrice: number;
   taxRate: number;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   tour: TourResponse;
   receiptPayments: ReceiptPaymentResponse[];
 }
@@ -44,8 +44,8 @@ export interface TourSettlementCancelLogSnapshotData {
 export interface TourSettlementCancelLogResponse {
   id: string;
   tourSettlementId: string;
-  canceledByUserId: string;
-  canceledByUser: UserResponse;
+  canceledByUserId: string | null;
+  canceledByUser: UserResponse | null;
   snapshotData: TourSettlementCancelLogSnapshotData | Record<string, unknown>;
   createdAt: string;
 }

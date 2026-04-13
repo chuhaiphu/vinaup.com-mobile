@@ -19,17 +19,16 @@ export type UpdateOrganizationRequest = Partial<CreateOrganizationRequest> & {
 export interface OrganizationResponse {
   id: string;
   name: string;
-  description: string;
-  email: string;
+  description?: string | null;
+  email: string | null;
   phone: string;
-  address: string;
+  address: string | null;
   website: string | null;
   avatarUrl: string | null;
   province: string;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: UserResponse;
-  createdByUserId: string;
+  createdBy: UserResponse | null;
   organizationIndustry: OrganizationIndustryResponse;
   memberCount?: number;
   memberLinkedCount?: number;

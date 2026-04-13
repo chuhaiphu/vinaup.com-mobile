@@ -19,7 +19,7 @@ export interface CarResponse {
   additionalImageUrls: string[];
   createdAt: Date;
   updatedAt: Date;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   organization: OrganizationResponse;
   carAssignments?: CarAssignmentResponse[];
 }
@@ -29,8 +29,8 @@ export interface CarAssignmentResponse {
   id: string;
   carId: string;
   car: CarResponse;
-  organizationMemberId: string;
-  organizationMember: OrganizationMemberResponse;
+  organizationMemberId: string | null;
+  organizationMember: OrganizationMemberResponse | null;
   startTime: Date;
   endTime: Date | null;
   status: CarAssignmentStatus;

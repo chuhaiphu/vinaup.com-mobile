@@ -16,9 +16,14 @@ export interface BookingResponse {
   note: string | null;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   organization: OrganizationResponse;
   organizationCustomer: OrganizationCustomerResponse | null;
+  fromOrganizationId: string | null;
+  fromOrganization: OrganizationResponse | null;
+  sourceBookingId: string | null;
+  sourceBooking: BookingResponse | null;
+  targetBooking: BookingResponse | null;
   receiptPayments: ReceiptPaymentResponse[];
   tourImplementation: TourImplementationResponse | null;
 }
@@ -31,6 +36,8 @@ export interface CreateBookingRequest {
   note?: string;
   organizationId: string;
   organizationCustomerId?: string;
+  fromOrganizationId?: string;
+  sourceBookingId?: string;
   tourImplementationId?: string;
 }
 

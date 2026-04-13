@@ -3,7 +3,7 @@ import { UserResponse } from "./user-interfaces";
 export interface CategoryResponse {
   id: string;
   description: string;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   isDefault: boolean;
 }
 

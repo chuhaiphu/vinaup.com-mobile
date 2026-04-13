@@ -1,11 +1,9 @@
 import { UserResponse } from './user-interfaces';
-import { OrganizationResponse } from './organization-interfaces';
 import { DocumentType, SignatureRole } from '@/constants/signature-contants';
 
 export interface ManageReceiverSignaturesRequest {
   documentId: string;
   documentType: DocumentType;
-  organizationId: string;
   targetUserIds: string[];
 }
 
@@ -31,10 +29,6 @@ export interface SignatureResponse {
   signedByUser?: UserResponse | null;
   signedByName?: string | null;
   signedAt?: Date | null;
-
-  // Organization relation
-  organizationId?: string | null;
-  organization?: OrganizationResponse | null;
 
   updatedAt: Date;
 }

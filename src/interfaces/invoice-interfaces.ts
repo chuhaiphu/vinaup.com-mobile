@@ -19,7 +19,7 @@ export interface InvoiceResponse {
   status: InvoiceStatus;
   note: string | null;
   createdAt: Date;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
   organization: OrganizationResponse | null;

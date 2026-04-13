@@ -12,7 +12,7 @@ export interface ProjectResponse {
   endDate: Date;
   status: ProjectStatus;
   note: string | null;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
   organization: OrganizationResponse | null;

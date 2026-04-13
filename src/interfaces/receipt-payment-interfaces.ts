@@ -22,7 +22,7 @@ export interface ReceiptPaymentResponse {
   frequency: number;
   vatRate: number;
   note: string | null;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   category: CategoryResponse;
   project: ProjectResponse | null;
   invoice: InvoiceResponse | null;

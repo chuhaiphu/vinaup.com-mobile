@@ -15,7 +15,12 @@ initWire({
   },
   interceptors: {
     onRequest: async () =>
-      await new Promise<void>((resolve) => setTimeout(resolve, 500)),
+      await new Promise<void>((resolve) => {
+        // After 500ms, resolve the promise to allow the request to proceed
+        setTimeout(() => {
+          resolve();
+        }, 500);
+      }),
   },
   getToken: async () => {
     return await AsyncStorage.getItem(STORAGE_KEYS.accessToken);

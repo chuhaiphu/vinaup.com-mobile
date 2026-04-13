@@ -9,13 +9,13 @@ export interface OrganizationMemberResponse {
   type: OrganizationMemberType;
   name: string;
   phone: string;
-  email: string;
+  email: string | null;
   avatarUrl: string | null;
   address: string | null;
   status: OrganizationMemberStatus;
   joinedAt: Date;
   organizationRoleId: string;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   user: UserResponse | null;
   organization: OrganizationResponse;
   organizationRole: OrganizationRoleResponse;

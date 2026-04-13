@@ -15,7 +15,7 @@ export interface TourResponse {
   status: TourStatus;
   note: string | null;
   createdAt: Date;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
   organization: OrganizationResponse | null;
@@ -30,12 +30,16 @@ export interface CreateTourRequest {
   startDate: Date;
   endDate: Date;
   note?: string;
-  organizationId?: string;
-  organizationCustomerId?: string | null;
+  organizationId: string;
+  organizationCustomerId?: string;
   externalOrganizationName?: string;
-  externalCustomerName?: string | null;
+  externalCustomerName?: string;
 }
 
 export type UpdateTourRequest = Partial<CreateTourRequest> & {
   status?: TourStatus;
+  adultTicketCount?: number;
+  childTicketCount?: number;
+  adultTicketPrice?: number;
+  childTicketPrice?: number;
 };

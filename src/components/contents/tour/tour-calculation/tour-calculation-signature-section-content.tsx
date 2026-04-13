@@ -81,7 +81,6 @@ export default function TourCalculationSignatureContent({
     manageReceiverSignaturesApi({
       documentId: tourData.tourCalculation?.id || '',
       documentType: 'TOUR_CALCULATION',
-      organizationId: tourData.organization?.id || '',
       targetUserIds,
     });
 

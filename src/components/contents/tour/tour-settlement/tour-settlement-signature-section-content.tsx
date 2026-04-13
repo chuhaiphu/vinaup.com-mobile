@@ -81,7 +81,6 @@ export default function TourSettlementSignatureContent({
     manageReceiverSignaturesApi({
       documentId: tourData.tourSettlement?.id || '',
       documentType: 'TOUR_SETTLEMENT',
-      organizationId: tourData.organization?.id || '',
       targetUserIds,
     });
 

@@ -12,7 +12,7 @@ export interface OrganizationCustomerResponse {
   status: string;
   isSystemDefault: boolean;
   joinedAt: Date;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   clientUser: UserResponse | null;
   clientOrganization: OrganizationResponse | null;
   organization: OrganizationResponse;

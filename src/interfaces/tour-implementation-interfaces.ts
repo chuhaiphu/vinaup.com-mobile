@@ -18,7 +18,7 @@ export interface TourImplementationResponse {
   childTicketPrice: number;
   taxRate: number;
   description: string;
-  createdBy: UserResponse;
+  createdBy: UserResponse | null;
   tour: TourResponse;
   membersInCharge: MemberInChargeTourImplementationResponse[];
   additionalData: TourImplementationAdditionalDataResponse[];
@@ -40,8 +40,8 @@ export interface ManageMembersInChargeRequest {
 export interface MemberInChargeTourImplementationResponse {
   id: string;
   tourImplementationId: string | null;
-  organizationMemberId: string;
-  organizationMember: OrganizationMemberResponse;
+  organizationMemberId: string | null;
+  organizationMember: OrganizationMemberResponse | null;
   role: string;
 }
 
