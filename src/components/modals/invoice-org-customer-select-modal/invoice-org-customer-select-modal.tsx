@@ -37,7 +37,8 @@ type PendingSelection =
 export function InvoiceOrgCustomerSelectModal({
   modalRef,
 }: InvoiceOrgCustomerSelectModalProps) {
-  const { invoice, isUpdatingInvoice, handleUpdateInvoice } = useInvoiceDetailContext();
+  const { invoice, isUpdatingInvoice, handleUpdateInvoice } =
+    useInvoiceDetailContext();
   const { organizationCustomers, refreshOrganizationCustomers } =
     useOrganizationCustomerContext();
   const { allOrganizations: organizations } = useAllOrganizationsContext();
@@ -48,19 +49,20 @@ export function InvoiceOrgCustomerSelectModal({
 
   const createCustomerModalRef = useRef<SlideSheetRef | null>(null);
 
-  const { executeMutationFn: createOrgCustomer, isMutating: isCreatingCustomer } = useMutationFn(
-    (org: OrganizationResponse) =>
-      createOrganizationCustomerApi({
-        organizationId: organizationId!,
-        name: org.name,
-        phone: org.phone,
-        email: org.email || undefined,
-        status: 'ACTIVE',
-        joinedAt: new Date().toISOString(),
-        clientOrganizationId: org.id,
-      }),
-    { invalidatesTags: ['organization-customer-list'] }
-  );
+  const { executeMutationFn: createOrgCustomer, isMutating: isCreatingCustomer } =
+    useMutationFn(
+      (org: OrganizationResponse) =>
+        createOrganizationCustomerApi({
+          organizationId: organizationId!,
+          name: org.name,
+          phone: org.phone,
+          email: org.email || undefined,
+          status: 'ACTIVE',
+          joinedAt: new Date().toISOString(),
+          clientOrganizationId: org.id,
+        }),
+      { invalidatesTags: ['organization-customer-list'] }
+    );
 
   const [currentTab, setCurrentTab] = useState<TabValue>('internal');
   const [searchQuery, setSearchQuery] = useState('');
@@ -162,23 +164,34 @@ export function InvoiceOrgCustomerSelectModal({
 
   const handleConfirm = () => {
     if (pendingSelection?.type === 'internal') {
-      handleUpdateInvoice({ organizationCustomerId: pendingSelection.customerId }, onCloseRequest);
+      handleUpdateInvoice(
+        { organizationCustomerId: pendingSelection.customerId },
+        onCloseRequest
+      );
       return;
     }
 
-    const selectedOrg = organizations.find((o) => o.id === pendingSelection?.organizationId);
+    const selectedOrg = organizations.find(
+      (o) => o.id === pendingSelection?.organizationId
+    );
     if (!selectedOrg || !organizationId) return;
 
     const existingCustomer = realOrganizationCustomers.get(selectedOrg.id);
     if (existingCustomer) {
-      handleUpdateInvoice({ organizationCustomerId: existingCustomer.id }, onCloseRequest);
+      handleUpdateInvoice(
+        { organizationCustomerId: existingCustomer.id },
+        onCloseRequest
+      );
       return;
     }
 
     createOrgCustomer(selectedOrg, {
       onSuccess: (created) => {
         refreshOrganizationCustomers();
-        handleUpdateInvoice({ organizationCustomerId: created?.id }, onCloseRequest);
+        handleUpdateInvoice(
+          { organizationCustomerId: created?.id },
+          onCloseRequest
+        );
       },
       onError: () => {
         Alert.alert('Lỗi', 'Không thể liên kết tổ chức cộng đồng.');
@@ -215,11 +228,16 @@ export function InvoiceOrgCustomerSelectModal({
             styles={{
               tab: styles.tab,
               tabTextContainer: styles.tabTextContainer,
-              tabText: styles.tabText,
-              activeTabText: styles.activeTabText,
             }}
           >
-            Tổ chức cộng đồng
+            <Text
+              style={[
+                styles.tabText,
+                currentTab === 'real' && styles.activeTabText,
+              ]}
+            >
+              Tổ chức cộng đồng
+            </Text>
           </Tabs.Tab>
           <Tabs.Tab
             value="internal"
@@ -228,11 +246,16 @@ export function InvoiceOrgCustomerSelectModal({
             styles={{
               tab: styles.tab,
               tabTextContainer: styles.tabTextContainer,
-              tabText: styles.tabText,
-              activeTabText: styles.activeTabText,
             }}
           >
-            Nội bộ tổ chức
+            <Text
+              style={[
+                styles.tabText,
+                currentTab === 'internal' && styles.activeTabText,
+              ]}
+            >
+              Nội bộ tổ chức
+            </Text>
           </Tabs.Tab>
         </Tabs.List>
 
@@ -246,7 +269,9 @@ export function InvoiceOrgCustomerSelectModal({
             style={styles.searchInput}
             editable={!isBusy}
           />
-          {isBusy ? <ActivityIndicator size="small" color={COLORS.vinaupTeal} /> : null}
+          {isBusy ? (
+            <ActivityIndicator size="small" color={COLORS.vinaupTeal} />
+          ) : null}
         </View>
 
         {currentTab === 'real' ? (
@@ -266,7 +291,11 @@ export function InvoiceOrgCustomerSelectModal({
         )}
 
         <View style={styles.footerActions}>
-          <Button style={styles.cancelButton} onPress={onCloseRequest} disabled={isBusy}>
+          <Button
+            style={styles.cancelButton}
+            onPress={onCloseRequest}
+            disabled={isBusy}
+          >
             <Text style={styles.cancelButtonText}>Hủy</Text>
           </Button>
           <Button

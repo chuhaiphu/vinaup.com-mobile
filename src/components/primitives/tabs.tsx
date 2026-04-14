@@ -1,13 +1,5 @@
 import React, { ReactNode } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StyleProp,
-  ViewStyle,
-  TextStyle,
-  ScrollView,
-} from 'react-native';
+import { View, StyleSheet, StyleProp, ViewStyle, ScrollView } from 'react-native';
 import { PressableOpacity } from './pressable-opacity';
 import { COLORS } from '@/constants/style-constant';
 
@@ -18,8 +10,6 @@ export interface TabsListStyles {
 export interface TabsTabStyles {
   tab?: StyleProp<ViewStyle>;
   tabTextContainer?: StyleProp<ViewStyle>;
-  tabText?: StyleProp<TextStyle>;
-  activeTabText?: StyleProp<TextStyle>;
   indicator?: StyleProp<ViewStyle>;
 }
 
@@ -73,16 +63,7 @@ const Tab = ({ value, children, styles, currentValue, onPress }: TabProps) => {
       style={[defaultStyles.tab, styles?.tab]}
     >
       <View style={[defaultStyles.tabTextContainer, styles?.tabTextContainer]}>
-        <Text
-          style={[
-            defaultStyles.tabText,
-            styles?.tabText,
-            isActive && defaultStyles.activeTabText,
-            isActive && styles?.activeTabText,
-          ]}
-        >
-          {children}
-        </Text>
+        {children}
 
         {isActive && <View style={[defaultStyles.indicator, styles?.indicator]} />}
       </View>
@@ -95,11 +76,11 @@ const Panel = ({ value, currentValue, children, styles }: PanelProps) => {
   return <View style={[defaultStyles.panel, styles?.panel]}>{children}</View>;
 };
 
-const Tabs = ({ children }: { children: ReactNode }) => <>{children}</>;
-
-Tabs.List = List;
-Tabs.Tab = Tab;
-Tabs.Panel = Panel;
+const Tabs = {
+  List,
+  Tab,
+  Panel,
+};
 
 export default Tabs;
 
@@ -122,14 +103,6 @@ const defaultStyles = StyleSheet.create({
     right: 0,
     height: 2,
     backgroundColor: COLORS.vinaupYellow,
-  },
-  tabText: {
-    fontSize: 14,
-    color: COLORS.vinaupBlack,
-  },
-  activeTabText: {
-    color: COLORS.vinaupYellow,
-    fontWeight: '600',
   },
   panel: {},
 });

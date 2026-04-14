@@ -81,14 +81,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     backgroundColor: COLORS.vinaupSoftGray,
     marginHorizontal: 8,
     marginBottom: 8,
     borderRadius: 8,
-    padding: 8,
+    // padding: 8,
   },
   titleWrapper: {
     flexDirection: 'row',

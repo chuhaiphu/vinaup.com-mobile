@@ -21,7 +21,7 @@ const PersonalReceiptPaymentHeaderBottom = () => {
   };
 
   return (
-    <>
+    <View style={styles.bottomContainer}>
       <View style={styles.titleWrapper}>
         <Text style={styles.titleLeft}>Thu chi</Text>
         <Text style={styles.titleRight}> ngày</Text>
@@ -29,11 +29,17 @@ const PersonalReceiptPaymentHeaderBottom = () => {
       <Button onPress={handleAddNew}>
         <VinaupAddNew width={30} height={30} />
       </Button>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  bottomContainer: {
+    padding: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   titleWrapper: {
     flexDirection: 'row',
     alignItems: 'center',

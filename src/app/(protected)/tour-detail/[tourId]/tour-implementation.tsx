@@ -37,7 +37,11 @@ export default function TourImplementationScreen() {
         tourImplementation?.id || '',
         'FOR_DIRECTOR'
       ),
-    { tags: [`receipt-payment-tour-implementation-director-${tourImplementation?.id}`] }
+    {
+      tags: [
+        `receipt-payment-tour-implementation-director-${tourImplementation?.id}`,
+      ],
+    }
   );
 
   const {
@@ -50,7 +54,11 @@ export default function TourImplementationScreen() {
         tourImplementation?.id || '',
         'FOR_TOUR_GUIDE'
       ),
-    { tags: [`receipt-payment-tour-implementation-tour-guide-${tourImplementation?.id}`] }
+    {
+      tags: [
+        `receipt-payment-tour-implementation-tour-guide-${tourImplementation?.id}`,
+      ],
+    }
   );
 
   useEffect(() => {
@@ -98,8 +106,6 @@ export default function TourImplementationScreen() {
                 onPress={setCurrentTab}
                 styles={{
                   tab: [styles.tab, currentTab === item.value && styles.activeTab],
-                  tabText: styles.tabText,
-                  activeTabText: styles.activeTabText,
                   indicator: { height: 0 },
                 }}
               >
@@ -114,7 +120,14 @@ export default function TourImplementationScreen() {
                     }
                   />
                 ) : (
-                  item.label
+                  <Text
+                    style={[
+                      styles.tabText,
+                      currentTab === item.value && styles.activeTabText,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
                 )}
               </Tabs.Tab>
             ))}

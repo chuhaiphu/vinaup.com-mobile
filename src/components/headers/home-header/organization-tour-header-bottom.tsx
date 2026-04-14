@@ -51,7 +51,7 @@ const OrganizationTourHeaderBottom = () => {
   };
 
   return (
-    <>
+    <View style={styles.bottomContainer}>
       <View style={styles.titleWrapper}>
         <Text style={styles.titleLeft}>Tour</Text>
         <Text style={styles.titleRight}> Trong nước</Text>
@@ -63,11 +63,17 @@ const OrganizationTourHeaderBottom = () => {
       >
         <VinaupAddNew width={30} height={30} />
       </Button>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  bottomContainer: {
+    padding: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   titleWrapper: {
     flexDirection: 'row',
     alignItems: 'center',

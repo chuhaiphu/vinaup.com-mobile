@@ -35,7 +35,7 @@ function TourDetailLayoutContent() {
   } = useTourDetailContext();
 
   const segments = useSegments();
-  const tab = segments[segments.length - 1] as string;
+  const tab = segments[segments.length - 1];
 
   const deleteTourFn = () => deleteTourApi(tourId);
 

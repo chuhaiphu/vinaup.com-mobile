@@ -1,7 +1,7 @@
 import Tabs from '@/components/primitives/tabs';
 import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 interface OrganizationTourDetailTabListContentProps {
   currentTab: string;
@@ -39,12 +39,17 @@ export const OrganizationTourDetailTabListContent = ({
           styles={{
             tab: styles.tab,
             tabTextContainer: styles.tabTextContainer,
-            tabText: styles.tabText,
-            activeTabText: styles.activeTabText,
             indicator: styles.indicator,
           }}
         >
-          {item.label}
+          <Text
+            style={[
+              styles.tabText,
+              currentTab === item.value && styles.activeTabText,
+            ]}
+          >
+            {item.label}
+          </Text>
         </Tabs.Tab>
       ))}
     </Tabs.List>
@@ -60,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   tab: {
-    flex: 1,
+    paddingHorizontal: 16,
   },
   tabTextContainer: {
     paddingVertical: 10,
@@ -68,7 +73,6 @@ const styles = StyleSheet.create({
   indicator: {
     backgroundColor: COLORS.vinaupYellow,
     height: 2,
-    bottom: 0,
   },
   tabText: {
     fontSize: 16,

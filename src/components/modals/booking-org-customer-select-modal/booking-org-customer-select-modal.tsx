@@ -230,11 +230,16 @@ export function BookingOrgCustomerSelectModal({
             styles={{
               tab: styles.tab,
               tabTextContainer: styles.tabTextContainer,
-              tabText: styles.tabText,
-              activeTabText: styles.activeTabText,
             }}
           >
-            Tổ chức cộng đồng
+            <Text
+              style={[
+                styles.tabText,
+                currentTab === 'real' && styles.activeTabText,
+              ]}
+            >
+              Tổ chức cộng đồng
+            </Text>
           </Tabs.Tab>
           <Tabs.Tab
             value="internal"
@@ -243,11 +248,16 @@ export function BookingOrgCustomerSelectModal({
             styles={{
               tab: styles.tab,
               tabTextContainer: styles.tabTextContainer,
-              tabText: styles.tabText,
-              activeTabText: styles.activeTabText,
             }}
           >
-            Nội bộ tổ chức
+            <Text
+              style={[
+                styles.tabText,
+                currentTab === 'internal' && styles.activeTabText,
+              ]}
+            >
+              Nội bộ tổ chức
+            </Text>
           </Tabs.Tab>
         </Tabs.List>
 

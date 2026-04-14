@@ -73,7 +73,7 @@ export default function OrganizationTabsLayout() {
       />
       <Tabs.Screen
         name="booking"
-        initialParams={{ organizationId }}
+        initialParams={{ organizationId, type: 'FROM' }}
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupSigningPenWithFrame
