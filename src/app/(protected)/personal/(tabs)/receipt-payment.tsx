@@ -1,88 +1,11 @@
-import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
-import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import { COLORS } from '@/constants/style-constant';
 import React, { Suspense, useState } from 'react';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
-import { useRouter } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { useFetch } from 'fetchwire';
-
-interface ReceiptPaymentListSectionProps {
-  selectedDate: dayjs.Dayjs;
-}
-
-function ReceiptPaymentListSection({
-  selectedDate,
-}: ReceiptPaymentListSectionProps) {
-  const router = useRouter();
-
-  const fetchReceiptPaymentsFn = async () => {
-    return getReceiptPaymentsByCurrentUserApi({
-      startDate: selectedDate.startOf('day').toISOString(),
-      endDate: selectedDate.endOf('day').toISOString(),
-    });
-  };
-  const fetchKey = `personal-receipt-payment-list-${selectedDate.format('YYYY-MM-DD')}`;
-
-  const {
-    data: receiptPayments,
-    refreshFetch,
-    isRefreshing,
-  } = useFetch(fetchReceiptPaymentsFn, fetchKey, {
-    tags: ['personal-receipt-payment-list'],
-  });
-
-  const normalizedReceiptPayments = receiptPayments ?? [];
-
-  const navigateToFormScreen = (id?: string) => {
-    router.push({
-      pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
-      params: {
-        receiptPaymentId: id || 'new',
-        lockDatePicker: 'false',
-        allowEditCategory: 'true',
-        receiptPaymentType: 'PAYMENT',
-      },
-    });
-  };
-
-  const renderItem = ({ item }: ListRenderItemInfo<ReceiptPaymentResponse>) => (
-    <Pressable onPress={() => navigateToFormScreen(item.id)}>
-      <ReceiptPaymentCard receiptPayment={item} />
-    </Pressable>
-  );
-
-  return (
-    <View style={styles.flex1}>
-      <FlatList
-        data={normalizedReceiptPayments}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refreshFetch}
-            colors={[COLORS.vinaupTeal]}
-          />
-        }
-      />
-      <ReceiptPaymentsSummary receiptPayments={normalizedReceiptPayments} />
-    </View>
-  );
-}
+import { ReceiptPaymentListSectionContent } from '@/components/contents/receipt-payment/receipt-payment-list-section-content';
 
 export default function PersonalReceiptPaymentScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -102,7 +25,7 @@ export default function PersonalReceiptPaymentScreen() {
         />
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
-        <ReceiptPaymentListSection
+        <ReceiptPaymentListSectionContent
           key={suspenseResetKey}
           selectedDate={selectedDate}
         />
@@ -122,11 +45,5 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     color: COLORS.vinaupTeal,
-  },
-  separator: {
-    height: 2,
-  },
-  flex1: {
-    flex: 1,
   },
 });

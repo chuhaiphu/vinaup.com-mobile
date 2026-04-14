@@ -1,9 +1,7 @@
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useFetch } from 'fetchwire';
-import { Suspense, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import dayjs from 'dayjs';
-import { FontAwesome5 } from '@expo/vector-icons';
 import {
   getProjectByIdApi,
   getProjectsOfByOrganizationIdApi,
@@ -11,27 +9,23 @@ import {
 import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment-apis';
 import { ProjectCard } from '@/components/cards/project-card';
 import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
-import { MonthYearPicker } from '@/components/primitives/month-year-picker';
-import { Select } from '@/components/primitives/select';
-import { PROJECT_TYPE, ProjectStatusOptions } from '@/constants/project-constants';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import { PROJECT_TYPE } from '@/constants/project-constants';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
-interface OrganizationProjectListSectionProps {
+export interface OrganizationProjectListSectionContentProps {
   organizationId: string;
   selectedDate: dayjs.Dayjs;
   projectStatusFilter: string;
 }
 
-function OrganizationProjectListSection({
+export function OrganizationProjectListSectionContent({
   organizationId,
   selectedDate,
   projectStatusFilter,
-}: OrganizationProjectListSectionProps) {
+}: OrganizationProjectListSectionContentProps) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
 
@@ -109,88 +103,9 @@ function OrganizationProjectListSection({
   );
 }
 
-type OrganizationProjectListContentProps = {
-  organizationId: string;
-};
-
-export function OrganizationProjectListContent({
-  organizationId,
-}: OrganizationProjectListContentProps) {
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [projectStatusFilter, setProjectStatusFilter] = useState('');
-
-  const suspenseResetKey = `organization-project-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.projectFilterContainer}>
-        <MonthYearPicker
-          leftSection={
-            <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
-          }
-          value={selectedDate}
-          onChange={setSelectedDate}
-          displayFormat="MM/YYYY"
-          style={{
-            dateText: styles.dateText,
-          }}
-        />
-        <View style={styles.statusFilter}>
-          <Select
-            renderTrigger={(option) => (
-              <>
-                <VinaupVerticalExpandArrow width={18} height={18} />
-                <Text style={{ color: COLORS.vinaupTeal }}>
-                  {option.label || 'Trạng thái'}
-                </Text>
-              </>
-            )}
-            options={ProjectStatusOptions}
-            value={projectStatusFilter}
-            onChange={(value) => setProjectStatusFilter(value)}
-            placeholder="Trạng thái"
-            style={{
-              triggerText: {
-                fontSize: 16,
-                color: COLORS.vinaupTeal,
-              },
-            }}
-          />
-        </View>
-      </View>
-      <Suspense fallback={<EntityListSectionSkeleton />}>
-        <OrganizationProjectListSection
-          key={suspenseResetKey}
-          organizationId={organizationId}
-          selectedDate={selectedDate}
-          projectStatusFilter={projectStatusFilter}
-        />
-      </Suspense>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   flex1: {
     flex: 1,
-  },
-  projectFilterContainer: {
-    marginVertical: 12,
-    paddingHorizontal: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  statusFilter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dateText: {
-    fontSize: 18,
-    color: COLORS.vinaupTeal,
   },
   separator: {
     height: 2,

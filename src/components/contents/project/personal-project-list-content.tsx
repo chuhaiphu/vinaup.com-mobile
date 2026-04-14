@@ -1,113 +1,14 @@
 import { COLORS } from '@/constants/style-constant';
-import { prefetch, useFetch } from 'fetchwire';
 import { Suspense, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import {
-  getProjectByIdApi,
-  getProjectsOfCurrentUserApi,
-} from '@/apis/project-apis';
-import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment-apis';
-import { ProjectCard } from '@/components/cards/project-card';
-import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-import { ProjectResponse } from '@/interfaces/project-interfaces';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { useRouter } from 'expo-router';
-import { useNavigationStore } from '@/hooks/use-navigation-store';
-
-interface ProjectListSectionProps {
-  projectType: 'SELF' | 'COMPANY';
-  selectedDate: dayjs.Dayjs;
-  projectStatusFilter: string;
-}
-
-function ProjectListSection({
-  projectType,
-  selectedDate,
-  projectStatusFilter,
-}: ProjectListSectionProps) {
-  const router = useRouter();
-  const { setIsNavigating } = useNavigationStore();
-
-  const navigateToDetail = async (project: ProjectResponse) => {
-    setIsNavigating(true);
-    const fetchKeyMap: Record<string, string> = {
-      SELF: `personal-project-self-${project.id}`,
-      COMPANY: `personal-project-company-${project.id}`,
-    };
-    const fetchKey =
-      fetchKeyMap[project.type] ?? `organization-project-${project.id}`;
-    try {
-      await prefetch(fetchKey, () => getProjectByIdApi(project.id));
-    } catch {
-      // Fallback to normal navigation if prefetch fails.
-    }
-    router.push({
-      pathname: '/(protected)/project-detail/[projectId]',
-      params: { projectId: project.id, type: project.type },
-    });
-    setIsNavigating(false);
-  };
-
-  const fetchProjectsAndReceiptPaymentsFn = async () => {
-    const projectsRes = await getProjectsOfCurrentUserApi({
-      type: projectType,
-      status: projectStatusFilter,
-      startDate: selectedDate.startOf('month').toISOString(),
-      endDate: selectedDate.endOf('month').toISOString(),
-    });
-
-    const projects = projectsRes.data ?? [];
-    const projectIds = projects.map((p) => p.id);
-
-    let allReceiptPayments: ReceiptPaymentResponse[] = [];
-    if (projectIds.length > 0) {
-      const rpRes = await getReceiptPaymentsByProjectIdsApi(projectIds);
-      allReceiptPayments = rpRes.data ?? [];
-    }
-
-    return { projects, allReceiptPayments };
-  };
-
-  const fetchKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
-
-  const { data, refreshFetch, isRefreshing } = useFetch<{
-    projects: ProjectResponse[];
-    allReceiptPayments: ReceiptPaymentResponse[];
-  }>(fetchProjectsAndReceiptPaymentsFn, fetchKey, {
-    tags: ['personal-project-list'],
-  });
-
-  const projects = data?.projects ?? [];
-  const allReceiptPayments = data?.allReceiptPayments ?? [];
-
-  return (
-    <View style={styles.flex1}>
-      <FlatList
-        data={projects}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ProjectCard project={item} onPress={() => navigateToDetail(item)} />
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refreshFetch}
-            colors={[COLORS.vinaupTeal]}
-          />
-        }
-      />
-      <ReceiptPaymentsSummary receiptPayments={allReceiptPayments} />
-    </View>
-  );
-}
+import { PersonalProjectListSectionContent } from './personal-project-list-section-content';
 
 type PersonalProjectListContentProps = {
   projectType: 'SELF' | 'COMPANY';
@@ -123,7 +24,7 @@ export function PersonalProjectListContent({
 
   return (
     <View style={styles.container}>
-      <View style={styles.projectFilterContainer}>
+      <View style={styles.projecttopContainer}>
         <MonthYearPicker
           leftSection={
             <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
@@ -159,7 +60,7 @@ export function PersonalProjectListContent({
         </View>
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
-        <ProjectListSection
+        <PersonalProjectListSectionContent
           key={suspenseResetKey}
           projectType={projectType}
           selectedDate={selectedDate}
@@ -174,10 +75,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  flex1: {
-    flex: 1,
-  },
-  projectFilterContainer: {
+  projecttopContainer: {
     marginVertical: 12,
     paddingHorizontal: 8,
     flexDirection: 'row',
@@ -191,8 +89,5 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     color: COLORS.vinaupTeal,
-  },
-  separator: {
-    height: 2,
   },
 });

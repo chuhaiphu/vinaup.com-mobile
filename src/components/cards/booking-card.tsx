@@ -1,123 +1,62 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { BookingResponse } from '@/interfaces/booking-interfaces';
-import dayjs from 'dayjs';
-import { BookingStatusDisplay } from '@/constants/booking-constants';
-import { useState } from 'react';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { PressableOpacity } from '../primitives/pressable-opacity';
-import { useRouter } from 'expo-router';
-import { prefetch } from 'fetchwire';
-import { getBookingByIdApi } from '@/apis/booking-apis';
-import { useNavigationStore } from '@/hooks/use-navigation-store';
+import { SimpleLineIcons } from '@expo/vector-icons';
+import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
+import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
+import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
 
 interface BookingCardProps {
   booking?: BookingResponse;
 }
 
-export function BookingCard({ booking }: BookingCardProps) {
-  const router = useRouter();
-  const { setIsNavigating } = useNavigationStore();
-  const [isShowingPrice, setIsShowingPrice] = useState(false);
-
-  const getDateRangeText = () => {
-    if (!booking) return '';
-    if (
-      dayjs(booking.startDate).format('DD/MM') ===
-      dayjs(booking.endDate).format('DD/MM')
-    ) {
-      return dayjs(booking.startDate).format('DD/MM');
-    }
-    return `${dayjs(booking.startDate).format('DD/MM')} - ${dayjs(
-      booking.endDate
-    ).format('DD/MM')}`;
-  };
-
-  const getBookingInfoText = () => {
-    if (!booking) return '';
-    if (booking.organizationCustomer) {
-      return booking.organizationCustomer.name || '';
-    }
-    return '—';
-  };
-
-  const togglePrice = () => {
-    setIsShowingPrice(!isShowingPrice);
-  };
-
-  const navigateToDetail = async (bookingId: string) => {
-    setIsNavigating(true);
-    try {
-      await prefetch(`organization-booking-${bookingId}`, () =>
-        getBookingByIdApi(bookingId)
-      );
-    } catch {
-      // Fallback to normal navigation if prefetch fails.
-    }
-    router.push({
-      pathname: '/(protected)/booking-detail/[bookingId]',
-      params: { bookingId },
-    });
-    setIsNavigating(false);
-  };
-
-  if (!booking) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <Text>Không có dữ liệu</Text>
-        </View>
-      </View>
-    );
-  }
-
-  const totalRemaining = calculateReceiptPaymentsSummary(
-    booking.receiptPayments
-  ).totalRemaining;
-
+export function BookingCard({ booking: _booking }: BookingCardProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.innerHeader}>
-        <View style={styles.left}>
-          <Text style={styles.dateRangeText}>{getDateRangeText()}</Text>
-          <PressableOpacity onPress={togglePrice}>
-            <Text
-              style={[
-                styles.equalSignText,
-                isShowingPrice && styles.equalSignActive,
-              ]}
-            >
-              =
+      <Text style={styles.dateHeader}>Từ 20/03 đến 23/03/26</Text>
+
+      <View style={styles.innerCard}>
+        <View style={styles.topSection}>
+          <View style={styles.topRow1}>
+            <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
+              Tên Booking hotel Hồng Hà
             </Text>
-          </PressableOpacity>
-          {isShowingPrice && (
-            <Text style={styles.bookingTotalAmountText}>
-              {generateLocalePriceFormat(totalRemaining, 'vi-VN')}
-            </Text>
-          )}
+            <View style={styles.iconGroup}>
+              <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
+              <SimpleLineIcons name="eye" size={24} color={COLORS.vinaupTeal} />
+            </View>
+          </View>
+
+          <View style={styles.topRow2}>
+            <VinaupUserArrowUpRight width={14} height={16} />
+            <Text style={styles.senderText}>Gửi: Nguyễn Văn Tèo Em</Text>
+          </View>
         </View>
-        <View style={styles.right}>
-          <Text style={styles.statusText}>
-            {BookingStatusDisplay[booking.status]}
-          </Text>
+
+        {/* Bottom section */}
+        <View style={styles.bottomSection}>
+          <View style={styles.left}>
+            <Text style={styles.bottomLabel}>Booking nhận bởi:</Text>
+            <Text style={styles.bottomValue}>Hotel Hồng Hà 7</Text>
+          </View>
+
+          <View style={styles.bottomDivider} />
+
+          <View style={styles.right}>
+            <View style={styles.topRightRow}>
+              <Text style={styles.statusLabel}>Trạng thái</Text>
+            </View>
+            <View style={styles.bottomRightRow}>
+              <Text style={[styles.statusText, { color: COLORS.vinaupOrange }]}>
+                Chờ ký
+              </Text>
+              <Text style={styles.statusText}> bởi </Text>
+              <VinaupUserChecked width={13} height={15} />
+              <Text style={styles.statusText}> nhận</Text>
+            </View>
+          </View>
         </View>
       </View>
-      <Pressable onPress={() => navigateToDetail(booking.id)}>
-        <View style={styles.content}>
-          <View style={styles.topRow}>
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.descriptionText}>{booking.description}</Text>
-            </View>
-            <Text style={styles.codeText}>No. {booking.code.slice(0, 8)}</Text>
-          </View>
-          <View style={styles.bottomRow}>
-            <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
-              {getBookingInfoText()}
-            </Text>
-          </View>
-        </View>
-      </Pressable>
     </View>
   );
 }
@@ -125,76 +64,103 @@ export function BookingCard({ booking }: BookingCardProps) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
+    paddingVertical: 4,
   },
-  innerHeader: {
-    marginVertical: 4,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-  },
-  left: {
-    flexDirection: 'row',
-    gap: 4,
-    alignItems: 'center',
-  },
-  right: {},
-  dateRangeText: {
+  dateHeader: {
     fontSize: 16,
-    fontWeight: '600',
+    marginVertical: 8,
   },
-  statusText: {
-    fontSize: 14,
-    color: COLORS.vinaupBlack,
-  },
-  equalSignText: {
-    fontSize: 20,
-    lineHeight: 20,
-    paddingHorizontal: 4,
-    borderRadius: 4,
-    color: COLORS.vinaupTeal,
-    backgroundColor: COLORS.vinaupWhite,
+  innerCard: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.vinaupLightGray,
     overflow: 'hidden',
   },
-  equalSignActive: {
-    backgroundColor: 'transparent',
+
+  // Top section
+  topSection: {
+    backgroundColor: COLORS.vinaupWhite,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 4,
   },
-  bookingTotalAmountText: {
-    fontSize: 16,
-    flexShrink: 0,
-  },
-  content: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
-  },
-  topRow: {
+  topRow1: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 8,
   },
-  bottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  descriptionContainer: {
+  titleText: {
     flex: 1,
-  },
-  descriptionText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
-  codeText: {
-    fontSize: 14,
-    color: COLORS.vinaupBlack,
-    marginLeft: 8,
-    flexShrink: 0,
+  iconGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
-  infoText: {
+  topRow2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  senderText: {
+    fontSize: 15,
+  },
+  bottomSection: {
+    backgroundColor: COLORS.vinaupSoftGray,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  left: {
     flex: 1,
+    gap: 2,
+  },
+  right: {
+    flex: 1,
+    gap: 2,
+  },
+  bottomDivider: {
+    width: 1,
+    alignSelf: 'stretch',
+    backgroundColor: COLORS.vinaupLightGray,
+    marginHorizontal: 10,
+  },
+  bottomLabel: {
     fontSize: 14,
     color: COLORS.vinaupDarkGray,
+  },
+  bottomValue: {
+    fontSize: 16,
+    color: COLORS.vinaupBlack,
+  },
+  topRightRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  statusLabel: {
+    fontSize: 14,
+    color: COLORS.vinaupDarkGray,
+  },
+  statusText: {
+    fontSize: 16,
+  },
+  waitingSignText: {
+    fontSize: 16,
+    color: COLORS.vinaupOrange,
+  },
+  bottomRightRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: 2,
+  },
+  confirmText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.vinaupTeal,
   },
 });

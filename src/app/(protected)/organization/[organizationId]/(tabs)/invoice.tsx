@@ -1,74 +1,15 @@
 import { COLORS } from '@/constants/style-constant';
-import { useFetch } from 'fetchwire';
 import { Suspense, useState } from 'react';
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
-import { InvoiceCard } from '@/components/cards/invoice-card';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
-import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-
-interface InvoiceListSectionProps {
-  organizationId: string;
-  selectedDate: dayjs.Dayjs;
-  statusFilter: string;
-  invoiceTypeCode: string;
-}
-
-function InvoiceListSection({
-  organizationId,
-  selectedDate,
-  statusFilter,
-  invoiceTypeCode,
-}: InvoiceListSectionProps) {
-  const { getInvoiceTypeByCode } = useInvoiceTypeContext();
-
-  const fetchInvoicesFn = () => {
-    const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
-    return getInvoicesByOrganizationIdApi(organizationId, {
-      invoiceTypeId: invoiceType?.id,
-      status: statusFilter || undefined,
-      startDate: selectedDate.startOf('month').toISOString(),
-      endDate: selectedDate.endOf('month').toISOString(),
-    });
-  };
-
-  const fetchKey = `org-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
-
-  const { data: invoices, refreshFetch, isRefreshing } = useFetch(fetchInvoicesFn, fetchKey, {
-    tags: ['organization-invoice-list'],
-  });
-
-  const normalizedInvoices = invoices ?? [];
-
-  return (
-    <FlatList
-      data={normalizedInvoices}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <InvoiceCard invoice={item} />}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={refreshFetch}
-          colors={[COLORS.vinaupTeal]}
-        />
-      }
-    />
-  );
-}
+import { InvoiceListSectionContent } from '@/components/contents/invoice/invoice-list-section-content';
 
 export default function OrganizationInvoiceScreen() {
   const params = useLocalSearchParams<{
@@ -86,7 +27,7 @@ export default function OrganizationInvoiceScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.filterContainer}>
+      <View style={styles.topContainer}>
         <MonthYearPicker
           leftSection={
             <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
@@ -122,7 +63,7 @@ export default function OrganizationInvoiceScreen() {
         </View>
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
-        <InvoiceListSection
+        <InvoiceListSectionContent
           key={suspenseResetKey}
           organizationId={organizationId}
           selectedDate={selectedDate}
@@ -138,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  filterContainer: {
+  topContainer: {
     marginVertical: 12,
     paddingHorizontal: 8,
     flexDirection: 'row',
@@ -152,8 +93,5 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     color: COLORS.vinaupTeal,
-  },
-  separator: {
-    height: 2,
   },
 });

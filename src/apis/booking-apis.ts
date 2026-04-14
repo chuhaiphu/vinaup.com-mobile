@@ -20,6 +20,7 @@ export async function getBookingsByOrganizationIdApi(
 ) {
   const filterQueryString = buildFilterQueryString(filter, {
     status: filter?.status,
+    type: filter?.type,
   });
   return wireApi<BookingResponse[]>(
     `/booking/organization/${organizationId}${filterQueryString}`,

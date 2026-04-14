@@ -27,7 +27,6 @@ import { PersonalHomeIndexSummary } from '@/components/summaries/personal-home-i
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import { useRouter } from 'expo-router';
 import { IndexUtilityGrid } from '@/components/grids/index-utility-grid';
-import Carousel from '@/components/primitives/carousel';
 
 export default function PersonalIndexScreen() {
   const router = useRouter();

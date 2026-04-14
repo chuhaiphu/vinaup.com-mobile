@@ -40,7 +40,7 @@ export function SelfProjectDetailContent() {
         onSave={handleSaveAndExit}
       />
       <View style={styles.container}>
-        <View style={styles.projectFilterContainer}>
+        <View style={styles.projecttopContainer}>
           <View style={styles.statusFilter}>
             <Select
               renderTrigger={(option) => (
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  projectFilterContainer: {
+  projecttopContainer: {
     marginVertical: 12,
     paddingHorizontal: 8,
     flexDirection: 'row',

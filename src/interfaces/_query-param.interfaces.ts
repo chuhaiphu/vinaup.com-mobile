@@ -23,6 +23,7 @@ export interface ReceiptPaymentFilterParam extends DateFilterParam {
 
 export interface BookingFilterParam extends DateFilterParam {
   status?: string;
+  type?: 'FROM' | 'TO';
   tourImplementationId?: string;
 }
 

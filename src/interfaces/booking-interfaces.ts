@@ -2,7 +2,7 @@ import { OrganizationResponse } from './organization-interfaces';
 import { OrganizationCustomerResponse } from './organization-customer-interfaces';
 import { UserResponse } from './user-interfaces';
 import { ReceiptPaymentResponse } from './receipt-payment-interfaces';
-import { BookingStatus } from '@/constants/booking-constants';
+import { BookingStatus, BookingType } from '@/constants/booking-constants';
 import { TourImplementationResponse } from './tour-implementation-interfaces';
 
 export interface BookingResponse {
@@ -13,6 +13,7 @@ export interface BookingResponse {
   startDate: string;
   endDate: string;
   status: BookingStatus;
+  type: BookingType | null;
   note: string | null;
   createdAt: string;
   updatedAt: string;
@@ -39,6 +40,7 @@ export interface CreateBookingRequest {
   fromOrganizationId?: string;
   sourceBookingId?: string;
   tourImplementationId?: string;
+  type?: BookingType;
 }
 
 export type UpdateBookingRequest = Partial<CreateBookingRequest> & {
