@@ -76,7 +76,7 @@ function TourCalculationScreenContent() {
             <TourDetailFooterContent />
           </Suspense>
         </ScrollView>
-        <View style={styles.tourCalculationSignatureWrapper}>
+        <View>
           <TourCalculationSignatureInfoPopover
             isVisible={isSignatureInfoPopoverVisible}
             onClose={() => setIsSignatureInfoPopoverVisible(false)}
@@ -107,9 +107,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {},
-  tourCalculationSignatureWrapper: {
-    overflow: 'visible',
-  },
   signatureInfoPopoverContainer: {
     position: 'relative',
     top: 0,

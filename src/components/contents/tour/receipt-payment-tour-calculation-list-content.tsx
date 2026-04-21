@@ -6,8 +6,14 @@ import { useRouter } from 'expo-router';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { generateDayJsDateRange } from '@/utils/generator-helpers';
 import dayjs from 'dayjs';
-import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
-import { RefreshControl } from 'react-native-gesture-handler';
+import {
+  ActivityIndicator,
+  Pressable,
+  SectionList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 interface ReceiptPaymentTourCalculationListContentProps {
   receiptPayments: ReceiptPaymentResponse[];
@@ -119,8 +125,12 @@ export function ReceiptPaymentTourCalculationListContent({
 
   return (
     <SectionList
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} colors={[COLORS.vinaupTeal]} />
+      ListHeaderComponent={
+        isRefreshing ? (
+          <View style={styles.refreshLoaderContainer}>
+            <ActivityIndicator size="small" color={COLORS.vinaupTeal} />
+          </View>
+        ) : null
       }
       scrollEnabled={false}
       sections={receiptPaymentInRangeSections}
@@ -162,6 +172,12 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 24,
+  },
+  refreshLoaderContainer: {
+    position: 'absolute',
+    top: 4,
+    left: 0,
+    right: 0,
   },
   emptyGroup: {
     paddingHorizontal: 10,

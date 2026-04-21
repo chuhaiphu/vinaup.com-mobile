@@ -1,63 +1,92 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { BookingResponse } from '@/interfaces/booking-interfaces';
-import { SimpleLineIcons } from '@expo/vector-icons';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
-import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
+import dayjs from 'dayjs';
+import { prefetch } from 'fetchwire';
+import { getBookingByIdApi } from '@/apis/booking-apis';
+import { useRouter } from 'expo-router';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface BookingCardProps {
   booking?: BookingResponse;
 }
 
-export function BookingCard({ booking: _booking }: BookingCardProps) {
+export function BookingCard({ booking }: BookingCardProps) {
+  const router = useRouter();
+  const { setIsNavigating } = useNavigationStore();
+
+  const startDate = booking?.startDate
+    ? dayjs(booking.startDate).format('DD/MM')
+    : '--';
+  const endDate = booking?.endDate
+    ? dayjs(booking.endDate).format('DD/MM/YY')
+    : '--';
+  const description = booking?.description || 'Booking mới';
+  const senderName = booking?.organization?.name || '---';
+  const receiverName = booking?.organizationCustomer?.name || 'Chưa xác định';
+
+  const navigateToDetail = async (bookingId: string) => {
+    setIsNavigating(true);
+    try {
+      await prefetch(`organization-booking-${bookingId}`, () =>
+        getBookingByIdApi(bookingId)
+      );
+    } catch {
+      // Fallback to normal navigation if prefetch fails.
+    }
+    router.push({
+      pathname: '/(protected)/booking-detail/[bookingId]',
+      params: { bookingId },
+    });
+    setIsNavigating(false);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.dateHeader}>Từ 20/03 đến 23/03/26</Text>
-
-      <View style={styles.innerCard}>
-        <View style={styles.topSection}>
-          <View style={styles.topRow1}>
-            <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
-              Tên Booking hotel Hồng Hà
-            </Text>
-            <View style={styles.iconGroup}>
-              <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
-              <SimpleLineIcons name="eye" size={24} color={COLORS.vinaupTeal} />
-            </View>
-          </View>
-
-          <View style={styles.topRow2}>
-            <VinaupUserArrowUpRight width={14} height={16} />
-            <Text style={styles.senderText}>Gửi: Nguyễn Văn Tèo Em</Text>
-          </View>
-        </View>
-
-        {/* Bottom section */}
-        <View style={styles.bottomSection}>
-          <View style={styles.left}>
-            <Text style={styles.bottomLabel}>Booking nhận bởi:</Text>
-            <Text style={styles.bottomValue}>Hotel Hồng Hà 7</Text>
-          </View>
-
-          <View style={styles.bottomDivider} />
-
-          <View style={styles.right}>
-            <View style={styles.topRightRow}>
-              <Text style={styles.statusLabel}>Trạng thái</Text>
-            </View>
-            <View style={styles.bottomRightRow}>
-              <Text style={[styles.statusText, { color: COLORS.vinaupOrange }]}>
-                Chờ ký
+    <Pressable onPress={() => booking && navigateToDetail(booking.id)}>
+      <View style={styles.container}>
+        <View style={styles.innerCard}>
+          <View style={styles.topSection}>
+            <View style={styles.topRow}>
+              <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
+                {description}
               </Text>
-              <Text style={styles.statusText}> bởi </Text>
-              <VinaupUserChecked width={13} height={15} />
-              <Text style={styles.statusText}> nhận</Text>
+            </View>
+            <View style={styles.topRow}>
+              <Text style={styles.dateText}>
+                Từ {startDate} đến {endDate}
+              </Text>
+              <Text style={styles.codeText}>No. {booking?.code}</Text>
+            </View>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.bottomSection}>
+            <View style={styles.senderInfo}>
+              <View style={styles.labelRow}>
+                <VinaupUserArrowUpRight width={13} height={15} />
+                <Text style={styles.label}>Gửi bởi</Text>
+              </View>
+              <Text style={styles.senderText} numberOfLines={1}>
+                {senderName}
+              </Text>
+            </View>
+            <View style={styles.receiverInfo}>
+              <View style={[styles.labelRow, styles.receiverLabelRow]}>
+                <Text style={styles.label}>Nhận bởi</Text>
+                <VinaupUserChecked width={13} height={15} />
+              </View>
+              <Text
+                style={[styles.receiverText, styles.receiverTextRight]}
+                numberOfLines={1}
+              >
+                {receiverName}
+              </Text>
             </View>
           </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -66,27 +95,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  dateHeader: {
-    fontSize: 16,
-    marginVertical: 8,
-  },
   innerCard: {
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: COLORS.vinaupLightGray,
     overflow: 'hidden',
+    backgroundColor: COLORS.vinaupSoftYellow,
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
   },
-
-  // Top section
+  divider: {
+    height: 1,
+    backgroundColor: COLORS.vinaupBlack,
+    marginHorizontal: 8,
+  },
   topSection: {
-    backgroundColor: COLORS.vinaupWhite,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 10,
     gap: 4,
   },
-  topRow1: {
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 8,
   },
   titleText: {
@@ -100,67 +128,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-  topRow2: {
+  dateText: {
+    fontSize: 14,
+  },
+  codeText: {
+    fontSize: 14,
+  },
+  bottomSection: {
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  senderInfo: {},
+  receiverInfo: {},
+  labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
-  senderText: {
-    fontSize: 15,
-  },
-  bottomSection: {
-    backgroundColor: COLORS.vinaupSoftGray,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  left: {
-    flex: 1,
-    gap: 2,
-  },
-  right: {
-    flex: 1,
-    gap: 2,
-  },
-  bottomDivider: {
-    width: 1,
-    alignSelf: 'stretch',
-    backgroundColor: COLORS.vinaupLightGray,
-    marginHorizontal: 10,
-  },
-  bottomLabel: {
-    fontSize: 14,
-    color: COLORS.vinaupDarkGray,
-  },
-  bottomValue: {
-    fontSize: 16,
-    color: COLORS.vinaupBlack,
-  },
-  topRightRow: {
-    flexDirection: 'row',
+  receiverLabelRow: {
     justifyContent: 'flex-end',
   },
-  statusLabel: {
-    fontSize: 14,
-    color: COLORS.vinaupDarkGray,
+  label: {
+    fontSize: 15,
   },
-  statusText: {
-    fontSize: 16,
-  },
-  waitingSignText: {
+  senderText: {
     fontSize: 16,
     color: COLORS.vinaupOrange,
   },
-  bottomRightRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: 2,
-  },
-  confirmText: {
+  receiverText: {
     fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.vinaupTeal,
+    color: COLORS.vinaupBlueDark,
+  },
+  receiverTextRight: {
+    textAlign: 'right',
   },
 });

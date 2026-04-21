@@ -7,8 +7,7 @@ import { COLORS } from '@/constants/style-constant';
 interface Props {
   isSigned?: boolean;
   isAllowToSign?: boolean;
-  signatureTargetUserId?: string | null;
-  currentUserId?: string | null;
+  isAllowToCancel?: boolean;
   role?: 'SENDER' | 'RECEIVER';
   isLoading?: boolean;
   unsignedText?: string;
@@ -21,9 +20,8 @@ interface Props {
 
 export default function SignatureEntityContent({
   isSigned = false,
-  isAllowToSign = true,
-  signatureTargetUserId,
-  currentUserId,
+  isAllowToSign = false,
+  isAllowToCancel = false,
   role = 'SENDER',
   isLoading = false,
   unsignedText = 'Chờ ký',
@@ -33,18 +31,8 @@ export default function SignatureEntityContent({
   onSign,
   onCancel,
 }: Props) {
-  const isOwner =
-    !!signatureTargetUserId &&
-    !!currentUserId &&
-    signatureTargetUserId === currentUserId;
-  const canSign = isOwner && !isSigned && isAllowToSign;
-
   const ActionBlock = (() => {
-    if (!isOwner || (isOwner && !isSigned && !isAllowToSign)) {
-      return <VinaupSigningPen color={COLORS.vinaupMediumGray} />;
-    }
-
-    if (canSign) {
+    if (isAllowToSign) {
       return (
         <Button onPress={onSign} disabled={isLoading} style={styles.actionTouch}>
           <VinaupSigningPen color={COLORS.vinaupTeal} />
@@ -52,15 +40,19 @@ export default function SignatureEntityContent({
       );
     }
 
-    return (
-      <Button
-        onPress={onCancel}
-        disabled={isLoading}
-        style={[styles.cancelButton, isLoading && styles.cancelButtonDisabled]}
-      >
-        <Text style={styles.cancelButtonText}>{cancelText}</Text>
-      </Button>
-    );
+    if (isAllowToCancel) {
+      return (
+        <Button
+          onPress={onCancel}
+          disabled={isLoading}
+          style={[styles.cancelButton, isLoading && styles.cancelButtonDisabled]}
+        >
+          <Text style={styles.cancelButtonText}>{cancelText}</Text>
+        </Button>
+      );
+    }
+
+    return <VinaupSigningPen color={COLORS.vinaupMediumGray} />;
   })();
   const TextBlock = (
     <Text style={[styles.text, isSigned && { color: COLORS.vinaupRed }]}>

@@ -129,6 +129,7 @@ export function ReceiptPaymentBookingListContent({
 
   return (
     <SectionList
+      scrollEnabled={false}
       sections={receiptPaymentInRangeSections}
       keyExtractor={(item) => item.id}
       refreshControl={

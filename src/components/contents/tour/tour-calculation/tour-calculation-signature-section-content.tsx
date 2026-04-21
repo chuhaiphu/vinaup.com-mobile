@@ -246,9 +246,8 @@ export default function TourCalculationSignatureContent({
             <Text style={styles.roleText}>Người tạo</Text>
             <SignatureEntityContent
               isSigned={sender?.isSigned}
-              isAllowToSign={true}
-              signatureTargetUserId={sender?.targetUserId}
-              currentUserId={currentUser?.id}
+              isAllowToSign={!sender?.isSigned && sender?.targetUserId === currentUser?.id}
+              isAllowToCancel={!!sender?.isSigned && sender?.signedByUserId === currentUser?.id}
               role="SENDER"
               isLoading={
                 isLoading || isSigningTourCalculation || isCancelingTourCalculation
@@ -271,9 +270,12 @@ export default function TourCalculationSignatureContent({
               <View key={receiver.id}>
                 <SignatureEntityContent
                   isSigned={receiver.isSigned}
-                  isAllowToSign={!hasUnsignedSender}
-                  signatureTargetUserId={receiver.targetUserId}
-                  currentUserId={currentUser?.id}
+                  isAllowToSign={
+                    !receiver.isSigned &&
+                    !hasUnsignedSender &&
+                    (receiver.targetUserId === currentUser?.id)
+                  }
+                  isAllowToCancel={!!receiver.isSigned && receiver.signedByUserId === currentUser?.id}
                   role="RECEIVER"
                   isLoading={
                     isLoading ||

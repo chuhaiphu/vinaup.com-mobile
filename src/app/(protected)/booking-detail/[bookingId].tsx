@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, RefreshControl } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { BookingDetailHeaderContent } from '@/components/contents/booking/booking-detail-header-content';
@@ -17,6 +17,10 @@ import {
 } from '@/providers/booking-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 import { ReceiptPaymentBookingListContent } from '@/components/contents/booking/receipt-payment-booking-list-content';
+import BookingSignatureSectionContent from '@/components/contents/booking/booking-signature-section-content';
+import { BookingSignaturePopover } from '@/components/popovers/booking-signature-popover';
+import { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function BookingDetailScreen() {
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
@@ -29,6 +33,10 @@ export default function BookingDetailScreen() {
 }
 
 function BookingDetailScreenContent() {
+  const [isSignatureInfoPopoverVisible, setIsSignatureInfoPopoverVisible] =
+    useState(false);
+  const insets = useSafeAreaInsets();
+
   const {
     booking,
     isLoadingBooking,
@@ -44,6 +52,11 @@ function BookingDetailScreenContent() {
     refreshBooking,
     refreshReceiptPayments,
   } = useBookingDetailContext();
+
+  const handleRefresh = () => {
+    refreshBooking();
+    refreshReceiptPayments();
+  };
 
   const handleSaveAndExit = () => {
     if (!booking) return;
@@ -67,7 +80,7 @@ function BookingDetailScreenContent() {
         onSave={handleSaveAndExit}
         isDeleting={isDeletingBooking}
       />
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingBottom: insets.bottom }]}>
         <View style={styles.actionContainer}>
           <View style={styles.statusFilter}>
             <Select
@@ -110,24 +123,57 @@ function BookingDetailScreenContent() {
             </PressableOpacity>
           </View>
         </View>
-        {/* TODO: Add editable tourImplementation selector in a later phase. */}
-        <BookingDetailHeaderContent />
-        {booking && (
-          <ReceiptPaymentBookingListContent
-            onRefresh={() => {
-              refreshBooking();
-              refreshReceiptPayments();
-            }}
-            receiptPayments={receiptPayments}
-            startDate={booking.startDate}
-            endDate={booking.endDate}
-            loading={isLoadingReceiptPayments}
-            refreshing={isRefreshingReceiptPayments}
-            bookingId={bookingId}
-            organizationId={booking.organization?.id}
-          />
-        )}
-        <BookingDetailFooterContent />
+
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshingBooking || isRefreshingReceiptPayments}
+              onRefresh={handleRefresh}
+              colors={[COLORS.vinaupTeal]}
+              tintColor={COLORS.vinaupTeal}
+            />
+          }
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
+          <View style={{ justifyContent: 'space-between', flex: 1 }}>
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
+              <BookingDetailHeaderContent />
+              {booking && (
+                <ReceiptPaymentBookingListContent
+                  onRefresh={handleRefresh}
+                  receiptPayments={receiptPayments}
+                  startDate={booking.startDate}
+                  endDate={booking.endDate}
+                  loading={isLoadingReceiptPayments}
+                  refreshing={isRefreshingReceiptPayments}
+                  bookingId={bookingId}
+                  organizationId={booking.organization?.id}
+                />
+              )}
+            </View>
+            <BookingDetailFooterContent />
+          </View>
+        </ScrollView>
+
+        <BookingSignaturePopover
+          isVisible={isSignatureInfoPopoverVisible}
+          onClose={() => setIsSignatureInfoPopoverVisible(false)}
+          containerStyle={styles.signatureInfoPopoverContainer}
+        />
+        <View style={styles.bookingSignatureContainer}>
+          {booking && (
+            <BookingSignatureSectionContent
+              bookingData={booking}
+              onOpenSignatureInfoPopover={() =>
+                setIsSignatureInfoPopoverVisible(true)
+              }
+            />
+          )}
+        </View>
       </View>
     </OrganizationCustomerProvider>
   );
@@ -156,5 +202,19 @@ const styles = StyleSheet.create({
   statusFilter: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  signatureInfoPopoverContainer: {
+    position: 'relative',
+    top: 0,
+    left: 0,
+    right: 0,
+    marginHorizontal: 8,
+    marginBottom: 8,
+  },
+  bookingSignatureContainer: {
+    backgroundColor: COLORS.vinaupLightGreen,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
   },
 });

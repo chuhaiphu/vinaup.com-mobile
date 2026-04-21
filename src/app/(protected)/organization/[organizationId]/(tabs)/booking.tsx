@@ -1,43 +1,22 @@
 import { COLORS } from '@/constants/style-constant';
+import { Suspense, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
-import { useState } from 'react';
 import dayjs from 'dayjs';
 import { Select } from '@/components/primitives/select';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
-import { BookingStatusOptions, BookingType } from '@/constants/booking-constants';
-import { BookingCard } from '@/components/cards/booking-card';
-import { getBookingsByOrganizationIdApi } from '@/apis/booking-apis';
-import { useFetch } from 'fetchwire';
+import { BookingStatusOptions } from '@/constants/booking-constants';
+import { BookingListSectionSkeleton } from '@/components/skeletons/booking-list-section-skeleton';
+import { BookingListSectionContent } from '@/components/contents/booking/booking-list-section-content';
 
 export default function OrganizationBookingScreen() {
-  const { type, organizationId } = useLocalSearchParams<{
-    organizationId: string;
-    type: string;
-  }>();
+  const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const fetchBookingsFn = () => {
-    return getBookingsByOrganizationIdApi(organizationId, {
-      type: type as BookingType,
-      status: statusFilter || undefined,
-      startDate: selectedDate.startOf('month').toISOString(),
-      endDate: selectedDate.endOf('month').toISOString(),
-    });
-  };
-
-  const fetchKey = `org-booking-list-${organizationId}-${type}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
-
-  const {
-    data: bookings,
-    refreshFetch,
-    isRefreshing,
-  } = useFetch(fetchBookingsFn, fetchKey, {
-    tags: ['organization-booking-list'],
-  });
+  const suspenseResetKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -76,7 +55,14 @@ export default function OrganizationBookingScreen() {
           />
         </View>
       </View>
-      <BookingCard />
+      <Suspense fallback={<BookingListSectionSkeleton />}>
+        <BookingListSectionContent
+          key={suspenseResetKey}
+          organizationId={organizationId}
+          selectedDate={selectedDate}
+          statusFilter={statusFilter}
+        />
+      </Suspense>
     </View>
   );
 }
@@ -91,8 +77,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomColor: COLORS.vinaupLightGray,
-    borderBottomWidth: 1,
   },
   statusFilter: {
     flexDirection: 'row',

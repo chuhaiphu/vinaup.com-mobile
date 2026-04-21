@@ -95,9 +95,7 @@ export function BookingDetailFooterContent() {
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    marginBottom: 20,
-  },
+  cardContainer: {},
   card: {
     flexDirection: 'row',
     alignItems: 'flex-start',
