@@ -12,31 +12,33 @@ import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces'
 import { ReceiptPaymentCard } from '@/components/cards/receipt-payment-card';
 import { generateDayJsDateRange } from '@/utils/generator-helpers';
 import { COLORS } from '@/constants/style-constant';
-import Loader from '@/components/primitives/loader';
 import { useRouter } from 'expo-router';
 import { ReceiptPaymentSectionListHeader } from '@/components/headers/receipt-payment-section-list-header';
+import { useFetch } from 'fetchwire';
+import { getReceiptPaymentsByBookingIdApi } from '@/apis/receipt-payment-apis';
 
 interface ReceiptPaymentBookingListContentProps {
-  receiptPayments: ReceiptPaymentResponse[];
   startDate: string;
   endDate: string;
-  loading?: boolean;
-  refreshing?: boolean;
-  onRefresh: () => void;
+  onRefresh?: () => void;
   bookingId: string;
   organizationId?: string;
 }
 
 export function ReceiptPaymentBookingListContent({
-  receiptPayments,
   startDate,
   endDate,
-  loading,
-  refreshing,
   onRefresh,
   bookingId,
   organizationId,
 }: ReceiptPaymentBookingListContentProps) {
+  const fetchKey = `receipt-payment-list-in-booking-${bookingId}`;
+  const { data, refreshFetch, isRefreshing } = useFetch(
+    () => getReceiptPaymentsByBookingIdApi(bookingId),
+    fetchKey,
+    { tags: [`organization-receipt-payment-list-in-booking-${bookingId}`] }
+  );
+  const receiptPayments = data ?? [];
   const router = useRouter();
 
   const dateRange = generateDayJsDateRange(startDate, endDate);
@@ -98,14 +100,6 @@ export function ReceiptPaymentBookingListContent({
     });
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <Loader size={48} />
-      </View>
-    );
-  }
-
   const renderOutOfRangeReceiptPaymentsSection = () => {
     if (receiptPaymentsOutOfRange.length === 0) return null;
     return (
@@ -134,8 +128,11 @@ export function ReceiptPaymentBookingListContent({
       keyExtractor={(item) => item.id}
       refreshControl={
         <RefreshControl
-          refreshing={refreshing ?? false}
-          onRefresh={onRefresh}
+          refreshing={isRefreshing}
+          onRefresh={() => {
+            refreshFetch();
+            onRefresh?.();
+          }}
           colors={[COLORS.vinaupTeal]}
           tintColor={COLORS.vinaupTeal}
         />

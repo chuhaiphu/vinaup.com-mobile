@@ -11,9 +11,10 @@ import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface BookingCardProps {
   booking?: BookingResponse;
+  isReceiver?: boolean;
 }
 
-export function BookingCard({ booking }: BookingCardProps) {
+export function BookingCard({ booking, isReceiver }: BookingCardProps) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
 
@@ -46,7 +47,7 @@ export function BookingCard({ booking }: BookingCardProps) {
   return (
     <Pressable onPress={() => booking && navigateToDetail(booking.id)}>
       <View style={styles.container}>
-        <View style={styles.innerCard}>
+        <View style={[styles.innerCard, { backgroundColor: isReceiver ? COLORS.vinaupLightGreen : COLORS.vinaupSoftYellow }]}>
           <View style={styles.topSection}>
             <View style={styles.topRow}>
               <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
@@ -98,7 +99,6 @@ const styles = StyleSheet.create({
   innerCard: {
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: COLORS.vinaupSoftYellow,
     boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
   },
   divider: {

@@ -4,6 +4,7 @@ import { UserResponse } from './user-interfaces';
 import { ReceiptPaymentResponse } from './receipt-payment-interfaces';
 import { BookingStatus } from '@/constants/booking-constants';
 import { TourImplementationResponse } from './tour-implementation-interfaces';
+import { BaseMeta } from './_meta.interfaces';
 
 export interface BookingResponse {
   id: string;
@@ -33,8 +34,12 @@ export interface CreateBookingRequest {
   organizationCustomerId?: string;
   tourImplementationId?: string;
 }
-
+  
 export type UpdateBookingRequest = Partial<CreateBookingRequest> & {
   status?: BookingStatus;
   tourImplementationId?: string | null;
 };
+
+export interface BookingMeta extends BaseMeta {
+  isSender: boolean;
+}

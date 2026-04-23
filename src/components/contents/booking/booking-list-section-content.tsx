@@ -2,7 +2,10 @@ import { COLORS } from '@/constants/style-constant';
 import { useFetch } from 'fetchwire';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import dayjs from 'dayjs';
-import { getBookingsByOrganizationIdApi } from '@/apis/booking-apis';
+import {
+  getBookingsByOrganizationIdApi,
+  getBookingsByOrganizationCustomerOrganizationIdApi,
+} from '@/apis/booking-apis';
 import { BookingCard } from '@/components/cards/booking-card';
 
 export interface BookingListSectionContentProps {
@@ -16,34 +19,47 @@ export function BookingListSectionContent({
   selectedDate,
   statusFilter,
 }: BookingListSectionContentProps) {
-  const fetchBookingsFn = () => {
-    return getBookingsByOrganizationIdApi(organizationId, {
-      status: statusFilter || undefined,
-      startDate: selectedDate.startOf('month').toISOString(),
-      endDate: selectedDate.endOf('month').toISOString(),
-    });
+  const filter = {
+    status: statusFilter || undefined,
+    startDate: selectedDate.startOf('month').toISOString(),
+    endDate: selectedDate.endOf('month').toISOString(),
   };
 
-  const fetchKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const senderKey = `org-booking-sender-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const receiverKey = `org-booking-receiver-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
-  const {
-    data: bookings,
-    refreshFetch,
-    isRefreshing,
-  } = useFetch(fetchBookingsFn, fetchKey, {
-    tags: ['organization-booking-list'],
-  });
+  const { data: senderBookings, refreshFetch: refreshSender, isRefreshing: isSenderRefreshing } =
+    useFetch(() => getBookingsByOrganizationIdApi(organizationId, filter), senderKey, {
+      tags: ['organization-booking-list'],
+    });
+
+  const { data: receiverBookings, refreshFetch: refreshReceiver, isRefreshing: isReceiverRefreshing } =
+    useFetch(() => getBookingsByOrganizationCustomerOrganizationIdApi(organizationId, filter), receiverKey, {
+      tags: ['organization-booking-list'],
+    });
+
+  const combinedBookings = [
+    ...(senderBookings ?? []),
+    ...(receiverBookings ?? []),
+  ].sort((a, b) => dayjs(b.startDate).valueOf() - dayjs(a.startDate).valueOf());
+
+  const handleRefresh = () => {
+    refreshSender();
+    refreshReceiver();
+  };
 
   return (
     <FlatList
-      data={bookings}
+      data={combinedBookings}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <BookingCard booking={item} />}
+      renderItem={({ item }) => (
+        <BookingCard booking={item} isReceiver={!item.meta.isSender} />
+      )}
       refreshControl={
         <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={refreshFetch}
+          refreshing={isSenderRefreshing || isReceiverRefreshing}
+          onRefresh={handleRefresh}
           colors={[COLORS.vinaupTeal]}
         />
       }

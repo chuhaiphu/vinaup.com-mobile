@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   innerCard: {
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: COLORS.vinaupSoftYellow,
+    backgroundColor: COLORS.vinaupWhite,
     boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.1)',
   },
   topSection: {
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.vinaupTeal,
     marginHorizontal: 8,
   },
   bottomSection: {

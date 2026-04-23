@@ -1,3 +1,4 @@
+import { Suspense, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, RefreshControl } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
@@ -19,8 +20,8 @@ import { OrganizationCustomerProvider } from '@/providers/organization-customer-
 import { ReceiptPaymentBookingListContent } from '@/components/contents/booking/receipt-payment-booking-list-content';
 import BookingSignatureSectionContent from '@/components/contents/booking/booking-signature-section-content';
 import { BookingSignaturePopover } from '@/components/popovers/booking-signature-popover';
-import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 
 export default function BookingDetailScreen() {
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
@@ -43,25 +44,19 @@ function BookingDetailScreenContent() {
     isUpdatingBooking,
     isRefreshingBooking,
     isDeletingBooking,
-    receiptPayments,
-    isLoadingReceiptPayments,
-    isRefreshingReceiptPayments,
     bookingId,
     handleUpdateBooking,
     handleDelete,
     refreshBooking,
-    refreshReceiptPayments,
   } = useBookingDetailContext();
 
   const handleRefresh = () => {
     refreshBooking();
-    refreshReceiptPayments();
   };
 
   const handleSaveAndExit = () => {
     if (!booking) return;
     refreshBooking();
-    refreshReceiptPayments();
   };
 
   if (isLoadingBooking) {
@@ -71,7 +66,6 @@ function BookingDetailScreenContent() {
       </View>
     );
   }
-
   return (
     <OrganizationCustomerProvider organizationId={booking?.organization?.id}>
       <StackWithHeader
@@ -127,7 +121,7 @@ function BookingDetailScreenContent() {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={isRefreshingBooking || isRefreshingReceiptPayments}
+              refreshing={isRefreshingBooking}
               onRefresh={handleRefresh}
               colors={[COLORS.vinaupTeal]}
               tintColor={COLORS.vinaupTeal}
@@ -143,16 +137,16 @@ function BookingDetailScreenContent() {
             >
               <BookingDetailHeaderContent />
               {booking && (
-                <ReceiptPaymentBookingListContent
-                  onRefresh={handleRefresh}
-                  receiptPayments={receiptPayments}
-                  startDate={booking.startDate}
-                  endDate={booking.endDate}
-                  loading={isLoadingReceiptPayments}
-                  refreshing={isRefreshingReceiptPayments}
-                  bookingId={bookingId}
-                  organizationId={booking.organization?.id}
-                />
+                <Suspense fallback={<EntityListSectionSkeleton />}>
+                  <ReceiptPaymentBookingListContent
+                    key={`receipt-payment-list-in-booking-${bookingId}`}
+                    onRefresh={handleRefresh}
+                    startDate={booking.startDate}
+                    endDate={booking.endDate}
+                    bookingId={bookingId}
+                    organizationId={booking.organization?.id}
+                  />
+                </Suspense>
               )}
             </View>
             <BookingDetailFooterContent />

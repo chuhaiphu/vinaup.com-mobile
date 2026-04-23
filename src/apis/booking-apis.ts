@@ -2,10 +2,12 @@ import {
   CreateBookingRequest,
   BookingResponse,
   UpdateBookingRequest,
+  BookingMeta,
 } from '@/interfaces/booking-interfaces';
 import { BookingFilterParam } from '@/interfaces/_query-param.interfaces';
 import { buildFilterQueryString } from '@/utils/api-helpers';
 import { wireApi } from 'fetchwire';
+import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 
 export async function createBookingApi(data: CreateBookingRequest) {
   return wireApi<BookingResponse>('/booking', {
@@ -20,16 +22,28 @@ export async function getBookingsByOrganizationIdApi(
 ) {
   const filterQueryString = buildFilterQueryString(filter, {
     status: filter?.status,
-    type: filter?.type,
   });
-  return wireApi<BookingResponse[]>(
+  return wireApi<ResponseWithMeta<BookingResponse, BookingMeta>[]>(
     `/booking/organization/${organizationId}${filterQueryString}`,
     { method: 'GET' }
   );
 }
 
+export async function getBookingsByOrganizationCustomerOrganizationIdApi(
+  organizationId: string,
+  filter?: BookingFilterParam
+) {
+  const filterQueryString = buildFilterQueryString(filter, {
+    status: filter?.status,
+  });
+  return wireApi<ResponseWithMeta<BookingResponse, BookingMeta>[]>(
+    `/booking/by-organization-customer/organization/${organizationId}${filterQueryString}`,
+    { method: 'GET' }
+  );
+}
+
 export async function getBookingByIdApi(id: string) {
-  return wireApi<BookingResponse>(`/booking/${id}`, {
+  return wireApi<ResponseWithMeta<BookingResponse, BookingMeta>>(`/booking/${id}`, {
     method: 'GET',
   });
 }

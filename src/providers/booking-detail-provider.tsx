@@ -6,12 +6,10 @@ import {
   getBookingByIdApi,
   updateBookingApi,
 } from '@/apis/booking-apis';
-import { getReceiptPaymentsByBookingIdApi } from '@/apis/receipt-payment-apis';
 import {
   BookingResponse,
   UpdateBookingRequest,
 } from '@/interfaces/booking-interfaces';
-import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
@@ -22,16 +20,12 @@ interface BookingDetailContextType {
   isRefreshingBooking: boolean;
   isUpdatingBooking: boolean;
   isDeletingBooking: boolean;
-  receiptPayments: ReceiptPaymentResponse[];
-  isLoadingReceiptPayments: boolean;
-  isRefreshingReceiptPayments: boolean;
   handleUpdateBooking: (
     fields: UpdateBookingRequest,
     onSuccess?: () => void
   ) => void;
   handleDelete: () => void;
   refreshBooking: () => void;
-  refreshReceiptPayments: () => void;
 }
 
 const BookingDetailContext = createContext<BookingDetailContextType | null>(null);
@@ -54,7 +48,7 @@ export function BookingDetailProvider({
 }) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
-
+  
   const {
     data: booking,
     isLoading: isLoadingBooking,
@@ -78,22 +72,11 @@ export function BookingDetailProvider({
       invalidatesTags: ['organization-booking-list'],
     });
 
-  const {
-    data: receiptPayments,
-    isLoading: isLoadingReceiptPayments,
-    isRefreshing: isRefreshingReceiptPayments,
-    executeFetchFn: fetchReceiptPayments,
-    refreshFetchFn: refreshReceiptPayments,
-  } = useFetchFn(() => getReceiptPaymentsByBookingIdApi(bookingId), {
-    tags: [`organization-receipt-payment-list-in-booking-${bookingId}`],
-  });
-
   useEffect(() => {
     if (bookingId) {
       fetchBooking();
-      fetchReceiptPayments();
     }
-  }, [bookingId, fetchBooking, fetchReceiptPayments]);
+  }, [bookingId, fetchBooking]);
 
   const handleUpdateBooking = useCallback(
     (updatedFields: UpdateBookingRequest, onSuccessCallback?: () => void) => {
@@ -144,13 +127,9 @@ export function BookingDetailProvider({
         isRefreshingBooking,
         isUpdatingBooking,
         isDeletingBooking,
-        receiptPayments: receiptPayments ?? [],
-        isLoadingReceiptPayments,
-        isRefreshingReceiptPayments,
         handleUpdateBooking,
         handleDelete,
         refreshBooking,
-        refreshReceiptPayments,
       }}
     >
       {children}
