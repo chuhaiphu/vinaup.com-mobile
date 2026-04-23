@@ -14,9 +14,11 @@ export interface OrganizationMemberResponse {
   address: string | null;
   status: OrganizationMemberStatus;
   joinedAt: string;
-  organizationRoleId: string;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
+  userId: string | null;
   user: UserResponse | null;
+  organizationRoleId: string;
   organization: OrganizationResponse;
   organizationRole: OrganizationRoleResponse;
 }

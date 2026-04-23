@@ -12,11 +12,14 @@ export interface ProjectResponse {
   endDate: string;
   status: ProjectStatus;
   note: string | null;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
+  organizationId: string | null;
+  organization: OrganizationResponse | null;
+  organizationCustomerId: string | null;
+  organizationCustomer: OrganizationCustomerResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
-  organization: OrganizationResponse | null;
-  organizationCustomer: OrganizationCustomerResponse | null;
 }
 
 export interface CreateProjectRequest {

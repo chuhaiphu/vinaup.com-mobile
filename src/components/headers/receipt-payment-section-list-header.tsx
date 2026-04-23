@@ -11,12 +11,14 @@ interface ReceiptPaymentSectionListHeaderProps {
   title: string;
   receiptPayments: ReceiptPaymentResponse[];
   onPressAddNew: () => void;
+  canAdd?: boolean;
 }
 
 export function ReceiptPaymentSectionListHeader({
   title,
   receiptPayments,
   onPressAddNew,
+  canAdd = true,
 }: ReceiptPaymentSectionListHeaderProps) {
   const [isShowingPrice, setIsShowingPrice] = useState(false);
   const togglePrice = () => {
@@ -42,9 +44,11 @@ export function ReceiptPaymentSectionListHeader({
           </Text>
         )}
       </View>
-      <Pressable onPress={onPressAddNew}>
-        <VinaupAddNew width={24} height={24} iconColor={COLORS.vinaupWhite} />
-      </Pressable>
+      {canAdd && (
+        <Pressable onPress={onPressAddNew}>
+          <VinaupAddNew width={24} height={24} iconColor={COLORS.vinaupWhite} />
+        </Pressable>
+      )}
     </View>
   );
 }

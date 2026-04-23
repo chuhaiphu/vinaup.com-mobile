@@ -7,15 +7,18 @@ import {
   updateBookingApi,
 } from '@/apis/booking-apis';
 import {
+  BookingMeta,
   BookingResponse,
   UpdateBookingRequest,
 } from '@/interfaces/booking-interfaces';
+import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface BookingDetailContextType {
   bookingId: string;
-  booking: BookingResponse | undefined;
+  booking: ResponseWithMeta<BookingResponse, BookingMeta> | undefined;
+  canEdit: boolean;
   isLoadingBooking: boolean;
   isRefreshingBooking: boolean;
   isUpdatingBooking: boolean;
@@ -118,11 +121,14 @@ export function BookingDetailProvider({
     ]);
   }, [bookingId, deleteBooking, router, setIsNavigating]);
 
+  const canEdit = booking?.meta?.canEdit ?? false;
+
   return (
     <BookingDetailContext
       value={{
         bookingId,
         booking: booking ?? undefined,
+        canEdit,
         isLoadingBooking,
         isRefreshingBooking,
         isUpdatingBooking,

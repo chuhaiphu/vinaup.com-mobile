@@ -28,7 +28,9 @@ export interface OrganizationResponse {
   province: string;
   createdAt: string;
   updatedAt: string;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
+  organizationIndustryId: string;
   organizationIndustry: OrganizationIndustryResponse;
   memberCount?: number;
   memberLinkedCount?: number;

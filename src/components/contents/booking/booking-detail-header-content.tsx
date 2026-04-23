@@ -9,8 +9,13 @@ import { BookingInfoModal } from '@/components/modals/booking-info-modal/booking
 import { useBookingDetailContext } from '@/providers/booking-detail-provider';
 
 export function BookingDetailHeaderContent() {
-  const { booking, isUpdatingBooking, isRefreshingBooking, handleUpdateBooking } =
-    useBookingDetailContext();
+  const {
+    booking,
+    canEdit,
+    isUpdatingBooking,
+    isRefreshingBooking,
+    handleUpdateBooking,
+  } = useBookingDetailContext();
   const modalRef = useRef<SlideSheetRef>(null);
 
   if (!booking) {
@@ -50,7 +55,7 @@ export function BookingDetailHeaderContent() {
   return (
     <>
       <PressableCard
-        onPress={handleOpen}
+        onPress={canEdit ? handleOpen : undefined}
         style={{
           container: styles.cardContainer,
           card: styles.card,
@@ -61,9 +66,11 @@ export function BookingDetailHeaderContent() {
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
-          <View style={styles.editButton}>
-            <VinaupPenLineVariant width={16} height={16} />
-          </View>
+          {canEdit && (
+            <View style={styles.editButton}>
+              <VinaupPenLineVariant width={16} height={16} />
+            </View>
+          )}
           <Text style={styles.entityCode}>No. {booking.code.slice(0, 8)}</Text>
         </View>
       </PressableCard>

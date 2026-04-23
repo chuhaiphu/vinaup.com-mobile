@@ -15,11 +15,14 @@ export interface TourResponse {
   status: TourStatus;
   note: string | null;
   createdAt: string;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
+  organizationId: string;
+  organization: OrganizationResponse | null;
+  organizationCustomerId: string | null;
+  organizationCustomer: OrganizationCustomerResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
-  organization: OrganizationResponse | null;
-  organizationCustomer: OrganizationCustomerResponse | null;
   tourCalculation: TourCalculationResponse | null;
   tourImplementation: TourImplementationResponse | null;
   tourSettlement: TourSettlementResponse | null;

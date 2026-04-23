@@ -1,12 +1,9 @@
-import { loginApi } from '@/apis/auth-apis';
 import { COLORS } from '@/constants/style-constant';
 import { useAuthContext } from '@/providers/auth-provider';
-import { ApiError } from 'fetchwire';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -27,22 +24,9 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
-    try {
-      const response = await loginApi(email, password);
-      if (response.status === 200 && response.data?.user) {
-        await performLogin(response.data.user, response.data.accessToken);
-        router.replace('/');
-      }
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.statusCode === 401) {
-          Alert.alert('Đăng nhập thất bại', 'Email hoặc mật khẩu không chính xác');
-        }
-      } else
-        Alert.alert(
-          'Đăng nhập thất bại',
-          error instanceof ApiError ? error.message : 'Lỗi không xác định'
-        );
+    const isSuccess = await performLogin({ email, password });
+    if (isSuccess) {
+      router.replace('/');
     }
   };
 

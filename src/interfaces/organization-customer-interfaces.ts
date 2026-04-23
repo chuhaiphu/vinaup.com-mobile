@@ -4,17 +4,18 @@ import { UserResponse } from './user-interfaces';
 export interface OrganizationCustomerResponse {
   id: string;
   organizationId: string;
+  createdByUserId: string | null;
+  createdBy: UserResponse | null;
   clientUserId: string | null;
+  clientUser: UserResponse | null;
   clientOrganizationId: string | null;
+  clientOrganization: OrganizationResponse | null;
   name: string;
   phone: string;
   email: string | null;
   status: string;
   isSystemDefault: boolean;
   joinedAt: string;
-  createdBy: UserResponse | null;
-  clientUser: UserResponse | null;
-  clientOrganization: OrganizationResponse | null;
   organization: OrganizationResponse;
 }
 

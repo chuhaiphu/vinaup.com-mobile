@@ -10,7 +10,9 @@ export interface TourSettlementResponse {
   adultTicketPrice: number;
   childTicketPrice: number;
   taxRate: number;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
+  tourId: string;
   tour: TourResponse;
   receiptPayments: ReceiptPaymentResponse[];
 }

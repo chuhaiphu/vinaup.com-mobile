@@ -4,12 +4,24 @@ import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-
 import { UserResponse } from '@/interfaces/user-interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { promiseCacheMap, updateWireConfig } from 'fetchwire';
+import { Alert } from 'react-native';
+import {
+  promiseCacheMap,
+  updateWireConfig,
+  useMutationFn,
+} from 'fetchwire';
+import { loginApi } from '@/apis/auth-apis';
 
 interface AuthContextType {
   isLoading: boolean;
   currentUser: UserResponse | null;
-  performLogin: (user: UserResponse, accessToken: string) => Promise<void>;
+  performLogin: ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => Promise<boolean>;
   performLogout: () => Promise<void>;
   performSync: (user: UserResponse) => Promise<void>;
 }
@@ -17,7 +29,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   isLoading: false,
   currentUser: null,
-  performLogin: async () => {},
+  performLogin: async () => false,
   performLogout: async () => {},
   performSync: async () => {},
 });
@@ -29,18 +41,49 @@ export function useAuthContext() {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const performLogin = async (user: UserResponse, accessToken: string) => {
+  const { executeMutationFn: signIn } = useMutationFn(
+    ({ email, password }: { email: string; password: string }) =>
+      loginApi(email, password)
+  );
+  const performLogin = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const jsonValue = JSON.stringify(user);
-      await AsyncStorage.setItem(STORAGE_KEYS.currentUser, jsonValue);
-      await AsyncStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
-      // wait for storage to complete before updating state to avoid race conditions
-      // in organization provider which depends on currentUser to fetch organizations using token
-      setCurrentUser(user);
-    } catch (error) {
-      console.error('Error performing login', error);
+      const response = await signIn(
+        { email, password },
+        {
+          onError: (error) => {
+            if (error.statusCode === 401) {
+              Alert.alert(
+                'Đăng nhập thất bại',
+                'Email hoặc mật khẩu không chính xác'
+              );
+              return;
+            }
+            Alert.alert('Đăng nhập thất bại', error.message || 'Lỗi không xác định');
+          },
+        },
+      );
+
+      if (response && response.status === 200 && response.data?.user) {
+        const user = response.data.user;
+        const accessToken = response.data.accessToken;
+        const jsonValue = JSON.stringify(user);
+        await AsyncStorage.setItem(STORAGE_KEYS.currentUser, jsonValue);
+        await AsyncStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
+        // wait for storage to complete before updating state to avoid race conditions
+        // in organization provider which depends on currentUser to fetch organizations using token
+        setCurrentUser(user);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
     } finally {
       setIsLoading(false);
     }

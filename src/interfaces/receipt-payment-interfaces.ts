@@ -22,19 +22,29 @@ export interface ReceiptPaymentResponse {
   frequency: number;
   vatRate: number;
   note: string | null;
+  createdAt: string;
+  updatedAt: string;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
+  categoryId: string;
   category: CategoryResponse;
+  projectId: string | null;
   project: ProjectResponse | null;
+  organizationId: string | null;
+  invoiceId: string | null;
   invoice: InvoiceResponse | null;
+  bookingId: string | null;
   booking: BookingResponse | null;
+  tourCalculationId: string | null;
   tourCalculation: TourCalculationResponse | null;
+  tourSettlementId: string | null;
+  tourSettlement: TourSettlementResponse | null;
   tourImplementationReceiptPayments: {
     id: string;
     tourImplementationId: string;
     receiptPaymentId: string;
     groupCode: string;
   }[];
-  tourSettlement: TourSettlementResponse | null;
 }
 
 export interface CreateReceiptPaymentRequest {

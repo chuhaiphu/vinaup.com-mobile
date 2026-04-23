@@ -6,6 +6,7 @@ import { InvoiceDiscountType, InvoiceStatus } from '@/constants/invoice-constant
 
 export interface InvoiceResponse {
   id: string;
+  invoiceTypeId: string;
   invoiceType: InvoiceTypeResponse;
   code: string;
   description: string;
@@ -19,10 +20,13 @@ export interface InvoiceResponse {
   status: InvoiceStatus;
   note: string | null;
   createdAt: string;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
   externalOrganizationName: string | null;
   externalCustomerName: string | null;
+  organizationId: string | null;
   organization: OrganizationResponse | null;
+  organizationCustomerId: string | null;
   organizationCustomer: OrganizationCustomerResponse | null;
 }
 

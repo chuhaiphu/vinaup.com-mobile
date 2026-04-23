@@ -12,8 +12,13 @@ import { BookingOrgCustomerSelectModal } from '@/components/modals/booking-org-c
 import { useBookingDetailContext } from '@/providers/booking-detail-provider';
 
 export function BookingDetailFooterContent() {
-  const { booking, isUpdatingBooking, isRefreshingBooking, handleUpdateBooking } =
-    useBookingDetailContext();
+  const {
+    booking,
+    canEdit,
+    isUpdatingBooking,
+    isRefreshingBooking,
+    handleUpdateBooking,
+  } = useBookingDetailContext();
 
   const isLoading = isUpdatingBooking || isRefreshingBooking;
   const organizationName = booking?.organization?.name ?? '';
@@ -27,14 +32,16 @@ export function BookingDetailFooterContent() {
     <>
       <Pressable
         style={styles.noteContainer}
-        onPress={() => noteModalRef.current?.open()}
-        disabled={isLoading}
+        onPress={canEdit ? () => noteModalRef.current?.open() : undefined}
+        disabled={isLoading || !canEdit}
       >
         <VinaupInfoNote width={22} height={22} color={COLORS.vinaupTeal} />
         <Text style={styles.noteValue} numberOfLines={2} ellipsizeMode="tail">
           {note || 'Ghi chú'}
         </Text>
-        <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
+        {canEdit && (
+          <VinaupPenLine width={16} height={16} color={COLORS.vinaupTeal} />
+        )}
       </Pressable>
 
       <PressableCard
@@ -42,7 +49,7 @@ export function BookingDetailFooterContent() {
           container: styles.cardContainer,
           card: styles.card,
         }}
-        onPress={() => selectCustomerModalRef.current?.open()}
+        onPress={canEdit ? () => selectCustomerModalRef.current?.open() : undefined}
       >
         <View style={styles.rowsNew}>
           <View style={styles.orgCol}>
@@ -63,33 +70,37 @@ export function BookingDetailFooterContent() {
               >
                 {customerName || ''}
               </Text>
-              <PressableOpacity
-                style={styles.searchCustomerButton}
-                onPress={() => selectCustomerModalRef.current?.open()}
-                disabled={isLoading}
-                hitSlop={8}
-              >
-                <Ionicons
-                  name="search"
-                  size={18}
-                  color={!isLoading ? COLORS.vinaupTeal : COLORS.vinaupMediumGray}
-                />
-              </PressableOpacity>
+              {canEdit && (
+                <PressableOpacity
+                  style={styles.searchCustomerButton}
+                  onPress={() => selectCustomerModalRef.current?.open()}
+                  disabled={isLoading}
+                  hitSlop={8}
+                >
+                  <Ionicons
+                    name="search"
+                    size={18}
+                    color={!isLoading ? COLORS.vinaupTeal : COLORS.vinaupMediumGray}
+                  />
+                </PressableOpacity>
+              )}
             </View>
           </View>
         </View>
       </PressableCard>
 
-      <BookingOrgCustomerSelectModal modalRef={selectCustomerModalRef} />
+      {canEdit && <BookingOrgCustomerSelectModal modalRef={selectCustomerModalRef} />}
 
-      <SimpleTextInputModal
-        value={note}
-        isLoading={isLoading}
-        modalRef={noteModalRef}
-        onConfirm={(noteValue: string, onSuccessClose?: () => void) => {
-          handleUpdateBooking({ note: noteValue }, onSuccessClose);
-        }}
-      />
+      {canEdit && (
+        <SimpleTextInputModal
+          value={note}
+          isLoading={isLoading}
+          modalRef={noteModalRef}
+          onConfirm={(noteValue: string, onSuccessClose?: () => void) => {
+            handleUpdateBooking({ note: noteValue }, onSuccessClose);
+          }}
+        />
+      )}
     </>
   );
 }

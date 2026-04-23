@@ -45,6 +45,7 @@ function BookingDetailScreenContent() {
     isRefreshingBooking,
     isDeletingBooking,
     bookingId,
+    canEdit,
     handleUpdateBooking,
     handleDelete,
     refreshBooking,
@@ -70,8 +71,8 @@ function BookingDetailScreenContent() {
     <OrganizationCustomerProvider organizationId={booking?.organization?.id}>
       <StackWithHeader
         title={'Chi tiết Booking'}
-        onDelete={handleDelete}
-        onSave={handleSaveAndExit}
+        onDelete={canEdit ? handleDelete : undefined}
+        onSave={canEdit ? handleSaveAndExit : undefined}
         isDeleting={isDeletingBooking}
       />
       <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -145,6 +146,7 @@ function BookingDetailScreenContent() {
                     endDate={booking.endDate}
                     bookingId={bookingId}
                     organizationId={booking.organization?.id}
+                    canEdit={canEdit}
                   />
                 </Suspense>
               )}

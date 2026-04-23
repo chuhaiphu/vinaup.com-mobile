@@ -8,7 +8,6 @@ import {
 import { buildFilterQueryString } from '@/utils/api-helpers';
 
 export async function createReceiptPaymentApi(data: CreateReceiptPaymentRequest) {
-  console.log('Creating receipt/payment with data:', data.transactionDate);
   return wireApi<ReceiptPaymentResponse>('/receipt-payment', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -90,12 +89,10 @@ export async function getReceiptPaymentsByTourCalculationIdApi(
 }
 
 export async function getReceiptPaymentsByTourImplementationIdApi(
-  tourImplementationId: string,
-  groupCode?: string
+  tourImplementationId: string
 ) {
-  const query = groupCode ? `?groupCode=${encodeURIComponent(groupCode)}` : '';
   return wireApi<ReceiptPaymentResponse[]>(
-    `/receipt-payment/tour-implementation/${tourImplementationId}${query}`,
+    `/receipt-payment/tour-implementation/${tourImplementationId}`,
     {
       method: 'GET',
     }

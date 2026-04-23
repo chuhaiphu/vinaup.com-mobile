@@ -23,6 +23,7 @@ interface ReceiptPaymentBookingListContentProps {
   onRefresh?: () => void;
   bookingId: string;
   organizationId?: string;
+  canEdit?: boolean;
 }
 
 export function ReceiptPaymentBookingListContent({
@@ -31,6 +32,7 @@ export function ReceiptPaymentBookingListContent({
   onRefresh,
   bookingId,
   organizationId,
+  canEdit = true,
 }: ReceiptPaymentBookingListContentProps) {
   const fetchKey = `receipt-payment-list-in-booking-${bookingId}`;
   const { data, refreshFetch, isRefreshing } = useFetch(
@@ -86,6 +88,7 @@ export function ReceiptPaymentBookingListContent({
     receiptPaymentId?: string;
     dateKey?: string;
   }) => {
+    if (!canEdit) return;
     router.push({
       pathname: '/(protected)/receipt-payment-form/[receiptPaymentId]',
       params: {
@@ -142,6 +145,7 @@ export function ReceiptPaymentBookingListContent({
           style={styles.itemContainer}
           key={item.id}
           onPress={() => navigateToFormScreen({ receiptPaymentId: item.id })}
+          disabled={!canEdit}
         >
           <ReceiptPaymentCard receiptPayment={item} />
         </Pressable>
@@ -150,6 +154,7 @@ export function ReceiptPaymentBookingListContent({
         <ReceiptPaymentSectionListHeader
           title={title}
           receiptPayments={data}
+          canAdd={canEdit}
           onPressAddNew={() =>
             navigateToFormScreen({
               dateKey,

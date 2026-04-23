@@ -17,10 +17,14 @@ export interface BookingResponse {
   note: string | null;
   createdAt: string;
   updatedAt: string;
+  createdByUserId: string | null;
   createdBy: UserResponse | null;
+  organizationId: string;
   organization: OrganizationResponse;
+  organizationCustomerId: string | null;
   organizationCustomer: OrganizationCustomerResponse | null;
   receiptPayments: ReceiptPaymentResponse[];
+  tourImplementationId: string | null;
   tourImplementation: TourImplementationResponse | null;
 }
 
@@ -34,7 +38,7 @@ export interface CreateBookingRequest {
   organizationCustomerId?: string;
   tourImplementationId?: string;
 }
-  
+
 export type UpdateBookingRequest = Partial<CreateBookingRequest> & {
   status?: BookingStatus;
   tourImplementationId?: string | null;

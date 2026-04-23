@@ -28,36 +28,13 @@ export default function TourImplementationScreen() {
   });
 
   const {
-    data: directorReceiptPayments,
-    isLoading: isLoadingDirector,
-    executeFetchFn: fetchDirectorReceiptPayments,
+    data: allReceiptPayments,
+    isLoading: isLoadingReceiptPayments,
+    executeFetchFn: fetchReceiptPayments,
   } = useFetchFn(
-    () =>
-      getReceiptPaymentsByTourImplementationIdApi(
-        tourImplementation?.id || '',
-        'FOR_DIRECTOR'
-      ),
+    () => getReceiptPaymentsByTourImplementationIdApi(tourImplementation?.id || ''),
     {
-      tags: [
-        `receipt-payment-tour-implementation-director-${tourImplementation?.id}`,
-      ],
-    }
-  );
-
-  const {
-    data: tourGuideReceiptPayments,
-    isLoading: isLoadingTourGuide,
-    executeFetchFn: fetchTourGuideReceiptPayments,
-  } = useFetchFn(
-    () =>
-      getReceiptPaymentsByTourImplementationIdApi(
-        tourImplementation?.id || '',
-        'FOR_TOUR_GUIDE'
-      ),
-    {
-      tags: [
-        `receipt-payment-tour-implementation-tour-guide-${tourImplementation?.id}`,
-      ],
+      tags: [`receipt-payment-tour-implementation-${tourImplementation?.id}`],
     }
   );
 
@@ -67,28 +44,50 @@ export default function TourImplementationScreen() {
 
   useEffect(() => {
     if (tourImplementation?.id) {
-      fetchDirectorReceiptPayments();
-      fetchTourGuideReceiptPayments();
+      fetchReceiptPayments();
     }
-  }, [
-    tourImplementation?.id,
-    fetchDirectorReceiptPayments,
-    fetchTourGuideReceiptPayments,
-  ]);
+  }, [tourImplementation?.id, fetchReceiptPayments]);
+  // Split receipt payments by groupCode from the junction table
+  const directorReceiptPayments = (allReceiptPayments ?? []).filter((rp) =>
+    rp.tourImplementationReceiptPayments?.some(
+      (j) =>
+        j.tourImplementationId === tourImplementation?.id &&
+        j.groupCode === 'FOR_DIRECTOR'
+    )
+  );
+  const tourGuideReceiptPayments = (allReceiptPayments ?? []).filter((rp) =>
+    rp.tourImplementationReceiptPayments?.some(
+      (j) =>
+        j.tourImplementationId === tourImplementation?.id &&
+        j.groupCode === 'FOR_TOUR_GUIDE'
+    )
+  );
 
-  const currentUserPermissions = (tourImplementation?.additionalData ?? [])
+  const isMemberInCharge = (tourImplementation?.membersInCharge ?? []).some(
+    (m) => m.organizationMember?.userId === currentUser?.id
+  );
+
+  const currentUserInvitedPermissions = (tourImplementation?.additionalData ?? [])
     .flatMap((ad) => ad.usersInvited)
     .filter((u) => u.userId === currentUser?.id)
     .flatMap((u) => u.permissions);
+
+  const canViewTourGuideReceiptPayments =
+    isMemberInCharge ||
+    currentUserInvitedPermissions.includes('RECEIPT_PAYMENT_FOR_TOUR_GUIDE_READ');
+
+  const canViewBooking =
+    isMemberInCharge ||
+    currentUserInvitedPermissions.includes('BOOKING_READ');
 
   const baseTabs: { value: string; label: string; isIcon?: boolean }[] = [
     { value: '1', label: 'Home', isIcon: true },
     { value: '2', label: 'Dự toán ĐH' },
   ];
-  if (currentUserPermissions.includes('RECEIPT_PAYMENT_TOUR_READ')) {
+  if (canViewTourGuideReceiptPayments) {
     baseTabs.push({ value: '3', label: 'Dự toán HDV' });
   }
-  if (currentUserPermissions.includes('BOOKING_READ')) {
+  if (canViewBooking) {
     baseTabs.push({ value: 'booking', label: 'Booking' });
   }
   const tabs = baseTabs;
@@ -151,17 +150,17 @@ export default function TourImplementationScreen() {
             >
               {tour && tourImplementation && (
                 <ReceiptPaymentTourImplementationDirectorListContent
-                  receiptPayments={directorReceiptPayments ?? []}
+                  receiptPayments={directorReceiptPayments}
                   startDate={tour.startDate}
                   endDate={tour.endDate}
-                  loading={isLoadingDirector}
+                  loading={isLoadingReceiptPayments}
                   tourImplementationId={tourImplementation.id}
                   organizationId={tour.organization?.id}
                 />
               )}
             </Tabs.Panel>
 
-            {currentUserPermissions.includes('RECEIPT_PAYMENT_TOUR_READ') && (
+            {canViewTourGuideReceiptPayments && (
               <Tabs.Panel
                 value="3"
                 currentValue={currentTab}
@@ -169,10 +168,10 @@ export default function TourImplementationScreen() {
               >
                 {tour && tourImplementation && (
                   <ReceiptPaymentTourImplementationTourGuideListContent
-                    receiptPayments={tourGuideReceiptPayments ?? []}
+                    receiptPayments={tourGuideReceiptPayments}
                     startDate={tour.startDate}
                     endDate={tour.endDate}
-                    loading={isLoadingTourGuide}
+                    loading={isLoadingReceiptPayments}
                     tourImplementationId={tourImplementation.id}
                     organizationId={tour.organization?.id}
                   />
@@ -180,7 +179,7 @@ export default function TourImplementationScreen() {
               </Tabs.Panel>
             )}
 
-            {currentUserPermissions.includes('BOOKING_READ') && (
+            {canViewBooking && (
               <Tabs.Panel
                 value="booking"
                 currentValue={currentTab}
