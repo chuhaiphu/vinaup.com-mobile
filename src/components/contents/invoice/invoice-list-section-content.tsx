@@ -31,13 +31,14 @@ export function InvoiceListSectionContent({
     });
   };
 
-  const fetchKey = `org-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const fetchKey = `organization-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   const {
     data: invoices,
     refreshFetch,
     isRefreshing,
-  } = useFetch(fetchInvoicesFn, fetchKey, {
+  } = useFetch(fetchInvoicesFn, {
+    fetchKey,
     tags: ['organization-invoice-list'],
   });
 

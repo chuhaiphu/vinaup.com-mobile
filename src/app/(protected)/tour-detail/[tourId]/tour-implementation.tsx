@@ -25,6 +25,7 @@ export default function TourImplementationScreen() {
     executeFetchFn: fetchTourImplementation,
     refreshFetchFn: refreshTourImplementation,
   } = useFetchFn(() => getTourImplementationByTourIdApi(tour?.id || ''), {
+    fetchKey: `tour-implementation-${tour?.id}`,
     tags: [`tour-implementation-${tour?.id}`],
   });
 
@@ -35,7 +36,8 @@ export default function TourImplementationScreen() {
   } = useFetchFn(
     () => getReceiptPaymentsByTourImplementationIdApi(tourImplementation?.id || ''),
     {
-      tags: [`receipt-payment-tour-implementation-${tourImplementation?.id}`],
+      fetchKey: `receipt-payment-list-in-tour-implementation-${tourImplementation?.id}`,
+      tags: [`receipt-payment-list-in-tour-implementation-${tourImplementation?.id}`],
     }
   );
 

@@ -29,13 +29,14 @@ export function OrganizationTourListSectionContent({
       status: tourStatusFilter || undefined,
     });
 
-  const fetchKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
+  const fetchKey = `organization-tour-list-${organizationId}-${tourStatusFilter}`;
 
   const {
     data: tours,
     refreshFetch,
     isRefreshing,
-  } = useFetch(fetchToursFn, fetchKey, {
+  } = useFetch(fetchToursFn, {
+    fetchKey,
     tags: ['organization-tour-list'],
   });
 

@@ -30,8 +30,8 @@ export function TourCalculationTicketSummaryReceiptPaymentListContent({
   const fetchTourCalculationFn = () => getTourCalculationByTourIdApi(tourId);
   const { data: tourCalculation, refreshFetch: refreshTourCalculation } = useFetch(
     fetchTourCalculationFn,
-    `tour-calculation-${tourId}`,
     {
+      fetchKey: `tour-calculation-${tourId}`,
       tags: [`tour-calculation-${tourId}`],
     }
   );
@@ -45,8 +45,8 @@ export function TourCalculationTicketSummaryReceiptPaymentListContent({
     isRefreshing: isRefreshingReceiptPaymentsByTourCalculation,
   } = useFetch(
     fetchReceiptPaymentsByTourCalculationFn,
-    `organization-receipt-payment-list-in-tour-calculation-${tourCalculation?.id}`,
     {
+      fetchKey: `organization-receipt-payment-list-in-tour-calculation-${tourCalculation?.id}`,
       tags: [
         `organization-receipt-payment-list-in-tour-calculation-${tourCalculation?.id}`,
       ],

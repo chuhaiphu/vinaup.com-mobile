@@ -74,7 +74,8 @@ export function OrganizationProjectListSectionContent({
   const { data, refreshFetch, isRefreshing } = useFetch<{
     projects: ProjectResponse[];
     allReceiptPayments: ReceiptPaymentResponse[];
-  }>(fetchProjectsAndReceiptPaymentsFn, fetchKey, {
+  }>(fetchProjectsAndReceiptPaymentsFn, {
+    fetchKey,
     tags: ['organization-project-list'],
   });
 

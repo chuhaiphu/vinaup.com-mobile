@@ -73,7 +73,8 @@ export function PersonalProjectListSectionContent({
   const { data, refreshFetch, isRefreshing } = useFetch<{
     projects: ProjectResponse[];
     allReceiptPayments: ReceiptPaymentResponse[];
-  }>(fetchProjectsAndReceiptPaymentsFn, fetchKey, {
+  }>(fetchProjectsAndReceiptPaymentsFn, {
+    fetchKey,
     tags: ['personal-project-list'],
   });
 

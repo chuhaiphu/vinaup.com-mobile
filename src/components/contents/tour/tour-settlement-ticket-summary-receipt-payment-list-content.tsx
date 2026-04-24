@@ -29,8 +29,8 @@ export function TourSettlementTicketSummaryReceiptPaymentListContent({
 }: TourSettlementTicketSummaryReceiptPaymentListContentProps) {
   const { data: tourSettlement, refreshFetch: refreshTourSettlement } = useFetch(
     () => getTourSettlementByTourIdApi(tourId),
-    `tour-settlement-${tourId}`,
     {
+      fetchKey: `tour-settlement-${tourId}`,
       tags: [`tour-settlement-${tourId}`],
     }
   );
@@ -41,8 +41,8 @@ export function TourSettlementTicketSummaryReceiptPaymentListContent({
     isRefreshing: isRefreshingReceiptPaymentsByTourSettlement,
   } = useFetch(
     () => getReceiptPaymentsByTourSettlementIdApi(tourSettlement?.id || ''),
-    `organization-receipt-payment-list-in-tour-settlement-${tourSettlement?.id}`,
     {
+      fetchKey: `organization-receipt-payment-list-in-tour-settlement-${tourSettlement?.id}`,
       tags: [
         `organization-receipt-payment-list-in-tour-settlement-${tourSettlement?.id}`,
       ],

@@ -58,6 +58,7 @@ export default function TourSettlementSignatureContent({
   } = useFetchFn(
     () => getSignaturesByDocumentIdApi(tourData.tourSettlement?.id || ''),
     {
+      fetchKey: `signature-list-in-tour-settlement-${tourData.tourSettlement?.id}`,
       tags: ['signature-list-in-tour-settlement'],
     }
   );
@@ -67,6 +68,7 @@ export default function TourSettlementSignatureContent({
       () =>
         getOrganizationMembersByOrganizationIdApi(tourData.organization?.id || ''),
       {
+        fetchKey: `organization-members-${tourData.organization?.id}`,
         tags: ['organization-members'],
       }
     );

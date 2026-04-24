@@ -40,6 +40,7 @@ export function TourCalculationCancelLogModalContent({
         tourData.tourCalculation?.id || ''
       ),
     {
+      fetchKey: `tour-calculation-cancel-logs-${tourData.tourCalculation?.id}`,
       tags: ['tour-calculation-cancel-logs'],
     }
   );

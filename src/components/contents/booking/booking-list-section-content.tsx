@@ -25,16 +25,18 @@ export function BookingListSectionContent({
     endDate: selectedDate.endOf('month').toISOString(),
   };
 
-  const senderKey = `org-booking-sender-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
-  const receiverKey = `org-booking-receiver-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const senderKey = `organization-booking-sender-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const receiverKey = `organization-booking-receiver-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   const { data: senderBookings, refreshFetch: refreshSender, isRefreshing: isSenderRefreshing } =
-    useFetch(() => getBookingsByOrganizationIdApi(organizationId, filter), senderKey, {
+    useFetch(() => getBookingsByOrganizationIdApi(organizationId, filter), {
+      fetchKey: senderKey,
       tags: ['organization-booking-list'],
     });
 
   const { data: receiverBookings, refreshFetch: refreshReceiver, isRefreshing: isReceiverRefreshing } =
-    useFetch(() => getBookingsByOrganizationCustomerOrganizationIdApi(organizationId, filter), receiverKey, {
+    useFetch(() => getBookingsByOrganizationCustomerOrganizationIdApi(organizationId, filter), {
+      fetchKey: receiverKey,
       tags: ['organization-booking-list'],
     });
 

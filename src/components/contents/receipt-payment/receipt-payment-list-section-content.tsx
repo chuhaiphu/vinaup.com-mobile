@@ -36,7 +36,8 @@ export function ReceiptPaymentListSectionContent({
     data: receiptPayments,
     refreshFetch,
     isRefreshing,
-  } = useFetch(fetchReceiptPaymentsFn, fetchKey, {
+  } = useFetch(fetchReceiptPaymentsFn, {
+    fetchKey,
     tags: ['personal-receipt-payment-list'],
   });
 

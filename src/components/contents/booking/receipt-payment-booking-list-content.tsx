@@ -37,8 +37,7 @@ export function ReceiptPaymentBookingListContent({
   const fetchKey = `receipt-payment-list-in-booking-${bookingId}`;
   const { data, refreshFetch, isRefreshing } = useFetch(
     () => getReceiptPaymentsByBookingIdApi(bookingId),
-    fetchKey,
-    { tags: [`organization-receipt-payment-list-in-booking-${bookingId}`] }
+    { fetchKey, tags: [`organization-receipt-payment-list-in-booking-${bookingId}`] }
   );
   const receiptPayments = data ?? [];
   const router = useRouter();

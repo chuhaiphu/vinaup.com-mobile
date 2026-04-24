@@ -35,8 +35,7 @@ export function ReceiptPaymentProjectListContent({
   const fetchKey = `receipt-payment-list-in-project-${projectId}`;
   const { data, refreshFetch, isRefreshing } = useFetch(
     () => getReceiptPaymentsByProjectIdApi(projectId),
-    fetchKey,
-    { tags: [`receipt-payment-list-in-project-${projectId}`] }
+    { fetchKey, tags: [`receipt-payment-list-in-project-${projectId}`] }
   );
   const receiptPayments = data ?? [];
 

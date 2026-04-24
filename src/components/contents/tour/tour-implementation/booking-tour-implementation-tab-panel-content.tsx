@@ -1,10 +1,12 @@
-import React from 'react';
-import { Alert, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Alert, FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { prefetch, useFetch, useMutationFn } from 'fetchwire';
+import dayjs from 'dayjs';
+import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import { createBookingApi, getBookingByIdApi, getBookingsByTourImplementationIdApi } from '@/apis/booking-apis';
 import { BookingCard } from '@/components/cards/booking-card';
-import { Button } from '@/components/primitives/button';
+import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
@@ -17,6 +19,10 @@ interface Props {
 export function BookingTourImplementationTabPanelContent({ tourImplementationId, organizationId }: Props) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+
+  const fetchKey = `organization-booking-list-in-tour-implementation-${tourImplementationId}-${selectedDate.format('YYYY-MM')}`;
+  const tag = `organization-booking-list-in-tour-implementation-${tourImplementationId}`;
 
   const createBookingFn = () =>
     createBookingApi({
@@ -28,13 +34,19 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
     });
 
   const { executeMutationFn: createBooking, isMutating } = useMutationFn(createBookingFn, {
-    invalidatesTags: ['organization-booking-list', `organization-booking-list-in-tour-impl-${tourImplementationId}`],
+    invalidatesTags: ['organization-booking-list', tag],
   });
 
   const { data: bookings, refreshFetch, isRefreshing } = useFetch(
-    () => getBookingsByTourImplementationIdApi(tourImplementationId),
-    `organization-booking-list-in-tour-impl-${tourImplementationId}`,
-    { tags: [`organization-booking-list-in-tour-impl-${tourImplementationId}`] }
+    () =>
+      getBookingsByTourImplementationIdApi(tourImplementationId, {
+        startDate: selectedDate.startOf('month').toISOString(),
+        endDate: selectedDate.endOf('month').toISOString(),
+      }),
+    {
+      fetchKey,
+      tags: [tag],
+    }
   );
 
   const handleAddNew = async () => {
@@ -66,13 +78,18 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.titleWrapper}>
-          <Text style={styles.titleLeft}>Tạo mới</Text>
-          <Text style={styles.titleRight}> Booking</Text>
-        </View>
-        <Button onPress={handleAddNew} isLoading={isMutating} loaderStyle={{ size: 30 }}>
-          <VinaupAddNew width={30} height={30} />
-        </Button>
+        <MonthYearPicker
+          leftSection={
+            <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
+          }
+          value={selectedDate}
+          onChange={setSelectedDate}
+          displayFormat="MM/YYYY"
+          style={{ dateText: styles.dateText }}
+        />
+        <Pressable onPress={handleAddNew} disabled={isMutating}>
+          <VinaupAddNew width={24} height={24} iconColor={COLORS.vinaupWhite} />
+        </Pressable>
       </View>
 
       <FlatList
@@ -98,22 +115,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   header: {
-    padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginVertical: 8,
   },
-  titleWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  titleLeft: {
+  dateText: {
     fontSize: 18,
-    color: COLORS.vinaupBlack,
-  },
-  titleRight: {
-    fontSize: 18,
-    fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
   separator: {

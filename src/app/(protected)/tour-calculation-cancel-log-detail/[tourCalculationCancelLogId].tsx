@@ -60,12 +60,14 @@ export default function TourCalculationCancelLogDetail() {
   } = useFetchFn(
     () => getTourCalculationCancelLogByIdApi(tourCalculationCancelLogId || ''),
     {
+      fetchKey: `tour-calculation-cancel-log-${tourCalculationCancelLogId}`,
       tags: ['tour-calculation-cancel-log-detail'],
     }
   );
 
-  const { data: organization, executeFetchFn: fetchOrganization } = useFetchFn(() =>
-    getOrganizationByIdApi(organizationId || '')
+  const { data: organization, executeFetchFn: fetchOrganization } = useFetchFn(
+    () => getOrganizationByIdApi(organizationId || ''),
+    { fetchKey: `organization-${organizationId}` }
   );
 
   useEffect(() => {

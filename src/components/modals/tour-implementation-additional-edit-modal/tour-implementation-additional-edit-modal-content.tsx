@@ -104,7 +104,7 @@ export function TourImplementationAdditionalEditModalContent({
         phone: tourGuideSearchQuery,
         email: tourGuideSearchQuery,
       }),
-    { tags: [] }
+    { fetchKey: `user-search-tour-guide-${selectedItem.id}`, tags: [] }
   );
 
   const {
@@ -119,7 +119,7 @@ export function TourImplementationAdditionalEditModalContent({
         phone: driverSearchQuery,
         email: driverSearchQuery,
       }),
-    { tags: [] }
+    { fetchKey: `user-search-driver-${selectedItem.id}`, tags: [] }
   );
 
   const { executeMutationFn: deleteAdditionalData, isMutating: isDeleting } =

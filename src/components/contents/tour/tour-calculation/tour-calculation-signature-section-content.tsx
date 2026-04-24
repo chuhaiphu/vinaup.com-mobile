@@ -58,6 +58,7 @@ export default function TourCalculationSignatureContent({
   } = useFetchFn(
     () => getSignaturesByDocumentIdApi(tourData.tourCalculation?.id || ''),
     {
+      fetchKey: `signature-list-in-tour-calculation-${tourData.tourCalculation?.id}`,
       tags: ['signature-list-in-tour-calculation'],
     }
   );
@@ -67,6 +68,7 @@ export default function TourCalculationSignatureContent({
       () =>
         getOrganizationMembersByOrganizationIdApi(tourData.organization?.id || ''),
       {
+        fetchKey: `organization-members-${tourData.organization?.id}`,
         tags: ['organization-members'],
       }
     );

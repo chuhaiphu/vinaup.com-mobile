@@ -95,10 +95,10 @@ export function ReceiptPaymentFormContent({ ref }: ReceiptPaymentFormContentProp
   const { receiptPaymentId } = params;
   const isUpdateMode = receiptPaymentId !== 'new';
 
-  const categoriesFetchKey = `receipt-payment-form-categories-${params.organizationId || 'self'}`;
+  const categoriesFetchKey = `category-list`;
   const { data: categories } = useFetch(
     () => getCategoriesOfCurrentUserApi(),
-    categoriesFetchKey
+    { fetchKey: categoriesFetchKey }
   );
 
   const receiptDetailFetchKey = isUpdateMode
@@ -112,8 +112,8 @@ export function ReceiptPaymentFormContent({ ref }: ReceiptPaymentFormContentProp
       }
       return getReceiptPaymentByIdApi(receiptPaymentId);
     },
-    receiptDetailFetchKey,
     {
+      fetchKey: receiptDetailFetchKey,
       tags: [receiptDetailFetchKey],
     }
   );

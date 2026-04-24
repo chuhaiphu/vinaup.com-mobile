@@ -38,6 +38,7 @@ export function TourSettlementCancelLogModalContent({
     () =>
       getTourSettlementLogsByTourSettlementIdApi(tourData.tourSettlement?.id || ''),
     {
+      fetchKey: `tour-settlement-cancel-logs-${tourData.tourSettlement?.id}`,
       tags: ['tour-settlement-cancel-logs'],
     }
   );

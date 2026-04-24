@@ -39,6 +39,7 @@ export default function BookingSignatureSectionContent({
     isLoading,
     executeFetchFn: fetchSignatures,
   } = useFetchFn(() => getSignaturesByDocumentIdApi(bookingData.id), {
+    fetchKey: `signature-list-in-booking-${bookingData.id}`,
     tags: ['signature-list-in-booking'],
   });
 

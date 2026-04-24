@@ -43,7 +43,10 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
     isLoading: isLoadingMembers,
   } = useFetchFn(
     () => getOrganizationMembersByOrganizationIdApi(tour?.organization?.id || ''),
-    { tags: ['organization-members'] }
+    {
+      fetchKey: `organization-members-${tour?.organization?.id}`,
+      tags: ['organization-members'],
+    }
   );
 
   const {
@@ -51,6 +54,7 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
     executeFetchFn: fetchTourImplementation,
     refreshFetchFn: refreshTourImplementation,
   } = useFetchFn(() => getTourImplementationByTourIdApi(tour?.id || ''), {
+    fetchKey: `tour-implementation-${tour?.id}`,
     tags: [`tour-implementation-${tour?.id}`],
   });
 

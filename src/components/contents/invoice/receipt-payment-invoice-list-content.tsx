@@ -39,8 +39,8 @@ export function ReceiptPaymentInvoiceListContent({
   const fetchKey = `receipt-payment-list-in-invoice-${invoiceId}`;
   const { data, refreshFetch, isRefreshing } = useFetch(
     () => getReceiptPaymentsByInvoiceIdApi(invoiceId),
-    fetchKey,
     {
+      fetchKey,
       tags: [`receipt-payment-list-in-invoice-${invoiceId}`],
     }
   );

@@ -79,6 +79,7 @@ export default function PersonalIndexScreen() {
     isRefreshing: isRefreshingReceiptPaymentsSelf,
     refreshFetchFn: refreshReceiptPaymentsSelf,
   } = useFetchFn(fetchReceiptPaymentsSelfFn, {
+    fetchKey: `personal-receipt-payment-list-${selectedDate.format('YYYY-MM-DD')}`,
     tags: ['personal-receipt-payment-list'],
   });
 
@@ -94,7 +95,9 @@ export default function PersonalIndexScreen() {
     executeFetchFn: fetchProjectsSelf,
     isRefreshing: isRefreshingProjectsSelf,
     refreshFetchFn: refreshProjectsSelf,
-  } = useFetchFn(fetchProjectsSelfFn);
+  } = useFetchFn(fetchProjectsSelfFn, {
+    fetchKey: `personal-project-list-self-${selectedDate.format('YYYY-MM-DD')}`,
+  });
 
   const fetchProjectsCompanyFn = () =>
     getProjectsOfCurrentUserApi({
@@ -108,7 +111,9 @@ export default function PersonalIndexScreen() {
     executeFetchFn: fetchProjectsCompany,
     isRefreshing: isRefreshingProjectsCompany,
     refreshFetchFn: refreshProjectsCompany,
-  } = useFetchFn(fetchProjectsCompanyFn);
+  } = useFetchFn(fetchProjectsCompanyFn, {
+    fetchKey: `personal-project-list-company-${selectedDate.format('YYYY-MM-DD')}`,
+  });
 
   const [receiptPaymentsInProjectSelf, setReceiptPaymentsInProjectSelf] = useState<
     ReceiptPaymentResponse[] | null
