@@ -4,7 +4,7 @@ import {
   signSignatureApi,
 } from '@/apis/signature-apis';
 import { useFetchFn, useMutationFn } from 'fetchwire';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import SignatureEntityContent from '../signature/signature-entity-content';
 import { Ionicons } from '@expo/vector-icons';

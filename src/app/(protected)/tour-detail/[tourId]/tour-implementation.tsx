@@ -13,6 +13,7 @@ import { useFetchFn } from 'fetchwire';
 import { getTourImplementationByTourIdApi } from '@/apis/tour-apis';
 import { getReceiptPaymentsByTourImplementationIdApi } from '@/apis/receipt-payment-apis';
 import TourImplementationAdditionalContent from '../../../../components/contents/tour/tour-implementation/tour-implementation-additional-content';
+import { BookingTourImplementationTabPanelContent } from '../../../../components/contents/tour/tour-implementation/booking-tour-implementation-tab-panel-content';
 
 export default function TourImplementationScreen() {
   const [currentTab, setCurrentTab] = useState('1');
@@ -185,7 +186,12 @@ export default function TourImplementationScreen() {
                 currentValue={currentTab}
                 styles={{ panel: styles.panel }}
               >
-                <Text style={styles.text}>Booking content (TBD)</Text>
+                {tourImplementation && (
+                  <BookingTourImplementationTabPanelContent
+                    tourImplementationId={tourImplementation.id}
+                    organizationId={tour?.organization?.id ?? ''}
+                  />
+                )}
               </Tabs.Panel>
             )}
           </View>
@@ -212,10 +218,6 @@ const styles = StyleSheet.create({
   content: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  text: {
-    fontSize: 18,
-    color: '#000',
   },
   tabList: {
     backgroundColor: COLORS.vinaupSoftGray,
