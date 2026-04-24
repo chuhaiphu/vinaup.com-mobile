@@ -4,11 +4,12 @@ import { useLocalSearchParams } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { BookingDetailHeaderContent } from '@/components/contents/booking/booking-detail-header-content';
 import Loader from '@/components/primitives/loader';
-import { Select } from '@/components/primitives/select';
-import { BookingStatus, BookingStatusOptions } from '@/constants/booking-constants';
+import {
+  BOOKING_STATUS,
+  BookingStatusDisplay,
+} from '@/constants/booking-constants';
 import { BookingDetailFooterContent } from '@/components/contents/booking/booking-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
@@ -41,12 +42,10 @@ function BookingDetailScreenContent() {
   const {
     booking,
     isLoadingBooking,
-    isUpdatingBooking,
     isRefreshingBooking,
     isDeletingBooking,
     bookingId,
     canEdit,
-    handleUpdateBooking,
     handleDelete,
     refreshBooking,
   } = useBookingDetailContext();
@@ -77,30 +76,26 @@ function BookingDetailScreenContent() {
       />
       <View style={[styles.container, { paddingBottom: insets.bottom }]}>
         <View style={styles.actionContainer}>
-          <View style={styles.statusFilter}>
-            <Select
-              renderTrigger={(option) => (
-                <>
-                  <VinaupVerticalExpandArrow width={16} height={16} />
-                  <Text style={{ color: COLORS.vinaupTeal }}>
-                    {option.label || 'Trạng thái'}
-                  </Text>
-                </>
-              )}
-              isLoading={isUpdatingBooking || isRefreshingBooking}
-              options={BookingStatusOptions}
-              value={booking?.status || ''}
-              onChange={(value) =>
-                handleUpdateBooking({ status: value as BookingStatus })
-              }
-              placeholder="Trạng thái"
-              style={{
-                triggerText: {
-                  fontSize: 16,
-                  color: COLORS.vinaupTeal,
-                },
-              }}
-            />
+          <View
+            style={[
+              styles.statusBadge,
+              booking?.status
+                ? statusBadgeStyle[booking.status]
+                : statusBadgeStyle[BOOKING_STATUS.DRAFT],
+            ]}
+          >
+            <Text
+              style={[
+                styles.statusBadgeText,
+                booking?.status
+                  ? statusTextStyle[booking.status]
+                  : statusTextStyle[BOOKING_STATUS.DRAFT],
+              ]}
+            >
+              {booking?.status
+                ? BookingStatusDisplay[booking.status]
+                : BookingStatusDisplay[BOOKING_STATUS.DRAFT]}
+            </Text>
           </View>
           <View style={styles.actionButton}>
             <PressableOpacity style={styles.actionButtonItem}>
@@ -167,6 +162,7 @@ function BookingDetailScreenContent() {
               onOpenSignatureInfoPopover={() =>
                 setIsSignatureInfoPopoverVisible(true)
               }
+              onRefresh={refreshBooking}
             />
           )}
         </View>
@@ -174,6 +170,18 @@ function BookingDetailScreenContent() {
     </OrganizationCustomerProvider>
   );
 }
+
+const statusBadgeStyle: Record<string, object> = {
+  DRAFT: { backgroundColor: COLORS.vinaupSoftYellow },
+  SENDER_SIGNED: { backgroundColor: '#e8f0fe' },
+  COMPLETED: { backgroundColor: COLORS.vinaupSoftGreen },
+};
+
+const statusTextStyle: Record<string, object> = {
+  DRAFT: { color: COLORS.vinaupOrange },
+  SENDER_SIGNED: { color: COLORS.vinaupBlueLink },
+  COMPLETED: { color: COLORS.vinaupTeal },
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -195,9 +203,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.vinaupTeal,
   },
-  statusFilter: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusBadgeText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   signatureInfoPopoverContainer: {
     position: 'relative',

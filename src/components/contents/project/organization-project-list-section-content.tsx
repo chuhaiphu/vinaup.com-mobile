@@ -32,9 +32,9 @@ export function OrganizationProjectListSectionContent({
   const navigateToDetail = async (project: ProjectResponse) => {
     setIsNavigating(true);
     try {
-      await prefetch(`organization-project-${project.id}`, () =>
-        getProjectByIdApi(project.id)
-      );
+      await prefetch(() => getProjectByIdApi(project.id), {
+        fetchKey: `organization-project-${project.id}`,
+      });
     } catch {
       // Fallback to normal navigation if prefetch fails.
     }

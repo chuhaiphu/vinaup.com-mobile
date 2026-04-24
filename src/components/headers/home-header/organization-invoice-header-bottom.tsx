@@ -50,9 +50,9 @@ const OrganizationInvoiceHeaderBottom = () => {
       onSuccess: async (data) => {
         setIsNavigating(true);
         try {
-          await prefetch(`organization-invoice-${data?.id}`, () =>
-            getInvoiceByIdApi(data?.id || '')
-          );
+          await prefetch(() => getInvoiceByIdApi(data?.id || ''), {
+            fetchKey: `organization-invoice-${data?.id}`,
+          });
         } catch {
           // Fallback to normal navigation if prefetch fails.
         }

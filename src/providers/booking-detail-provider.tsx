@@ -70,9 +70,16 @@ export function BookingDetailProvider({
       { invalidatesTags: ['organization-booking-list'] }
     );
 
+  const deleteInvalidateTags = [
+    'organization-booking-list',
+    ...(booking?.tourImplementationId
+      ? [`organization-booking-list-in-tour-implementation-${booking.tourImplementationId}`]
+      : []),
+  ];
+
   const { executeMutationFn: deleteBooking, isMutating: isDeletingBooking } =
     useMutationFn(() => deleteBookingApi(bookingId), {
-      invalidatesTags: ['organization-booking-list'],
+      invalidatesTags: deleteInvalidateTags,
     });
 
   useEffect(() => {

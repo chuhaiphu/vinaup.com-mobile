@@ -23,7 +23,7 @@ export default function OrganizationInvoiceScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const suspenseResetKey = `org-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const suspenseKey = `org-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -64,7 +64,7 @@ export default function OrganizationInvoiceScreen() {
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
         <InvoiceListSectionContent
-          key={suspenseResetKey}
+          key={suspenseKey}
           organizationId={organizationId}
           selectedDate={selectedDate}
           statusFilter={statusFilter}

@@ -5,20 +5,18 @@ import dayjs from 'dayjs';
 import {
   getBookingsByOrganizationIdApi,
   getBookingsByOrganizationCustomerOrganizationIdApi,
+  getBookingsByTourImplementationIdApi,
 } from '@/apis/booking-apis';
 import { BookingCard } from '@/components/cards/booking-card';
 
 export interface BookingListSectionContentProps {
   organizationId: string;
   selectedDate: dayjs.Dayjs;
-  statusFilter: string;
+  statusFilter?: string;
+  tourImplementationId?: string;
 }
 
-export function BookingListSectionContent({
-  organizationId,
-  selectedDate,
-  statusFilter,
-}: BookingListSectionContentProps) {
+function BookingListByOrganization({ organizationId, selectedDate, statusFilter }: BookingListSectionContentProps) {
   const filter = {
     status: statusFilter || undefined,
     startDate: selectedDate.startOf('month').toISOString(),
@@ -67,6 +65,46 @@ export function BookingListSectionContent({
       }
     />
   );
+}
+
+function BookingListByTourImplementation({ tourImplementationId, selectedDate, statusFilter }: BookingListSectionContentProps) {
+  const filter = {
+    status: statusFilter || undefined,
+    startDate: selectedDate.startOf('month').toISOString(),
+    endDate: selectedDate.endOf('month').toISOString(),
+  };
+
+  const fetchKey = `organization-booking-list-in-tour-implementation-${tourImplementationId}-${selectedDate.format('YYYY-MM')}`;
+
+  const { data: bookings, refreshFetch, isRefreshing } =
+    useFetch(() => getBookingsByTourImplementationIdApi(tourImplementationId!, filter), {
+      fetchKey,
+      tags: [`organization-booking-list-in-tour-implementation-${tourImplementationId}`],
+    });
+
+  return (
+    <FlatList
+      data={bookings ?? []}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <BookingCard booking={item} isReceiver={false} />}
+      scrollEnabled={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing ?? false}
+          onRefresh={refreshFetch}
+          colors={[COLORS.vinaupTeal]}
+        />
+      }
+    />
+  );
+}
+
+export function BookingListSectionContent(props: BookingListSectionContentProps) {
+  if (props.tourImplementationId) {
+    return <BookingListByTourImplementation {...props} />;
+  }
+  return <BookingListByOrganization {...props} />;
 }
 
 const styles = StyleSheet.create({

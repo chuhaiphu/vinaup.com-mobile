@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import {
-  promiseCacheMap,
+  fetchClient,
   updateWireConfig,
   useMutationFn,
 } from 'fetchwire';
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.removeItem(STORAGE_KEYS.accessToken);
       usePersonalUtilitiesStore.persist.clearStorage();
       useOrganizationUtilitiesStore.persist.clearStorage();
-      promiseCacheMap.clear();
+      fetchClient.clear();
     } catch (error) {
       console.error('Error performing logout', error);
     } finally {

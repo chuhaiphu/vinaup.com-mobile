@@ -33,9 +33,9 @@ const OrganizationTourHeaderBottom = () => {
       onSuccess: async (data) => {
         setIsNavigating(true);
         try {
-          await prefetch(`organization-tour-${data?.id}`, () =>
-            getTourByIdApi(data?.id || '')
-          );
+          await prefetch(() => getTourByIdApi(data?.id || ''), {
+            fetchKey: `organization-tour-${data?.id}`,
+          });
         } catch {
           // Fallback to normal navigation if prefetch fails.
         }

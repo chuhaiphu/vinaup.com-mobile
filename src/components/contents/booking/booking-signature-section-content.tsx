@@ -19,11 +19,13 @@ import { BookingResponse } from '@/interfaces/booking-interfaces';
 interface BookingSignatureSectionContentProps {
   bookingData: BookingResponse;
   onOpenSignatureInfoPopover?: () => void;
+  onRefresh?: () => void;
 }
 
 export default function BookingSignatureSectionContent({
   bookingData,
   onOpenSignatureInfoPopover,
+  onRefresh,
 }: BookingSignatureSectionContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSignConfirmVisible, setIsSignConfirmVisible] = useState(false);
@@ -88,7 +90,10 @@ export default function BookingSignatureSectionContent({
   const handleConfirmSign = () => {
     if (!selectedSignatureId) return;
     signBooking(selectedSignatureId, {
-      onSuccess: handleCloseSignConfirmModal,
+      onSuccess: () => {
+        handleCloseSignConfirmModal();
+        onRefresh?.();
+      },
       onError: (error) => console.error('Error signing booking:', error),
     });
   };
@@ -96,7 +101,10 @@ export default function BookingSignatureSectionContent({
   const handleConfirmCancel = () => {
     if (!selectedSignatureId) return;
     cancelBooking(selectedSignatureId, {
-      onSuccess: handleCloseCancelConfirmModal,
+      onSuccess: () => {
+        handleCloseCancelConfirmModal();
+        onRefresh?.();
+      },
       onError: (error) =>
         console.error('Error canceling booking signature:', error),
     });

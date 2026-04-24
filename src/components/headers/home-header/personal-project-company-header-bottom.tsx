@@ -30,9 +30,9 @@ const PersonalProjectCompanyHeaderBottom = () => {
       onSuccess: async (data) => {
         setIsNavigating(true);
         try {
-          await prefetch(`personal-project-company-${data?.id}`, () =>
-            getProjectByIdApi(data?.id || '')
-          );
+          await prefetch(() => getProjectByIdApi(data?.id || ''), {
+            fetchKey: `personal-project-company-${data?.id}`,
+          });
         } catch {
           // Fallback to normal navigation if prefetch fails.
         }

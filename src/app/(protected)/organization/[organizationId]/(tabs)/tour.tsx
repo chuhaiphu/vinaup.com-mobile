@@ -14,7 +14,7 @@ export default function OrganizationTourScreen() {
 
   const [tourStatusFilter, setTourStatusFilter] = useState('');
 
-  const suspenseResetKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
+  const suspenseKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -38,7 +38,7 @@ export default function OrganizationTourScreen() {
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
         <OrganizationTourListSectionContent
-          key={suspenseResetKey}
+          key={suspenseKey}
           organizationId={organizationId}
           tourStatusFilter={tourStatusFilter}
         />

@@ -44,7 +44,7 @@ export function OrganizationTourListSectionContent({
     if (!id) return;
     setIsNavigating(true);
     try {
-      await prefetch(`organization-tour-${id}`, () => getTourByIdApi(id));
+      await prefetch(() => getTourByIdApi(id), { fetchKey: `organization-tour-${id}` });
     } catch {
       // Fallback to normal navigation if prefetch fails.
     }

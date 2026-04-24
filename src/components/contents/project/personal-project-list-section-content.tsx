@@ -37,7 +37,7 @@ export function PersonalProjectListSectionContent({
     const fetchKey =
       fetchKeyMap[project.type] ?? `organization-project-${project.id}`;
     try {
-      await prefetch(fetchKey, () => getProjectByIdApi(project.id));
+      await prefetch(() => getProjectByIdApi(project.id), { fetchKey });
     } catch {
       // Fallback to normal navigation if prefetch fails.
     }

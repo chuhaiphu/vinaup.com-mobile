@@ -42,9 +42,9 @@ const OrganizationProjectHeaderBottom = () => {
 
         setIsNavigating(true);
         try {
-          await prefetch(`organization-project-${projectId}`, () =>
-            getProjectByIdApi(projectId)
-          );
+          await prefetch(() => getProjectByIdApi(projectId), {
+            fetchKey: `organization-project-${projectId}`,
+          });
         } catch {
           // Fallback to normal navigation if prefetch fails.
         }

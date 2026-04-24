@@ -40,9 +40,9 @@ const OrganizationBookingHeaderBottom = () => {
 
         setIsNavigating(true);
         try {
-          await prefetch(`organization-booking-${bookingId}`, () =>
-            getBookingByIdApi(bookingId)
-          );
+          await prefetch(() => getBookingByIdApi(bookingId), {
+            fetchKey: `organization-booking-${bookingId}`,
+          });
         } catch {
           // Fallback to normal navigation if prefetch fails.
         }

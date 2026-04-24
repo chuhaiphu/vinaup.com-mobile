@@ -9,7 +9,7 @@ import { ReceiptPaymentListSectionContent } from '@/components/contents/receipt-
 
 export default function PersonalReceiptPaymentScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const suspenseResetKey = selectedDate.format('YYYY-MM-DD');
+  const suspenseKey = selectedDate.format('YYYY-MM-DD');
 
   return (
     <View style={styles.container}>
@@ -26,7 +26,7 @@ export default function PersonalReceiptPaymentScreen() {
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
         <ReceiptPaymentListSectionContent
-          key={suspenseResetKey}
+          key={suspenseKey}
           selectedDate={selectedDate}
         />
       </Suspense>

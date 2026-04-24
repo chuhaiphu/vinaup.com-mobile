@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import { Alert, FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import React, { Suspense, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { prefetch, useFetch, useMutationFn } from 'fetchwire';
+import { prefetch, useMutationFn } from 'fetchwire';
 import dayjs from 'dayjs';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
-import { createBookingApi, getBookingByIdApi, getBookingsByTourImplementationIdApi } from '@/apis/booking-apis';
-import { BookingCard } from '@/components/cards/booking-card';
+import { createBookingApi, getBookingByIdApi } from '@/apis/booking-apis';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
+import { BookingListSectionContent } from '@/components/contents/booking/booking-list-section-content';
+import { BookingListSectionSkeleton } from '@/components/skeletons/booking-list-section-skeleton';
+import { Button } from '@/components/primitives/button';
 
 interface Props {
   tourImplementationId: string;
@@ -21,8 +23,8 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
   const { setIsNavigating } = useNavigationStore();
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
-  const fetchKey = `organization-booking-list-in-tour-implementation-${tourImplementationId}-${selectedDate.format('YYYY-MM')}`;
   const tag = `organization-booking-list-in-tour-implementation-${tourImplementationId}`;
+  const suspenseKey = `tour-impl-booking-list-${tourImplementationId}-${selectedDate.format('YYYY-MM')}`;
 
   const createBookingFn = () =>
     createBookingApi({
@@ -37,18 +39,6 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
     invalidatesTags: ['organization-booking-list', tag],
   });
 
-  const { data: bookings, refreshFetch, isRefreshing } = useFetch(
-    () =>
-      getBookingsByTourImplementationIdApi(tourImplementationId, {
-        startDate: selectedDate.startOf('month').toISOString(),
-        endDate: selectedDate.endOf('month').toISOString(),
-      }),
-    {
-      fetchKey,
-      tags: [tag],
-    }
-  );
-
   const handleAddNew = async () => {
     await createBooking({
       onSuccess: async (data) => {
@@ -60,7 +50,7 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
 
         setIsNavigating(true);
         try {
-          await prefetch(`organization-booking-${bookingId}`, () => getBookingByIdApi(bookingId));
+          await prefetch(() => getBookingByIdApi(bookingId), { fetchKey: `organization-booking-${bookingId}` });
         } catch {
           // Fallback to normal navigation if prefetch fails.
         }
@@ -87,25 +77,19 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
           displayFormat="MM/YYYY"
           style={{ dateText: styles.dateText }}
         />
-        <Pressable onPress={handleAddNew} disabled={isMutating}>
+        <Button onPress={handleAddNew} isLoading={isMutating}>
           <VinaupAddNew width={24} height={24} iconColor={COLORS.vinaupWhite} />
-        </Pressable>
+        </Button>
       </View>
 
-      <FlatList
-        data={bookings ?? []}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <BookingCard booking={item} isReceiver={false} />}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        scrollEnabled={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing ?? false}
-            onRefresh={refreshFetch}
-            colors={[COLORS.vinaupTeal]}
-          />
-        }
-      />
+      <Suspense fallback={<BookingListSectionSkeleton />}>
+        <BookingListSectionContent
+          key={suspenseKey}
+          organizationId={organizationId}
+          tourImplementationId={tourImplementationId}
+          selectedDate={selectedDate}
+        />
+      </Suspense>
     </View>
   );
 }
@@ -124,8 +108,5 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     color: COLORS.vinaupTeal,
-  },
-  separator: {
-    height: 2,
   },
 });

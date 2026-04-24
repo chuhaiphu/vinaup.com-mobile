@@ -20,7 +20,7 @@ export function PersonalProjectListContent({
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
-  const suspenseResetKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
+  const suspenseKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -61,7 +61,7 @@ export function PersonalProjectListContent({
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
         <PersonalProjectListSectionContent
-          key={suspenseResetKey}
+          key={suspenseKey}
           projectType={projectType}
           selectedDate={selectedDate}
           projectStatusFilter={projectStatusFilter}

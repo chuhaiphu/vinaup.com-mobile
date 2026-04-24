@@ -40,7 +40,6 @@ export interface CreateBookingRequest {
 }
 
 export type UpdateBookingRequest = Partial<CreateBookingRequest> & {
-  status?: BookingStatus;
   tourImplementationId?: string | null;
 };
 

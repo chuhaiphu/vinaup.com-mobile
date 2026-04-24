@@ -31,9 +31,9 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
   const navigateToDetail = async (bookingId: string) => {
     setIsNavigating(true);
     try {
-      await prefetch(`organization-booking-${bookingId}`, () =>
-        getBookingByIdApi(bookingId)
-      );
+      await prefetch(() => getBookingByIdApi(bookingId), {
+        fetchKey: `organization-booking-${bookingId}`,
+      });
     } catch {
       // Fallback to normal navigation if prefetch fails.
     }

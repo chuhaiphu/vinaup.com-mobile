@@ -18,7 +18,7 @@ export default function OrganizationProjectScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [projectStatusFilter, setProjectStatusFilter] = useState('');
 
-  const suspenseResetKey = `organization-project-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
+  const suspenseKey = `organization-project-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -59,7 +59,7 @@ export default function OrganizationProjectScreen() {
       </View>
       <Suspense fallback={<EntityListSectionSkeleton />}>
         <OrganizationProjectListSectionContent
-          key={suspenseResetKey}
+          key={suspenseKey}
           organizationId={organizationId}
           selectedDate={selectedDate}
           projectStatusFilter={projectStatusFilter}

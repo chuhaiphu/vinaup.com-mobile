@@ -16,7 +16,7 @@ export default function OrganizationBookingScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const suspenseResetKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const suspenseKey = `org-booking-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -57,7 +57,7 @@ export default function OrganizationBookingScreen() {
       </View>
       <Suspense fallback={<BookingListSectionSkeleton />}>
         <BookingListSectionContent
-          key={suspenseResetKey}
+          key={suspenseKey}
           organizationId={organizationId}
           selectedDate={selectedDate}
           statusFilter={statusFilter}

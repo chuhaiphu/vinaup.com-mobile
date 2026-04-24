@@ -65,9 +65,9 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
   const navigateToDetail = async (invoiceId: string) => {
     setIsNavigating(true);
     try {
-      await prefetch(`organization-invoice-${invoiceId}`, () =>
-        getInvoiceByIdApi(invoiceId)
-      );
+      await prefetch(() => getInvoiceByIdApi(invoiceId), {
+        fetchKey: `organization-invoice-${invoiceId}`,
+      });
     } catch {
       // Fallback to normal navigation if prefetch fails.
     }
