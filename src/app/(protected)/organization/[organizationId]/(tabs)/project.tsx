@@ -2,11 +2,10 @@ import { COLORS } from '@/constants/style-constant';
 import { Suspense, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import { OrganizationProjectListSectionContent } from '@/components/contents/project/organization-project-list-section-content';
 import { useLocalSearchParams } from 'expo-router';
@@ -16,9 +15,9 @@ export default function OrganizationProjectScreen() {
   const { organizationId } = params;
 
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [projectStatusFilter, setProjectStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const suspenseKey = `organization-project-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
+  const suspenseKey = `organization-project-list-${organizationId}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -38,22 +37,20 @@ export default function OrganizationProjectScreen() {
           <Select
             renderTrigger={(option) => (
               <>
-                <VinaupVerticalExpandArrow width={18} height={18} />
-                <Text style={{ color: COLORS.vinaupTeal }}>
+                <Text style={styles.statusFilterText}>
                   {option.label || 'Trạng thái'}
                 </Text>
+                <FontAwesome6
+                  name="caret-down"
+                  size={20}
+                  color={COLORS.vinaupTeal}
+                />
               </>
             )}
             options={ProjectStatusOptions}
-            value={projectStatusFilter}
-            onChange={(value) => setProjectStatusFilter(value)}
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(value)}
             placeholder="Trạng thái"
-            style={{
-              triggerText: {
-                fontSize: 16,
-                color: COLORS.vinaupTeal,
-              },
-            }}
           />
         </View>
       </View>
@@ -62,7 +59,7 @@ export default function OrganizationProjectScreen() {
           key={suspenseKey}
           organizationId={organizationId}
           selectedDate={selectedDate}
-          projectStatusFilter={projectStatusFilter}
+          statusFilter={statusFilter}
         />
       </Suspense>
     </View>
@@ -84,8 +81,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  statusFilterText: {
+    fontSize: 16,
+    color: COLORS.vinaupTeal,
+  },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
 });

@@ -17,13 +17,13 @@ import { useNavigationStore } from '@/hooks/use-navigation-store';
 export interface PersonalProjectListSectionContentProps {
   projectType: 'SELF' | 'COMPANY';
   selectedDate: dayjs.Dayjs;
-  projectStatusFilter: string;
+  statusFilter: string;
 }
 
 export function PersonalProjectListSectionContent({
   projectType,
   selectedDate,
-  projectStatusFilter,
+  statusFilter,
 }: PersonalProjectListSectionContentProps) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
@@ -51,7 +51,7 @@ export function PersonalProjectListSectionContent({
   const fetchProjectsAndReceiptPaymentsFn = async () => {
     const projectsRes = await getProjectsOfCurrentUserApi({
       type: projectType,
-      status: projectStatusFilter,
+      status: statusFilter || undefined,
       startDate: selectedDate.startOf('month').toISOString(),
       endDate: selectedDate.endOf('month').toISOString(),
     });
@@ -68,7 +68,7 @@ export function PersonalProjectListSectionContent({
     return { projects, allReceiptPayments };
   };
 
-  const fetchKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
+  const fetchKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   const { data, refreshFetch, isRefreshing } = useFetch<{
     projects: ProjectResponse[];

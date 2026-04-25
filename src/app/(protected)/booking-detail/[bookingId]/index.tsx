@@ -85,29 +85,18 @@ function BookingDetailScreenContent() {
       />
       <View style={[styles.container, { paddingBottom: insets.bottom }]}>
         <View style={styles.actionContainer}>
-          <View
-            style={[
-              styles.statusBadge,
-              booking?.status
-                ? statusBadgeStyle[booking.status]
-                : statusBadgeStyle[BOOKING_STATUS.DRAFT],
-            ]}
-          >
-            <Text
-              style={[
-                styles.statusBadgeText,
-                booking?.status
-                  ? statusTextStyle[booking.status]
-                  : statusTextStyle[BOOKING_STATUS.DRAFT],
-              ]}
-            >
+          <View style={[styles.statusBadge]}>
+            <Text style={[styles.statusBadgeText]}>
               {booking?.status
                 ? BookingStatusDisplay[booking.status]
                 : BookingStatusDisplay[BOOKING_STATUS.DRAFT]}
             </Text>
           </View>
           <View style={styles.actionButton}>
-            <PressableOpacity style={styles.actionButtonItem} onPress={handlePressPreview}>
+            <PressableOpacity
+              style={styles.actionButtonItem}
+              onPress={handlePressPreview}
+            >
               <VinaupEyeSquare />
             </PressableOpacity>
             <PressableOpacity style={styles.actionButtonItem}>
@@ -171,7 +160,6 @@ function BookingDetailScreenContent() {
               onOpenSignatureInfoPopover={() =>
                 setIsSignatureInfoPopoverVisible(true)
               }
-              onRefresh={refreshBooking}
             />
           )}
         </View>
@@ -179,18 +167,6 @@ function BookingDetailScreenContent() {
     </OrganizationCustomerProvider>
   );
 }
-
-const statusBadgeStyle: Record<string, object> = {
-  DRAFT: { backgroundColor: COLORS.vinaupSoftYellow },
-  SENDER_SIGNED: { backgroundColor: '#e8f0fe' },
-  COMPLETED: { backgroundColor: COLORS.vinaupSoftGreen },
-};
-
-const statusTextStyle: Record<string, object> = {
-  DRAFT: { color: COLORS.vinaupOrange },
-  SENDER_SIGNED: { color: COLORS.vinaupBlueLink },
-  COMPLETED: { color: COLORS.vinaupTeal },
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -212,10 +188,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
+    backgroundColor: COLORS.vinaupLightGreen,
   },
   statusBadgeText: {
     fontSize: 13,
     fontWeight: '600',
+    color: COLORS.vinaupTeal,
   },
   signatureInfoPopoverContainer: {
     position: 'relative',

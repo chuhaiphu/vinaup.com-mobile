@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { BookingResponse } from '@/interfaces/booking-interfaces';
+import { BookingMeta, BookingResponse } from '@/interfaces/booking-interfaces';
+import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
 import dayjs from 'dayjs';
@@ -11,7 +12,7 @@ import { useNavigationStore } from '@/hooks/use-navigation-store';
 import Feather from '@expo/vector-icons/Feather';
 import { PressableOpacity } from '../primitives/pressable-opacity';
 interface BookingCardProps {
-  booking?: BookingResponse;
+  booking?: ResponseWithMeta<BookingResponse, BookingMeta> | BookingResponse;
   isReceiver?: boolean;
 }
 
@@ -28,6 +29,9 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
   const description = booking?.description || 'Booking mới';
   const senderName = booking?.organization?.name || '---';
   const receiverName = booking?.organizationCustomer?.name || 'Chưa xác định';
+  const meta = booking && 'meta' in booking ? booking.meta : undefined;
+  const isSenderSigned = meta?.isSenderSigned ?? false;
+  const isReceiverSigned = meta?.isReceiverSigned ?? false;
 
   const navigateToDetail = async (bookingId: string) => {
     setIsNavigating(true);
@@ -71,7 +75,9 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
                 {description}
               </Text>
               <View style={styles.iconGroup}>
-                <PressableOpacity onPress={() => booking && handlePressPreview(booking.id)}>
+                <PressableOpacity
+                  onPress={() => booking && handlePressPreview(booking.id)}
+                >
                   <Feather name="eye" size={24} color={COLORS.vinaupTeal} />
                 </PressableOpacity>
               </View>
@@ -90,21 +96,35 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
                 <VinaupUserArrowUpRight width={13} height={15} />
                 <Text style={styles.label}>Gửi bởi</Text>
               </View>
-              <Text style={styles.senderText} numberOfLines={1}>
-                {senderName}
-              </Text>
+              <View style={styles.valueRow}>
+                <Text style={styles.senderText} numberOfLines={1}>
+                  {senderName}
+                </Text>
+                {isSenderSigned && (
+                  <Text style={styles.senderSignedText}>(đã ký)</Text>
+                )}
+              </View>
             </View>
             <View style={styles.receiverInfo}>
               <View style={[styles.labelRow, styles.receiverLabelRow]}>
                 <Text style={styles.label}>Nhận bởi</Text>
                 <VinaupUserChecked width={13} height={15} />
               </View>
-              <Text
-                style={[styles.receiverText, styles.receiverTextRight]}
-                numberOfLines={1}
-              >
-                {receiverName}
-              </Text>
+              <View style={styles.valueRow}>
+                <Text
+                  style={[styles.receiverText, styles.receiverTextRight]}
+                  numberOfLines={1}
+                >
+                  {receiverName}
+                </Text>
+                {isReceiverSigned && (
+                  <Text
+                    style={[styles.receiverSignedText, styles.receiverTextRight]}
+                  >
+                    (đã ký)
+                  </Text>
+                )}
+              </View>
             </View>
           </View>
         </View>
@@ -169,6 +189,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
+  valueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   receiverLabelRow: {
     justifyContent: 'flex-end',
   },
@@ -179,8 +204,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.vinaupOrange,
   },
+  senderSignedText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.vinaupOrange,
+  },
   receiverText: {
     fontSize: 16,
+    color: COLORS.vinaupBlueDark,
+  },
+  receiverSignedText: {
+    fontSize: 13,
+    fontWeight: '700',
     color: COLORS.vinaupBlueDark,
   },
   receiverTextRight: {

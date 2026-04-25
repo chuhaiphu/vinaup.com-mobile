@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.vinaupLightGray,
     borderRadius: 8,
     paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingVertical: 2,
     backgroundColor: COLORS.vinaupWhite,
   },
   cancelButtonText: {

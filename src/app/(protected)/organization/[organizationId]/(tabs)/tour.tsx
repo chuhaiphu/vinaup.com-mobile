@@ -4,17 +4,17 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Select } from '@/components/primitives/select';
 import { TourStatusOptions } from '@/constants/tour-constants';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import { OrganizationTourListSectionContent } from '@/components/contents/tour/organization-tour-list-section-content';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function OrganizationTourScreen() {
   const params = useLocalSearchParams<{ organizationId: string }>();
   const { organizationId } = params;
 
-  const [tourStatusFilter, setTourStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const suspenseKey = `org-tour-list-${organizationId}-${tourStatusFilter}`;
+  const suspenseKey = `org-tour-list-${organizationId}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -22,15 +22,19 @@ export default function OrganizationTourScreen() {
         <View style={styles.statusFilter}>
           <Select
             options={TourStatusOptions}
-            value={tourStatusFilter}
-            onChange={(value) => setTourStatusFilter(value)}
+            value={statusFilter}  
+            onChange={(value) => setStatusFilter(value)}
             placeholder="Trạng thái"
             renderTrigger={(option) => (
               <>
-                <VinaupVerticalExpandArrow width={18} height={18} />
                 <Text style={styles.statusFilterText}>
                   {option.label || 'Trạng thái'}
                 </Text>
+                <FontAwesome6
+                  name="caret-down"
+                  size={20}
+                  color={COLORS.vinaupTeal}
+                />
               </>
             )}
           />
@@ -40,7 +44,7 @@ export default function OrganizationTourScreen() {
         <OrganizationTourListSectionContent
           key={suspenseKey}
           organizationId={organizationId}
-          tourStatusFilter={tourStatusFilter}
+          statusFilter={statusFilter}
         />
       </Suspense>
     </View>

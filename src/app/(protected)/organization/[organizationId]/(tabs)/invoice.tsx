@@ -2,12 +2,11 @@ import { COLORS } from '@/constants/style-constant';
 import { Suspense, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import { InvoiceListSectionContent } from '@/components/contents/invoice/invoice-list-section-content';
 
@@ -43,22 +42,20 @@ export default function OrganizationInvoiceScreen() {
           <Select
             renderTrigger={(option) => (
               <>
-                <VinaupVerticalExpandArrow width={18} height={18} />
-                <Text style={{ color: COLORS.vinaupTeal }}>
+                <Text style={styles.statusFilterText}>
                   {option.label || 'Trạng thái'}
                 </Text>
+                <FontAwesome6
+                  name="caret-down"
+                  size={20}
+                  color={COLORS.vinaupTeal}
+                />
               </>
             )}
             options={InvoiceStatusOptions}
             value={statusFilter}
             onChange={(value) => setStatusFilter(value)}
             placeholder="Trạng thái"
-            style={{
-              triggerText: {
-                fontSize: 16,
-                color: COLORS.vinaupTeal,
-              },
-            }}
           />
         </View>
       </View>
@@ -90,8 +87,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  statusFilterText: {
+    fontSize: 16,
+    color: COLORS.vinaupTeal,
+  },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
 });

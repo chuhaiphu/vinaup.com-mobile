@@ -26,7 +26,8 @@ export const ProjectStatusDisplay: Record<ProjectStatus, string> = {
   [PROJECT_STATUS.CANCELLED]: 'Đã hủy',
 };
 
-export const ProjectStatusOptions: { value: ProjectStatus; label: string }[] = [
+export const ProjectStatusOptions: { value: ProjectStatus | ''; label: string }[] = [
+  { value: '', label: 'Tất cả' },
   { value: PROJECT_STATUS.PROCESSING, label: ProjectStatusDisplay.PROCESSING },
   { value: PROJECT_STATUS.DONE, label: ProjectStatusDisplay.DONE },
   { value: PROJECT_STATUS.PAID, label: ProjectStatusDisplay.PAID },

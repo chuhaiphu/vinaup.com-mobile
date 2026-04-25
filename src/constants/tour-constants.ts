@@ -9,7 +9,8 @@ export const TourStatusDisplay: Record<TourStatus, string> = {
   [TOUR_STATUS.COMPLETED]: 'Đã xong',
 };
 
-export const TourStatusOptions: { value: TourStatus; label: string }[] = [
+export const TourStatusOptions: { value: TourStatus | ''; label: string }[] = [
+  { value: '', label: 'Tất cả' },
   { value: TOUR_STATUS.NOT_COMPLETED, label: TourStatusDisplay[TOUR_STATUS.NOT_COMPLETED] },
   { value: TOUR_STATUS.COMPLETED, label: TourStatusDisplay[TOUR_STATUS.COMPLETED] },
 ];

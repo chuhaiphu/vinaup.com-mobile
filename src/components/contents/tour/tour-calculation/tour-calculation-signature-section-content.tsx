@@ -59,7 +59,7 @@ export default function TourCalculationSignatureContent({
     () => getSignaturesByDocumentIdApi(tourData.tourCalculation?.id || ''),
     {
       fetchKey: `signature-list-in-tour-calculation-${tourData.tourCalculation?.id}`,
-      tags: ['signature-list-in-tour-calculation'],
+      tags: [`signature-list-in-tour-calculation-${tourData.tourCalculation?.id}`],
     }
   );
 
@@ -93,14 +93,14 @@ export default function TourCalculationSignatureContent({
     executeMutationFn: manageReceiverSignatures,
     isMutating: isManagingReceiverSignatures,
   } = useMutationFn(manageReceiverSignaturesFn, {
-    invalidatesTags: ['signature-list-in-tour-calculation'],
+    invalidatesTags: [`signature-list-in-tour-calculation-${tourData.tourCalculation?.id}`],
   });
 
   const {
     executeMutationFn: signTourCalculation,
     isMutating: isSigningTourCalculation,
   } = useMutationFn(signTourCalculationFn, {
-    invalidatesTags: ['signature-list-in-tour-calculation'],
+    invalidatesTags: [`signature-list-in-tour-calculation-${tourData.tourCalculation?.id}`],
   });
 
   const {
@@ -108,8 +108,8 @@ export default function TourCalculationSignatureContent({
     isMutating: isCancelingTourCalculation,
   } = useMutationFn(cancelTourCalculationFn, {
     invalidatesTags: [
-      'signature-list-in-tour-calculation',
-      'tour-calculation-cancel-logs',
+      `signature-list-in-tour-calculation-${tourData.tourCalculation?.id}`,
+      `tour-calculation-cancel-logs-${tourData.tourCalculation?.id}`,
     ],
   });
 
@@ -248,8 +248,12 @@ export default function TourCalculationSignatureContent({
             <Text style={styles.roleText}>Người tạo</Text>
             <SignatureEntityContent
               isSigned={sender?.isSigned}
-              isAllowToSign={!sender?.isSigned && sender?.targetUserId === currentUser?.id}
-              isAllowToCancel={!!sender?.isSigned && sender?.signedByUserId === currentUser?.id}
+              isAllowToSign={
+                !sender?.isSigned && sender?.targetUserId === currentUser?.id
+              }
+              isAllowToCancel={
+                !!sender?.isSigned && sender?.signedByUserId === currentUser?.id
+              }
               role="SENDER"
               isLoading={
                 isLoading || isSigningTourCalculation || isCancelingTourCalculation
@@ -275,9 +279,12 @@ export default function TourCalculationSignatureContent({
                   isAllowToSign={
                     !receiver.isSigned &&
                     !hasUnsignedSender &&
-                    (receiver.targetUserId === currentUser?.id)
+                    receiver.targetUserId === currentUser?.id
                   }
-                  isAllowToCancel={!!receiver.isSigned && receiver.signedByUserId === currentUser?.id}
+                  isAllowToCancel={
+                    !!receiver.isSigned &&
+                    receiver.signedByUserId === currentUser?.id
+                  }
                   role="RECEIVER"
                   isLoading={
                     isLoading ||
@@ -296,7 +303,6 @@ export default function TourCalculationSignatureContent({
                     <Text style={styles.timeText}>
                       {dayjs(receiver.signedAt).format('DD/MM/YYYY HH:mm')}
                     </Text>
-                    <Text style={styles.nameText}>{receiver.targetUser?.name}</Text>
                   </View>
                 )}
                 {receivers.length > 1 && index < receivers.length - 1 && (
@@ -406,8 +412,8 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: 16,
-    color: COLORS.vinaupMediumDarkGray,
-    marginBottom: 6,
+    fontWeight: '500',
+    marginBottom: 12,
   },
   timeText: {
     fontSize: 14,
@@ -424,7 +430,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     textAlign: 'right',
-    marginVertical: 2,
+    marginVertical: 4,
     fontSize: 12,
   },
 });

@@ -39,7 +39,7 @@ export default function BookingDetailPreview() {
     isLoading: isLoadingBooking,
     executeFetchFn: fetchBooking,
   } = useFetchFn(() => getBookingByIdApi(bookingId || ''), {
-    fetchKey: `booking-preview-${bookingId}`,
+    fetchKey: `organization-booking-${bookingId}`,
   });
 
   const {
@@ -47,7 +47,7 @@ export default function BookingDetailPreview() {
     isLoading: isLoadingSignatures,
     executeFetchFn: fetchSignatures,
   } = useFetchFn(() => getSignaturesByDocumentIdApi(bookingId || ''), {
-    fetchKey: `signatures-preview-booking-${bookingId}`,
+    fetchKey: `signature-list-in-booking-${bookingId}`,
   });
 
   useEffect(() => {
@@ -90,10 +90,10 @@ export default function BookingDetailPreview() {
   const balance = totalReceipt - totalPayment;
 
   const senderSignature = signatures?.find((s) => s.signatureRole === 'SENDER');
-  const receiverSignatures = signatures?.filter((s) => s.signatureRole === 'RECEIVER') ?? [];
+  const receiverSignatures =
+    signatures?.filter((s) => s.signatureRole === 'RECEIVER') ?? [];
 
-  const customerName =
-    booking?.organizationCustomer?.name || '-';
+  const customerName = booking?.organizationCustomer?.name || '-';
 
   const handleRetry = () => {
     if (!bookingId) return;
@@ -118,7 +118,10 @@ export default function BookingDetailPreview() {
           ),
           headerRight: () => (
             <View style={styles.rightActions}>
-              <Pressable style={[styles.actionBtn, styles.actionBtnDisabled]} disabled>
+              <Pressable
+                style={[styles.actionBtn, styles.actionBtnDisabled]}
+                disabled
+              >
                 <MaterialCommunityIcons
                   name="file-pdf-box"
                   size={28}
@@ -176,7 +179,9 @@ export default function BookingDetailPreview() {
 
           {/* Booking info section */}
           <View style={styles.section}>
-            <Text style={styles.bookingName}>Tên: {booking.description || '-'}</Text>
+            <Text style={styles.bookingName}>
+              Tên: {booking.description || '-'}
+            </Text>
             <View style={styles.bookingSubInfoRow}>
               <Text style={styles.bookingTime}>
                 Từ {formatDateTime(booking.startDate)} đến{' '}
@@ -222,8 +227,12 @@ export default function BookingDetailPreview() {
                       <Text style={styles.receiptPaymentCellCol2}>
                         {generateLocalePriceFormat(item.unitPrice)}
                       </Text>
-                      <Text style={styles.receiptPaymentCellCol3}>{item.quantity}</Text>
-                      <Text style={styles.receiptPaymentCellCol4}>{item.frequency}</Text>
+                      <Text style={styles.receiptPaymentCellCol3}>
+                        {item.quantity}
+                      </Text>
+                      <Text style={styles.receiptPaymentCellCol4}>
+                        {item.frequency}
+                      </Text>
                       <Text style={styles.receiptPaymentCellCol5}>
                         {generateLocalePriceFormat(total)}
                       </Text>
@@ -239,15 +248,21 @@ export default function BookingDetailPreview() {
           <View style={styles.financialSection}>
             <View style={styles.finRow}>
               <Text style={styles.finLabel}>Tổng thu</Text>
-              <Text style={styles.finValue}>{generateLocalePriceFormat(totalReceipt)}</Text>
+              <Text style={styles.finValue}>
+                {generateLocalePriceFormat(totalReceipt)}
+              </Text>
             </View>
             <View style={styles.finRow}>
               <Text style={styles.finLabel}>Tổng chi</Text>
-              <Text style={styles.finValueBold}>{generateLocalePriceFormat(totalPayment)}</Text>
+              <Text style={styles.finValueBold}>
+                {generateLocalePriceFormat(totalPayment)}
+              </Text>
             </View>
             <View style={styles.finRow}>
               <Text style={styles.finLabel}>Số dư</Text>
-              <Text style={[styles.finValue, balance < 0 && styles.finValueNegative]}>
+              <Text
+                style={[styles.finValue, balance < 0 && styles.finValueNegative]}
+              >
                 {generateLocalePriceFormat(balance)}
               </Text>
             </View>
@@ -256,7 +271,11 @@ export default function BookingDetailPreview() {
           {/* Note */}
           <View style={styles.thinDivider} />
           <View style={styles.notesSection}>
-            <Feather name="message-square" size={18} color={COLORS.vinaupDarkGray} />
+            <Feather
+              name="message-square"
+              size={18}
+              color={COLORS.vinaupDarkGray}
+            />
             <Text style={styles.noteText}>{booking.note || '-'}</Text>
           </View>
 
@@ -266,7 +285,9 @@ export default function BookingDetailPreview() {
           <View style={styles.partiesSection}>
             <View style={styles.partyCol}>
               <Text style={styles.partyLabel}>Bên tạo</Text>
-              <Text style={styles.partyValue}>{booking.organization?.name || '-'}</Text>
+              <Text style={styles.partyValue}>
+                {booking.organization?.name || '-'}
+              </Text>
             </View>
             <View style={styles.partyColRight}>
               <Text style={styles.partyLabel}>Khách hàng</Text>

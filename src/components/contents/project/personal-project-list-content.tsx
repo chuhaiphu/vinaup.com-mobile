@@ -2,11 +2,10 @@ import { COLORS } from '@/constants/style-constant';
 import { Suspense, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 import { PersonalProjectListSectionContent } from './personal-project-list-section-content';
 
@@ -18,9 +17,9 @@ export function PersonalProjectListContent({
   projectType,
 }: PersonalProjectListContentProps) {
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [projectStatusFilter, setProjectStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const suspenseKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${projectStatusFilter}`;
+  const suspenseKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -40,22 +39,20 @@ export function PersonalProjectListContent({
           <Select
             renderTrigger={(option) => (
               <>
-                <VinaupVerticalExpandArrow width={18} height={18} />
-                <Text style={{ color: COLORS.vinaupTeal }}>
+                <Text style={styles.statusFilterText}>
                   {option.label || 'Trạng thái'}
                 </Text>
+                <FontAwesome6
+                  name="caret-down"
+                  size={20}
+                  color={COLORS.vinaupTeal}
+                />
               </>
             )}
             options={ProjectStatusOptions}
-            value={projectStatusFilter}
-            onChange={(value) => setProjectStatusFilter(value)}
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(value)}
             placeholder="Trạng thái"
-            style={{
-              triggerText: {
-                fontSize: 16,
-                color: COLORS.vinaupTeal,
-              },
-            }}
           />
         </View>
       </View>
@@ -64,7 +61,7 @@ export function PersonalProjectListContent({
           key={suspenseKey}
           projectType={projectType}
           selectedDate={selectedDate}
-          projectStatusFilter={projectStatusFilter}
+          statusFilter={statusFilter}
         />
       </Suspense>
     </View>
@@ -86,8 +83,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  statusFilterText: {
+    fontSize: 16,
+    color: COLORS.vinaupTeal,
+  },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
 });

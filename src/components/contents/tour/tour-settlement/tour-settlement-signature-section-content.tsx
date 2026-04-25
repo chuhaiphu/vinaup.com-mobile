@@ -59,7 +59,7 @@ export default function TourSettlementSignatureContent({
     () => getSignaturesByDocumentIdApi(tourData.tourSettlement?.id || ''),
     {
       fetchKey: `signature-list-in-tour-settlement-${tourData.tourSettlement?.id}`,
-      tags: ['signature-list-in-tour-settlement'],
+      tags: [`signature-list-in-tour-settlement-${tourData.tourSettlement?.id}`],
     }
   );
 
@@ -93,14 +93,14 @@ export default function TourSettlementSignatureContent({
     executeMutationFn: manageReceiverSignatures,
     isMutating: isManagingReceiverSignatures,
   } = useMutationFn(manageReceiverSignaturesFn, {
-    invalidatesTags: ['signature-list-in-tour-settlement'],
+    invalidatesTags: [`signature-list-in-tour-settlement-${tourData.tourSettlement?.id}`],
   });
 
   const {
     executeMutationFn: signTourSettlement,
     isMutating: isSigningTourSettlement,
   } = useMutationFn(signTourSettlementFn, {
-    invalidatesTags: ['signature-list-in-tour-settlement'],
+    invalidatesTags: [`signature-list-in-tour-settlement-${tourData.tourSettlement?.id}`],
   });
 
   const {
@@ -108,8 +108,8 @@ export default function TourSettlementSignatureContent({
     isMutating: isCancelingTourSettlement,
   } = useMutationFn(cancelTourSettlementFn, {
     invalidatesTags: [
-      'signature-list-in-tour-settlement',
-      'tour-settlement-cancel-logs',
+      `signature-list-in-tour-settlement-${tourData.tourSettlement?.id}`,
+      `tour-settlement-cancel-logs-${tourData.tourSettlement?.id}`,
     ],
   });
 
@@ -297,7 +297,6 @@ export default function TourSettlementSignatureContent({
                     <Text style={styles.timeText}>
                       {dayjs(receiver.signedAt).format('DD/MM/YYYY HH:mm')}
                     </Text>
-                    <Text style={styles.nameText}>{receiver.targetUser?.name}</Text>
                   </View>
                 )}
                 {receivers.length > 1 && index < receivers.length - 1 && (
@@ -404,8 +403,8 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: 16,
-    color: COLORS.vinaupMediumDarkGray,
-    marginBottom: 6,
+    marginBottom: 12,
+    fontWeight: '500',
   },
   timeText: {
     fontSize: 14,
@@ -422,7 +421,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     textAlign: 'right',
-    marginVertical: 2,
+    marginVertical: 4,
     fontSize: 12,
   },
 });

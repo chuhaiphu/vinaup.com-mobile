@@ -14,22 +14,22 @@ import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 export type OrganizationTourListSectionContentProps = {
   organizationId: string;
-  tourStatusFilter: string;
+  statusFilter: string;
 };
 
 export function OrganizationTourListSectionContent({
   organizationId,
-  tourStatusFilter,
+  statusFilter,
 }: OrganizationTourListSectionContentProps) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
 
   const fetchToursFn = () =>
     getToursByOrganizationIdApi(organizationId, {
-      status: tourStatusFilter || undefined,
+      status: statusFilter || undefined,
     });
 
-  const fetchKey = `organization-tour-list-${organizationId}-${tourStatusFilter}`;
+  const fetchKey = `organization-tour-list-${organizationId}-${statusFilter}`;
 
   const {
     data: tours,

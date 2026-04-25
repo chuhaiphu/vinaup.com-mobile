@@ -26,7 +26,8 @@ export const InvoiceStatusDisplay: Record<InvoiceStatus, string> = {
   [INVOICE_STATUS.CANCELLED]: 'Đã hủy',
 };
 
-export const InvoiceStatusOptions: { value: InvoiceStatus; label: string }[] = [
+export const InvoiceStatusOptions: { value: InvoiceStatus | ''; label: string }[] = [
+  { value: '', label: 'Tất cả' },
   { value: INVOICE_STATUS.PROCESSING, label: InvoiceStatusDisplay.PROCESSING },
   { value: INVOICE_STATUS.DONE, label: InvoiceStatusDisplay.DONE },
   { value: INVOICE_STATUS.PAID, label: InvoiceStatusDisplay.PAID },

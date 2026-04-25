@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
 });

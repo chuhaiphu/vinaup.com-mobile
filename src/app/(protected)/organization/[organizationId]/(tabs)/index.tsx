@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
   iconButton: {

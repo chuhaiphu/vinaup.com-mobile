@@ -6,10 +6,10 @@ import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import dayjs from 'dayjs';
 import { Select } from '@/components/primitives/select';
-import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { BookingStatusOptions } from '@/constants/booking-constants';
 import { BookingListSectionSkeleton } from '@/components/skeletons/booking-list-section-skeleton';
 import { BookingListSectionContent } from '@/components/contents/booking/booking-list-section-content';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function OrganizationBookingScreen() {
   const { organizationId } = useLocalSearchParams<{ organizationId: string }>();
@@ -36,22 +36,20 @@ export default function OrganizationBookingScreen() {
           <Select
             renderTrigger={(option) => (
               <>
-                <VinaupVerticalExpandArrow width={18} height={18} />
-                <Text style={{ color: COLORS.vinaupTeal }}>
+                <Text style={styles.statusFilterText}>
                   {option.label || 'Trạng thái'}
                 </Text>
+                <FontAwesome6
+                  name="caret-down"
+                  size={20}
+                  color={COLORS.vinaupTeal}
+                />
               </>
             )}
             options={BookingStatusOptions}
             value={statusFilter}
             onChange={(value) => setStatusFilter(value)}
             placeholder="Trạng thái"
-            style={{
-              triggerText: {
-                fontSize: 16,
-                color: COLORS.vinaupTeal,
-              },
-            }}
           />
         </View>
       </View>
@@ -82,8 +80,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  statusFilterText: {
+    fontSize: 16,
+    color: COLORS.vinaupTeal,
+  },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
 });

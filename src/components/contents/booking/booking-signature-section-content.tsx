@@ -19,13 +19,11 @@ import { BookingResponse } from '@/interfaces/booking-interfaces';
 interface BookingSignatureSectionContentProps {
   bookingData: BookingResponse;
   onOpenSignatureInfoPopover?: () => void;
-  onRefresh?: () => void;
 }
 
 export default function BookingSignatureSectionContent({
   bookingData,
   onOpenSignatureInfoPopover,
-  onRefresh,
 }: BookingSignatureSectionContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSignConfirmVisible, setIsSignConfirmVisible] = useState(false);
@@ -42,7 +40,7 @@ export default function BookingSignatureSectionContent({
     executeFetchFn: fetchSignatures,
   } = useFetchFn(() => getSignaturesByDocumentIdApi(bookingData.id), {
     fetchKey: `signature-list-in-booking-${bookingData.id}`,
-    tags: ['signature-list-in-booking'],
+    tags: [`signature-list-in-booking-${bookingData.id}`],
   });
 
   useEffect(() => {
@@ -52,14 +50,23 @@ export default function BookingSignatureSectionContent({
   const signBookingFn = (id: string) => signSignatureApi(id);
   const cancelBookingFn = (id: string) => cancelSignatureApi(id);
 
+  const signInvalidateTags = [
+    `signature-list-in-booking-${bookingData.id}`,
+    'organization-booking-list',
+    `organization-booking-${bookingData.id}`,
+    ...(bookingData.tourImplementationId
+      ? [`organization-booking-list-in-tour-implementation-${bookingData.tourImplementationId}`]
+      : []),
+  ];
+
   const { executeMutationFn: signBooking, isMutating: isSigningBooking } =
     useMutationFn(signBookingFn, {
-      invalidatesTags: ['signature-list-in-booking'],
+      invalidatesTags: signInvalidateTags,
     });
 
   const { executeMutationFn: cancelBooking, isMutating: isCancelingBooking } =
     useMutationFn(cancelBookingFn, {
-      invalidatesTags: ['signature-list-in-booking'],
+      invalidatesTags: signInvalidateTags,
     });
 
   const handleOpenSignConfirmModal = (
@@ -92,7 +99,6 @@ export default function BookingSignatureSectionContent({
     signBooking(selectedSignatureId, {
       onSuccess: () => {
         handleCloseSignConfirmModal();
-        onRefresh?.();
       },
       onError: (error) => console.error('Error signing booking:', error),
     });
@@ -103,7 +109,6 @@ export default function BookingSignatureSectionContent({
     cancelBooking(selectedSignatureId, {
       onSuccess: () => {
         handleCloseCancelConfirmModal();
-        onRefresh?.();
       },
       onError: (error) =>
         console.error('Error canceling booking signature:', error),

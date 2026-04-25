@@ -18,7 +18,10 @@ interface Props {
   organizationId: string;
 }
 
-export function BookingTourImplementationTabPanelContent({ tourImplementationId, organizationId }: Props) {
+export function BookingTourImplementationTabPanelContent({
+  tourImplementationId,
+  organizationId,
+}: Props) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -35,9 +38,12 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
       tourImplementationId,
     });
 
-  const { executeMutationFn: createBooking, isMutating } = useMutationFn(createBookingFn, {
-    invalidatesTags: ['organization-booking-list', tag],
-  });
+  const { executeMutationFn: createBooking, isMutating } = useMutationFn(
+    createBookingFn,
+    {
+      invalidatesTags: ['organization-booking-list', tag],
+    }
+  );
 
   const handleAddNew = async () => {
     await createBooking({
@@ -50,7 +56,9 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
 
         setIsNavigating(true);
         try {
-          await prefetch(() => getBookingByIdApi(bookingId), { fetchKey: `organization-booking-${bookingId}` });
+          await prefetch(() => getBookingByIdApi(bookingId), {
+            fetchKey: `organization-booking-${bookingId}`,
+          });
         } catch {
           // Fallback to normal navigation if prefetch fails.
         }
@@ -61,7 +69,8 @@ export function BookingTourImplementationTabPanelContent({ tourImplementationId,
           params: { bookingId },
         });
       },
-      onError: (error) => Alert.alert('Lỗi', error.message || 'Không thể tạo Booking mới'),
+      onError: (error) =>
+        Alert.alert('Lỗi', error.message || 'Không thể tạo Booking mới'),
     });
   };
 
@@ -106,7 +115,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
 });

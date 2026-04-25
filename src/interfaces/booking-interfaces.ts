@@ -45,4 +45,6 @@ export type UpdateBookingRequest = Partial<CreateBookingRequest> & {
 
 export interface BookingMeta extends BaseMeta {
   isSender: boolean;
+  isSenderSigned?: boolean;
+  isReceiverSigned?: boolean;
 }

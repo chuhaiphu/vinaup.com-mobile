@@ -97,6 +97,7 @@ export default function PersonalIndexScreen() {
     refreshFetchFn: refreshProjectsSelf,
   } = useFetchFn(fetchProjectsSelfFn, {
     fetchKey: `personal-project-list-self-${selectedDate.format('YYYY-MM-DD')}`,
+    tags: ['personal-project-list'],
   });
 
   const fetchProjectsCompanyFn = () =>
@@ -113,6 +114,7 @@ export default function PersonalIndexScreen() {
     refreshFetchFn: refreshProjectsCompany,
   } = useFetchFn(fetchProjectsCompanyFn, {
     fetchKey: `personal-project-list-company-${selectedDate.format('YYYY-MM-DD')}`,
+    tags: ['personal-project-list'],
   });
 
   const [receiptPaymentsInProjectSelf, setReceiptPaymentsInProjectSelf] = useState<
@@ -275,7 +277,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.vinaupTeal,
   },
   iconButton: {
