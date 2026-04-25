@@ -67,7 +67,7 @@ export function BookingDetailProvider({
     useMutationFn(
       (updatedFields: UpdateBookingRequest) =>
         updateBookingApi(bookingId, updatedFields),
-      { invalidatesTags: ['organization-booking-list'] }
+      { invalidatesTags: ['organization-booking-list', `organization-booking-${bookingId}`] }
     );
 
   const deleteInvalidateTags = [
@@ -93,7 +93,6 @@ export function BookingDetailProvider({
       if (!booking) return;
       updateBooking(updatedFields, {
         onSuccess: () => {
-          refreshBooking();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -101,7 +100,7 @@ export function BookingDetailProvider({
         },
       });
     },
-    [booking, updateBooking, refreshBooking]
+    [booking, updateBooking]
   );
 
   const handleDelete = useCallback(() => {

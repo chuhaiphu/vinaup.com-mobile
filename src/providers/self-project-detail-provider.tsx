@@ -66,7 +66,7 @@ export function SelfProjectDetailProvider({
     useMutationFn(
       (updatedFields: UpdateProjectRequest) =>
         updateProjectApi(projectId, updatedFields),
-      { invalidatesTags: ['personal-project-list'] }
+      { invalidatesTags: ['personal-project-list', `personal-project-self-${projectId}`] }
     );
 
   const { executeMutationFn: deleteProject, isMutating: isDeletingProject } =
@@ -84,8 +84,7 @@ export function SelfProjectDetailProvider({
     (updatedFields: UpdateProjectRequest, onSuccessCallback?: () => void) => {
       if (!project) return;
       updateProject(updatedFields, {
-        onSuccess: async () => {
-          await refreshProject();
+        onSuccess: () => {
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -93,7 +92,7 @@ export function SelfProjectDetailProvider({
         },
       });
     },
-    [project, updateProject, refreshProject]
+    [project, updateProject]
   );
 
   const handleDelete = useCallback(() => {

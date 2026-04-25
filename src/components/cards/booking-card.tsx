@@ -8,7 +8,8 @@ import { prefetch } from 'fetchwire';
 import { getBookingByIdApi } from '@/apis/booking-apis';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
-
+import Feather from '@expo/vector-icons/Feather';
+import { PressableOpacity } from '../primitives/pressable-opacity';
 interface BookingCardProps {
   booking?: BookingResponse;
   isReceiver?: boolean;
@@ -44,15 +45,36 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
     setIsNavigating(false);
   };
 
+  const handlePressPreview = (bookingId: string) => {
+    router.push({
+      pathname: '/(protected)/booking-detail/[bookingId]/booking-detail-preview',
+      params: { bookingId },
+    });
+  };
+
   return (
     <Pressable onPress={() => booking && navigateToDetail(booking.id)}>
       <View style={styles.container}>
-        <View style={[styles.innerCard, { backgroundColor: isReceiver ? COLORS.vinaupLightGreen : COLORS.vinaupSoftYellow }]}>
+        <View
+          style={[
+            styles.innerCard,
+            {
+              backgroundColor: isReceiver
+                ? COLORS.vinaupLightGreen
+                : COLORS.vinaupSoftYellow,
+            },
+          ]}
+        >
           <View style={styles.topSection}>
             <View style={styles.topRow}>
               <Text style={styles.titleText} numberOfLines={1} ellipsizeMode="tail">
                 {description}
               </Text>
+              <View style={styles.iconGroup}>
+                <PressableOpacity onPress={() => booking && handlePressPreview(booking.id)}>
+                  <Feather name="eye" size={24} color={COLORS.vinaupTeal} />
+                </PressableOpacity>
+              </View>
             </View>
             <View style={styles.topRow}>
               <Text style={styles.dateText}>
@@ -115,7 +137,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 8,
   },
   titleText: {
     flex: 1,

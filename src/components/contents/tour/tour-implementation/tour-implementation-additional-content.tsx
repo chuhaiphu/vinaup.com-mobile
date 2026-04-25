@@ -42,9 +42,7 @@ export default function TourImplementationAdditionalContent({
   const editModalRef = useRef<SlideSheetRef>(null);
 
   const { executeMutationFn: createAdditionalData, isMutating: isCreating } =
-    useMutationFn(() => createAdditionalDataApi(tourImplementationId ?? ''), {
-      invalidatesTags: [],
-    });
+    useMutationFn(() => createAdditionalDataApi(tourImplementationId ?? ''));
 
   const {
     executeMutationFn: updateAdditionalData,
@@ -56,8 +54,7 @@ export default function TourImplementationAdditionalContent({
     }: {
       id: string;
       data: UpdateTourImplementationAdditionalDataRequest;
-    }) => updateAdditionalDataApi(id, data),
-    { invalidatesTags: [] }
+    }) => updateAdditionalDataApi(id, data)
   );
 
   const {
@@ -65,15 +62,13 @@ export default function TourImplementationAdditionalContent({
     isMutating: isUpdatingTourGuide,
   } = useMutationFn(
     ({ id, data }: { id: string; data: UpdateUserInvitedRequest }) =>
-      updateUserInvitedApi(id, data),
-    { invalidatesTags: [] }
+      updateUserInvitedApi(id, data)
   );
 
   const { executeMutationFn: updateDriverInvited, isMutating: isUpdatingDriver } =
     useMutationFn(
       ({ id, data }: { id: string; data: UpdateUserInvitedRequest }) =>
-        updateUserInvitedApi(id, data),
-      { invalidatesTags: [] }
+        updateUserInvitedApi(id, data)
     );
 
   const isConfirming =

@@ -44,7 +44,7 @@ export function TourDetailProvider({
   const { executeMutationFn: updateTour, isMutating: isUpdatingTour } =
     useMutationFn(
       (updatedFields: UpdateTourRequest) => updateTourApi(tourId, updatedFields),
-      { invalidatesTags: ['organization-tour-list'] }
+      { invalidatesTags: ['organization-tour-list', `organization-tour-${tourId}`] }
     );
 
   useEffect(() => {
@@ -57,8 +57,7 @@ export function TourDetailProvider({
     (updatedFields: UpdateTourRequest, onSuccessCallback?: () => void) => {
       if (!tour) return;
       updateTour(updatedFields, {
-        onSuccess: async () => {
-          await refreshTour();
+        onSuccess: () => {
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -66,7 +65,7 @@ export function TourDetailProvider({
         },
       });
     },
-    [tour, updateTour, refreshTour]
+    [tour, updateTour]
   );
 
   return (

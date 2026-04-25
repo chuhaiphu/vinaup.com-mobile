@@ -52,24 +52,27 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
   const {
     data: tourImplementation,
     executeFetchFn: fetchTourImplementation,
-    refreshFetchFn: refreshTourImplementation,
   } = useFetchFn(() => getTourImplementationByTourIdApi(tour?.id || ''), {
     fetchKey: `tour-implementation-${tour?.id}`,
     tags: [`tour-implementation-${tour?.id}`],
   });
 
   const { executeMutationFn: manageMembersInCharge, isMutating: isConfirming } =
-    useMutationFn((organizationMemberIds: string[]) =>
-      manageMembersInChargeApi(tourImplementation?.id || '', {
-        organizationMemberIds,
-      })
+    useMutationFn(
+      (organizationMemberIds: string[]) =>
+        manageMembersInChargeApi(tourImplementation?.id || '', {
+          organizationMemberIds,
+        }),
+      { invalidatesTags: [`tour-implementation-${tour?.id}`] }
     );
 
   const {
     executeMutationFn: updateTourImplementation,
     isMutating: isUpdatingImplementation,
-  } = useMutationFn((data: UpdateTourImplementationRequest) =>
-    updateTourImplementationApi(tourImplementation?.id || '', data)
+  } = useMutationFn(
+    (data: UpdateTourImplementationRequest) =>
+      updateTourImplementationApi(tourImplementation?.id || '', data),
+    { invalidatesTags: [`tour-implementation-${tour?.id}`] }
   );
 
   useEffect(() => {
@@ -98,7 +101,6 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
       },
       {
         onSuccess: () => {
-          refreshTourImplementation();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -110,9 +112,6 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
 
   const handleConfirmMembers = (selectedOrgMemberIds: string[]) => {
     manageMembersInCharge(selectedOrgMemberIds, {
-      onSuccess: () => {
-        refreshTourImplementation();
-      },
       onError: () => Alert.alert('Lỗi', 'Có lỗi xảy ra khi cập nhật nhân sự.'),
     });
   };
@@ -129,7 +128,6 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
       { description: value },
       {
         onSuccess: () => {
-          refreshTourImplementation();
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {

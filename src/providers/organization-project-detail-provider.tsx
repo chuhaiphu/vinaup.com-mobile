@@ -65,7 +65,7 @@ export function OrganizationProjectDetailProvider({
     useMutationFn(
       (updatedFields: UpdateProjectRequest) =>
         updateProjectApi(projectId, updatedFields),
-      { invalidatesTags: ['organization-project-list'] }
+      { invalidatesTags: ['organization-project-list', `organization-project-${projectId}`] }
     );
 
   const { executeMutationFn: deleteProject, isMutating: isDeletingProject } =
@@ -83,8 +83,7 @@ export function OrganizationProjectDetailProvider({
     (updatedFields: UpdateProjectRequest, onSuccessCallback?: () => void) => {
       if (!project) return;
       updateProject(updatedFields, {
-        onSuccess: async () => {
-          await refreshProject();
+        onSuccess: () => {
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -92,7 +91,7 @@ export function OrganizationProjectDetailProvider({
         },
       });
     },
-    [project, updateProject, refreshProject]
+    [project, updateProject]
   );
 
   const handleDelete = useCallback(() => {

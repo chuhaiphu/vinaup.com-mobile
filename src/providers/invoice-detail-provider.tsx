@@ -64,7 +64,7 @@ export function InvoiceDetailProvider({
     useMutationFn(
       (updatedFields: UpdateInvoiceRequest) =>
         updateInvoiceApi(invoiceId, updatedFields),
-      { invalidatesTags: ['organization-invoice-list'] }
+      { invalidatesTags: ['organization-invoice-list', `organization-invoice-${invoiceId}`] }
     );
 
   const { executeMutationFn: deleteInvoice, isMutating: isDeletingInvoice } =
@@ -82,8 +82,7 @@ export function InvoiceDetailProvider({
     (updatedFields: UpdateInvoiceRequest, onSuccessCallback?: () => void) => {
       if (!invoice) return;
       updateInvoice(updatedFields, {
-        onSuccess: async () => {
-          await refreshInvoice();
+        onSuccess: () => {
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -91,7 +90,7 @@ export function InvoiceDetailProvider({
         },
       });
     },
-    [invoice, updateInvoice, refreshInvoice]
+    [invoice, updateInvoice]
   );
 
   const handleDelete = useCallback(() => {

@@ -1,6 +1,6 @@
 import { Suspense, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, RefreshControl } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StackWithHeader } from '@/components/headers/stack-with-header';
 import { BookingDetailHeaderContent } from '@/components/contents/booking/booking-detail-header-content';
 import Loader from '@/components/primitives/loader';
@@ -23,6 +23,7 @@ import BookingSignatureSectionContent from '@/components/contents/booking/bookin
 import { BookingSignaturePopover } from '@/components/popovers/booking-signature-popover';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import VinaupEyeSquare from '@/components/icons/vinaup-eye-square.native';
 
 export default function BookingDetailScreen() {
   const { bookingId } = useLocalSearchParams<{ bookingId: string }>();
@@ -38,6 +39,7 @@ function BookingDetailScreenContent() {
   const [isSignatureInfoPopoverVisible, setIsSignatureInfoPopoverVisible] =
     useState(false);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const {
     booking,
@@ -57,6 +59,13 @@ function BookingDetailScreenContent() {
   const handleSaveAndExit = () => {
     if (!booking) return;
     refreshBooking();
+  };
+
+  const handlePressPreview = () => {
+    router.push({
+      pathname: '/(protected)/booking-detail/[bookingId]/booking-detail-preview',
+      params: { bookingId },
+    });
   };
 
   if (isLoadingBooking) {
@@ -98,8 +107,8 @@ function BookingDetailScreenContent() {
             </Text>
           </View>
           <View style={styles.actionButton}>
-            <PressableOpacity style={styles.actionButtonItem}>
-              <Text style={styles.actionButtonItemText}>Booking</Text>
+            <PressableOpacity style={styles.actionButtonItem} onPress={handlePressPreview}>
+              <VinaupEyeSquare />
             </PressableOpacity>
             <PressableOpacity style={styles.actionButtonItem}>
               <FontAwesome5 name="copy" size={18} color={COLORS.vinaupTeal} />
@@ -199,10 +208,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   actionButtonItem: {},
-  actionButtonItemText: {
-    fontSize: 16,
-    color: COLORS.vinaupTeal,
-  },
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
