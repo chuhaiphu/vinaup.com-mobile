@@ -3,13 +3,13 @@ import { getSignaturesByDocumentIdApi } from '@/apis/signature-apis';
 import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-layers.native';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
-import { Avatar } from '@/components/primitives/avatar';
+import VinaupSigningPen from '@/components/icons/vinaup-signing-pen.native';
 import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
 import { RECEIPT_PAYMENT_TYPES } from '@/constants/receipt-payment-constants';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useFetchFn } from 'fetchwire';
 import dayjs from 'dayjs';
@@ -25,9 +25,9 @@ import {
 
 function formatDateTime(value?: string | Date | null): string {
   if (!value) return '-';
-  const formatted = dayjs(value);
-  if (!formatted.isValid()) return '-';
-  return formatted.format('DD/MM HH:mm');
+  const d = dayjs(value);
+  if (!d.isValid()) return '-';
+  return d.format('DD/MM HH:mm');
 }
 
 export default function BookingDetailPreview() {
@@ -90,8 +90,7 @@ export default function BookingDetailPreview() {
   const balance = totalReceipt - totalPayment;
 
   const senderSignature = signatures?.find((s) => s.signatureRole === 'SENDER');
-  const receiverSignatures =
-    signatures?.filter((s) => s.signatureRole === 'RECEIVER') ?? [];
+  const receiverSignature = signatures?.find((s) => s.signatureRole === 'RECEIVER');
 
   const customerName = booking?.organizationCustomer?.name || '-';
 
@@ -159,199 +158,208 @@ export default function BookingDetailPreview() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Header title row */}
-          <View style={styles.headerTitleRow}>
-            <Text style={styles.mainTitle}>Booking</Text>
-            <Avatar
-              imgSrc={booking.organization?.avatarUrl}
-              size={36}
-              icon={
-                <MaterialIcons name="groups" size={24} color={COLORS.vinaupTeal} />
-              }
-            />
-          </View>
-          <View style={styles.subHeaderRow}>
-            <Text style={styles.orgName}>{booking.organization?.name || '-'}</Text>
-            <Text style={styles.dateText}>{formatDateTime(booking.createdAt)}</Text>
-          </View>
-
-          <View style={styles.thickDivider} />
-
-          {/* Booking info section */}
-          <View style={styles.section}>
-            <Text style={styles.bookingName}>
-              Tên: {booking.description || '-'}
-            </Text>
-            <View style={styles.bookingSubInfoRow}>
-              <Text style={styles.bookingTime}>
-                Từ {formatDateTime(booking.startDate)} đến{' '}
-                {formatDateTime(booking.endDate)}
+          {/* ── Header box ── */}
+          <View style={styles.headerBox}>
+            <Text style={styles.bookingName}>{booking.description || '-'}</Text>
+            <View style={styles.headerSubRow}>
+              <Text style={styles.headerMeta} numberOfLines={1}>
+                Từ: {formatDateTime(booking.startDate)}
+                {'  '}Đến: {formatDateTime(booking.endDate)}
               </Text>
               <Text style={styles.bookingCode}>No.{booking.code || '-'}</Text>
             </View>
             {customerName !== '-' && (
-              <Text style={styles.customerName}>Khách hàng: {customerName}</Text>
+              <Text style={styles.customerLine}>Khách hàng: {customerName}</Text>
             )}
           </View>
 
-          <View style={styles.thinDivider} />
-
-          {/* Receipt payments table */}
-          <Text style={styles.detailsTitle}>Chi tiết thu chi</Text>
-          <View style={styles.mediumDivider} />
-
-          {groupedReceiptPayments.length === 0 && (
-            <Text style={styles.emptyText}>Chưa có dữ liệu thu chi.</Text>
-          )}
-
-          {groupedReceiptPayments.map((group) => (
-            <View key={group.label}>
-              <View style={styles.section}>
-                <Text style={styles.dateGroupTitle}>{group.label}</Text>
-                <View style={styles.thinDivider} />
-                <View style={styles.detailHeaderRow}>
-                  <Text style={styles.receiptPaymentHeaderCol1}>Tên nội dung</Text>
-                  <Text style={styles.receiptPaymentHeaderCol2}>Đơn giá</Text>
-                  <Text style={styles.receiptPaymentHeaderCol3}>SLượng</Text>
-                  <Text style={styles.receiptPaymentHeaderCol4}>SLần</Text>
-                  <Text style={styles.receiptPaymentHeaderCol5}>Thành tiền</Text>
+          {/* ── Table ── */}
+          <View style={styles.tableContainer}>
+            {groupedReceiptPayments.length === 0 ? (
+              <Text style={styles.emptyText}>Chưa có dữ liệu thu chi.</Text>
+            ) : (
+              <>
+                <View style={styles.tableHead}>
+                  <Text style={styles.thCol1}>Nội dung</Text>
+                  <Text style={styles.thCol2}>Đơn giá</Text>
+                  <Text style={styles.thCol3}>SL</Text>
+                  <Text style={styles.thCol4}>Lần</Text>
+                  <Text style={styles.thCol5}>Thành tiền</Text>
                 </View>
                 <View style={styles.thinDivider} />
-                {group.items.map((item) => {
-                  const total = item.unitPrice * item.quantity * item.frequency;
-                  return (
-                    <View style={styles.detailRow} key={item.id}>
-                      <Text style={styles.receiptPaymentCellCol1} numberOfLines={2}>
-                        {item.description || '-'}
-                      </Text>
-                      <Text style={styles.receiptPaymentCellCol2}>
-                        {generateLocalePriceFormat(item.unitPrice)}
-                      </Text>
-                      <Text style={styles.receiptPaymentCellCol3}>
-                        {item.quantity}
-                      </Text>
-                      <Text style={styles.receiptPaymentCellCol4}>
-                        {item.frequency}
-                      </Text>
-                      <Text style={styles.receiptPaymentCellCol5}>
-                        {generateLocalePriceFormat(total)}
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
+
+                {groupedReceiptPayments.map((group) => (
+                  <View key={group.label}>
+                    <Text style={styles.groupDate}>{group.label}</Text>
+                    {group.items.map((item) => {
+                      const total = item.unitPrice * item.quantity * item.frequency;
+                      return (
+                        <View key={item.id} style={styles.tableRow}>
+                          <Text style={styles.tdCol1} numberOfLines={2}>
+                            {item.description || '-'}
+                          </Text>
+                          <Text style={styles.tdCol2}>
+                            {generateLocalePriceFormat(item.unitPrice)}
+                          </Text>
+                          <Text style={styles.tdCol3}>{item.quantity}</Text>
+                          <Text style={styles.tdCol4}>{item.frequency}</Text>
+                          <Text style={styles.tdCol5}>
+                            {generateLocalePriceFormat(total)}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                ))}
+              </>
+            )}
+          </View>
+
+          {/* ── Summary ── */}
+          <View style={styles.finRow}>
+            <Text style={styles.finLabel}>Tổng thu</Text>
+            <Text style={styles.finValue}>
+              {generateLocalePriceFormat(totalReceipt)}
+            </Text>
+          </View>
+          <View style={styles.finRow}>
+            <Text style={styles.finLabel}>Tổng chi</Text>
+            <Text style={styles.finValue}>
+              {generateLocalePriceFormat(totalPayment)}
+            </Text>
+          </View>
+          <View style={styles.finRow}>
+            <Text style={styles.finLabel}>Số dư</Text>
+            <Text style={[styles.finValue, balance < 0 && styles.colorNegative]}>
+              {generateLocalePriceFormat(balance)}
+            </Text>
+          </View>
+
+          {/* ── Ghi chú ── */}
+          {!!booking.note && (
+            <>
               <View style={styles.thinDivider} />
-            </View>
-          ))}
-
-          {/* Financial summary */}
-          <View style={styles.financialSection}>
-            <View style={styles.finRow}>
-              <Text style={styles.finLabel}>Tổng thu</Text>
-              <Text style={styles.finValue}>
-                {generateLocalePriceFormat(totalReceipt)}
-              </Text>
-            </View>
-            <View style={styles.finRow}>
-              <Text style={styles.finLabel}>Tổng chi</Text>
-              <Text style={styles.finValueBold}>
-                {generateLocalePriceFormat(totalPayment)}
-              </Text>
-            </View>
-            <View style={styles.finRow}>
-              <Text style={styles.finLabel}>Số dư</Text>
-              <Text
-                style={[styles.finValue, balance < 0 && styles.finValueNegative]}
-              >
-                {generateLocalePriceFormat(balance)}
-              </Text>
-            </View>
-          </View>
-
-          {/* Note */}
-          <View style={styles.thinDivider} />
-          <View style={styles.notesSection}>
-            <Feather
-              name="message-square"
-              size={18}
-              color={COLORS.vinaupDarkGray}
-            />
-            <Text style={styles.noteText}>{booking.note || '-'}</Text>
-          </View>
+              <View style={styles.noteRow}>
+                <Feather
+                  name="message-square"
+                  size={14}
+                  color={COLORS.vinaupMediumGray}
+                />
+                <Text style={styles.noteText}>{booking.note}</Text>
+              </View>
+            </>
+          )}
 
           <View style={styles.thinDivider} />
 
-          {/* Parties section */}
-          <View style={styles.partiesSection}>
-            <View style={styles.partyCol}>
-              <Text style={styles.partyLabel}>Bên tạo</Text>
-              <Text style={styles.partyValue}>
+          {/* ── Parties ── */}
+          <View style={styles.partiesBox}>
+            <View style={styles.partyLeft}>
+              <View style={styles.partyRoleRow}>
+                <VinaupUserArrowUpRight />
+                <Text style={styles.partyRoleText}> Bên tạo</Text>
+              </View>
+              <Text style={styles.partyName}>
                 {booking.organization?.name || '-'}
               </Text>
             </View>
-            <View style={styles.partyColRight}>
-              <Text style={styles.partyLabel}>Khách hàng</Text>
-              <Text style={styles.partyValueTeal}>{customerName}</Text>
+            <View style={styles.partyRight}>
+              <View style={[styles.partyRoleRow, { justifyContent: 'flex-end' }]}>
+                <Text style={styles.partyRoleText}>Bên nhận </Text>
+                <VinaupUserChecked />
+              </View>
+              <Text style={[styles.partyName, { textAlign: 'right' }]}>
+                {customerName}
+              </Text>
             </View>
           </View>
 
-          {/* Signature section */}
-          <View style={styles.signatureSection}>
-            <Text style={styles.signatureTitle}>Ký tên</Text>
-            <View style={styles.mediumDivider} />
-
-            {senderSignature && (
-              <View style={styles.sigBlock}>
-                <View style={styles.sigRowSpace}>
-                  <View style={styles.sigRoleWrap}>
-                    <VinaupUserArrowUpRight />
-                    <Text style={styles.sigRoleItalic}> Tạo:</Text>
-                  </View>
-                  <Text style={styles.sigDateTextItalic}>
-                    {formatDateTime(senderSignature.signedAt || null)}
-                  </Text>
-                </View>
-                <View style={styles.sigRowSpace}>
-                  <Text style={styles.sigName}>
-                    {senderSignature.targetUser?.name ||
-                      senderSignature.targetName ||
-                      '-'}
-                  </Text>
-                  <Text style={styles.sigStatus}>
-                    {senderSignature.isSigned ? '(Đã ký)' : '(Chưa ký)'}
-                  </Text>
-                </View>
+          {/* ── Signatures ── */}
+          {(senderSignature || receiverSignature) && (
+            <View style={styles.sigRow}>
+              <View style={styles.sigCol}>
+                {senderSignature && (
+                  <>
+                    <View style={styles.sigStatusRow}>
+                      <VinaupSigningPen
+                        width={16}
+                        height={15}
+                        color={
+                          senderSignature.isSigned
+                            ? COLORS.vinaupOrange
+                            : COLORS.vinaupMediumGray
+                        }
+                      />
+                      <Text
+                        style={[
+                          styles.sigStatusText,
+                          {
+                            color: senderSignature.isSigned
+                              ? COLORS.vinaupOrange
+                              : COLORS.vinaupMediumGray,
+                          },
+                        ]}
+                      >
+                        {senderSignature.isSigned ? ' Đã ký' : ' Chờ ký'}
+                      </Text>
+                    </View>
+                    <Text style={styles.sigName}>
+                      {senderSignature.targetUser?.name ||
+                        senderSignature.targetName ||
+                        '-'}
+                    </Text>
+                    <Text style={styles.sigDate}>
+                      {formatDateTime(senderSignature.signedAt ?? null)}
+                    </Text>
+                  </>
+                )}
               </View>
-            )}
 
-            {receiverSignatures.map((receiver) => (
-              <View style={styles.sigBlock} key={receiver.id}>
-                <View style={styles.sigRowSpace}>
-                  <View style={styles.sigRoleWrap}>
-                    <VinaupUserChecked />
-                    <Text style={styles.sigRoleItalic}> Nhận:</Text>
-                  </View>
-                  <Text style={styles.sigDateTextItalic}>
-                    {formatDateTime(receiver.signedAt || null)}
-                  </Text>
-                </View>
-                <View style={styles.sigRowSpace}>
-                  <Text style={styles.sigName}>
-                    {receiver.targetUser?.name || receiver.targetName || '-'}
-                  </Text>
-                  <Text style={styles.sigStatus}>
-                    {receiver.isSigned ? '(Đã ký)' : '(Chưa ký)'}
-                  </Text>
-                </View>
+              <View style={[styles.sigCol, { alignItems: 'flex-end' }]}>
+                {receiverSignature && (
+                  <>
+                    <View style={styles.sigStatusRow}>
+                      <Text
+                        style={[
+                          styles.sigStatusText,
+                          {
+                            color: receiverSignature.isSigned
+                              ? COLORS.vinaupOrange
+                              : COLORS.vinaupTeal,
+                          },
+                        ]}
+                      >
+                        {receiverSignature.isSigned ? 'Đã ký' : 'Chờ ký'}
+                      </Text>
+                      <VinaupSigningPen
+                        width={16}
+                        height={15}
+                        color={
+                          receiverSignature.isSigned
+                            ? COLORS.vinaupOrange
+                            : COLORS.vinaupTeal
+                        }
+                      />
+                    </View>
+                    <Text style={[styles.sigName, { textAlign: 'right' }]}>
+                      {receiverSignature.signedByUser?.name ||
+                        receiverSignature.targetName ||
+                        '-'}
+                    </Text>
+                    <Text style={[styles.sigDate, { textAlign: 'right' }]}>
+                      {formatDateTime(receiverSignature.signedAt ?? null)}
+                    </Text>
+                  </>
+                )}
               </View>
-            ))}
+            </View>
+          )}
 
-            {!senderSignature && receiverSignatures.length === 0 && (
-              <Text style={styles.emptyText}>Không có dữ liệu ký tên.</Text>
-            )}
-          </View>
+          {!senderSignature && !receiverSignature && (
+            <Text style={styles.emptyText}>Không có dữ liệu ký tên.</Text>
+          )}
 
-          {/* Footer */}
+          {/* ── Footer ── */}
           <View style={styles.footer}>
             <View style={styles.doubleLine} />
             <Text style={styles.footerText}>
@@ -378,8 +386,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   stateText: {
-    color: COLORS.vinaupMediumDarkGray,
     fontSize: 14,
+    color: COLORS.vinaupMediumDarkGray,
   },
   retryButton: {
     paddingHorizontal: 12,
@@ -389,8 +397,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.vinaupLightGray,
   },
   retryButtonText: {
-    color: COLORS.vinaupTeal,
     fontSize: 14,
+    color: COLORS.vinaupTeal,
   },
   headerTitleStyle: {
     fontSize: 18,
@@ -402,187 +410,157 @@ const styles = StyleSheet.create({
   rightActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   actionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
   actionBtnDisabled: {
     opacity: 0.6,
   },
   scrollContent: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingBottom: 40,
   },
-  headerTitleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
+
+  // ── Header box ──
+  headerBox: {
+    backgroundColor: COLORS.vinaupSoftGray,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 4,
   },
-  mainTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.vinaupTeal,
-  },
-  subHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  orgName: {
+  bookingName: {
     fontSize: 16,
+    fontWeight: '700',
     color: COLORS.vinaupBlackLaminated,
-    flex: 1,
-    marginRight: 8,
   },
-  dateText: {
-    fontSize: 14,
+  headerSubRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerMeta: {
+    flex: 1,
+    fontSize: 13,
+    fontStyle: 'italic',
     color: COLORS.vinaupMediumDarkGray,
   },
-  thickDivider: {
-    height: 4,
-    backgroundColor: COLORS.vinaupTeal,
-    marginVertical: 8,
+  bookingCode: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: COLORS.vinaupMediumDarkGray,
   },
-  mediumDivider: {
-    height: 2,
-    backgroundColor: COLORS.vinaupTeal,
-    marginVertical: 8,
+  customerLine: {
+    fontSize: 13,
+    color: COLORS.vinaupMediumDarkGray,
   },
+
+  // ── Dividers ──
   thinDivider: {
     height: 1,
     backgroundColor: COLORS.vinaupLightGray,
     marginVertical: 8,
   },
-  section: {
-    paddingVertical: 4,
+
+  // ── Table ──
+  tableContainer: {
+    marginVertical: 8,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: COLORS.vinaupLightGray,
   },
-  bookingName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.vinaupBlackLaminated,
-    marginBottom: 4,
-  },
-  bookingSubInfoRow: {
+  tableHead: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 3,
   },
-  bookingTime: {
-    fontSize: 14,
-    color: COLORS.vinaupMediumDarkGray,
-    fontStyle: 'italic',
-    flex: 1,
-  },
-  bookingCode: {
-    fontSize: 14,
-    color: COLORS.vinaupMediumDarkGray,
-    fontStyle: 'italic',
-    marginLeft: 8,
-  },
-  customerName: {
-    fontSize: 14,
-    color: COLORS.vinaupMediumDarkGray,
-    marginTop: 4,
-  },
-  detailsTitle: {
-    fontSize: 15,
-    fontWeight: '700',
+  thCol1: {
+    flex: 2.2,
+    fontSize: 13,
     color: COLORS.vinaupBlackLaminated,
-    marginTop: 4,
   },
-  emptyText: {
-    fontSize: 14,
+  thCol2: {
+    flex: 1.4,
+    fontSize: 13,
+    color: COLORS.vinaupBlackLaminated,
+    textAlign: 'center',
+  },
+  thCol3: {
+    flex: 0.7,
+    fontSize: 13,
+    color: COLORS.vinaupBlackLaminated,
+    textAlign: 'center',
+  },
+  thCol4: {
+    flex: 0.7,
+    fontSize: 13,
+    color: COLORS.vinaupBlackLaminated,
+    textAlign: 'center',
+  },
+  thCol5: {
+    flex: 1.5,
+    fontSize: 13,
+    color: COLORS.vinaupBlackLaminated,
+    textAlign: 'right',
+  },
+  groupDate: {
+    fontSize: 12,
+    fontStyle: 'italic',
     color: COLORS.vinaupMediumGray,
-    marginBottom: 8,
+    marginTop: 4,
   },
-  dateGroupTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.vinaupBlackLaminated,
-  },
-  detailHeaderRow: {
+  tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
+    // borderBottomWidth: 1,
+    borderBottomColor: COLORS.vinaupLightGray,
   },
-  receiptPaymentHeaderCol1: {
+  tdCol1: {
+    flex: 2.2,
     fontSize: 13,
     color: COLORS.vinaupBlackLaminated,
-    flex: 2,
+    lineHeight: 18,
   },
-  receiptPaymentHeaderCol2: {
+  tdCol2: {
+    flex: 1.4,
     fontSize: 13,
     color: COLORS.vinaupBlackLaminated,
-    flex: 1.2,
     textAlign: 'center',
   },
-  receiptPaymentHeaderCol3: {
+  tdCol3: {
+    flex: 0.7,
     fontSize: 13,
     color: COLORS.vinaupBlackLaminated,
-    flex: 1.1,
     textAlign: 'center',
   },
-  receiptPaymentHeaderCol4: {
+  tdCol4: {
+    flex: 0.7,
     fontSize: 13,
     color: COLORS.vinaupBlackLaminated,
-    flex: 1.1,
     textAlign: 'center',
   },
-  receiptPaymentHeaderCol5: {
-    fontSize: 13,
-    color: COLORS.vinaupBlackLaminated,
+  tdCol5: {
     flex: 1.5,
+    fontSize: 13,
+    color: COLORS.vinaupBlackLaminated,
     textAlign: 'right',
   },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
-  },
-  receiptPaymentCellCol1: {
-    fontSize: 13,
-    color: COLORS.vinaupBlackLaminated,
-    flex: 2,
-  },
-  receiptPaymentCellCol2: {
-    fontSize: 13,
-    color: COLORS.vinaupBlackLaminated,
-    flex: 1.1,
-    textAlign: 'center',
-  },
-  receiptPaymentCellCol3: {
-    fontSize: 13,
-    color: COLORS.vinaupBlackLaminated,
-    flex: 1.1,
-    textAlign: 'center',
-  },
-  receiptPaymentCellCol4: {
-    fontSize: 13,
-    color: COLORS.vinaupBlackLaminated,
-    flex: 1.1,
-    textAlign: 'center',
-  },
-  receiptPaymentCellCol5: {
-    fontSize: 13,
-    color: COLORS.vinaupBlackLaminated,
-    flex: 1.5,
-    textAlign: 'right',
-  },
-  financialSection: {
-    paddingVertical: 4,
-    gap: 4,
-  },
+
+  // ── Summary ──
   finRow: {
     flexDirection: 'row',
+    paddingVertical: 2,
   },
   finLabel: {
     flex: 3,
     fontSize: 14,
     color: COLORS.vinaupMediumDarkGray,
     textAlign: 'right',
+    paddingRight: 12,
   },
   finValue: {
     flex: 1.5,
@@ -590,97 +568,85 @@ const styles = StyleSheet.create({
     color: COLORS.vinaupBlackLaminated,
     textAlign: 'right',
   },
-  finValueBold: {
-    flex: 1.5,
-    fontSize: 14,
-    fontWeight: '700',
-    color: COLORS.vinaupBlackLaminated,
-    textAlign: 'right',
-  },
-  finValueNegative: {
+  colorNegative: {
     color: COLORS.vinaupOrange,
   },
-  notesSection: {
+
+  // ── Note ──
+  noteRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 4,
-    gap: 8,
+    alignItems: 'flex-start',
+    gap: 6,
+    paddingVertical: 2,
   },
   noteText: {
-    fontSize: 14,
+    flex: 1,
+    fontSize: 13,
     color: COLORS.vinaupMediumGray,
-    flex: 1,
+    lineHeight: 18,
   },
-  partiesSection: {
+
+  // ── Parties ──
+  partiesBox: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
-    marginBottom: 8,
+    backgroundColor: COLORS.vinaupSoftGray,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
-  partyCol: {
-    gap: 4,
+  partyLeft: {
     flex: 1,
-  },
-  partyColRight: {
     gap: 4,
-    alignItems: 'flex-end',
+  },
+  partyRight: {
     flex: 1,
+    gap: 4,
   },
-  partyLabel: {
-    fontSize: 14,
-    color: COLORS.vinaupMediumDarkGray,
-    textDecorationLine: 'underline',
-  },
-  partyValue: {
-    fontSize: 15,
-    color: COLORS.vinaupBlackLaminated,
-  },
-  partyValueTeal: {
-    fontSize: 15,
-    color: COLORS.vinaupTeal,
-  },
-  signatureSection: {
-    paddingVertical: 4,
-  },
-  signatureTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.vinaupBlackLaminated,
-  },
-  sigBlock: {
-    marginBottom: 12,
-  },
-  sigRowSpace: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 8,
-  },
-  sigRoleWrap: {
+  partyRoleRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  sigRoleItalic: {
+  partyRoleText: {
+    fontSize: 13,
+    color: COLORS.vinaupDarkGray,
+  },
+  partyName: {
     fontSize: 14,
-    fontStyle: 'italic',
+    fontWeight: '600',
     color: COLORS.vinaupBlackLaminated,
   },
-  sigDateTextItalic: {
-    fontSize: 14,
-    color: COLORS.vinaupMediumGray,
-    fontStyle: 'italic',
+
+  // ── Signatures ──
+  sigRow: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+  },
+  sigCol: {
+    flex: 1,
+    gap: 2,
+  },
+  sigStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  sigStatusText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   sigName: {
-    fontSize: 14,
-    color: COLORS.vinaupBlackLaminated,
-    flex: 1,
-  },
-  sigStatus: {
-    fontSize: 14,
+    fontSize: 13,
     color: COLORS.vinaupBlackLaminated,
   },
+  sigDate: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    color: COLORS.vinaupMediumGray,
+  },
+
+  // ── Footer ──
   footer: {
-    backgroundColor: COLORS.vinaupWhite,
+    marginTop: 4,
   },
   doubleLine: {
     height: 3,
@@ -691,7 +657,13 @@ const styles = StyleSheet.create({
   },
   footerText: {
     textAlign: 'center',
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.vinaupMediumDarkGray,
+  },
+
+  emptyText: {
+    fontSize: 13,
+    color: COLORS.vinaupMediumGray,
+    marginBottom: 8,
   },
 });

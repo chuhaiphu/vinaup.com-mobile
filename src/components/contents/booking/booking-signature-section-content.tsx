@@ -55,7 +55,9 @@ export default function BookingSignatureSectionContent({
     'organization-booking-list',
     `organization-booking-${bookingData.id}`,
     ...(bookingData.tourImplementationId
-      ? [`organization-booking-list-in-tour-implementation-${bookingData.tourImplementationId}`]
+      ? [
+          `organization-booking-list-in-tour-implementation-${bookingData.tourImplementationId}`,
+        ]
       : []),
   ];
 
@@ -120,6 +122,7 @@ export default function BookingSignatureSectionContent({
   const hasUnsignedSender =
     bookingSignatures?.some((s) => s.signatureRole === 'SENDER' && !s.isSigned) ??
     false;
+  const isBookingCompleted = !!receiver?.isSigned;
 
   const hasOrganizationCustomer = bookingData.organizationCustomer !== null;
   const isMutating = isSigningBooking || isCancelingBooking;
@@ -156,7 +159,9 @@ export default function BookingSignatureSectionContent({
                 !sender?.isSigned && sender?.targetUserId === currentUser?.id
               }
               isAllowToCancel={
-                !!sender?.isSigned && sender?.signedByUserId === currentUser?.id
+                !isBookingCompleted &&
+                !!sender?.isSigned &&
+                sender?.signedByUserId === currentUser?.id
               }
               role="SENDER"
               isLoading={isLoading || isMutating}
@@ -180,10 +185,7 @@ export default function BookingSignatureSectionContent({
               <SignatureEntityContent
                 isSigned={receiver?.isSigned}
                 isAllowToSign={!receiver?.isSigned && !hasUnsignedSender}
-                isAllowToCancel={
-                  !!receiver?.isSigned &&
-                  receiver?.signedByUserId === currentUser?.id
-                }
+                isAllowToCancel={false}
                 role="RECEIVER"
                 isLoading={isLoading || isMutating}
                 alignment="right"
@@ -194,11 +196,11 @@ export default function BookingSignatureSectionContent({
               />
               {receiver?.isSigned && (
                 <View style={styles.signatureInfo}>
-                  <Text style={styles.timeText}>
-                    {dayjs(receiver.signedAt).format('DD/MM/YYYY HH:mm')}
-                  </Text>
                   <Text style={styles.nameText}>
                     {receiver.signedByUser?.name ?? receiver.signedByName}
+                  </Text>
+                  <Text style={styles.timeText}>
+                    {dayjs(receiver.signedAt).format('DD/MM/YYYY HH:mm')}
                   </Text>
                 </View>
               )}
@@ -262,8 +264,8 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: 16,
-    color: COLORS.vinaupMediumDarkGray,
     marginBottom: 6,
+    fontWeight: '500',
   },
   nameText: {
     fontSize: 16,

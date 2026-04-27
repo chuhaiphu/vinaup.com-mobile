@@ -97,7 +97,7 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
                 <Text style={styles.label}>Gửi bởi</Text>
               </View>
               <View style={styles.valueRow}>
-                <Text style={styles.senderText} numberOfLines={1}>
+                <Text style={styles.senderText} numberOfLines={2}>
                   {senderName}
                 </Text>
                 {isSenderSigned && (
@@ -113,7 +113,7 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
               <View style={styles.valueRow}>
                 <Text
                   style={[styles.receiverText, styles.receiverTextRight]}
-                  numberOfLines={1}
+                  numberOfLines={2}
                 >
                   {receiverName}
                 </Text>
@@ -189,11 +189,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  valueRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
+  valueRow: {},
   receiverLabelRow: {
     justifyContent: 'flex-end',
   },
