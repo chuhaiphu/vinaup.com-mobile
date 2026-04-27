@@ -7,8 +7,8 @@ import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import dayjs from 'dayjs';
 import { Select } from '@/components/primitives/select';
 import { BookingStatusOptions } from '@/constants/booking-constants';
-import { BookingListSectionSkeleton } from '@/components/skeletons/booking-list-section-skeleton';
-import { BookingListSectionContent } from '@/components/contents/booking/booking-list-section-content';
+import { BookingListSectionSkeleton } from '@/components/commons/skeletons/booking-list-section-skeleton';
+import { BookingListSectionContent } from '@/components/organization/booking/list/booking-list-section-content';
 import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function OrganizationBookingScreen() {

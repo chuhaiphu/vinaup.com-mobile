@@ -2,7 +2,7 @@ import { getTourCalculationCancelLogByIdApi } from '@/apis/tour-apis';
 import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-layers.native';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
-import { PdfPageSizeModal } from '@/components/modals/pdf-page-size-modal/pdf-page-size-modal';
+import { PdfPageSizeModal } from '@/components/commons/modals/pdf-page-size-modal/pdf-page-size-modal';
 import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
 import { TourCalculationCancelLogSnapshotData } from '@/interfaces/tour-calculation-interfaces';

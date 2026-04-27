@@ -1,14 +1,14 @@
 import { Suspense, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, RefreshControl } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StackWithHeader } from '@/components/headers/stack-with-header';
-import { BookingDetailHeaderContent } from '@/components/contents/booking/booking-detail-header-content';
+import { StackWithHeader } from '@/components/commons/headers/stack-with-header';
+import { BookingDetailHeaderContent } from '@/components/organization/booking/detail/booking-detail-header-content';
 import Loader from '@/components/primitives/loader';
 import {
   BOOKING_STATUS,
   BookingStatusDisplay,
 } from '@/constants/booking-constants';
-import { BookingDetailFooterContent } from '@/components/contents/booking/booking-detail-footer-content';
+import { BookingDetailFooterContent } from '@/components/organization/booking/detail/booking-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -18,11 +18,11 @@ import {
   useBookingDetailContext,
 } from '@/providers/booking-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
-import { ReceiptPaymentBookingListContent } from '@/components/contents/booking/receipt-payment-booking-list-content';
-import BookingSignatureSectionContent from '@/components/contents/booking/booking-signature-section-content';
-import { BookingSignaturePopover } from '@/components/popovers/booking-signature-popover';
+import { ReceiptPaymentBookingListContent } from '@/components/organization/booking/receipt-payment-booking-list-content';
+import BookingSignatureSectionContent from '@/components/organization/booking/detail/booking-signature-section-content';
+import { BookingSignaturePopover } from '@/components/organization/booking/popovers/booking-signature-popover';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
 import VinaupEyeSquare from '@/components/icons/vinaup-eye-square.native';
 
 export default function BookingDetailScreen() {

@@ -1,15 +1,15 @@
 import { StyleSheet, ScrollView, RefreshControl, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { TourDetailFooterContent } from '@/components/contents/tour/tour-detail-footer-content';
-import TourCalculationSignatureContent from '@/components/contents/tour/tour-calculation/tour-calculation-signature-section-content';
-import { TourDetailHeaderContent } from '@/components/contents/tour/tour-detail-header-content';
+import { TourDetailFooterContent } from '@/components/organization/tour/detail/tour-detail-footer-content';
+import TourCalculationSignatureContent from '@/components/organization/tour/calculation/tour-calculation-signature-section-content';
+import { TourDetailHeaderContent } from '@/components/organization/tour/detail/tour-detail-header-content';
 import { Suspense, useRef, useState } from 'react';
-import { TourCalculationSignatureInfoPopover } from '@/components/popovers/tour-calculation-signature-info-popover';
+import { TourCalculationSignatureInfoPopover } from '@/components/organization/tour/popovers/tour-calculation-signature-info-popover';
 import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
-import { TourCalculationTicketSummaryReceiptPaymentListContent } from '@/components/contents/tour/tour-calculation-ticket-summary-receipt-payment-list-content';
-import { WhitePaneSkeleton } from '@/components/skeletons/white-pane-skeleton';
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import { TourCalculationTicketSummaryReceiptPaymentListContent } from '@/components/organization/tour/calculation/tour-calculation-ticket-summary-receipt-payment-list-content';
+import { WhitePaneSkeleton } from '@/components/commons/skeletons/white-pane-skeleton';
+import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
 
 function TourCalculationScreenContent() {
   const [isSignatureInfoPopoverVisible, setIsSignatureInfoPopoverVisible] =

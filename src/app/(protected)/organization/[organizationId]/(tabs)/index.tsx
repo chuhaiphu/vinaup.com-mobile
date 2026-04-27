@@ -12,13 +12,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import dayjs from 'dayjs';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
-import { OrganizationHomeIndexSummary } from '@/components/summaries/organization-home-index-summary';
+import { OrganizationHomeIndexSummary } from '@/components/organization/home/organization-home-index-summary';
 import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import VinaupSigningPenWithFrame from '@/components/icons/vinaup-signing-pen-with-frame.native';
-import { IndexUtilityGrid } from '@/components/grids/index-utility-grid';
+import { IndexUtilityGrid } from '@/components/commons/grids/index-utility-grid';
 
 export default function OrganizationIndexScreen() {
   const router = useRouter();

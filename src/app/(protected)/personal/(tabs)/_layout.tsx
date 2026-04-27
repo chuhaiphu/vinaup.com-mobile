@@ -1,4 +1,4 @@
-import { HomeHeader } from '@/components/headers/home-header/home-header';
+import { HomeHeader } from '@/components/commons/headers/home-header/home-header';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';

@@ -5,8 +5,8 @@ import {
 import {
   OrganizationProjectDetailProvider,
 } from '@/providers/organization-project-detail-provider';
-import { PersonalProjectDetailContent } from '@/components/contents/project/personal-project-detail-content';
-import { OrganizationProjectDetailContent } from '@/components/contents/project/organization-project-detail-content';
+import { PersonalProjectDetailContent } from '@/components/personal/project/detail/personal-project-detail-content';
+import { OrganizationProjectDetailContent } from '@/components/organization/project/detail/organization-project-detail-content';
 
 export default function ProjectDetailScreen() {
   const { projectId, organizationId } = useLocalSearchParams<{

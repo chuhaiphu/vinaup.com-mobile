@@ -6,8 +6,8 @@ import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-import { OrganizationProjectListSectionContent } from '@/components/contents/project/organization-project-list-section-content';
+import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
+import { OrganizationProjectListSectionContent } from '@/components/organization/project/list/organization-project-list-section-content';
 import { useLocalSearchParams } from 'expo-router';
 
 export default function OrganizationProjectScreen() {

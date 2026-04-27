@@ -3,7 +3,7 @@ import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-l
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
 import { Button } from '@/components/primitives/button';
-import { PdfPageSizeModal } from '@/components/modals/pdf-page-size-modal/pdf-page-size-modal';
+import { PdfPageSizeModal } from '@/components/commons/modals/pdf-page-size-modal/pdf-page-size-modal';
 import { COLORS } from '@/constants/style-constant';
 import { TourSettlementCancelLogSnapshotData } from '@/interfaces/tour-settlement-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';

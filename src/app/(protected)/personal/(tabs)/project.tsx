@@ -6,8 +6,8 @@ import { FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-import { PersonalProjectListSectionContent } from '@/components/contents/project/personal-project-list-section-content';
+import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
+import { PersonalProjectListSectionContent } from '@/components/personal/project/list/personal-project-list-section-content';
 
 export default function PersonalProjectScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());

@@ -5,15 +5,15 @@ import { COLORS } from '@/constants/style-constant';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { useAuthContext } from '@/providers/auth-provider';
-import { TourImplementationHomeTabPanelContent } from '../../../../components/contents/tour/tour-implementation/tour-implementation-home-tab-panel-content';
-import { ReceiptPaymentTourImplementationDirectorListContent } from '../../../../components/contents/tour/tour-implementation/receipt-payment-tour-implementation-director-list-content';
-import { ReceiptPaymentTourImplementationTourGuideListContent } from '../../../../components/contents/tour/tour-implementation/receipt-payment-tour-implementation-tour-guide-list-content';
+import { TourImplementationHomeTabPanelContent } from '@/components/organization/tour/implementation/tour-implementation-home-tab-panel-content';
+import { ReceiptPaymentTourImplementationDirectorListContent } from '@/components/organization/tour/implementation/receipt-payment-tour-implementation-director-list-content';
+import { ReceiptPaymentTourImplementationTourGuideListContent } from '@/components/organization/tour/implementation/receipt-payment-tour-implementation-tour-guide-list-content';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 import { useFetchFn } from 'fetchwire';
 import { getTourImplementationByTourIdApi } from '@/apis/tour-apis';
 import { getReceiptPaymentsByTourImplementationIdApi } from '@/apis/receipt-payment-apis';
-import TourImplementationAdditionalContent from '../../../../components/contents/tour/tour-implementation/tour-implementation-additional-content';
-import { BookingTourImplementationTabPanelContent } from '../../../../components/contents/tour/tour-implementation/booking-tour-implementation-tab-panel-content';
+import TourImplementationAdditionalContent from '@/components/organization/tour/implementation/tour-implementation-additional-content';
+import { BookingTourImplementationTabPanelContent } from '@/components/organization/tour/implementation/booking-tour-implementation-tab-panel-content';
 
 export default function TourImplementationScreen() {
   const [currentTab, setCurrentTab] = useState('1');

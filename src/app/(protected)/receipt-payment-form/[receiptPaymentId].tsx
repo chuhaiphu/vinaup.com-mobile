@@ -4,9 +4,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ReceiptPaymentFormContent,
   type ReceiptPaymentFormContentRef,
-} from '@/components/contents/receipt-payment-form/receipt-payment-form-content';
-import { FormInputListSkeleton } from '@/components/skeletons/form-input-list-skeleton';
-import { StackWithHeader } from '@/components/headers/stack-with-header';
+} from '@/components/commons/receipt-payment-form/receipt-payment-form-content';
+import { FormInputListSkeleton } from '@/components/commons/skeletons/form-input-list-skeleton';
+import { StackWithHeader } from '@/components/commons/headers/stack-with-header';
 import { ReceiptPaymentType } from '@/constants/receipt-payment-constants';
 import { CreateReceiptPaymentRequest } from '@/interfaces/receipt-payment-interfaces';
 import {

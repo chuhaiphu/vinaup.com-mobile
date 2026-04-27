@@ -1,11 +1,11 @@
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
+import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
 import { COLORS } from '@/constants/style-constant';
 import React, { Suspense, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { ReceiptPaymentListSectionContent } from '@/components/contents/receipt-payment/receipt-payment-list-section-content';
+import { ReceiptPaymentListSectionContent } from '@/components/personal/receipt-payment/list/receipt-payment-list-section-content';
 
 export default function PersonalReceiptPaymentScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());

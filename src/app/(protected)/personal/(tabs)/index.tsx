@@ -22,10 +22,10 @@ import dayjs from 'dayjs';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
-import { PersonalHomeIndexSummary } from '@/components/summaries/personal-home-index-summary';
+import { PersonalHomeIndexSummary } from '@/components/personal/home/personal-home-index-summary';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import { useRouter } from 'expo-router';
-import { IndexUtilityGrid } from '@/components/grids/index-utility-grid';
+import { IndexUtilityGrid } from '@/components/commons/grids/index-utility-grid';
 
 export default function PersonalIndexScreen() {
   const router = useRouter();
@@ -124,10 +124,7 @@ export default function PersonalIndexScreen() {
   };
 
   const onRefresh = async () => {
-    await Promise.all([
-      refreshReceiptPaymentsSelf(),
-      refreshProjects(),
-    ]);
+    await Promise.all([refreshReceiptPaymentsSelf(), refreshProjects()]);
   };
 
   const isRefreshing = isRefreshingReceiptPaymentsSelf || isRefreshingProjects;

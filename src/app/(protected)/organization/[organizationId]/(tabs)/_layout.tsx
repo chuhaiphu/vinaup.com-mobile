@@ -1,4 +1,4 @@
-import { HomeHeader } from '@/components/headers/home-header/home-header';
+import { HomeHeader } from '@/components/commons/headers/home-header/home-header';
 import VinaupCircleHorizontalHalfArrow from '@/components/icons/vinaup-circle-horizontal-half-arrow.native';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';

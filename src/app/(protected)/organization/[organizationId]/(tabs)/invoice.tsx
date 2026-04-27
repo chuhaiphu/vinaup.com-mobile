@@ -7,8 +7,8 @@ import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { InvoiceStatusOptions } from '@/constants/invoice-constants';
 import { useLocalSearchParams } from 'expo-router';
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-import { InvoiceListSectionContent } from '@/components/contents/invoice/invoice-list-section-content';
+import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
+import { InvoiceListSectionContent } from '@/components/organization/invoice/list/invoice-list-section-content';
 
 export default function OrganizationInvoiceScreen() {
   const params = useLocalSearchParams<{

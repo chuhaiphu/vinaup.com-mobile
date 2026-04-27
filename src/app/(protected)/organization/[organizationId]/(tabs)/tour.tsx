@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Select } from '@/components/primitives/select';
 import { TourStatusOptions } from '@/constants/tour-constants';
-import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-import { OrganizationTourListSectionContent } from '@/components/contents/tour/organization-tour-list-section-content';
+import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
+import { OrganizationTourListSectionContent } from '@/components/organization/tour/list/organization-tour-list-section-content';
 import { FontAwesome6 } from '@expo/vector-icons';
 
 export default function OrganizationTourScreen() {
@@ -22,7 +22,7 @@ export default function OrganizationTourScreen() {
         <View style={styles.statusFilter}>
           <Select
             options={TourStatusOptions}
-            value={statusFilter}  
+            value={statusFilter}
             onChange={(value) => setStatusFilter(value)}
             placeholder="Trạng thái"
             renderTrigger={(option) => (
