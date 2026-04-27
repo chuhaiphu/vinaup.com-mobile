@@ -15,13 +15,11 @@ import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 export interface PersonalProjectListSectionContentProps {
-  projectType: 'SELF' | 'COMPANY';
   selectedDate: dayjs.Dayjs;
   statusFilter: string;
 }
 
 export function PersonalProjectListSectionContent({
-  projectType,
   selectedDate,
   statusFilter,
 }: PersonalProjectListSectionContentProps) {
@@ -30,12 +28,9 @@ export function PersonalProjectListSectionContent({
 
   const navigateToDetail = async (project: ProjectResponse) => {
     setIsNavigating(true);
-    const fetchKeyMap: Record<string, string> = {
-      SELF: `personal-project-self-${project.id}`,
-      COMPANY: `personal-project-company-${project.id}`,
-    };
-    const fetchKey =
-      fetchKeyMap[project.type] ?? `organization-project-${project.id}`;
+    const fetchKey = project.organizationId
+      ? `organization-project-${project.id}`
+      : `personal-project-${project.id}`;
     try {
       await prefetch(() => getProjectByIdApi(project.id), { fetchKey });
     } catch {
@@ -43,14 +38,16 @@ export function PersonalProjectListSectionContent({
     }
     router.push({
       pathname: '/(protected)/project-detail/[projectId]',
-      params: { projectId: project.id, type: project.type },
+      params: {
+        projectId: project.id,
+        organizationId: project.organizationId ?? undefined,
+      },
     });
     setIsNavigating(false);
   };
 
   const fetchProjectsAndReceiptPaymentsFn = async () => {
     const projectsRes = await getProjectsOfCurrentUserApi({
-      type: projectType,
       status: statusFilter || undefined,
       startDate: selectedDate.startOf('month').toISOString(),
       endDate: selectedDate.endOf('month').toISOString(),
@@ -68,7 +65,7 @@ export function PersonalProjectListSectionContent({
     return { projects, allReceiptPayments };
   };
 
-  const fetchKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const fetchKey = `personal-project-list-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   const { data, refreshFetch, isRefreshing } = useFetch<{
     projects: ProjectResponse[];

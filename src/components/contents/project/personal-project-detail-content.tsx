@@ -9,10 +9,10 @@ import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constan
 import { ProjectDetailFooterContent } from './project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
-import { useCompanyProjectDetailContext } from '@/providers/company-project-detail-provider';
+import { usePersonalProjectDetailContext } from '@/providers/personal-project-detail-provider';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
 
-export function CompanyProjectDetailContent() {
+export function PersonalProjectDetailContent() {
   const {
     projectId,
     project,
@@ -22,7 +22,7 @@ export function CompanyProjectDetailContent() {
     handleUpdateProject,
     handleDelete,
     refreshProject,
-  } = useCompanyProjectDetailContext();
+  } = usePersonalProjectDetailContext();
   const router = useRouter();
 
   const handleSaveAndExit = () => {

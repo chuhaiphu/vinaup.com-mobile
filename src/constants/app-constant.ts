@@ -10,7 +10,6 @@ export const STORAGE_KEYS = {
  */
 export const PERSONAL_UTILITY_KEYS = {
   receiptPayment: 'receipt-payment',
-  projectSelf: 'project-self',
   projectCompany: 'project-company',
 } as const;
 export type PersonalUtilityKey =

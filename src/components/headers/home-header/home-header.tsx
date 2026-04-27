@@ -6,7 +6,6 @@ import { OwnerSelector } from '../../selectors/owner-selector/owner-selector';
 import { useLocalSearchParams, usePathname } from 'expo-router';
 import PersonalNavigatorSelector from '../../selectors/navigator-selector/personal-navigator-selector';
 import PersonalReceiptPaymentHeaderBottom from './personal-receipt-payment-header-bottom';
-import PersonalProjectSelfHeaderBottom from './personal-project-self-header-bottom';
 import PersonalProjectCompanyHeaderBottom from './personal-project-company-header-bottom';
 // import PersonalIndexHeaderBottom from './personal-index-header-bottom';
 // import OrganizationIndexHeaderBottom from './organization-index-header-bottom';
@@ -22,9 +21,7 @@ export const HomeHeader = () => {
 
   const renderHeaderBottom = () => {
     switch (true) {
-      case pathname.includes('/personal/project-self'):
-        return <PersonalProjectSelfHeaderBottom />;
-      case pathname.includes('/personal/project-company'):
+      case pathname.includes('/personal/project'):
         return <PersonalProjectCompanyHeaderBottom />;
       case pathname.includes('/personal/receipt-payment'):
         return <PersonalReceiptPaymentHeaderBottom />;

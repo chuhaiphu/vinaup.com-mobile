@@ -6,7 +6,6 @@ import { COLORS } from '@/constants/style-constant';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { Ionicons } from '@expo/vector-icons';
 
-import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import VinaupSelector from '@/components/icons/vinaup-selector.native';
 import VinaupUtilityShape from '@/components/icons/vinaup-utility-shape.native';
@@ -18,7 +17,7 @@ export default function PersonalNavigatorSelector() {
 
   const navItems: SelectOption[] = [
     {
-      value: '/personal/project-company',
+      value: '/personal/project',
       label: 'Thu chi Dự án',
       leftSection: (
         <VinaupPlusMinusMultiplyEqual
@@ -33,13 +32,6 @@ export default function PersonalNavigatorSelector() {
       label: 'Được share với bạn',
       leftSection: (
         <Ionicons name="share-social" size={26} color={COLORS.vinaupTeal} />
-      ),
-    },
-    {
-      value: '/personal/project-self',
-      label: 'Lịch tiền công',
-      leftSection: (
-        <VinaupCalendarIcon width={26} height={26} color={COLORS.vinaupTeal} />
       ),
     },
   ];

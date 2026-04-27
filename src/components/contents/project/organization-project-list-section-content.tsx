@@ -9,7 +9,6 @@ import {
 import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment-apis';
 import { ProjectCard } from '@/components/cards/project-card';
 import { ReceiptPaymentsSummary } from '@/components/summaries/receipt-payments-summary';
-import { PROJECT_TYPE } from '@/constants/project-constants';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useRouter } from 'expo-router';
@@ -43,7 +42,7 @@ export function OrganizationProjectListSectionContent({
       pathname: '/(protected)/project-detail/[projectId]',
       params: {
         projectId: project.id,
-        type: PROJECT_TYPE.ORGANIZATION,
+        organizationId: organizationId,
       },
     });
     setIsNavigating(false);
@@ -51,7 +50,6 @@ export function OrganizationProjectListSectionContent({
 
   const fetchProjectsAndReceiptPaymentsFn = async () => {
     const projectsRes = await getProjectsOfByOrganizationIdApi(organizationId, {
-      type: PROJECT_TYPE.ORGANIZATION,
       status: statusFilter || undefined,
       startDate: selectedDate.startOf('month').toISOString(),
       endDate: selectedDate.endOf('month').toISOString(),

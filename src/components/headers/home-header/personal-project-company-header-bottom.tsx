@@ -15,7 +15,6 @@ const PersonalProjectCompanyHeaderBottom = () => {
   const createProjectFn = () =>
     createProjectApi({
       description: 'Dự án',
-      type: 'COMPANY',
       endDate: new Date().toISOString(),
       startDate: new Date().toISOString(),
     });
@@ -31,7 +30,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
         setIsNavigating(true);
         try {
           await prefetch(() => getProjectByIdApi(data?.id || ''), {
-            fetchKey: `personal-project-company-${data?.id}`,
+            fetchKey: `personal-project-${data?.id}`,
           });
         } catch {
           // Fallback to normal navigation if prefetch fails.
@@ -39,7 +38,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
         setIsNavigating(false);
         router.push({
           pathname: '/(protected)/project-detail/[projectId]',
-          params: { projectId: data?.id || '', type: data?.type },
+          params: { projectId: data?.id || '' },
         });
       },
       onError: (error) =>

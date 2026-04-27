@@ -34,10 +34,10 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
 
   const getProjectInfoText = () => {
     if (!project) return '';
-    if (project.type === 'SELF' || project.type === 'COMPANY') {
-      return `${project.externalOrganizationName || ''}`;
+    if (project.organizationId) {
+      return `${project.organization?.name || ''}`;
     }
-    return `${project.organization?.name || ''}`;
+    return `${project.externalOrganizationName || ''}`;
   };
 
   const getProjectDateRangeText = () => {

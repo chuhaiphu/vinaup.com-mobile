@@ -7,7 +7,6 @@ import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createProjectApi, getProjectByIdApi } from '@/apis/project-apis';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
-import { PROJECT_TYPE } from '@/constants/project-constants';
 
 const OrganizationProjectHeaderBottom = () => {
   const router = useRouter();
@@ -19,7 +18,6 @@ const OrganizationProjectHeaderBottom = () => {
   const createProjectFn = () => {
     return createProjectApi({
       description: 'Dự án',
-      type: PROJECT_TYPE.ORGANIZATION,
       endDate: new Date().toISOString(),
       startDate: new Date().toISOString(),
       organizationId: params.organizationId,
@@ -54,7 +52,7 @@ const OrganizationProjectHeaderBottom = () => {
           pathname: '/(protected)/project-detail/[projectId]',
           params: {
             projectId,
-            type: PROJECT_TYPE.ORGANIZATION,
+            organizationId: params.organizationId,
           },
         });
       },

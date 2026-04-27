@@ -7,19 +7,13 @@ import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { Select } from '@/components/primitives/select';
 import { ProjectStatusOptions } from '@/constants/project-constants';
 import { EntityListSectionSkeleton } from '@/components/skeletons/entity-list-section-skeleton';
-import { PersonalProjectListSectionContent } from './personal-project-list-section-content';
+import { PersonalProjectListSectionContent } from '@/components/contents/project/personal-project-list-section-content';
 
-type PersonalProjectListContentProps = {
-  projectType: 'SELF' | 'COMPANY';
-};
-
-export function PersonalProjectListContent({
-  projectType,
-}: PersonalProjectListContentProps) {
+export default function PersonalProjectScreen() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [statusFilter, setStatusFilter] = useState('');
 
-  const suspenseKey = `personal-project-list-${projectType}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
+  const suspenseKey = `personal-project-list-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   return (
     <View style={styles.container}>
@@ -59,7 +53,6 @@ export function PersonalProjectListContent({
       <Suspense fallback={<EntityListSectionSkeleton />}>
         <PersonalProjectListSectionContent
           key={suspenseKey}
-          projectType={projectType}
           selectedDate={selectedDate}
           statusFilter={statusFilter}
         />

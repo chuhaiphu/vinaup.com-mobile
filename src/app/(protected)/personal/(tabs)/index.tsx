@@ -19,7 +19,6 @@ import {
 } from '@/constants/app-constant';
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
-import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
 import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
@@ -40,15 +39,6 @@ export default function PersonalIndexScreen() {
       leftSection: (
         <View style={styles.utilityOptionIcon}>
           <VinaupPlusMinus width={22} height={22} color={COLORS.vinaupTeal} />
-        </View>
-      ),
-    },
-    {
-      label: 'Thu chi Tiền công',
-      value: PERSONAL_UTILITY_KEYS.projectSelf,
-      leftSection: (
-        <View style={styles.utilityOptionIcon}>
-          <VinaupCalendarIcon width={22} height={22} color={COLORS.vinaupTeal} />
         </View>
       ),
     },
@@ -83,41 +73,23 @@ export default function PersonalIndexScreen() {
     tags: ['personal-receipt-payment-list'],
   });
 
-  const fetchProjectsSelfFn = () =>
+  const fetchProjectsFn = () =>
     getProjectsOfCurrentUserApi({
-      type: 'SELF',
       startDate: selectedDate.startOf('day').toISOString(),
       endDate: selectedDate.endOf('day').toISOString(),
     });
 
   const {
-    data: projectsSelf,
-    executeFetchFn: fetchProjectsSelf,
-    isRefreshing: isRefreshingProjectsSelf,
-    refreshFetchFn: refreshProjectsSelf,
-  } = useFetchFn(fetchProjectsSelfFn, {
-    fetchKey: `personal-project-list-self-${selectedDate.format('YYYY-MM-DD')}`,
+    data: projects,
+    executeFetchFn: fetchProjects,
+    isRefreshing: isRefreshingProjects,
+    refreshFetchFn: refreshProjects,
+  } = useFetchFn(fetchProjectsFn, {
+    fetchKey: `personal-project-list-${selectedDate.format('YYYY-MM-DD')}`,
     tags: ['personal-project-list'],
   });
 
-  const fetchProjectsCompanyFn = () =>
-    getProjectsOfCurrentUserApi({
-      type: 'COMPANY',
-      startDate: selectedDate.startOf('day').toISOString(),
-      endDate: selectedDate.endOf('day').toISOString(),
-    });
-
-  const {
-    data: projectsCompany,
-    executeFetchFn: fetchProjectsCompany,
-    isRefreshing: isRefreshingProjectsCompany,
-    refreshFetchFn: refreshProjectsCompany,
-  } = useFetchFn(fetchProjectsCompanyFn, {
-    fetchKey: `personal-project-list-company-${selectedDate.format('YYYY-MM-DD')}`,
-    tags: ['personal-project-list'],
-  });
-
-  const [receiptPaymentsInProjectSelf, setReceiptPaymentsInProjectSelf] = useState<
+  const [receiptPaymentsInProjects, setReceiptPaymentsInProjects] = useState<
     ReceiptPaymentResponse[] | null
   >(null);
 
@@ -126,50 +98,39 @@ export default function PersonalIndexScreen() {
   }, [fetchReceiptPaymentsSelf, selectedDate]);
 
   useEffect(() => {
-    fetchProjectsSelf();
-  }, [fetchProjectsSelf, selectedDate]);
+    fetchProjects();
+  }, [fetchProjects, selectedDate]);
 
   useEffect(() => {
-    fetchProjectsCompany();
-  }, [fetchProjectsCompany, selectedDate]);
-
-  useEffect(() => {
-    if (!projectsSelf) return;
-    const ids = projectsSelf.map((p) => p.id);
+    if (!projects) return;
+    const ids = projects.map((p) => p.id);
     if (ids.length === 0) {
-      setReceiptPaymentsInProjectSelf([]);
+      setReceiptPaymentsInProjects([]);
       return;
     }
     getReceiptPaymentsByProjectIdsApi(ids).then((res) => {
-      setReceiptPaymentsInProjectSelf(res.data ?? null);
+      setReceiptPaymentsInProjects(res.data ?? null);
     });
-  }, [projectsSelf]);
+  }, [projects]);
 
   const handlePress = (key: string) => {
-    if (key === PERSONAL_UTILITY_KEYS.projectSelf) {
-      router.push('/(protected)/personal/(tabs)/project-self');
-      return;
-    }
     if (key === PERSONAL_UTILITY_KEYS.projectCompany) {
-      router.push('/(protected)/personal/(tabs)/project-company');
+      router.push('/(protected)/personal/(tabs)/project' as never);
       return;
     }
     if (key === PERSONAL_UTILITY_KEYS.receiptPayment) {
       router.push('/(protected)/personal/(tabs)/receipt-payment');
     }
   };
+
   const onRefresh = async () => {
     await Promise.all([
       refreshReceiptPaymentsSelf(),
-      refreshProjectsSelf(),
-      refreshProjectsCompany(),
+      refreshProjects(),
     ]);
   };
 
-  const isRefreshing =
-    isRefreshingReceiptPaymentsSelf ||
-    isRefreshingProjectsSelf ||
-    isRefreshingProjectsCompany;
+  const isRefreshing = isRefreshingReceiptPaymentsSelf || isRefreshingProjects;
 
   const allUtilities = [
     {
@@ -179,15 +140,9 @@ export default function PersonalIndexScreen() {
       icon: <VinaupPlusMinus width={26} height={26} color={COLORS.vinaupTeal} />,
     },
     {
-      key: PERSONAL_UTILITY_KEYS.projectSelf,
-      label: 'Thu chi Tiền công',
-      value: `(${projectsSelf?.length || 0})`,
-      icon: <VinaupCalendarIcon width={26} height={26} color={COLORS.vinaupTeal} />,
-    },
-    {
       key: PERSONAL_UTILITY_KEYS.projectCompany,
       label: 'Thu chi Dự án',
-      value: `(${projectsCompany?.length || 0})`,
+      value: `(${projects?.length || 0})`,
       icon: (
         <VinaupPlusMinusMultiplyEqual
           width={26}
@@ -234,7 +189,7 @@ export default function PersonalIndexScreen() {
         </PressableOpacity>
       </View>
 
-      <PersonalHomeIndexSummary receiptPayments={receiptPaymentsInProjectSelf} />
+      <PersonalHomeIndexSummary receiptPayments={receiptPaymentsInProjects} />
 
       <View style={styles.utilitiesRow}>
         <View style={styles.utilitiesLeft}>

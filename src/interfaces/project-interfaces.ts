@@ -1,11 +1,11 @@
 import { OrganizationResponse } from './organization-interfaces';
 import { UserResponse } from './user-interfaces';
 import { OrganizationCustomerResponse } from './organization-customer-interfaces';
-import { ProjectStatus, ProjectType } from '@/constants/project-constants';
+import { ProjectStatus } from '@/constants/project-constants';
 
 export interface ProjectResponse {
   id: string;
-  type: ProjectType;
+  type: string | null;
   code: string;
   description: string;
   startDate: string;
@@ -23,7 +23,7 @@ export interface ProjectResponse {
 }
 
 export interface CreateProjectRequest {
-  type: ProjectType;
+  type?: string;
   description: string;
   endDate: string;
   startDate?: string;

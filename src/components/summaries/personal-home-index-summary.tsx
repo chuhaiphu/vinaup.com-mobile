@@ -20,7 +20,7 @@ export function PersonalHomeIndexSummary({
   const router = useRouter();
 
   const handlePressSchedule = () => {
-    router.push('/(protected)/personal/(tabs)/project-company');
+    router.push('/(protected)/personal/(tabs)/project' as never);
   };
 
   return (

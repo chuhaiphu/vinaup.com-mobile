@@ -1,43 +1,30 @@
 import { useLocalSearchParams } from 'expo-router';
-import { ProjectType } from '@/constants/project-constants';
 import {
-  SelfProjectDetailProvider,
-} from '@/providers/self-project-detail-provider';
-import {
-  CompanyProjectDetailProvider,
-} from '@/providers/company-project-detail-provider';
+  PersonalProjectDetailProvider,
+} from '@/providers/personal-project-detail-provider';
 import {
   OrganizationProjectDetailProvider,
 } from '@/providers/organization-project-detail-provider';
-import { SelfProjectDetailContent } from '@/components/contents/project/self-project-detail-content';
-import { CompanyProjectDetailContent } from '@/components/contents/project/company-project-detail-content';
+import { PersonalProjectDetailContent } from '@/components/contents/project/personal-project-detail-content';
 import { OrganizationProjectDetailContent } from '@/components/contents/project/organization-project-detail-content';
 
 export default function ProjectDetailScreen() {
-  const { projectId, type } = useLocalSearchParams<{
+  const { projectId, organizationId } = useLocalSearchParams<{
     projectId: string;
-    type: ProjectType;
+    organizationId?: string;
   }>();
 
-  if (type === 'SELF') {
+  if (organizationId) {
     return (
-      <SelfProjectDetailProvider projectId={projectId}>
-        <SelfProjectDetailContent />
-      </SelfProjectDetailProvider>
-    );
-  }
-
-  if (type === 'COMPANY') {
-    return (
-      <CompanyProjectDetailProvider projectId={projectId}>
-        <CompanyProjectDetailContent />
-      </CompanyProjectDetailProvider>
+      <OrganizationProjectDetailProvider projectId={projectId}>
+        <OrganizationProjectDetailContent />
+      </OrganizationProjectDetailProvider>
     );
   }
 
   return (
-    <OrganizationProjectDetailProvider projectId={projectId}>
-      <OrganizationProjectDetailContent />
-    </OrganizationProjectDetailProvider>
+    <PersonalProjectDetailProvider projectId={projectId}>
+      <PersonalProjectDetailContent />
+    </PersonalProjectDetailProvider>
   );
 }

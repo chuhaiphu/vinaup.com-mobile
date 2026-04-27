@@ -9,12 +9,6 @@ export const PROJECT_STATUS = {
 } as const;
 export type ProjectStatus = (typeof PROJECT_STATUS)[keyof typeof PROJECT_STATUS];
 
-export const PROJECT_TYPE = {
-  COMPANY: 'COMPANY',
-  SELF: 'SELF',
-  ORGANIZATION: 'ORGANIZATION',
-} as const;
-export type ProjectType = (typeof PROJECT_TYPE)[keyof typeof PROJECT_TYPE];
 
 export const ProjectStatusDisplay: Record<ProjectStatus, string> = {
   [PROJECT_STATUS.PROCESSING]: 'Đang xử lý',

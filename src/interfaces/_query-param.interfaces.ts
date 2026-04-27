@@ -4,7 +4,7 @@ export interface DateFilterParam {
 }
 
 export interface ProjectFilterParam extends DateFilterParam {
-  type?: 'SELF' | 'COMPANY' | 'ORGANIZATION';
+  type?: string;
   status?: string;
 }
 

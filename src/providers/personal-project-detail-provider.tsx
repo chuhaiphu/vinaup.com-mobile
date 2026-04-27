@@ -13,7 +13,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
-interface CompanyProjectDetailContextType {
+interface PersonalProjectDetailContextType {
   projectId: string;
   project: ProjectResponse | undefined;
   isLoadingProject: boolean;
@@ -28,19 +28,19 @@ interface CompanyProjectDetailContextType {
   refreshProject: () => void;
 }
 
-const CompanyProjectDetailContext =
-  createContext<CompanyProjectDetailContextType | null>(null);
+const PersonalProjectDetailContext =
+  createContext<PersonalProjectDetailContextType | null>(null);
 
-export function useCompanyProjectDetailContext() {
-  const ctx = useContext(CompanyProjectDetailContext);
+export function usePersonalProjectDetailContext() {
+  const ctx = useContext(PersonalProjectDetailContext);
   if (!ctx)
     throw new Error(
-      'useCompanyProjectDetailContext must be used within CompanyProjectDetailProvider'
+      'usePersonalProjectDetailContext must be used within PersonalProjectDetailProvider'
     );
   return ctx;
 }
 
-export function CompanyProjectDetailProvider({
+export function PersonalProjectDetailProvider({
   projectId,
   children,
 }: {
@@ -57,8 +57,8 @@ export function CompanyProjectDetailProvider({
     executeFetchFn: fetchProject,
     refreshFetchFn: refreshProject,
   } = useFetchFn(() => getProjectByIdApi(projectId), {
-    fetchKey: `personal-project-company-${projectId}`,
-    tags: [`personal-project-company-${projectId}`],
+    fetchKey: `personal-project-${projectId}`,
+    tags: [`personal-project-${projectId}`],
   });
 
   const { executeMutationFn: updateProject, isMutating: isUpdatingProject } =
@@ -120,7 +120,7 @@ export function CompanyProjectDetailProvider({
   }, [projectId, deleteProject, router, setIsNavigating]);
 
   return (
-    <CompanyProjectDetailContext
+    <PersonalProjectDetailContext
       value={{
         projectId,
         project: project ?? undefined,
@@ -134,6 +134,6 @@ export function CompanyProjectDetailProvider({
       }}
     >
       {children}
-    </CompanyProjectDetailContext>
+    </PersonalProjectDetailContext>
   );
 }
