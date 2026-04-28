@@ -8,7 +8,7 @@ import { TourSettlementResponse } from './tour-settlement-interfaces';
 
 export interface TourResponse {
   id: string;
-  code: string;
+  code: string | null;
   description: string;
   startDate: string;
   endDate: string;
@@ -29,6 +29,7 @@ export interface TourResponse {
 }
 
 export interface CreateTourRequest {
+  code?: string;
   description: string;
   startDate: string;
   endDate: string;
@@ -40,6 +41,7 @@ export interface CreateTourRequest {
 }
 
 export type UpdateTourRequest = Partial<CreateTourRequest> & {
+  code?: string;
   status?: TourStatus;
   adultTicketCount?: number;
   childTicketCount?: number;

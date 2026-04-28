@@ -45,7 +45,9 @@ export function DateTimePicker({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (selectedDate) {
-      onChange?.(dayjs(selectedDate).startOf('day'));
+      const dateValue = dayjs(selectedDate);
+      // For date mode, set it to the start of the day
+      onChange?.(mode === 'date' ? dateValue.startOf('day') : dateValue);
     }
     if (Platform.OS === 'ios') {
       setShowDatePicker(false);

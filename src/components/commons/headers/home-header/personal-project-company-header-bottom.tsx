@@ -5,6 +5,7 @@ import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createProjectApi, getProjectByIdApi } from '@/apis/project-apis';
+import { generateDateCode } from '@/utils/generator-helpers';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
@@ -14,6 +15,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
 
   const createProjectFn = () =>
     createProjectApi({
+      code: generateDateCode(),
       description: 'Dự án',
       endDate: new Date().toISOString(),
       startDate: new Date().toISOString(),

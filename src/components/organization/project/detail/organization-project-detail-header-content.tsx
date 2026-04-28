@@ -43,6 +43,7 @@ export function OrganizationProjectDetailHeaderContent() {
         <Text style={styles.dateText}>Từ {start.format('DD/MM')} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         <Text style={styles.dateText}> đến {end.format('DD/MM')}</Text>
+        <Text style={styles.hourText}> ({end.format('HH:mm')})</Text>
       </>
     );
   };
@@ -58,6 +59,9 @@ export function OrganizationProjectDetailHeaderContent() {
       >
         <View style={styles.leftInfo}>
           <Text style={styles.entityName}>Tên: {project.description}</Text>
+          {project.code ? (
+            <Text style={styles.codeText}>Mã: {project.code}</Text>
+          ) : null}
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
@@ -95,9 +99,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   entityName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.vinaupBlack,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  codeText: {
+    fontSize: 16,
+    color: COLORS.vinaupMediumDarkGray,
   },
   dateRow: {
     flexDirection: 'row',
@@ -109,7 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   hourText: {
-    color: COLORS.vinaupMediumGray,
+    color: COLORS.vinaupMediumDarkGray,
     fontSize: 16,
   },
   editButton: {

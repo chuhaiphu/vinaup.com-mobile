@@ -8,7 +8,7 @@ import { BaseMeta } from './_meta.interfaces';
 
 export interface BookingResponse {
   id: string;
-  code: string;
+  code: string | null;
   description: string;
   content: string | null;
   startDate: string;
@@ -29,6 +29,7 @@ export interface BookingResponse {
 }
 
 export interface CreateBookingRequest {
+  code?: string;
   description: string;
   content?: string;
   startDate: string;
@@ -40,6 +41,7 @@ export interface CreateBookingRequest {
 }
 
 export type UpdateBookingRequest = Partial<CreateBookingRequest> & {
+  code?: string;
   tourImplementationId?: string | null;
 };
 

@@ -8,6 +8,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createInvoiceApi, getInvoiceByIdApi } from '@/apis/invoice-apis';
+import { generateDateCode } from '@/utils/generator-helpers';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
@@ -27,6 +28,7 @@ const OrganizationInvoiceHeaderBottom = () => {
     if (!invoiceType)
       return Promise.reject(new Error('Không tìm thấy loại hoá đơn'));
     return createInvoiceApi({
+      code: generateDateCode(),
       invoiceTypeId: invoiceType.id,
       description: currentCode === 'BUY' ? 'Mua hàng' : 'Bán hàng',
       endDate: new Date().toISOString(),

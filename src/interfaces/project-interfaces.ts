@@ -6,7 +6,7 @@ import { ProjectStatus } from '@/constants/project-constants';
 export interface ProjectResponse {
   id: string;
   type: string | null;
-  code: string;
+  code: string | null;
   description: string;
   startDate: string;
   endDate: string;
@@ -23,6 +23,7 @@ export interface ProjectResponse {
 }
 
 export interface CreateProjectRequest {
+  code?: string;
   type?: string;
   description: string;
   endDate: string;

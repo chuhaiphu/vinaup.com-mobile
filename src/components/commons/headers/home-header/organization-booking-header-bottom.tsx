@@ -6,6 +6,7 @@ import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createBookingApi, getBookingByIdApi } from '@/apis/booking-apis';
+import { generateDateCode } from '@/utils/generator-helpers';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationBookingHeaderBottom = () => {
@@ -17,6 +18,7 @@ const OrganizationBookingHeaderBottom = () => {
 
   const createBookingFn = () => {
     return createBookingApi({
+      code: generateDateCode(),
       description: 'Booking mới',
       endDate: new Date().toISOString(),
       startDate: new Date().toISOString(),

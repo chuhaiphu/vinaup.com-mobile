@@ -7,6 +7,7 @@ import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createTourApi, getTourByIdApi } from '@/apis/tour-apis';
 import dayjs from 'dayjs';
+import { generateDateCode } from '@/utils/generator-helpers';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationTourHeaderBottom = () => {
@@ -16,6 +17,7 @@ const OrganizationTourHeaderBottom = () => {
 
   const createTourFn = () =>
     createTourApi({
+      code: generateDateCode(),
       description: 'Tiêu đề tour',
       organizationId,
       externalCustomerName: 'Khách lẻ',

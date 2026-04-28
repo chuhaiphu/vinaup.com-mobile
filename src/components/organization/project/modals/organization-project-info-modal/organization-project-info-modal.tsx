@@ -26,7 +26,7 @@ export function OrganizationProjectInfoModal({
   return (
     <SlideSheet ref={modalRef}>
       <OrganizationProjectInfoModalContent
-        prjCode={project.code}
+        prjCode={project.code ?? undefined}
         prjDescription={project.description}
         prjStartDate={project.startDate}
         prjEndDate={project.endDate}

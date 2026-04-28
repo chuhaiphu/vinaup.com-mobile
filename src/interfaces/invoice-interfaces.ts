@@ -8,7 +8,7 @@ export interface InvoiceResponse {
   id: string;
   invoiceTypeId: string;
   invoiceType: InvoiceTypeResponse;
-  code: string;
+  code: string | null;
   description: string;
   startDate: string;
   endDate: string;
@@ -31,6 +31,7 @@ export interface InvoiceResponse {
 }
 
 export interface CreateInvoiceRequest {
+  code?: string;
   invoiceTypeId: string;
   description: string;
   endDate: string;

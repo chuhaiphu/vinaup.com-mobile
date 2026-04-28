@@ -32,6 +32,7 @@ export function OrganizationProjectInfoModalContent({
   onCloseRequest,
 }: OrganizationProjectInfoModalContentProps) {
   const [description, setDescription] = useState(prjDescription);
+  const [code, setCode] = useState(prjCode ?? '');
   const [startDate, setStartDate] = useState<Dayjs>(dayjs(prjStartDate));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs(prjEndDate));
   const [inputErrors, setInputErrors] = useState<{
@@ -51,7 +52,7 @@ export function OrganizationProjectInfoModalContent({
       description,
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
-      code: prjCode,
+      code: code.trim() || undefined,
     });
   };
 
@@ -91,6 +92,24 @@ export function OrganizationProjectInfoModalContent({
                   description: !value.trim() ? true : undefined,
                 }));
               }}
+              placeholderTextColor={COLORS.vinaupMediumGray}
+              editable={!isLoading}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputItem}>
+          <View style={styles.inputWrapper}>
+            <View style={styles.labelSection}>
+              <Text style={styles.insideLabel}>Mã số</Text>
+            </View>
+            <View style={styles.separator} />
+            <TextInput
+              style={styles.inputNative}
+              placeholder="..."
+              maxLength={40}
+              value={code}
+              onChangeText={setCode}
               placeholderTextColor={COLORS.vinaupMediumGray}
               editable={!isLoading}
             />
