@@ -42,6 +42,7 @@ export function InvoiceDetailHeaderContent() {
         <Text style={styles.dateText}>Từ {start.format('DD/MM')} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         <Text style={styles.dateText}> đến {end.format('DD/MM')}</Text>
+        <Text style={styles.hourText}> ({end.format('HH:mm')})</Text>
       </>
     );
   };
@@ -63,7 +64,7 @@ export function InvoiceDetailHeaderContent() {
           <View style={styles.editButton}>
             <VinaupPenLineVariant width={16} height={16} />
           </View>
-          <Text style={styles.entityCode}>No. {invoice.code.slice(0, 8)}</Text>
+          <Text style={styles.entityCode}>No. {invoice.code}</Text>
         </View>
       </PressableCard>
       <InvoiceInfoModal

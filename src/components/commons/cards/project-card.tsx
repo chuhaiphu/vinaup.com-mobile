@@ -105,8 +105,10 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
             <View style={styles.descriptionContainer}>
               <Text style={styles.descriptionText}>{project.description}</Text>
             </View>
-            <View style={styles.action}>
-              {/* <VinaupPenLine width={20} height={20} /> */}
+            <View style={styles.code}>
+              {project.code && (
+                <Text style={styles.codeText}>{project.code}</Text>
+              )}
             </View>
           </View>
           <View style={styles.bottomRow}>
@@ -123,9 +125,10 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
+    marginBottom: 6,
   },
   innerHeader: {
-    marginVertical: 8,
+    marginVertical: 6,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
@@ -136,8 +139,7 @@ const styles = StyleSheet.create({
   },
   right: {},
   projectDateRangeText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15
   },
   projectTotalAmountText: {
     fontSize: 16,
@@ -183,9 +185,13 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {},
   descriptionText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
-  action: {},
+  code: {},
+  codeText: {
+    fontSize: 14,
+    color: COLORS.vinaupDarkGray
+  },
 });

@@ -11,6 +11,7 @@ interface TourInfoModalProps {
       description: string;
       startDate: string;
       endDate: string;
+      code?: string;
     },
     onSuccessCallback?: () => void
   ) => void;
@@ -26,6 +27,7 @@ export function TourInfoModal({
     <SlideSheet ref={modalRef}>
       <TourInfoModalContent
         tourDescription={tour.description}
+        tourCode={tour.code ?? undefined}
         tourStartDate={tour.startDate}
         tourEndDate={tour.endDate}
         isLoading={isLoading}

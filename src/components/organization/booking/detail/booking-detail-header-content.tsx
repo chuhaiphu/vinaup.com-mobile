@@ -48,6 +48,7 @@ export function BookingDetailHeaderContent() {
         <Text style={styles.dateText}>Từ {start.format('DD/MM')} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         <Text style={styles.dateText}> đến {end.format('DD/MM')}</Text>
+        <Text style={styles.hourText}> ({end.format('HH:mm')})</Text>
       </>
     );
   };
@@ -71,7 +72,7 @@ export function BookingDetailHeaderContent() {
               <VinaupPenLineVariant width={16} height={16} />
             </View>
           )}
-          <Text style={styles.entityCode}>No. {booking.code.slice(0, 8)}</Text>
+          <Text style={styles.entityCode}>No. {booking.code}</Text>
         </View>
       </PressableCard>
       <BookingInfoModal

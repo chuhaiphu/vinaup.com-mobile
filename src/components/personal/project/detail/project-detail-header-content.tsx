@@ -58,6 +58,7 @@ export function ProjectDetailHeaderContent({
         <Text style={styles.dateText}>Từ {start.format('DD/MM')} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         <Text style={styles.dateText}> đến {end.format('DD/MM')}</Text>
+        <Text style={styles.hourText}> ({end.format('HH:mm')})</Text>
       </>
     );
   };
@@ -73,13 +74,15 @@ export function ProjectDetailHeaderContent({
       >
         <View style={styles.leftInfo}>
           <Text style={styles.entityName}>Tên: {project.description}</Text>
+          {project.code ? (
+            <Text style={styles.codeText}>Mã: {project.code}</Text>
+          ) : null}
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
           <View style={styles.editButton}>
             <VinaupPenLineVariant width={16} height={16} />
           </View>
-          {/* <Text style={styles.entityCode}>No. {project.code.slice(0, 8)}</Text> */}
         </View>
       </PressableCard>
       <ProjectInfoModal
@@ -111,6 +114,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: COLORS.vinaupBlack,
+  },
+  codeText: {
+    fontSize: 16,
+    color: COLORS.vinaupMediumDarkGray,
   },
   dateRow: {
     flexDirection: 'row',

@@ -7,6 +7,7 @@ import dayjs, { Dayjs } from 'dayjs';
 
 interface TourInfoModalContentProps {
   tourDescription?: string;
+  tourCode?: string;
   tourStartDate?: string;
   tourEndDate?: string;
   isLoading?: boolean;
@@ -14,12 +15,14 @@ interface TourInfoModalContentProps {
     description: string;
     startDate: string;
     endDate: string;
+    code?: string;
   }) => void;
   onCloseRequest?: () => void;
 }
 
 export function TourInfoModalContent({
   tourDescription = '',
+  tourCode = '',
   tourStartDate,
   tourEndDate,
   isLoading = false,
@@ -27,6 +30,7 @@ export function TourInfoModalContent({
   onCloseRequest,
 }: TourInfoModalContentProps) {
   const [description, setDescription] = useState(tourDescription);
+  const [code, setCode] = useState(tourCode);
   const [startDate, setStartDate] = useState<Dayjs>(
     tourStartDate ? dayjs(tourStartDate) : dayjs()
   );
@@ -51,6 +55,7 @@ export function TourInfoModalContent({
       description,
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
+      code: code.trim() || undefined,
     });
   };
 
@@ -90,6 +95,24 @@ export function TourInfoModalContent({
                   description: !value.trim() ? true : undefined,
                 }));
               }}
+              placeholderTextColor={COLORS.vinaupMediumGray}
+              editable={!isLoading}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputItem}>
+          <View style={styles.inputWrapper}>
+            <View style={styles.labelSection}>
+              <Text style={styles.insideLabel}>Mã số</Text>
+            </View>
+            <View style={styles.separator} />
+            <TextInput
+              style={styles.inputNative}
+              placeholder="..."
+              maxLength={40}
+              value={code}
+              onChangeText={setCode}
               placeholderTextColor={COLORS.vinaupMediumGray}
               editable={!isLoading}
             />

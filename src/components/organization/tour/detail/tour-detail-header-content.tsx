@@ -39,7 +39,7 @@ export function TourDetailHeaderContent({
     if (start.isSame(end, 'day')) {
       return (
         <>
-          <Text style={styles.dateText}>Ngày {start.format('DD/MM/YY')} </Text>
+          <Text style={styles.dateText}>Ngày {start.format('DD/MM')} </Text>
           <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         </>
       );
@@ -48,7 +48,8 @@ export function TourDetailHeaderContent({
       <>
         <Text style={styles.dateText}>Từ {start.format('DD/MM')} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
-        <Text style={styles.dateText}> đến {end.format('DD/MM/YY')}</Text>
+        <Text style={styles.dateText}> đến {end.format('DD/MM')}</Text>
+        <Text style={styles.hourText}> ({end.format('HH:mm')})</Text>
       </>
     );
   };
@@ -70,7 +71,7 @@ export function TourDetailHeaderContent({
           <View style={styles.editButton}>
             <VinaupPenLineVariant width={14} height={14} />
           </View>
-          <Text style={styles.entityCode}>No. {tour?.code.slice(0, 8)}</Text>
+          <Text style={styles.entityCode}>No. {tour?.code}</Text>
         </View>
       </PressableCard>
       {tour && (

@@ -9,6 +9,7 @@ import VinaupLeftRightArrows from '@/components/icons/vinaup-left-right-arrows.n
 
 interface BookingInfoModalContentProps {
   bookingDescription?: string;
+  bookingCode?: string;
   bookingStartDate?: string;
   bookingEndDate?: string;
   isLoading?: boolean;
@@ -16,12 +17,14 @@ interface BookingInfoModalContentProps {
     description: string;
     startDate: string;
     endDate: string;
+    code?: string;
   }) => void;
   onCloseRequest?: () => void;
 }
 
 export function BookingInfoModalContent({
   bookingDescription = '',
+  bookingCode = '',
   bookingStartDate,
   bookingEndDate,
   isLoading = false,
@@ -29,6 +32,7 @@ export function BookingInfoModalContent({
   onCloseRequest,
 }: BookingInfoModalContentProps) {
   const [description, setDescription] = useState(bookingDescription);
+  const [code, setCode] = useState(bookingCode);
   const [startDate, setStartDate] = useState<Dayjs>(dayjs(bookingStartDate));
   const [endDate, setEndDate] = useState<Dayjs>(dayjs(bookingEndDate));
   const [inputErrors, setInputErrors] = useState<{
@@ -48,6 +52,7 @@ export function BookingInfoModalContent({
       description,
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
+      code: code.trim() || undefined,
     });
   };
 
@@ -87,6 +92,24 @@ export function BookingInfoModalContent({
                   description: !value.trim() ? true : undefined,
                 }));
               }}
+              placeholderTextColor={COLORS.vinaupMediumGray}
+              editable={!isLoading}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputItem}>
+          <View style={styles.inputWrapper}>
+            <View style={styles.labelSection}>
+              <Text style={styles.insideLabel}>Mã số</Text>
+            </View>
+            <View style={styles.separator} />
+            <TextInput
+              style={styles.inputNative}
+              placeholder="..."
+              maxLength={40}
+              value={code}
+              onChangeText={setCode}
               placeholderTextColor={COLORS.vinaupMediumGray}
               editable={!isLoading}
             />

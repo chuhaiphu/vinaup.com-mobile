@@ -37,7 +37,6 @@ export function ProjectInfoModalContent({
   const [endDate, setEndDate] = useState<Dayjs>(dayjs(prjEndDate));
   const [inputErrors, setInputErrors] = useState<{
     description?: boolean;
-    code?: boolean;
   }>({});
 
   const isSameDay = startDate.isSame(endDate, 'day');
@@ -46,7 +45,6 @@ export function ProjectInfoModalContent({
   const handleConfirm = () => {
     const errors: typeof inputErrors = {};
     if (!description.trim()) errors.description = true;
-    if (code.trim() === '') errors.code = true;
     setInputErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
@@ -100,40 +98,23 @@ export function ProjectInfoModalContent({
           </View>
         </View>
 
-        {/* <View style={styles.inputItem}>
-          <View
-            style={[
-              styles.inputWrapper,
-              inputErrors.code && styles.inputError,
-            ]}
-          >
+        <View style={styles.inputItem}>
+          <View style={styles.inputWrapper}>
             <View style={styles.labelSection}>
-              <Text
-                style={[
-                  styles.insideLabel,
-                  inputErrors.code && styles.labelError,
-                ]}
-              >
-                No.
-              </Text>
+              <Text style={styles.insideLabel}>Mã số</Text>
             </View>
             <View style={styles.separator} />
             <TextInput
               style={styles.inputNative}
+              placeholder="..."
+              maxLength={40}
               value={code}
-              placeholder="Mã số"
-              onChangeText={(value) => {
-                setCode(value);
-                setInputErrors((prev) => ({
-                  ...prev,
-                  code: value.trim() === '' ? true : undefined,
-                }));
-              }}
+              onChangeText={setCode}
               placeholderTextColor={COLORS.vinaupMediumGray}
               editable={!isLoading}
             />
           </View>
-        </View> */}
+        </View>
 
         <View style={styles.inputGroup}>
           <View style={styles.dateRow}>

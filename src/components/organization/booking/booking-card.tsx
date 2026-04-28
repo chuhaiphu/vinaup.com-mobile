@@ -86,7 +86,7 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
               <Text style={styles.dateText}>
                 Từ {startDate} đến {endDate}
               </Text>
-              <Text style={styles.codeText}>No. {booking?.code}</Text>
+              <Text style={styles.codeText}>{booking?.code}</Text>
             </View>
           </View>
           <View style={styles.divider} />

@@ -54,6 +54,11 @@ export function TourCard({ tour }: TourCardProps) {
           <View style={styles.descriptionContainer}>
             <Text style={styles.descriptionText}>{tour.description}</Text>
           </View>
+          <View style={styles.code}>
+            {tour.code && (
+              <Text style={styles.codeText}>{tour.code}</Text>
+            )}
+          </View>
         </View>
         <View style={styles.bottomRow}>
           <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
@@ -68,9 +73,10 @@ export function TourCard({ tour }: TourCardProps) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
+    marginBottom: 6,
   },
   innerHeader: {
-    marginVertical: 4,
+    marginVertical: 6,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
@@ -81,8 +87,7 @@ const styles = StyleSheet.create({
   },
   right: {},
   tourDateRangeText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
   },
   tourStatusText: {
     fontSize: 14,
@@ -112,9 +117,14 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {},
   descriptionText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
+  },
+  code: {},
+  codeText: {
+    fontSize: 14,
+    color: COLORS.vinaupDarkGray,
   },
 });
 

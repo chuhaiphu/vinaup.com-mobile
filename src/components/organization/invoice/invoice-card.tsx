@@ -125,7 +125,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
             <View style={styles.descriptionContainer}>
               <Text style={styles.descriptionText}>{invoice.description}</Text>
             </View>
-            <Text style={styles.codeText}>No. {invoice.code.slice(0, 8)}</Text>
+            <Text style={styles.codeText}>{invoice.code}</Text>
           </View>
           <View style={styles.bottomRow}>
             <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
@@ -148,9 +148,10 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
+    marginBottom: 6,
   },
   innerHeader: {
-    marginVertical: 4,
+    marginVertical: 6,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
@@ -161,8 +162,7 @@ const styles = StyleSheet.create({
   },
   right: {},
   dateRangeText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
   },
   statusText: {
     fontSize: 14,
@@ -205,13 +205,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   descriptionText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
   codeText: {
     fontSize: 14,
-    color: COLORS.vinaupBlack,
+    color: COLORS.vinaupDarkGray,
     marginLeft: 8,
     flexShrink: 0,
   },

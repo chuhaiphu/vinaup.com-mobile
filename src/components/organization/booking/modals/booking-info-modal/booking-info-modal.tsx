@@ -11,6 +11,7 @@ interface BookingInfoModalProps {
       description: string;
       startDate: string;
       endDate: string;
+      code?: string;
     },
     onSuccessCallback?: () => void
   ) => void;
@@ -26,6 +27,7 @@ export function BookingInfoModal({
     <SlideSheet ref={modalRef}>
       <BookingInfoModalContent
         bookingDescription={booking.description}
+        bookingCode={booking.code ?? undefined}
         bookingStartDate={booking.startDate}
         bookingEndDate={booking.endDate}
         isLoading={isLoading}
