@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+<div align="center">
+  <img src="src/assets/images/logo-vinaup.png" alt="VinaUp Logo" width="120" />
+  <h1>VinaUp Mobile</h1>
+  <p>Income & expense management app for individuals and organizations.</p>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+  ![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue)
+  ![Expo](https://img.shields.io/badge/Expo-55.0.0-000020?logo=expo)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)
+  ![React Native](https://img.shields.io/badge/React%20Native-0.83.2-61DAFB?logo=react)
+</div>
 
-## Get started
+---
 
-1. Install dependencies
+## Table of Contents
 
-   ```bash
-   npm install
-   ```
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Setup](#setup)
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## Overview
 
-In the output, you'll find options to open the app in a
+VinaUp Mobile is an income and expense management app for a wide range of users — from individuals such as office workers and laborers, to organizations including small retail businesses.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+The app currently includes specialized support for **Travel Companies and Tour Guides**, with plans to expand to additional business types in the future.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The app operates in two modes:
 
-## Get a fresh project
+- **Personal Mode** — income/expense tracking and project management for individual users
+- **Organization Mode** — full workspace per organization with tours, bookings, invoices, projects, and team management
 
-When you're ready, run:
+A single account can belong to multiple organizations and switch between them seamlessly.
 
-```bash
-npm run reset-project
-```
+---
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Architecture
 
-## Learn more
+For system context, component structure, and how the app is organized internally, see:
 
-To learn more about developing your project with Expo, look at the following resources:
+**[docs/architecture/SYSTEM-CONTEXT.md](docs/architecture/SYSTEM-CONTEXT.md)**
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+**[docs/architecture/COMPONENT.md](docs/architecture/COMPONENT.md)**
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## Setup
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+For installation, environment variables, local development build, USB debugging, wireless debugging, and EAS build instructions, see:
+
+**[docs/setup/SETUP.md](docs/setup/SETUP.md)**
+
+If you cannot connect wirelessly during development, see:
+
+**[docs/setup/TROUBLESHOOTING.md](docs/setup/TROUBLESHOOTING.md)**
