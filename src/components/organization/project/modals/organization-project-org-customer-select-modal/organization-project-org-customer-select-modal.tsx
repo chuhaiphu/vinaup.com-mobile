@@ -20,7 +20,7 @@ import { Button } from '@/components/primitives/button';
 import { useAllOrganizationsContext } from '@/providers/all-organizations-provider';
 import { useOrganizationCustomerContext } from '@/providers/organization-customer-provider';
 import { useOrganizationProjectDetailContext } from '@/providers/organization-project-detail-provider';
-import { OrganizationProjectOrgCustomerRealList } from './organization-project-org-customer-real-list';
+import { OrgCustomerRealList } from '@/components/commons/org-customer-real-list';
 import { OrganizationProjectOrgCustomerInternalList } from './organization-project-org-customer-internal-list';
 
 interface OrganizationProjectOrgCustomerSelectModalProps {
@@ -278,7 +278,7 @@ export function OrganizationProjectOrgCustomerSelectModal({
         </View>
 
         {currentTab === 'real' ? (
-          <OrganizationProjectOrgCustomerRealList
+          <OrgCustomerRealList
             realOrganizations={realOrganizations}
             selectedKey={pendingSelectedKey}
             isBusy={isBusy}

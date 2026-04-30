@@ -19,6 +19,7 @@ import {
   useInvoiceDetailContext,
 } from '@/providers/invoice-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 export default function InvoiceDetailScreen() {
   const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
@@ -42,6 +43,11 @@ function InvoiceDetailScreenContent() {
     handleDelete,
     refreshInvoice,
   } = useInvoiceDetailContext();
+  const setIsNavigating = useNavigationStore((s) => s.setIsNavigating);
+
+  function handleDeleteInvoice() {
+    return handleDelete(() => setIsNavigating(true), () => setIsNavigating(false));
+  }
 
   const handleSaveAndExit = () => {
     if (!invoice) return;
@@ -64,7 +70,7 @@ function InvoiceDetailScreenContent() {
           ' ' +
           (invoice?.invoiceType.description ? invoice?.invoiceType.description : '')
         }
-        onDelete={handleDelete}
+        onDelete={handleDeleteInvoice}
         onSave={handleSaveAndExit}
         isDeleting={isDeletingInvoice}
       />

@@ -1,30 +1,15 @@
 # Provider Pattern
 
-## Intent
+## What
 
-Wrap a subtree of the component tree with a React Context that owns server-derived state for a specific domain or entity. Consumers anywhere in the subtree can access data and mutation handlers without prop-drilling.
+A provider is a React Context component that owns server-derived state for a specific domain or entity. It fetches data, exposes that data and mutation handlers through context, and wraps only the route subtree that needs it. Consumers anywhere inside that subtree access data through a typed hook without prop-drilling.
 
----
+### Context type interface
 
-## Where It Is Used
+Declares exactly what the provider exposes. Every field is typed; no `any`, no raw `data` objects.
 
-All files in `src/providers/`. There are two variants:
-
-| Variant | Purpose | Examples |
-|---------|---------|---------|
-| **List Provider** | Fetches a list, exposes refresh | `OrganizationProvider`, `AllOrganizationsProvider`, `InvoiceTypeProvider`, `OrganizationCustomerProvider` |
-| **Detail Provider** | Fetches a single entity by ID, exposes update/delete mutations | `TourDetailProvider`, `BookingDetailProvider`, `InvoiceDetailProvider`, `OrganizationProjectDetailProvider`, `PersonalProjectDetailProvider` |
-| **Auth Provider** | Special case — manages login/logout/token lifecycle | `AuthProvider` |
-| **UI-state Provider** | Thin wrapper with no API calls; pure client state | `OwnerModeProvider` |
-
----
-
-## Anatomy of a Provider
-
-Every provider follows the same five-part structure:
-
-### 1. Context type interface
 ```ts
+// src/providers/tour-detail-provider.tsx
 interface TourDetailContextType {
   tourId: string;
   tour: TourResponse | undefined;
@@ -36,13 +21,18 @@ interface TourDetailContextType {
 }
 ```
 
-### 2. Context creation with `null` default
+### Context with `null` default
+
+The context is created with `null`, not a fake default. This ensures that calling `useTourDetailContext()` outside the provider throws a clear error immediately, instead of silently returning stale or empty data.
+
 ```ts
 const TourDetailContext = createContext<TourDetailContextType | null>(null);
 ```
-Using `null` instead of a dummy default forces a runtime error if a consumer is rendered outside the provider — catching integration mistakes early.
 
-### 3. Custom hook with guard
+### Typed consumer hook with guard
+
+Consumers never call `useContext` directly. The exported hook centralises the `null` check.
+
 ```ts
 export function useTourDetailContext() {
   const ctx = useContext(TourDetailContext);
@@ -52,9 +42,11 @@ export function useTourDetailContext() {
 }
 ```
 
-### 4. Provider component
+### Provider component
+
+Owns the fetch and mutation lifecycle. Takes entity ID as a prop, wires `useFetchFn` and `useMutationFn`, and exposes handlers that include `onError` with `Alert.alert`.
+
 ```ts
-// src/providers/tour-detail-provider.tsx
 export function TourDetailProvider({ tourId, children }: { tourId: string; children: React.ReactNode }) {
   const { data: tour, isLoading, isRefreshing, executeFetchFn: fetchTour, refreshFetchFn: refreshTour } =
     useFetchFn(() => getTourByIdApi(tourId), {
@@ -89,54 +81,102 @@ export function TourDetailProvider({ tourId, children }: { tourId: string; child
 }
 ```
 
-### 5. Co-location with route layout
-```
-src/app/(protected)/tour-detail/[tourId]/_layout.tsx
-  └── TourDetailProvider (wraps all sub-screens of this route)
-        └── TourDetailLayoutContent (consumes useTourDetailContext)
-```
+### Provider tree — co-location
 
----
-
-## Provider Tree (co-location rules)
+Each provider is placed at the closest layout that wraps all screens needing it.
 
 ```
 src/app/_layout.tsx
-  └── AuthProvider                          ← global: auth state, token lifecycle
+  └── AuthProvider
 
 src/app/(protected)/_layout.tsx
-  └── AllOrganizationsProvider              ← global: user's full org list (for switcher)
-       └── OrganizationProvider             ← global: selected org + list
-            └── OwnerModeProvider           ← global: owner/member role toggle
+  └── AllOrganizationsProvider
+       └── OrganizationProvider
+            └── OwnerModeProvider
 
 src/app/(protected)/organization/[organizationId]/_layout.tsx
-  └── InvoiceTypeProvider                   ← org-scoped: invoice types for this org
+  └── InvoiceTypeProvider
 
-tour-detail/[tourId]/_layout.tsx            ← route-scoped detail providers
-booking-detail/[bookingId]/index.tsx
-invoice-detail/[invoiceId].tsx
-project-detail/[projectId].tsx
+src/app/(protected)/tour-detail/[tourId]/_layout.tsx
+  └── TourDetailProvider          ← route-scoped
+
+src/app/(protected)/booking-detail/[bookingId]/index.tsx
+  └── BookingDetailProvider       ← screen-scoped
+
+src/app/(protected)/invoice-detail/[invoiceId].tsx
+  └── InvoiceDetailProvider       ← screen-scoped
+
+src/app/(protected)/project-detail/[projectId].tsx
+  └── PersonalProjectDetailProvider | OrganizationProjectDetailProvider
 ```
 
-**Rule:** A provider must be placed in the **closest common ancestor** of all screens that need it — no higher.
+### Provider variants
+
+| Variant | Fetches data | Has mutations | Example |
+|---------|:---:|:---:|---------|
+| List provider | ✅ | ❌ | `OrganizationProvider`, `InvoiceTypeProvider` |
+| Detail provider | ✅ | ✅ | `TourDetailProvider`, `BookingDetailProvider` |
+| Auth provider | Special — login/logout/token lifecycle | `AuthProvider` |
+| UI-only provider | ❌ | ❌ | `OwnerModeProvider` |
 
 ---
 
-## Rules
+## Why
 
-1. **Context default is always `null`** — never provide a fake implementation as default.
-2. **Always export a custom hook** (`useTourDetailContext`) — consumers never call `useContext` directly.
-3. **Providers own mutations** — `handleUpdateTour`, `handleDelete` live in the provider, not in screens. Screens call handlers, not raw API functions.
-4. **onError is always handled** — every `executeMutationFn` call must have an `onError` callback with `Alert.alert`.
-5. **List providers use `?? []`**, detail providers use `?? undefined` as fallback for missing data.
-6. **Providers do not call `setIsNavigating`** — navigation loading state is UI state; it belongs in the screen/layout component that triggers navigation.
+Without providers, screens must each individually fetch and manage the same data, handle loading states, wire mutation callbacks, and pass results down through props across multiple levels. This produces duplicated fetch logic, inconsistent loading/error handling, and screens tightly coupled to the API layer.
+
+Providers centralise fetch ownership. A screen that needs a tour only calls `useTourDetailContext()` — it does not know how the tour is fetched, cached, or invalidated. When the fetch strategy changes (e.g., adding a new cache tag), it changes in one place.
+
+Co-locating providers with routes (rather than hoisting everything to root) ensures that data is only fetched when the screens that need it are actually mounted.
 
 ---
 
-## Adding a New Detail Provider
+## How
+
+### Rule 1 — Context default is always `null`
+
+Never provide a stub default. A `null` default means bad wiring is caught immediately as a thrown error, not silently swallowed.
+
+### Rule 2 — Always export a typed consumer hook
+
+Consumers call `useTourDetailContext()`, never `useContext(TourDetailContext)`. The hook is the public API; the context object is an implementation detail.
+
+### Rule 3 — Providers own mutations; screens call handlers
+
+The provider exposes `handleUpdateTour(fields, onSuccess?)`. The screen calls that handler. The screen does not import or call `updateTourApi` directly.
+
+### Rule 4 — Every `useMutationFn` call must have `onError`
 
 ```ts
-// 1. Define context type
+// ✅
+updateTour(fields, {
+  onSuccess: () => onSuccess?.(),
+  onError: (error: ApiError) => Alert.alert('Lỗi', generateErrorMessage(error)),
+});
+
+// ❌ — silent failure
+updateTour(fields, { onSuccess: () => onSuccess?.() });
+```
+
+### Rule 5 — `?? []` for lists, `?? undefined` for single entities
+
+```ts
+organizations: organizations ?? [],    // list — always an array, never null
+tour: tour ?? undefined,               // single — undefined signals "not yet loaded"
+```
+
+### Rule 6 — Providers do not call `setIsNavigating`
+
+Navigation loading is a UI concern. Remove any `useNavigationStore` imports from providers. The screen or layout that calls the mutation handler is responsible for toggling the navigation overlay.
+
+### Rule 7 — Co-locate with the closest ancestor route
+
+Do not hoist a detail provider to root just because it is convenient. Place it at the layout or screen file of the route that introduces the entity ID as a param.
+
+### Adding a new detail provider
+
+```ts
+// 1. Define the context type
 interface XxxDetailContextType {
   xxxId: string;
   xxx: XxxResponse | undefined;
@@ -157,12 +197,12 @@ export function useXxxDetailContext() {
   return ctx;
 }
 
-// 4. Implement provider
+// 4. Implement provider with useFetchFn + useMutationFn
 export function XxxDetailProvider({ xxxId, children }: { xxxId: string; children: React.ReactNode }) {
-  // useFetchFn + useMutationFn setup ...
+  // ... fetch + mutation wiring
   return <XxxDetailContext value={...}>{children}</XxxDetailContext>;
 }
 
-// 5. Co-locate in route layout
+// 5. Co-locate in the route layout
 // src/app/(protected)/xxx-detail/[xxxId]/_layout.tsx
 ```

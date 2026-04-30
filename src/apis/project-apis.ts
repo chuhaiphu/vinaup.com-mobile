@@ -48,7 +48,7 @@ export async function updateProjectApi(id: string, data: UpdateProjectRequest) {
 }
 
 export async function deleteProjectApi(id: string) {
-  return wireApi<null>(`/project/${id}`, {
+  return wireApi<void>(`/project/${id}`, {
     method: 'DELETE',
   });
 }

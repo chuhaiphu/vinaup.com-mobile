@@ -1,12 +1,10 @@
 # Separation of Concerns (SoC)
 
-## Principle
+## What
 
 Each unit of code — file, function, component, or layer — should have one clearly defined concern. A concern is a distinct aspect of the system's behaviour: fetching data, rendering UI, managing state, defining types, or handling business logic. When concerns are mixed, a change in one area requires understanding and touching unrelated code.
 
----
-
-## Layer Separation
+### Layer Separation
 
 The codebase is organized into four layers. Dependencies only point **inward** — outer layers depend on inner layers, never the reverse.
 
@@ -27,23 +25,23 @@ The codebase is organized into four layers. Dependencies only point **inward** �
 └─────────────────────────────────────────┘
 ```
 
-### Core Layer — zero external dependencies
+#### Core Layer — zero external dependencies
 `src/interfaces/`, `src/constants/`, `src/utils/` contain only TypeScript types, enums, and pure functions. No React, no Expo, no `fetchwire`. These files may import from each other but from nothing above.
 
-### API Layer — HTTP adapters only
+#### API Layer — HTTP adapters only
 `src/apis/` translates typed Core objects into HTTP calls and back. Functions take Core types as input, return Core types as output. They never import from providers, hooks, or components.
 
-### State Layer — lifecycle bridges
+#### State Layer — lifecycle bridges
 `src/providers/` owns server-state fetch/mutation lifecycle via `useFetchFn` / `useMutationFn`. `src/hooks/` owns ephemeral UI state via Zustand. Neither imports from `src/components/` or `src/app/`.
 
-### UI Layer — render only
+#### UI Layer — render only
 `src/components/` and `src/app/` render. They consume state via context hooks and Zustand selectors. They do not call `wireApi` directly. They do not define business logic.
 
 ---
 
-## Concern Boundaries Within Layers
+### Concern Boundaries Within Layers
 
-### Component concerns
+#### Component concerns
 | Concern | Where it lives |
 |---------|---------------|
 | Render structure | Component JSX |
@@ -53,7 +51,7 @@ The codebase is organized into four layers. Dependencies only point **inward** �
 | Business calculations | `src/utils/calculator-helpers.ts` |
 | Navigation on user action | Component calls `router.push`, sets `isNavigating` |
 
-### Provider concerns
+#### Provider concerns
 | Concern | Where it lives |
 |---------|---------------|
 | Fetch data from API | Provider — `useFetchFn` |
@@ -64,27 +62,25 @@ The codebase is organized into four layers. Dependencies only point **inward** �
 
 ---
 
-## Current Adherence
+### Current Adherence
 
-### ✅ Layer boundaries are mostly respected
+**✅ Layer boundaries are mostly respected**
 
-- Screens consume providers via `useXxxContext()` — they never import API functions directly (with one known exception below).
-- Providers are the only bridge between `src/apis/` and the UI.
-- `src/interfaces/` contains no React or library imports.
+Screens consume providers via `useXxxContext()` — they never import API functions directly (with one known exception below). Providers are the only bridge between `src/apis/` and the UI. `src/interfaces/` contains no React or library imports.
 
-### ✅ Modal shell + content separation
+**✅ Modal shell + content separation**
 
 All modals are split into a container file (`*-modal.tsx`) and a content file (`*-modal-content.tsx`). Container owns lifecycle; content owns UI. See `docs/pattern/COMPOSITE-PATTERN.md`.
 
-### ✅ Zustand vs Context separation
+**✅ Zustand vs Context separation**
 
-Zustand stores handle UI/ephemeral state (modals, navigation loading, form fields, preferences). React Context handles server state (fetched entities). These concerns are not mixed. See `docs/pattern/OBSERVER-PATTERN.md` and `docs/pattern/PROVIDER-PATTERN.md`.
+Zustand stores handle UI/ephemeral state (navigation loading, form fields, preferences). React Context handles server state (fetched entities). These concerns are not mixed. See `docs/pattern/OBSERVER-PATTERN.md` and `docs/pattern/PROVIDER-PATTERN.md`.
 
 ---
 
-## Current Violations
+### Current Violations
 
-### ❌ Card components fetch data — UI layer calls API layer
+**❌ Card components fetch data — UI layer calls API layer**
 
 **Files:** `src/components/commons/cards/project-card.tsx`, `src/components/organization/invoice/invoice-card.tsx`
 
@@ -103,33 +99,7 @@ A card is a presentational component. Its concern is rendering. Fetching belongs
 
 ---
 
-### ❌ Providers set navigation loading state — State layer concerns itself with UI
-
-**Files:** `src/providers/invoice-detail-provider.tsx`, `booking-detail-provider.tsx`, `organization-project-detail-provider.tsx`, `personal-project-detail-provider.tsx`
-
-```ts
-// ❌ Server-state provider importing a UI-state store
-import { useNavigationStore } from '@/hooks/use-navigation-store';
-
-// Inside mutation handler:
-setIsNavigating(true);
-updateInvoice(fields, {
-  onSuccess: () => setIsNavigating(false),
-  onError:   () => setIsNavigating(false),
-});
-```
-
-Navigation loading is a UI concern. Providers should expose mutation handlers; screens/layouts should orchestrate UI state around them.
-
----
-
-### ❌ `src/interfaces/store-interfaces.ts` — a State concern in the Core layer
-
-`ModalStore` describes a Zustand store shape — a State layer construct. It does not belong alongside API response interfaces in `src/interfaces/` (Core layer). It should live in `src/hooks/use-modal-store.ts`, co-located with the factory that uses it.
-
----
-
-### ❌ `TourDetailLayout` mixes five concerns in one file
+**❌ `TourDetailLayout` mixes five concerns in one file**
 
 `src/app/(protected)/tour-detail/[tourId]/_layout.tsx` (212 lines) is responsible for:
 1. Extracting route params
@@ -142,7 +112,17 @@ Each of these is a distinct concern. The delete flow alone should be extracted i
 
 ---
 
-## Layer Import Rules
+## Why
+
+When concerns are mixed, every change has a wider blast radius. Editing a card's rendering logic risks breaking its fetch logic. Editing a provider's mutation handler risks breaking navigation state. Mixing concerns also makes code harder to test: a component that fetches, calculates, and renders requires a full network setup to test a simple visual change.
+
+Layers enforce a dependency direction that keeps each part of the system independently changeable. The API layer can change its URLs without touching providers. Providers can change their cache strategy without touching screens. Screens can change their layout without touching providers.
+
+---
+
+## How
+
+### Layer Import Rules
 
 | From ↓ \ To → | interfaces | constants | utils | apis | providers | hooks | components | app |
 |----------------|:----------:|:---------:|:-----:|:----:|:---------:|:-----:|:----------:|:---:|
@@ -150,11 +130,10 @@ Each of these is a distinct concern. The delete flow alone should be extracted i
 | **constants** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **utils** | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **apis** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **providers** | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️* | ❌ | ❌ |
+| **providers** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | **hooks** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | **components** | ✅ | ✅ | ✅ | ❌† | ✅ | ✅ | ✅ | ❌ |
 | **app** | ✅ | ✅ | ✅ | ⚠️‡ | ✅ | ✅ | ✅ | ✅ |
 
-\* Providers importing `useNavigationStore` is a current violation — to be fixed.  
 † `project-card.tsx` and `invoice-card.tsx` currently violate this — to be fixed.  
 ‡ Layout files may pass an API function reference to `useMutationFn` — acceptable only when no provider exists for that operation.

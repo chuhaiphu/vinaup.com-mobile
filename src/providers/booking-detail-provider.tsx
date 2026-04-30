@@ -13,7 +13,6 @@ import {
 } from '@/interfaces/booking-interfaces';
 import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 import { useRouter } from 'expo-router';
-import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface BookingDetailContextType {
   bookingId: string;
@@ -27,7 +26,7 @@ interface BookingDetailContextType {
     fields: UpdateBookingRequest,
     onSuccess?: () => void
   ) => void;
-  handleDelete: () => void;
+  handleDelete: (onStart?: () => void, onFinish?: () => void) => void;
   refreshBooking: () => void;
 }
 
@@ -50,8 +49,7 @@ export function BookingDetailProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { setIsNavigating } = useNavigationStore();
-  
+
   const {
     data: booking,
     isLoading: isLoadingBooking,
@@ -103,7 +101,7 @@ export function BookingDetailProvider({
     [booking, updateBooking]
   );
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback((onStart?: () => void, onFinish?: () => void) => {
     if (!bookingId) return;
     Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
       { text: 'Huỷ', style: 'cancel' },
@@ -111,21 +109,21 @@ export function BookingDetailProvider({
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          setIsNavigating(true);
+          onStart?.();
           deleteBooking({
             onSuccess: () => {
-              setIsNavigating(false);
+              onFinish?.();
               router.back();
             },
             onError: (error: ApiError) => {
-              setIsNavigating(false);
+              onFinish?.();
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });
         },
       },
     ]);
-  }, [bookingId, deleteBooking, router, setIsNavigating]);
+  }, [bookingId, deleteBooking, router]);
 
   const canEdit = booking?.meta?.canEdit ?? false;
 

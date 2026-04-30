@@ -56,7 +56,7 @@ export async function updateBookingApi(id: string, data: UpdateBookingRequest) {
 }
 
 export async function deleteBookingApi(id: string) {
-  return wireApi<null>(`/booking/${id}`, {
+  return wireApi<void>(`/booking/${id}`, {
     method: 'DELETE',
   });
 }

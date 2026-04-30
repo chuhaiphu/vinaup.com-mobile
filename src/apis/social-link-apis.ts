@@ -23,7 +23,7 @@ export async function updateSocialLinkApi(
 }
 
 export async function deleteSocialLinkApi(id: string) {
-  return wireApi<null>(`/social-link/${id}`, {
+  return wireApi<void>(`/social-link/${id}`, {
     method: 'DELETE',
   });
 }

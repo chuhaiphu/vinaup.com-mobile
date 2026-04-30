@@ -4,19 +4,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 
-interface TourOrgCustomerRealListProps {
+interface OrgCustomerRealListProps {
   realOrganizations: OrganizationResponse[];
   selectedKey: string;
   isBusy: boolean;
   onChooseReal: (organizationId: string) => void;
 }
 
-export function TourOrgCustomerRealList({
+export function OrgCustomerRealList({
   realOrganizations,
   selectedKey,
   isBusy,
   onChooseReal,
-}: TourOrgCustomerRealListProps) {
+}: OrgCustomerRealListProps) {
   return (
     <ScrollView contentContainerStyle={styles.listContent}>
       {realOrganizations.map((organization) => {
@@ -72,11 +72,11 @@ const styles = StyleSheet.create({
   },
   optionRow: {
     borderRadius: 12,
-    paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 2,
+    minHeight: 60,
   },
   optionRowActive: {
     backgroundColor: '#F2FBFA',

@@ -12,7 +12,7 @@ import Tabs from '@/components/primitives/tabs';
 import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { CreateOrganizationCustomerModal } from '@/components/commons/modals/create-organization-customer-modal/create-organization-customer-modal';
 import { createOrganizationCustomerApi } from '@/apis/organization-apis';
-import { TourOrgCustomerRealList } from './tour-org-customer-real-list';
+import { OrgCustomerRealList } from '@/components/commons/org-customer-real-list';
 import { TourOrgCustomerInternalList } from './tour-org-customer-internal-list';
 import { COLORS } from '@/constants/style-constant';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
@@ -273,7 +273,7 @@ export function TourOrgCustomerSelectModal({
         </View>
 
         {currentTab === 'real' ? (
-          <TourOrgCustomerRealList
+          <OrgCustomerRealList
             realOrganizations={realOrganizations}
             selectedKey={pendingSelectedKey}
             isBusy={isBusy}

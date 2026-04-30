@@ -34,7 +34,7 @@ export async function updateReceiptPaymentApi(
 }
 
 export async function deleteReceiptPaymentApi(id: string) {
-  return wireApi<null>(`/receipt-payment/${id}`, {
+  return wireApi<void>(`/receipt-payment/${id}`, {
     method: 'DELETE',
   });
 }

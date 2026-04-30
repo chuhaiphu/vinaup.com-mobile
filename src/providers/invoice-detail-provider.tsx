@@ -11,7 +11,6 @@ import {
   UpdateInvoiceRequest,
 } from '@/interfaces/invoice-interfaces';
 import { useRouter } from 'expo-router';
-import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface InvoiceDetailContextType {
   invoiceId: string;
@@ -24,7 +23,7 @@ interface InvoiceDetailContextType {
     fields: UpdateInvoiceRequest,
     onSuccess?: () => void
   ) => void;
-  handleDelete: () => void;
+  handleDelete: (onStart?: () => void, onFinish?: () => void) => void;
   refreshInvoice: () => void;
 }
 
@@ -47,7 +46,6 @@ export function InvoiceDetailProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { setIsNavigating } = useNavigationStore();
 
   const {
     data: invoice,
@@ -93,7 +91,7 @@ export function InvoiceDetailProvider({
     [invoice, updateInvoice]
   );
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback((onStart?: () => void, onFinish?: () => void) => {
     if (!invoiceId) return;
     Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
       { text: 'Huỷ', style: 'cancel' },
@@ -101,21 +99,21 @@ export function InvoiceDetailProvider({
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          setIsNavigating(true);
+          onStart?.();
           deleteInvoice({
             onSuccess: () => {
-              setIsNavigating(false);
+              onFinish?.();
               router.back();
             },
             onError: (error: ApiError) => {
-              setIsNavigating(false);
+              onFinish?.();
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });
         },
       },
     ]);
-  }, [invoiceId, deleteInvoice, router, setIsNavigating]);
+  }, [invoiceId, deleteInvoice, router]);
 
   return (
     <InvoiceDetailContext

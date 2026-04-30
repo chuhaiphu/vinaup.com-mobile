@@ -8,7 +8,7 @@ import { ProjectStatus, ProjectStatusOptions } from '@/constants/project-constan
 import { COLORS } from '@/constants/style-constant';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { useOrganizationProjectDetailContext } from '@/providers/organization-project-detail-provider';
-import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
 import { OrganizationProjectDetailHeaderContent } from './organization-project-detail-header-content';
 import { OrganizationProjectDetailFooterContent } from './organization-project-detail-footer-content';
@@ -25,6 +25,11 @@ export function OrganizationProjectDetailContent() {
     refreshProject,
   } = useOrganizationProjectDetailContext();
   const router = useRouter();
+  const setIsNavigating = useNavigationStore((s) => s.setIsNavigating);
+
+  function handleDeleteProject() {
+    return handleDelete(() => setIsNavigating(true), () => setIsNavigating(false));
+  }
 
   const handleSaveAndExit = () => {
     if (!project) return;
@@ -33,10 +38,10 @@ export function OrganizationProjectDetailContent() {
   };
 
   return (
-    <OrganizationCustomerProvider organizationId={project?.organization?.id}>
+    <>
       <StackWithHeader
         title="Chi tiết Dự án"
-        onDelete={handleDelete}
+        onDelete={handleDeleteProject}
         isDeleting={isDeletingProject}
         onSave={handleSaveAndExit}
       />
@@ -82,7 +87,7 @@ export function OrganizationProjectDetailContent() {
         )}
         <OrganizationProjectDetailFooterContent />
       </View>
-    </OrganizationCustomerProvider>
+    </>
   );
 }
 

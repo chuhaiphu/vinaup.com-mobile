@@ -11,8 +11,6 @@ import {
   UpdateProjectRequest,
 } from '@/interfaces/project-interfaces';
 import { useRouter } from 'expo-router';
-import { useNavigationStore } from '@/hooks/use-navigation-store';
-
 interface PersonalProjectDetailContextType {
   projectId: string;
   project: ProjectResponse | undefined;
@@ -24,7 +22,7 @@ interface PersonalProjectDetailContextType {
     fields: UpdateProjectRequest,
     onSuccess?: () => void
   ) => void;
-  handleDelete: () => void;
+  handleDelete: (onStart?: () => void, onFinish?: () => void) => void;
   refreshProject: () => void;
 }
 
@@ -48,7 +46,6 @@ export function PersonalProjectDetailProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { setIsNavigating } = useNavigationStore();
 
   const {
     data: project,
@@ -83,8 +80,7 @@ export function PersonalProjectDetailProvider({
     (updatedFields: UpdateProjectRequest, onSuccessCallback?: () => void) => {
       if (!project) return;
       updateProject(updatedFields, {
-        onSuccess: async () => {
-          await refreshProject();
+        onSuccess: () => {
           onSuccessCallback?.();
         },
         onError: (error: ApiError) => {
@@ -92,10 +88,10 @@ export function PersonalProjectDetailProvider({
         },
       });
     },
-    [project, updateProject, refreshProject]
+    [project, updateProject]
   );
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback((onStart?: () => void, onFinish?: () => void) => {
     if (!projectId) return;
     Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
       { text: 'Huỷ', style: 'cancel' },
@@ -103,21 +99,21 @@ export function PersonalProjectDetailProvider({
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          setIsNavigating(true);
+          onStart?.();
           deleteProject({
             onSuccess: () => {
-              setIsNavigating(false);
+              onFinish?.();
               router.back();
             },
             onError: (error: ApiError) => {
-              setIsNavigating(false);
+              onFinish?.();
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });
         },
       },
     ]);
-  }, [projectId, deleteProject, router, setIsNavigating]);
+  }, [projectId, deleteProject, router]);
 
   return (
     <PersonalProjectDetailContext

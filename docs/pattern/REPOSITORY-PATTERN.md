@@ -1,98 +1,60 @@
 # Repository Pattern
 
-## Intent
+## What
 
-Isolate all HTTP communication behind a thin function layer (`src/apis/`). The rest of the app — providers, hooks, screens — never imports `wireApi` or constructs URLs directly; it only calls named functions from the API layer.
+A repository is a module that abstracts data access behind a set of named functions.
 
----
+### API module — one file per domain
 
-## Where It Is Used
+Each file in `src/apis/` owns exactly one business domain. It imports the domain's request/response types from `src/interfaces/`, calls `wireApi` from `fetchwire`, and exports named async functions.
 
-All files in `src/apis/`. Each file owns one business domain:
+```
+src/apis/
+├── auth-apis.ts           ← authentication
+├── user-apis.ts           ← user profile
+├── organization-apis.ts   ← org, members, roles, industries
+├── tour-apis.ts           ← tours, calculations, settlements, implementations
+├── booking-apis.ts        ← bookings
+├── invoice-apis.ts        ← invoices
+├── receipt-payment-apis.ts← receipt & payment transactions
+├── project-apis.ts        ← projects
+├── category-apis.ts       ← categories
+├── signature-apis.ts      ← signatures
+├── upload-apis.ts         ← file uploads
+└── social-link-apis.ts    ← social profile links
+```
 
-| File | Domain |
-|------|--------|
-| `auth-apis.ts` | Authentication |
-| `user-apis.ts` | User profile |
-| `organization-apis.ts` | Organizations, members, roles |
-| `tour-apis.ts` | Tours + calculations + settlements + implementations |
-| `booking-apis.ts` | Bookings |
-| `invoice-apis.ts` | Invoices |
-| `receipt-payment-apis.ts` | Receipt & payment transactions |
-| `project-apis.ts` | Projects |
-| `category-apis.ts` | Categories |
-| `signature-apis.ts` | Signatures |
-| `upload-apis.ts` | File uploads |
-| `social-link-apis.ts` | Social profile links |
+### CRUD function set
 
----
-
-## Anatomy of an API Function
-
-Every function follows the same shape:
+Each domain exposes a standard set of functions following the `{verb}{Entity}Api` naming convention.
 
 ```ts
 // src/apis/tour-apis.ts
-
-// CREATE
 export async function createTourApi(data: CreateTourRequest) {
-  return wireApi<TourResponse>('/tour', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
+  return wireApi<TourResponse>('/tour', { method: 'POST', body: JSON.stringify(data) });
 }
 
-// READ (list with filter)
-export async function getToursByOrganizationIdApi(
-  organizationId: string,
-  filter?: TourFilterParam
-) {
-  const filterQueryString = buildFilterQueryString(filter, { status: filter?.status });
-  return wireApi<TourResponse[]>(`/tour/organization/${organizationId}${filterQueryString}`, {
-    method: 'GET',
-  });
+export async function getToursByOrganizationIdApi(organizationId: string, filter?: TourFilterParam) {
+  const qs = buildFilterQueryString(filter, { status: filter?.status });
+  return wireApi<TourResponse[]>(`/tour/organization/${organizationId}${qs}`, { method: 'GET' });
 }
 
-// READ (single by ID)
 export async function getTourByIdApi(id: string) {
   return wireApi<TourResponse>(`/tour/${id}`, { method: 'GET' });
 }
 
-// UPDATE
 export async function updateTourApi(id: string, data: UpdateTourRequest) {
-  return wireApi<TourResponse>(`/tour/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(data),
-  });
+  return wireApi<TourResponse>(`/tour/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
 }
 
-// DELETE
 export async function deleteTourApi(id: string) {
   return wireApi<void>(`/tour/${id}`, { method: 'DELETE' });
 }
 ```
 
----
+### Filter query string utility
 
-## Naming Convention
-
-```
-{verb}{Entity}Api()
-```
-
-| Verb | Meaning | Example |
-|------|---------|---------|
-| `create` | POST new entity | `createTourApi` |
-| `get` | GET one or many | `getTourByIdApi`, `getToursByOrganizationIdApi` |
-| `update` | PATCH partial fields | `updateTourApi` |
-| `delete` | DELETE entity | `deleteTourApi` |
-| `search` | GET with search query | `searchUsersApi` |
-
----
-
-## Filter Query String Utility
-
-All list endpoints with filters use `buildFilterQueryString` from `src/utils/api-helpers.ts`:
+All list endpoints that accept filter parameters use `buildFilterQueryString` from `src/utils/api-helpers.ts`. This function handles date range params and any additional key-value pairs, returning a correctly encoded query string.
 
 ```ts
 // src/utils/api-helpers.ts
@@ -109,45 +71,102 @@ export function buildFilterQueryString(
   const query = params.toString();
   return query ? `?${query}` : '';
 }
-
-// Usage in api file:
-const qs = buildFilterQueryString(filter, { status: filter?.status, type: filter?.type });
-return wireApi<InvoiceResponse[]>(`/invoice/organization/${orgId}${qs}`, { method: 'GET' });
 ```
 
-**Do not** construct `URLSearchParams` manually inside API functions — always use this helper.
+### Request and response types
 
----
-
-## Type Contracts
-
-Every API function is fully typed at both ends:
+Every function is typed at both ends. Request types come from `src/interfaces/`; the generic parameter of `wireApi<T>` declares the response shape.
 
 ```ts
-// Request type — defined in src/interfaces/*-interfaces.ts
+// types live in src/interfaces/tour-interfaces.ts
 export interface CreateTourRequest { ... }
 export type UpdateTourRequest = Partial<CreateTourRequest> & { ... };
+export interface TourResponse { id: string; status: TourStatus; ... }
 
-// Response type — returned via generic parameter
-wireApi<TourResponse>(...)        // returns Promise<WireResponse<TourResponse>>
-wireApi<TourResponse[]>(...)      // returns Promise<WireResponse<TourResponse[]>>
-wireApi<void>(...)                // DELETE — no body expected
+// usage
+wireApi<TourResponse>(...)       // single entity
+wireApi<TourResponse[]>(...)     // list
+wireApi<void>(...)               // delete — no response body
 ```
 
 ---
 
-## Rules
+## Why
 
-1. **Screens and providers never import `wireApi` directly** — only `*-apis.ts` files do.
-2. **All DELETE operations return `wireApi<void>`** — not `wireApi<null>`.
-3. **All filter-based GET endpoints use `buildFilterQueryString`** — never manual `URLSearchParams`.
-4. **Function parameters use a typed request interface** — not inline `{ field: string }` objects, except for simple single-param calls (`id: string`).
-5. **One file per domain** — do not add booking API functions to `invoice-apis.ts`.
-6. **Naming follows `{verb}{Entity}Api` exactly** — `loginApi` is a legacy exception that should be migrated to accept `LoginRequest`.
+Without a repository layer every provider, hook, and screen that needs data constructs its own URL, passes its own headers, and interprets its own response shape. A change to an endpoint URL or response field requires finding and updating every caller. TypeScript cannot catch mismatches because callers hold raw fetch calls, not typed functions.
+
+The API layer creates a single source of truth for each endpoint. When the backend changes a URL or renames a field, only the relevant `*-apis.ts` file changes. Providers and screens remain untouched. TypeScript's generic typing on `wireApi<T>` propagates the correct shape to every caller automatically.
 
 ---
 
-## Adding a New API Module
+## How
+
+### Rule 1 — No `wireApi` calls outside `src/apis/`
+
+Providers, hooks, components, and screens never import `wireApi` directly. They import named functions from the relevant `*-apis.ts` file.
+
+```ts
+// ✅
+import { updateTourApi } from '@/apis/tour-apis';
+useMutationFn((fields) => updateTourApi(tourId, fields), { ... });
+
+// ❌
+import { wireApi } from 'fetchwire';
+useMutationFn((fields) => wireApi(`/tour/${tourId}`, { method: 'PATCH', body: JSON.stringify(fields) }), { ... });
+```
+
+### Rule 2 — All DELETE functions return `wireApi<void>`
+
+```ts
+// ✅
+export async function deleteTourApi(id: string) {
+  return wireApi<void>(`/tour/${id}`, { method: 'DELETE' });
+}
+
+// ❌ — inconsistent
+return wireApi<null>(`/tour/${id}`, { method: 'DELETE' });
+```
+
+### Rule 3 — All filter list endpoints use `buildFilterQueryString`
+
+Never build `URLSearchParams` manually inside an API function.
+
+```ts
+// ✅
+const qs = buildFilterQueryString(filter, { status: filter?.status });
+return wireApi<TourResponse[]>(`/tour/organization/${orgId}${qs}`, { method: 'GET' });
+
+// ❌
+const params = new URLSearchParams();
+if (filter?.status) params.append('status', filter.status);
+return wireApi<TourResponse[]>(`/tour/organization/${orgId}?${params}`, { method: 'GET' });
+```
+
+### Rule 4 — Function parameters use typed request interfaces, not inline objects
+
+```ts
+// ✅
+export async function createTourApi(data: CreateTourRequest)
+
+// ❌
+export async function createTourApi(data: { name: string; startDate: string; ... })
+```
+
+### Rule 5 — One file per domain; do not cross domains
+
+Booking functions go in `booking-apis.ts`. Do not add a booking API function to `invoice-apis.ts` because it is "related".
+
+### Rule 6 — Naming follows `{verb}{Entity}Api` exactly
+
+| Verb | HTTP method | Example |
+|------|------------|---------|
+| `create` | POST | `createTourApi` |
+| `get` | GET (one or many) | `getTourByIdApi`, `getToursByOrganizationIdApi` |
+| `update` | PATCH | `updateTourApi` |
+| `delete` | DELETE | `deleteTourApi` |
+| `search` | GET with query | `searchUsersApi` |
+
+### Adding a new API module
 
 ```ts
 // src/apis/xxx-apis.ts

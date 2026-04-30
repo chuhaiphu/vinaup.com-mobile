@@ -51,7 +51,7 @@ export async function getInvoicesByOrganizationIdApi(
 }
 
 export async function deleteInvoiceApi(id: string) {
-  return wireApi<null>(`/invoice/${id}`, {
+  return wireApi<void>(`/invoice/${id}`, {
     method: 'DELETE',
   });
 }

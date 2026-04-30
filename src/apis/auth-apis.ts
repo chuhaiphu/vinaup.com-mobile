@@ -1,9 +1,9 @@
-import { LoginResponse } from '@/interfaces/auth-interfaces';
+import { LoginRequest, LoginResponse } from '@/interfaces/auth-interfaces';
 import { wireApi } from 'fetchwire';
-export const loginApi = async (email: string, password: string) => {
-  const response = await wireApi<LoginResponse>('/auth/local', {
+
+export async function loginApi(data: LoginRequest) {
+  return wireApi<LoginResponse>('/auth/local', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify(data),
   });
-  return response;
-};
+}

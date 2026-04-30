@@ -17,6 +17,7 @@ import {
   BookingDetailProvider,
   useBookingDetailContext,
 } from '@/providers/booking-detail-provider';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 import { ReceiptPaymentBookingListContent } from '@/components/organization/booking/receipt-payment-booking-list-content';
 import BookingSignatureSectionContent from '@/components/organization/booking/detail/booking-signature-section-content';
@@ -51,6 +52,11 @@ function BookingDetailScreenContent() {
     handleDelete,
     refreshBooking,
   } = useBookingDetailContext();
+  const setIsNavigating = useNavigationStore((s) => s.setIsNavigating);
+
+  function handleDeleteBooking() {
+    return handleDelete(() => setIsNavigating(true), () => setIsNavigating(false));
+  }
 
   const handleRefresh = () => {
     refreshBooking();
@@ -79,7 +85,7 @@ function BookingDetailScreenContent() {
     <OrganizationCustomerProvider organizationId={booking?.organization?.id}>
       <StackWithHeader
         title={'Chi tiết Booking'}
-        onDelete={canEdit ? handleDelete : undefined}
+        onDelete={canEdit ? handleDeleteBooking : undefined}
         onSave={canEdit ? handleSaveAndExit : undefined}
         isDeleting={isDeletingBooking}
       />

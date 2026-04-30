@@ -3,7 +3,7 @@ import { usePersonalUtilitiesStore } from '@/hooks/use-personal-utility-store';
 import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
 import { UserResponse } from '@/interfaces/user-interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import {
   fetchClient,
@@ -11,6 +11,7 @@ import {
   useMutationFn,
 } from 'fetchwire';
 import { loginApi } from '@/apis/auth-apis';
+import { LoginRequest } from '@/interfaces/auth-interfaces';
 
 interface AuthContextType {
   isLoading: boolean;
@@ -42,8 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<UserResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { executeMutationFn: signIn } = useMutationFn(
-    ({ email, password }: { email: string; password: string }) =>
-      loginApi(email, password)
+    (data: LoginRequest) => loginApi(data)
   );
   const performLogin = async ({
     email,
@@ -131,7 +131,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const savedUser = await AsyncStorage.getItem(STORAGE_KEYS.currentUser);
       if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
+        try {
+          setCurrentUser(JSON.parse(savedUser));
+        } catch {
+          await AsyncStorage.removeItem(STORAGE_KEYS.currentUser);
+          await AsyncStorage.removeItem(STORAGE_KEYS.accessToken);
+        }
       }
     } catch (error) {
       console.error('Error loading storage data', error);

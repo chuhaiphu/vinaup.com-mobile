@@ -1,6 +1,6 @@
 # KISS — Keep It Simple, Stupid
 
-## Principle
+## What
 
 Prefer the simplest solution that solves the actual problem. Complexity must earn its place. If a simpler approach works, it is correct. Complexity introduced before it is needed is debt, not investment.
 
@@ -9,37 +9,31 @@ In practice:
 - Fetch-and-display components use `useFetchFn`, not manual `useEffect` + `useState` + `fetch`.
 - Providers expose only what consumers actually need.
 
----
-
-## How the Codebase Applies KISS
-
 ### ✅ Done well
 
-**1. `fetchwire` hooks eliminate fetch boilerplate**
+**`fetchwire` hooks eliminate fetch boilerplate**
 Instead of managing `isLoading`, `data`, `error`, and `useEffect` manually for every API call, the codebase uses `useFetchFn` (read) and `useMutationFn` (write). A list fetch is two lines:
 ```ts
 const { data: tours, isLoading, refreshFetchFn: refresh } =
   useFetchFn(() => getToursByOrganizationIdApi(orgId), { fetchKey: `...`, tags: [...] });
 ```
 
-**2. Expo Router file-based routing**
+**Expo Router file-based routing**
 No manual `Stack.Navigator` + `Screen` registration for every route. The file path IS the route. Adding a new screen means adding one file.
 
-**3. `generateErrorMessage` for error extraction**
+**`generateErrorMessage` for error extraction**
 One call replaces fragile pattern-matching everywhere:
 ```ts
 Alert.alert('Lỗi', generateErrorMessage(error));
 // instead of: error.message || error?.data?.message || 'Có lỗi xảy ra'
 ```
 
-**4. Simple forms stay simple**
+**Simple forms stay simple**
 Login (`login.tsx`) and register (`register.tsx`) use plain `useState` — three fields, no library, no store. The form complexity does not justify more infrastructure.
 
----
+### ❌ Current violations
 
-## Where KISS Is Violated
-
-### ❌ Card components are unnecessarily complex
+**Card components are unnecessarily complex**
 
 `src/components/commons/cards/project-card.tsx` and `invoice-card.tsx` each do:
 1. Own API data fetching (`useFetchFn`)
@@ -53,7 +47,7 @@ A card component's only job is to display data it receives as props. Everything 
 
 ---
 
-### ❌ `TourDetailLayout` handles too many concerns
+**`TourDetailLayout` handles too many concerns**
 
 `src/app/(protected)/tour-detail/[tourId]/_layout.tsx` (212 lines) manages:
 - Route param extraction (`useLocalSearchParams` called twice — in both parent and child)
@@ -67,14 +61,14 @@ A card component's only job is to display data it receives as props. Everything 
 
 ---
 
-### ❌ `useLocalSearchParams` called in both parent and child of the same layout
+**`useLocalSearchParams` called in both parent and child of the same layout**
 
 `src/app/(protected)/tour-detail/[tourId]/_layout.tsx`:
 ```ts
-// Line 26–28 — inside TourDetailLayoutContent (child)
+// Inside TourDetailLayoutContent (child)
 const { tourId } = useLocalSearchParams<{ tourId: string }>();
 
-// Line 162 — inside TourDetailLayout (parent)
+// Inside TourDetailLayout (parent)
 const { tourId } = useLocalSearchParams<{ tourId: string }>();
 ```
 
@@ -82,7 +76,7 @@ The child can simply receive `tourId` as a prop from the parent. Two hook calls 
 
 ---
 
-### ❌ Hardcoded color values inside component files
+**Hardcoded color values inside component files**
 
 `src/components/primitives/select.tsx` lines 105, 206, 242:
 ```ts
@@ -95,7 +89,13 @@ These are design tokens that belong in `src/constants/style-constant.ts`. Using 
 
 ---
 
-## Rules
+## Why
+
+Every line of code that is not required to solve the problem is a line that must be read, understood, tested, and maintained. Complexity compounds: a component that fetches, calculates, and renders is harder to test than one that only renders. A layout that manages five concerns is harder to change than one that manages one. Simple code fails in simple, obvious ways; complex code fails in subtle, unexpected ways.
+
+---
+
+## How
 
 1. **Choose the simplest state mechanism that works:**
    - Pure display → no state, just props

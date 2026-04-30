@@ -10,6 +10,7 @@ import { ProjectDetailFooterContent } from './project-detail-footer-content';
 import { COLORS } from '@/constants/style-constant';
 import VinaupVerticalExpandArrow from '@/components/icons/vinaup-vertical-expand-arrow.native';
 import { usePersonalProjectDetailContext } from '@/providers/personal-project-detail-provider';
+import { useNavigationStore } from '@/hooks/use-navigation-store';
 import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
 
 export function PersonalProjectDetailContent() {
@@ -24,6 +25,11 @@ export function PersonalProjectDetailContent() {
     refreshProject,
   } = usePersonalProjectDetailContext();
   const router = useRouter();
+  const setIsNavigating = useNavigationStore((s) => s.setIsNavigating);
+
+  function handleDeleteProject() {
+    return handleDelete(() => setIsNavigating(true), () => setIsNavigating(false));
+  }
 
   const handleSaveAndExit = () => {
     if (!project) return;
@@ -35,7 +41,7 @@ export function PersonalProjectDetailContent() {
     <>
       <StackWithHeader
         title="Chi tiết Dự án"
-        onDelete={handleDelete}
+        onDelete={handleDeleteProject}
         isDeleting={isDeletingProject}
         onSave={handleSaveAndExit}
       />

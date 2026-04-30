@@ -64,7 +64,7 @@ export async function updateTourApi(id: string, data: UpdateTourRequest) {
 }
 
 export async function deleteTourApi(id: string) {
-  return wireApi<null>(`/tour/${id}`, {
+  return wireApi<void>(`/tour/${id}`, {
     method: 'DELETE',
   });
 }
@@ -251,7 +251,7 @@ export async function updateAdditionalDataApi(
 }
 
 export async function deleteAdditionalDataApi(additionalDataId: string) {
-  return wireApi<null>(
+  return wireApi<void>(
     `/tour-implementation/additional-data/${additionalDataId}`,
     {
       method: 'DELETE',
@@ -260,7 +260,7 @@ export async function deleteAdditionalDataApi(additionalDataId: string) {
 }
 
 export async function removeUserInvitedApi(userInvitedId: string) {
-  return wireApi<null>(`/tour-implementation/users-invited/${userInvitedId}`, {
+  return wireApi<void>(`/tour-implementation/users-invited/${userInvitedId}`, {
     method: 'DELETE',
   });
 }

@@ -25,62 +25,6 @@ Both cards import `getReceiptPaymentsByXxxIdApi` and run `useFetchFn` internally
 
 ---
 
-### [H · M] `auth-provider.tsx` interceptor — stale closure
-
-**Principle:** KISS — avoid hidden fragility
-
-**File:** `src/providers/auth-provider.tsx` lines 108–118
-
-`performLogout` is captured in a `useEffect` closure with an empty dependency array. If `performLogout` changes identity, the interceptor calls the stale version.
-
-**Fix:** Use a `useRef` to hold a stable reference:
-```ts
-const logoutRef = useRef(performLogout);
-useEffect(() => { logoutRef.current = performLogout; });
-
-useEffect(() => {
-  updateWireConfig({
-    interceptors: {
-      onError: async (error) => {
-        if (error.errorCode === 'TOKEN_INVALID') await logoutRef.current();
-      },
-    },
-  });
-}, []);
-```
-
----
-
-### [H · M] `loadStorageData` does not handle corrupted JSON
-
-**Principle:** KISS — explicit, complete error handling
-
-**File:** `src/providers/auth-provider.tsx` lines 130–141
-
-`JSON.parse(savedUser)` can throw on malformed AsyncStorage data. The outer `catch` only logs — corrupt data stays in storage and causes the same failure on every restart.
-
-**Fix:**
-```ts
-const loadStorageData = async () => {
-  try {
-    const savedUser = await AsyncStorage.getItem(STORAGE_KEYS.currentUser);
-    if (savedUser) {
-      try {
-        setCurrentUser(JSON.parse(savedUser));
-      } catch {
-        await AsyncStorage.multiRemove([STORAGE_KEYS.currentUser, STORAGE_KEYS.accessToken]);
-      }
-    }
-  } catch (error) {
-    console.error('Error loading storage data', error);
-  } finally {
-    setIsLoading(false);
-  }
-};
-```
-
----
-
 ### [H · L] Two PDF generator files — 1300+ duplicated lines
 
 **Principle:** DRY
@@ -97,55 +41,7 @@ const loadStorageData = async () => {
 
 ---
 
-### [H · L] Three `*-real-list.tsx` components are copy-pasted
-
-**Principle:** DRY
-
-**Files:**
-- `src/components/organization/invoice/modals/invoice-org-customer-select-modal/invoice-org-customer-real-list.tsx`
-- `src/components/organization/tour/modals/tour-org-customer-select-modal/tour-org-customer-real-list.tsx`
-- `src/components/organization/project/modals/organization-project-org-customer-select-modal/organization-project-org-customer-real-list.tsx`
-
-~116 lines each, logic identical.
-
-**Fix:** Create `src/components/commons/org-customer-real-list.tsx`. Accept a `fetchKeyPrefix` prop. Delete the three domain copies.
-
----
-
 ## MEDIUM PRIORITY
-
-### [M · M] Providers set `isNavigating` — State layer concerns itself with UI
-
-**Principle:** SoC — providers must not depend on UI state
-
-**Files:** `src/providers/invoice-detail-provider.tsx`, `booking-detail-provider.tsx`, `organization-project-detail-provider.tsx`, `personal-project-detail-provider.tsx`
-
-All four import `useNavigationStore` and call `setIsNavigating(true/false)` inside mutation callbacks. Navigation loading overlay is a UI concern — it belongs in the screen or layout that triggers the mutation.
-
-**Fix:** Remove `useNavigationStore` from all four providers. In each calling layout/screen:
-```ts
-const { setIsNavigating } = useNavigationStore();
-const { handleDelete } = useXxxDetailContext();
-
-const onDelete = () => {
-  setIsNavigating(true);
-  handleDelete(() => setIsNavigating(false));
-};
-```
-
----
-
-### [M · S] `PersonalProjectDetailProvider` double-fetches after mutation
-
-**Principle:** KISS — no unnecessary network calls
-
-**File:** `src/providers/personal-project-detail-provider.tsx` lines 82–96
-
-After `updateProject` succeeds, the code calls `await refreshProject()` despite `invalidatesTags` already triggering a cache refresh automatically. `OrganizationProjectDetailProvider` (the parallel provider) does not do this — confirming the inconsistency.
-
-**Fix:** Remove `await refreshProject()` from the `onSuccess` callback.
-
----
 
 ### [M · M] `TourDetailLayout` mixes five concerns
 
@@ -181,51 +77,6 @@ Replace inline functions in all three files. Also add `export const DATE_FORMAT_
 
 ---
 
-### [M · S] `loginApi` uses positional parameters — inconsistent with all other APIs
-
-**Principle:** KISS (consistency reduces cognitive load)
-
-**File:** `src/apis/auth-apis.ts`
-
-```ts
-// Current — only API in the project with positional params
-loginApi(email: string, password: string)
-
-// Convention used everywhere else
-loginApi(data: { email: string; password: string })
-```
-
-**Fix:** Change signature. Update the one caller in `auth-provider.tsx`.
-
----
-
-### [M · S] DELETE operations return mixed types (`void` vs `null`)
-
-**Principle:** KISS (consistency)
-
-`organization-apis.ts` returns `wireApi<void>`; all other API files return `wireApi<null>`.
-
-**Fix:** Update all DELETE functions to `wireApi<void>`:
-`booking-apis.ts`, `invoice-apis.ts`, `tour-apis.ts` (×4), `receipt-payment-apis.ts`, `project-apis.ts`, `social-link-apis.ts`.
-
----
-
-### [M · S] `searchUsersApi` builds URLSearchParams manually
-
-**Principle:** DRY — `buildFilterQueryString` exists for this
-
-**File:** `src/apis/user-apis.ts` lines 20–29
-
-**Fix:**
-```ts
-export async function searchUsersApi(filter?: UserSearchParam) {
-  const qs = buildFilterQueryString(filter, { query: filter?.query });
-  return wireApi<UserResponse[]>(`/user/search${qs}`, { method: 'GET' });
-}
-```
-
----
-
 ### [M · S] List components show no error state on fetch failure
 
 **Principle:** KISS — explicit, complete UI state handling
@@ -233,28 +84,6 @@ export async function searchUsersApi(filter?: UserSearchParam) {
 All `*-list-section-content.tsx` files handle `isRefreshing` but not fetch errors. Users see an empty list with no explanation when the API fails.
 
 **Fix:** Use `useFetchFn`'s error result (or a try/catch in `useEffect`) to set an error state, and render an inline message with a retry button when `data` is null after loading completes.
-
----
-
-### [M · S] `OrganizationCustomerProvider` instantiated inside component body
-
-**Principle:** SoC — provider lifecycle should be stable, not tied to parent re-renders
-
-**File:** `src/components/organization/project/detail/organization-project-detail-content.tsx`
-
-Rendering a provider inside a component body causes it to remount on every parent re-render, triggering a new fetch each time.
-
-**Fix:** Lift `OrganizationCustomerProvider` to `src/app/(protected)/project-detail/[projectId].tsx`, alongside the other detail providers.
-
----
-
-### [M · S] `src/interfaces/store-interfaces.ts` — Core layer file containing a State layer type
-
-**Principle:** SoC — layer boundaries
-
-`ModalStore` is a Zustand store interface. It does not belong in `src/interfaces/` alongside API response types.
-
-**Fix:** Move `ModalStore` into `src/hooks/use-modal-store.ts`, co-located with the `createModalStore` factory that uses it.
 
 ---
 
@@ -318,24 +147,31 @@ The index signature and the union with `Record<string, unknown>` make these inte
 
 ---
 
+### [L · S] `deleteImageApi` returns `wireApi<null>` — should be `wireApi<void>`
+
+**Principle:** KISS (consistency) — all DELETE functions must return `wireApi<void>`
+
+**File:** `src/apis/upload-apis.ts`
+
+```ts
+// ❌ Current
+export async function deleteImageApi(path: string) {
+  return wireApi<null>('/upload', { method: 'DELETE', body: JSON.stringify({ path }) });
+}
+
+// ✅ Fix
+export async function deleteImageApi(path: string) {
+  return wireApi<void>('/upload', { method: 'DELETE', body: JSON.stringify({ path }) });
+}
+```
+
+---
+
 ## Summary
 
 | Priority | S tasks | M tasks | L tasks | Total |
 |----------|:-------:|:-------:|:-------:|:-----:|
-| High | 0 | 2 | 2 | 4 |
-| Medium | 6 | 3 | 0 | 9 |
-| Low | 6 | 0 | 0 | 6 |
-| **Total** | **12** | **5** | **2** | **19** |
-
-**Recommended sprint order:**
-1. [H·M] Fix stale closure in auth interceptor
-2. [H·M] Fix corrupted JSON handling in `loadStorageData`
-3. [M·S] Remove redundant `refreshProject()` in `PersonalProjectDetailProvider`
-4. [M·S] Fix DELETE return type consistency across all API files
-5. [M·M] Remove `setIsNavigating` from providers → move to screens
-6. [M·M] Add `formatDateRange` + `DATE_FORMAT_SHORT` constant
-7. [M·S] Fix `loginApi` to accept object parameter
-8. [L·S] Delete commented code + empty styles (quick cleanup)
-9. [H·L] Consolidate PDF generators into shared helper file
-10. [H·L] Extract shared `OrgCustomerRealList` component
-11. [H·M] Remove data fetching from card components
+| High | 0 | 1 | 1 | 2 |
+| Medium | 1 | 2 | 0 | 3 |
+| Low | 7 | 0 | 0 | 7 |
+| **Total** | **8** | **3** | **1** | **12** |

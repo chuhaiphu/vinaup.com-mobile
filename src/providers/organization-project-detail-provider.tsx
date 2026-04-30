@@ -11,7 +11,6 @@ import {
   UpdateProjectRequest,
 } from '@/interfaces/project-interfaces';
 import { useRouter } from 'expo-router';
-import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface OrganizationProjectDetailContextType {
   projectId: string;
@@ -24,7 +23,7 @@ interface OrganizationProjectDetailContextType {
     fields: UpdateProjectRequest,
     onSuccess?: () => void
   ) => void;
-  handleDelete: () => void;
+  handleDelete: (onStart?: () => void, onFinish?: () => void) => void;
   refreshProject: () => void;
 }
 
@@ -48,7 +47,6 @@ export function OrganizationProjectDetailProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { setIsNavigating } = useNavigationStore();
 
   const {
     data: project,
@@ -94,7 +92,7 @@ export function OrganizationProjectDetailProvider({
     [project, updateProject]
   );
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback((onStart?: () => void, onFinish?: () => void) => {
     if (!projectId) return;
     Alert.alert('Xác nhận', 'Bạn muốn xoá?', [
       { text: 'Huỷ', style: 'cancel' },
@@ -102,21 +100,21 @@ export function OrganizationProjectDetailProvider({
         text: 'OK',
         style: 'destructive',
         onPress: () => {
-          setIsNavigating(true);
+          onStart?.();
           deleteProject({
             onSuccess: () => {
-              setIsNavigating(false);
+              onFinish?.();
               router.back();
             },
             onError: (error: ApiError) => {
-              setIsNavigating(false);
+              onFinish?.();
               Alert.alert('Lỗi', error.message || 'Có lỗi xảy ra khi xóa.');
             },
           });
         },
       },
     ]);
-  }, [projectId, deleteProject, router, setIsNavigating]);
+  }, [projectId, deleteProject, router]);
 
   return (
     <OrganizationProjectDetailContext
