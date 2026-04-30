@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '@/constants/app-constant';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
+import { ErrorBoundary } from '@/components/primitives/error-boundary';
 import Loader from '@/components/primitives/loader';
 
 initWire({
@@ -42,12 +43,14 @@ export default function RootLayout() {
   const { isNavigating } = useNavigationStore();
 
   return (
-    <GestureHandlerRootView>
-      <AuthProvider>
-        <StatusBar barStyle="dark-content" />
-        <Stack screenOptions={{ headerShown: false }} />
-      </AuthProvider>
-      {isNavigating && <Loader withOverlay size={96} />}
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView>
+        <AuthProvider>
+          <StatusBar barStyle="dark-content" />
+          <Stack screenOptions={{ headerShown: false }} />
+        </AuthProvider>
+        {isNavigating && <Loader withOverlay size={96} />}
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

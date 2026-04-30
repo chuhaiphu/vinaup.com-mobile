@@ -1,5 +1,5 @@
 import { UserResponse } from './user-interfaces';
-import { DocumentType, SignatureRole } from '@/constants/signature-contants';
+import { DocumentType, SignatureRole } from '@/constants/signature-constants';
 
 export interface ManageReceiverSignaturesRequest {
   documentId: string;

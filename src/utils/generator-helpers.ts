@@ -41,6 +41,14 @@ export const generateLocalePriceFormat = (
   return price.toLocaleString(locale);
 };
 
+export function generateErrorMessage(error: unknown, fallback = 'Có lỗi xảy ra'): string {
+  if (typeof error === 'string') return error;
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+    return error.message;
+  }
+  return fallback;
+}
+
 export async function generateBase64FromUrl(url?: string | null): Promise<string> {
   if (!url) return '';
 

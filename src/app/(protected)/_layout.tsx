@@ -1,6 +1,5 @@
 import { useAuthContext } from '@/providers/auth-provider';
 import { AllOrganizationsProvider } from '@/providers/all-organizations-provider';
-import { InvoiceTypeProvider } from '@/providers/invoice-type-provider';
 import { OrganizationProvider } from '@/providers/organization-provider';
 import { OwnerModeProvider } from '@/providers/owner-mode-provider';
 import { useEffect } from 'react';
@@ -27,17 +26,15 @@ export default function ProtectedLayout() {
   return (
     <AllOrganizationsProvider>
       <OrganizationProvider>
-        <InvoiceTypeProvider>
-          <OwnerModeProvider>
-            <Stack>
-              <Stack.Screen name="personal/(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="organization/[organizationId]/(tabs)"
-                options={{ headerShown: false }}
-              />
-            </Stack>
-          </OwnerModeProvider>
-        </InvoiceTypeProvider>
+        <OwnerModeProvider>
+          <Stack>
+            <Stack.Screen name="personal/(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="organization/[organizationId]/(tabs)"
+              options={{ headerShown: false }}
+            />
+          </Stack>
+        </OwnerModeProvider>
       </OrganizationProvider>
     </AllOrganizationsProvider>
   );
