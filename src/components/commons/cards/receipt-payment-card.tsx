@@ -20,11 +20,8 @@ export function ReceiptPaymentCard({ receiptPayment }: ReceiptPaymentCardProps) 
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.topRow}>
-          <View style={styles.descriptionContainer}>
+          <View>
             <Text style={styles.descriptionText}>{receiptPayment.description}</Text>
-          </View>
-          <View style={styles.action}>
-            {/* <VinaupPenLine width={20} height={20} /> */}
           </View>
         </View>
         <View style={styles.bottomRow}>
@@ -75,8 +72,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  descriptionContainer: {},
-  action: {},
   quantityContainer: {
     flex: 0.75,
     alignItems: 'center',

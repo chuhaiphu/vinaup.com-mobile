@@ -1,3 +1,4 @@
+import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { EntityListSectionSkeleton } from '@/components/commons/skeletons/entity-list-section-skeleton';
 import { COLORS } from '@/constants/style-constant';
 import React, { Suspense, useState } from 'react';
@@ -20,7 +21,7 @@ export default function PersonalReceiptPaymentScreen() {
           }
           value={selectedDate}
           onChange={setSelectedDate}
-          displayFormat="DD/MM"
+          displayFormat={DATE_FORMAT_SHORT}
           style={{ dateText: styles.dateText }}
         />
       </View>

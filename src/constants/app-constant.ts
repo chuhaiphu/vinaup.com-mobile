@@ -1,3 +1,5 @@
+export const DATE_FORMAT_SHORT = 'DD/MM';
+
 export const STORAGE_KEYS = {
   currentUser: 'current-user',
   accessToken: 'access-token',

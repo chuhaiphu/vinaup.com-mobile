@@ -1,3 +1,4 @@
+import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
@@ -48,16 +49,16 @@ export function ProjectDetailHeaderContent({
     if (start.isSame(end, 'day')) {
       return (
         <>
-          <Text style={styles.dateText}>Ngày {start.format('DD/MM')} </Text>
+          <Text style={styles.dateText}>Ngày {start.format(DATE_FORMAT_SHORT)} </Text>
           <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         </>
       );
     }
     return (
       <>
-        <Text style={styles.dateText}>Từ {start.format('DD/MM')} </Text>
+        <Text style={styles.dateText}>Từ {start.format(DATE_FORMAT_SHORT)} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
-        <Text style={styles.dateText}> đến {end.format('DD/MM')}</Text>
+        <Text style={styles.dateText}> đến {end.format(DATE_FORMAT_SHORT)}</Text>
         <Text style={styles.hourText}> ({end.format('HH:mm')})</Text>
       </>
     );

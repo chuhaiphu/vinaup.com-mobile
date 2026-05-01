@@ -1,54 +1,24 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
-import dayjs from 'dayjs';
 import { InvoiceStatusDisplay } from '@/constants/invoice-constants';
-import { prefetch, useFetchFn } from 'fetchwire';
-import { useEffect, useState } from 'react';
-import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
+import { prefetch } from 'fetchwire';
+import { useState } from 'react';
 import { getInvoiceByIdApi } from '@/apis/invoice-apis';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { generateLocalePriceFormat, formatDateRange } from '@/utils/generator-helpers';
 import { useRouter } from 'expo-router';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 interface InvoiceCardProps {
   invoice?: InvoiceResponse;
+  totalRemaining?: number;
 }
 
-export function InvoiceCard({ invoice }: InvoiceCardProps) {
+export function InvoiceCard({ invoice, totalRemaining }: InvoiceCardProps) {
   const router = useRouter();
   const { setIsNavigating } = useNavigationStore();
-
   const [isShowingPrice, setIsShowingPrice] = useState(false);
-  const fetchReceiptPaymentsFn = () =>
-    getReceiptPaymentsByInvoiceIdApi(invoice?.id || '');
-
-  const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
-    useFetchFn(fetchReceiptPaymentsFn, {
-      fetchKey: `receipt-payment-list-in-invoice-${invoice?.id}`,
-      tags: [`receipt-payment-list-in-invoice-${invoice?.id}`],
-    });
-
-  useEffect(() => {
-    if (invoice?.id) {
-      fetchReceiptPayments();
-    }
-  }, [invoice, fetchReceiptPayments]);
-
-  const getDateRangeText = () => {
-    if (!invoice) return '';
-    if (
-      dayjs(invoice.startDate).format('DD/MM') ===
-      dayjs(invoice.endDate).format('DD/MM')
-    ) {
-      return dayjs(invoice.startDate).format('DD/MM');
-    }
-    return `${dayjs(invoice.startDate).format('DD/MM')} - ${dayjs(
-      invoice.endDate
-    ).format('DD/MM')}`;
-  };
 
   const getInvoiceInfoText = () => {
     if (!invoice) return '';
@@ -92,7 +62,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
     <View style={styles.container}>
       <View style={styles.innerHeader}>
         <View style={styles.left}>
-          <Text style={styles.dateRangeText}>{getDateRangeText()}</Text>
+          <Text style={styles.dateRangeText}>{formatDateRange(invoice.startDate, invoice.endDate)}</Text>
           <PressableOpacity onPress={togglePrice}>
             <Text
               style={[
@@ -105,11 +75,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
           </PressableOpacity>
           {isShowingPrice && (
             <Text style={styles.invoiceTotalAmountText}>
-              {generateLocalePriceFormat(
-                calculateReceiptPaymentsSummary(receiptPayments || [])
-                  .totalRemaining,
-                'vi-VN'
-              )}
+              {generateLocalePriceFormat(totalRemaining ?? 0, 'vi-VN')}
             </Text>
           )}
         </View>
@@ -131,13 +97,6 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
             <Text style={styles.infoText} numberOfLines={1} ellipsizeMode="tail">
               {getInvoiceInfoText()}
             </Text>
-            {/* <Text style={styles.totalAmountText}>
-              {generateLocalePriceFormat(
-                calculateReceiptPaymentsSummary(receiptPayments || [])
-                  .totalRemaining,
-                'vi-VN'
-              )}
-            </Text> */}
           </View>
         </View>
       </Pressable>

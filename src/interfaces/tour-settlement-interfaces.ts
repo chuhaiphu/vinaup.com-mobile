@@ -38,7 +38,6 @@ export interface TourSettlementCancelLogSnapshotData {
     createdBy?: UserResponse;
     tour?: TourResponse;
     receiptPayments?: ReceiptPaymentResponse[];
-    [key: string]: unknown;
   };
   signatures: SignatureResponse[];
 }
@@ -48,6 +47,6 @@ export interface TourSettlementCancelLogResponse {
   tourSettlementId: string;
   canceledByUserId: string | null;
   canceledByUser: UserResponse | null;
-  snapshotData: TourSettlementCancelLogSnapshotData | Record<string, unknown>;
+  snapshotData: TourSettlementCancelLogSnapshotData;
   createdAt: string;
 }

@@ -1,5 +1,6 @@
 import { OrganizationResponse } from './organization-interfaces';
 import { UserResponse } from './user-interfaces';
+import { OrganizationCustomerStatus } from '@/constants/organization-constants';
 
 export interface OrganizationCustomerResponse {
   id: string;
@@ -13,7 +14,7 @@ export interface OrganizationCustomerResponse {
   name: string;
   phone: string;
   email: string | null;
-  status: string;
+  status: OrganizationCustomerStatus;
   isSystemDefault: boolean;
   joinedAt: string;
   organization: OrganizationResponse;
@@ -24,7 +25,7 @@ export interface CreateOrganizationCustomerRequest {
   name: string;
   phone: string;
   email?: string;
-  status: string;
+  status: OrganizationCustomerStatus;
   joinedAt: string;
   clientUserId?: string;
   clientOrganizationId?: string;

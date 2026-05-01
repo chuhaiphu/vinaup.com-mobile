@@ -31,11 +31,35 @@ The codebase is organized into four layers. Dependencies only point **inward** �
 #### API Layer — HTTP adapters only
 `src/apis/` translates typed Core objects into HTTP calls and back. Functions take Core types as input, return Core types as output. They never import from providers, hooks, or components.
 
+```ts
+// src/apis/tour-apis.ts
+export async function getToursByOrganizationIdApi(
+  organizationId: string,
+  filter: TourFilterRequest
+): Promise<TourResponse[]> { ... }
+```
+
 #### State Layer — lifecycle bridges
 `src/providers/` owns server-state fetch/mutation lifecycle via `useFetchFn` / `useMutationFn`. `src/hooks/` owns ephemeral UI state via Zustand. Neither imports from `src/components/` or `src/app/`.
 
+```ts
+// src/providers/tour-detail-provider.tsx
+// Owns: fetch, mutation, cache invalidation, error alerts
+// Does NOT own: navigation loading overlay (that is a UI concern)
+export function TourDetailProvider({ tourId, children }: { tourId: string; children: React.ReactNode }) {
+  const { data: tour, ... } = useFetchFn(() => getTourByIdApi(tourId), { ... });
+  const { executeMutationFn: updateTour, ... } = useMutationFn(...);
+  // ...
+}
+```
+
 #### UI Layer — render only
 `src/components/` and `src/app/` render. They consume state via context hooks and Zustand selectors. They do not call `wireApi` directly. They do not define business logic.
+
+```ts
+// screen consumes context — does not import API functions directly
+const { tour, handleUpdateTour } = useTourDetailContext();
+```
 
 ---
 
@@ -64,51 +88,17 @@ The codebase is organized into four layers. Dependencies only point **inward** �
 
 ### Current Adherence
 
-**✅ Layer boundaries are mostly respected**
+**Layer boundaries are mostly respected**
 
 Screens consume providers via `useXxxContext()` — they never import API functions directly (with one known exception below). Providers are the only bridge between `src/apis/` and the UI. `src/interfaces/` contains no React or library imports.
 
-**✅ Modal shell + content separation**
+**Modal shell + content separation**
 
 All modals are split into a container file (`*-modal.tsx`) and a content file (`*-modal-content.tsx`). Container owns lifecycle; content owns UI. See `docs/pattern/COMPOSITE-PATTERN.md`.
 
-**✅ Zustand vs Context separation**
+**Zustand vs Context separation**
 
 Zustand stores handle UI/ephemeral state (navigation loading, form fields, preferences). React Context handles server state (fetched entities). These concerns are not mixed. See `docs/pattern/OBSERVER-PATTERN.md` and `docs/pattern/PROVIDER-PATTERN.md`.
-
----
-
-### Current Violations
-
-**❌ Card components fetch data — UI layer calls API layer**
-
-**Files:** `src/components/commons/cards/project-card.tsx`, `src/components/organization/invoice/invoice-card.tsx`
-
-```ts
-// ❌ UI component directly imports from API layer
-import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
-
-// ❌ Data fetching inside a presentational card
-const { data: receiptPayments } = useFetchFn(
-  () => getReceiptPaymentsByProjectIdApi(project?.id || ''),
-  { fetchKey: `receipt-payment-list-in-project-${project?.id}` }
-);
-```
-
-A card is a presentational component. Its concern is rendering. Fetching belongs in the parent list screen or a container component that passes data down as props.
-
----
-
-**❌ `TourDetailLayout` mixes five concerns in one file**
-
-`src/app/(protected)/tour-detail/[tourId]/_layout.tsx` (212 lines) is responsible for:
-1. Extracting route params
-2. Wiring the delete mutation + confirmation dialog
-3. Save-and-exit navigation
-4. Rendering a status dropdown
-5. Composing the layout structure
-
-Each of these is a distinct concern. The delete flow alone should be extracted into a `useTourDelete(tourId)` hook.
 
 ---
 
@@ -132,8 +122,7 @@ Layers enforce a dependency direction that keeps each part of the system indepen
 | **apis** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | **providers** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
 | **hooks** | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| **components** | ✅ | ✅ | ✅ | ❌† | ✅ | ✅ | ✅ | ❌ |
-| **app** | ✅ | ✅ | ✅ | ⚠️‡ | ✅ | ✅ | ✅ | ✅ |
+| **components** | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ |
+| **app** | ✅ | ✅ | ✅ | ⚠️† | ✅ | ✅ | ✅ | ✅ |
 
-† `project-card.tsx` and `invoice-card.tsx` currently violate this — to be fixed.  
-‡ Layout files may pass an API function reference to `useMutationFn` — acceptable only when no provider exists for that operation.
+† Layout files may pass an API function reference to `useMutationFn` — acceptable only when no provider exists for that operation.

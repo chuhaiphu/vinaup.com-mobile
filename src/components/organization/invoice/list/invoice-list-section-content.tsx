@@ -3,8 +3,12 @@ import { useFetch } from 'fetchwire';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import dayjs from 'dayjs';
 import { getInvoicesByOrganizationIdApi } from '@/apis/invoice-apis';
+import { getReceiptPaymentsByInvoiceIdsApi } from '@/apis/receipt-payment-apis';
 import { InvoiceCard } from '@/components/organization/invoice/invoice-card';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
+import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
+import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 
 export interface InvoiceListSectionContentProps {
   organizationId: string;
@@ -21,33 +25,54 @@ export function InvoiceListSectionContent({
 }: InvoiceListSectionContentProps) {
   const { getInvoiceTypeByCode } = useInvoiceTypeContext();
 
-  const fetchInvoicesFn = () => {
+  const fetchInvoicesAndReceiptPaymentsFn = async () => {
     const invoiceType = getInvoiceTypeByCode(invoiceTypeCode);
-    return getInvoicesByOrganizationIdApi(organizationId, {
+    const invoicesRes = await getInvoicesByOrganizationIdApi(organizationId, {
       invoiceTypeId: invoiceType?.id,
       status: statusFilter || undefined,
       startDate: selectedDate.startOf('month').toISOString(),
       endDate: selectedDate.endOf('month').toISOString(),
     });
+
+    const invoices = invoicesRes.data ?? [];
+    const invoiceIds = invoices.map((inv) => inv.id);
+
+    let allReceiptPayments: ReceiptPaymentResponse[] = [];
+    if (invoiceIds.length > 0) {
+      const rpRes = await getReceiptPaymentsByInvoiceIdsApi(invoiceIds);
+      allReceiptPayments = rpRes.data ?? [];
+    }
+
+    return { invoices, allReceiptPayments };
   };
 
   const fetchKey = `organization-invoice-list-${organizationId}-${invoiceTypeCode}-${selectedDate.format('YYYY-MM')}-${statusFilter}`;
 
   const {
-    data: invoices,
+    data,
     refreshFetch,
     isRefreshing,
-  } = useFetch(fetchInvoicesFn, {
-    fetchKey,
-    tags: ['organization-invoice-list'],
-  });
+  } = useFetch<{ invoices: InvoiceResponse[]; allReceiptPayments: ReceiptPaymentResponse[] }>(
+    fetchInvoicesAndReceiptPaymentsFn,
+    {
+      fetchKey,
+      tags: ['organization-invoice-list'],
+    }
+  );
+
+  const invoices = data?.invoices ?? [];
+  const allReceiptPayments = data?.allReceiptPayments ?? [];
 
   return (
     <FlatList
       data={invoices}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <InvoiceCard invoice={item} />}
+      renderItem={({ item }) => {
+        const invoiceRPs = allReceiptPayments.filter((rp) => rp.invoiceId === item.id);
+        const { totalRemaining } = calculateReceiptPaymentsSummary(invoiceRPs);
+        return <InvoiceCard invoice={item} totalRemaining={totalRemaining} />;
+      }}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}

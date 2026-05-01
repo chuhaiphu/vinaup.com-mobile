@@ -1,36 +1,19 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
-import dayjs from 'dayjs';
 import { ProjectStatusDisplay } from '@/constants/project-constants';
-import { useFetchFn } from 'fetchwire';
-import { useEffect, useState } from 'react';
-import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { formatDateRange, generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { useState } from 'react';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
 interface ProjectCardProps {
   project?: ProjectResponse;
   onPress?: () => void;
+  totalRemaining?: number;
 }
 
-export function ProjectCard({ project, onPress }: ProjectCardProps) {
+export function ProjectCard({ project, onPress, totalRemaining }: ProjectCardProps) {
   const [isShowingPrice, setIsShowingPrice] = useState(false);
-  const fetchReceiptPaymentsFn = () =>
-    getReceiptPaymentsByProjectIdApi(project?.id || '');
-
-  const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } =
-    useFetchFn(fetchReceiptPaymentsFn, {
-      fetchKey: `receipt-payment-list-in-project-${project?.id}`,
-      tags: [`receipt-payment-list-in-project-${project?.id}`],
-    });
-
-  useEffect(() => {
-    if (project?.id) {
-      fetchReceiptPayments();
-    }
-  }, [project, fetchReceiptPayments]);
 
   const getProjectInfoText = () => {
     if (!project) return '';
@@ -38,19 +21,6 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
       return `${project.organization?.name || ''}`;
     }
     return `${project.externalOrganizationName || ''}`;
-  };
-
-  const getProjectDateRangeText = () => {
-    if (!project) return '';
-    if (
-      dayjs(project.startDate).format('DD/MM') ===
-      dayjs(project.endDate).format('DD/MM')
-    ) {
-      return dayjs(project.startDate).format('DD/MM');
-    }
-    return `${dayjs(project.startDate).format('DD/MM')} - ${dayjs(
-      project.endDate
-    ).format('DD/MM')}`;
   };
 
   const togglePrice = () => {
@@ -71,7 +41,7 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
       <View style={styles.innerHeader}>
         <View style={styles.left}>
           <Text style={styles.projectDateRangeText}>
-            {getProjectDateRangeText()}
+            {formatDateRange(project.startDate, project.endDate)}
           </Text>
           <PressableOpacity onPress={togglePrice}>
             <Text
@@ -85,11 +55,7 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
           </PressableOpacity>
           {isShowingPrice && (
             <Text style={styles.projectTotalAmountText}>
-              {generateLocalePriceFormat(
-                calculateReceiptPaymentsSummary(receiptPayments || [])
-                  .totalRemaining,
-                'vi-VN'
-              )}
+              {generateLocalePriceFormat(totalRemaining ?? 0, 'vi-VN')}
             </Text>
           )}
         </View>
@@ -102,10 +68,10 @@ export function ProjectCard({ project, onPress }: ProjectCardProps) {
       <Pressable onPress={onPress}>
         <View style={styles.content}>
           <View style={styles.topRow}>
-            <View style={styles.descriptionContainer}>
+            <View>
               <Text style={styles.descriptionText}>{project.description}</Text>
             </View>
-            <View style={styles.code}>
+            <View>
               {project.code && (
                 <Text style={styles.codeText}>{project.code}</Text>
               )}
@@ -183,13 +149,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.vinaupDarkGray,
   },
-  descriptionContainer: {},
   descriptionText: {
     fontSize: 16,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
-  code: {},
   codeText: {
     fontSize: 14,
     color: COLORS.vinaupDarkGray

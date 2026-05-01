@@ -4,83 +4,66 @@
 
 Every piece of knowledge must have a single, unambiguous representation in the system. When logic, structure, or data must change, it should require modification in exactly one place.
 
-DRY does not mean "never write similar code". It means "never duplicate decisions". Incidental structural similarity is not a DRY violation. Identical business logic copied across files is.
+### Named constants for shared values
 
-### ✅ Done well
+Format strings, magic numbers, and color codes are defined once in `src/constants/` and imported wherever they are needed. All callers update automatically when the constant changes.
 
-**`buildFilterQueryString` utility**
-Every paginated list endpoint needs date range + extra filter params in the query string. This logic is written once in `src/utils/api-helpers.ts` and called from every relevant API function.
+```ts
+// src/constants/app-constant.ts
+export const DATE_FORMAT_SHORT = 'DD/MM';
 
-**Shared primitives layer**
-`Button`, `Input`, `Select`, `Modal`, `Loader`, etc. are defined once in `src/components/primitives/` and reused across all domains. Touch handling, loading states, and styling live in one place.
+// every consumer imports the same constant
+d.format(DATE_FORMAT_SHORT)              // receipt-payment-booking-list-content.tsx
+start.format(DATE_FORMAT_SHORT)          // tour-detail-header-content.tsx
+displayFormat={DATE_FORMAT_SHORT}        // DateTimePicker usages
+```
 
-**Interface-driven API typing**
+### Shared utility functions
+
+Logic that recurs in two or more call sites is extracted into `src/utils/`. A fix or spec change in the utility propagates to every caller automatically.
+
+```ts
+// src/utils/generator-helpers.ts
+export function formatDateRange(start: string, end: string, format = DATE_FORMAT_SHORT): string {
+  // single definition — used in project-card, invoice-card, tour-card
+}
+```
+
+```ts
+// src/utils/api-helpers.ts
+export function buildFilterQueryString(dateRange: DateRange, extra?: Record<string, string>): string {
+  // single definition — called from every paginated list API function
+}
+```
+
+### Shared primitives layer
+
+`Button`, `Input`, `Select`, `Modal`, `Loader`, and others are defined once in `src/components/primitives/` and reused across all domains. Touch handling, loading states, and styling live in one place.
+
+### Interface-driven API typing
+
 Request and response types are defined once in `src/interfaces/*-interfaces.ts` and shared between API functions, providers, and components — never redefined inline.
 
-### ❌ Current violations
+### Parameterised templates
 
-**`formatDateRange` logic duplicated in three card components**
-
-The same function body appears in `project-card.tsx`, `invoice-card.tsx`, and `tour-card.tsx`:
+When two modules share the same structure but differ in a few values, a single template function accepts those values as parameters.
 
 ```ts
-// Repeated identically in three files
-const getDateRangeText = () => {
-  if (dayjs(startDate).format('DD/MM') === dayjs(endDate).format('DD/MM'))
-    return dayjs(startDate).format('DD/MM');
-  return `${dayjs(startDate).format('DD/MM')} - ${dayjs(endDate).format('DD/MM')}`;
-};
+// src/utils/tour-pdf-helpers.ts — one definition
+export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: string): string { ... }
+
+// two callers supply only what differs
+buildHtml({ ..., mainTitle: 'Tính giá',   summaryHeaderLabel: 'Dự kiến' }, b64)  // calculation
+buildHtml({ ..., mainTitle: 'Quyết toán', summaryHeaderLabel: 'Thực tế' }, b64)  // settlement
 ```
 
-**Fix:** Add `formatDateRange(start: string, end: string): string` to `src/utils/generator-helpers.ts` and import it from the three card files.
+## Current Violations
 
----
-
-**Receipt payment prefetch pattern duplicated in card components**
-
-`project-card.tsx` and `invoice-card.tsx` both contain:
-```ts
-const { data: receiptPayments, executeFetchFn: fetchReceiptPayments } = useFetchFn(
-  () => getReceiptPaymentsByXxxIdApi(id),
-  { fetchKey: `receipt-payment-list-in-xxx-${id}`, tags: [...] }
-);
-useEffect(() => { if (id) fetchReceiptPayments(); }, [id, fetchReceiptPayments]);
-```
-
-**Fix:** Extract a shared custom hook or lift this fetching to the parent list screen that passes pre-fetched data down as props.
-
----
-
-**Two PDF generator files (~664 lines each) share 95% of their code**
-
-`src/utils/tour-calculation-cancel-log-pdf.ts` and `src/utils/tour-settlement-cancel-log-pdf.ts` duplicate `escapeHtml`, `formatDateTime`, `buildReceiptPaymentRows`, the full CSS block, and most of the HTML template structure.
-
-**Fix:**
-1. Create `src/utils/tour-pdf-helpers.ts` with all shared functions.
-2. Keep only the domain-specific HTML sections in each original file.
-3. Both files import from `tour-pdf-helpers.ts`.
-
----
-
-**Date format string `'DD/MM'` as a magic string repeated ~8 times**
-
-Same literal appears in `project-card.tsx`, `invoice-card.tsx`, `tour-card.tsx`, `booking-card.tsx`, and inside the `formatDateRange` calls.
-
-**Fix:** Define `const DATE_FORMAT_SHORT = 'DD/MM'` in `src/constants/app-constant.ts` and reference it everywhere.
-
----
-
-**Zustand utility stores are structurally identical**
-
-`use-organization-utility-store.ts` and `use-personal-utility-store.ts` implement the same `selections / toggleUtility / setUtilities / resetUtilities` shape with different storage keys.
-
-**Fix:** Extract a `createUtilityStore` factory shared between both.
-
----
+- **Zustand utility stores** (`use-navigation-store`, `use-modal-store`, etc.) are structurally identical — each defines a single boolean flag + setter with the same shape — but defined separately. A generic `useBooleanStore` factory would eliminate the duplication.
 
 ## Why
 
-When logic exists in one place, fixing a bug or updating behaviour requires touching exactly one file — and TypeScript propagates the change to every caller automatically. When the same decision is duplicated across files, a change requires finding every copy. Copies drift: different files apply different fixes, different formatting strings, different error messages. The more copies exist, the harder it is to be certain that a change is complete.
+When logic exists in one place, fixing a bug or updating behaviour requires touching exactly one file — and TypeScript propagates the change to every caller automatically. When the same decision is duplicated across files, a change requires finding every copy. The more copies exist, the harder it is to be certain that a change is complete.
 
 ---
 

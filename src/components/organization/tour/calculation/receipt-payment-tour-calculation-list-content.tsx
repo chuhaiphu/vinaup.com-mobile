@@ -1,3 +1,4 @@
+import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { ReceiptPaymentCard } from '@/components/commons/cards/receipt-payment-card';
 import { ReceiptPaymentSectionListHeader } from '@/components/commons/headers/receipt-payment-section-list-header';
 import Loader from '@/components/primitives/loader';
@@ -68,7 +69,7 @@ export function ReceiptPaymentTourCalculationListContent({
   const receiptPaymentInRangeSections = dateRange.map((d) => {
     const key = d.format('YYYY-MM-DD');
     return {
-      title: d.format('DD/MM'),
+      title: d.format(DATE_FORMAT_SHORT),
       dateKey: key,
       data: receiptPaymentsInRangeMap[key] || [],
     };

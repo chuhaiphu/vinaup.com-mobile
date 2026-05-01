@@ -11,6 +11,7 @@ import { ProjectCard } from '@/components/commons/cards/project-card';
 import { ReceiptPaymentsSummary } from '@/components/commons/receipt-payments-summary';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
@@ -86,9 +87,17 @@ export function OrganizationProjectListSectionContent({
         data={projects}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ProjectCard project={item} onPress={() => navigateToDetail(item)} />
-        )}
+        renderItem={({ item }) => {
+          const projectRPs = allReceiptPayments.filter((rp) => rp.projectId === item.id);
+          const { totalRemaining } = calculateReceiptPaymentsSummary(projectRPs);
+          return (
+            <ProjectCard
+              project={item}
+              onPress={() => navigateToDetail(item)}
+              totalRemaining={totalRemaining}
+            />
+          );
+        }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}

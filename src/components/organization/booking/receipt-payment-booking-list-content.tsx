@@ -1,3 +1,4 @@
+import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import React from 'react';
 import {
   Pressable,
@@ -77,7 +78,7 @@ export function ReceiptPaymentBookingListContent({
   const receiptPaymentInRangeSections = dateRange.map((d) => {
     const key = d.format('YYYY-MM-DD');
     return {
-      title: d.format('DD/MM'),
+      title: d.format(DATE_FORMAT_SHORT),
       dateKey: key,
       data: receiptPaymentsInRangeMap[key] || [],
     };

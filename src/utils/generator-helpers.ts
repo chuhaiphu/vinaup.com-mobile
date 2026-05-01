@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { ImageManipulator } from 'expo-image-manipulator';
+import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
 
 export function generateDateCode(): string {
   const now = new Date();
@@ -49,6 +50,12 @@ export function generateErrorMessage(error: unknown, fallback = 'Có lỗi xảy
   return fallback;
 }
 
+export function formatDateRange(start: string, end: string, format = DATE_FORMAT_SHORT): string {
+  const s = dayjs(start).format(format);
+  const e = dayjs(end).format(format);
+  return s === e ? s : `${s} - ${e}`;
+}
+
 export async function generateBase64FromUrl(url?: string | null): Promise<string> {
   if (!url) return '';
 
@@ -62,7 +69,7 @@ export async function generateBase64FromUrl(url?: string | null): Promise<string
 
     return `data:image/jpeg;base64,${result.base64}`;
   } catch (error) {
-    console.warn('Loi khi convert image sang base64', error);
+    console.warn('Lỗi khi convert image sang base64', error);
     return '';
   }
 }

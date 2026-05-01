@@ -26,8 +26,13 @@ function TourDetailLayoutContent() {
   const { tourId } = useLocalSearchParams<{
     tourId: string;
   }>();
-  const { tour, isRefreshingTour, isUpdatingTour, handleUpdateTour, refreshTour } =
-    useTourDetailContext();
+  const {
+    tour,
+    isRefreshingTour,
+    isUpdatingTour,
+    handleUpdateTour,
+    refreshTour,
+  } = useTourDetailContext();
 
   const segments = useSegments();
   const tab = segments[segments.length - 1];

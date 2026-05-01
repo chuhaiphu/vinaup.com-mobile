@@ -1,3 +1,9 @@
+export const ORGANIZATION_CUSTOMER_STATUS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+} as const;
+export type OrganizationCustomerStatus = (typeof ORGANIZATION_CUSTOMER_STATUS)[keyof typeof ORGANIZATION_CUSTOMER_STATUS];
+
 export const ORGANIZATION_MEMBER_STATUS = {
   PENDING: 'PENDING',
   ACTIVE: 'ACTIVE',

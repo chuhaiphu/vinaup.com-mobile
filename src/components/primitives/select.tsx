@@ -196,13 +196,13 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#EEE',
+    borderBottomColor: COLORS.vinaupLightGray,
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: COLORS.vinaupBlack,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -210,13 +210,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 0.5,
-    borderBottomColor: '#EEE',
+    borderBottomColor: COLORS.vinaupLightGray,
     gap: 8,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: COLORS.vinaupBlack,
     paddingVertical: 8,
   },
   listPadding: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 18,
-    color: '#444',
+    color: COLORS.vinaupDarkGray,
   },
   optionTextActive: {
     color: COLORS.vinaupTeal,

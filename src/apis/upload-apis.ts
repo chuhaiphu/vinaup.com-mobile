@@ -11,7 +11,7 @@ export async function uploadImageApi(file: File) {
 }
 
 export async function deleteImageApi(path: string) {
-  return wireApi<null>('/upload', {
+  return wireApi<void>('/upload', {
     method: 'DELETE',
     body: JSON.stringify({ path }),
   });

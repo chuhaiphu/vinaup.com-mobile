@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
+import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { BookingMeta, BookingResponse } from '@/interfaces/booking-interfaces';
 import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
@@ -21,7 +22,7 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
   const { setIsNavigating } = useNavigationStore();
 
   const startDate = booking?.startDate
-    ? dayjs(booking.startDate).format('DD/MM')
+    ? dayjs(booking.startDate).format(DATE_FORMAT_SHORT)
     : '--';
   const endDate = booking?.endDate
     ? dayjs(booking.endDate).format('DD/MM/YY')
@@ -91,7 +92,7 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
           </View>
           <View style={styles.divider} />
           <View style={styles.bottomSection}>
-            <View style={styles.senderInfo}>
+            <View>
               <View style={styles.labelRow}>
                 <VinaupUserArrowUpRight width={13} height={15} />
                 <Text style={styles.label}>Gửi bởi</Text>
@@ -105,7 +106,7 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
                 )}
               </View>
             </View>
-            <View style={styles.receiverInfo}>
+            <View>
               <View style={[styles.labelRow, styles.receiverLabelRow]}>
                 <Text style={styles.label}>Nhận bởi</Text>
                 <VinaupUserChecked width={13} height={15} />
@@ -182,8 +183,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
-  senderInfo: {},
-  receiverInfo: {},
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',

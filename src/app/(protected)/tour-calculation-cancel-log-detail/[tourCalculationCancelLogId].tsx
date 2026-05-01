@@ -1,3 +1,4 @@
+import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { getTourCalculationCancelLogByIdApi } from '@/apis/tour-apis';
 import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-layers.native';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
@@ -5,7 +6,6 @@ import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
 import { PdfPageSizeModal } from '@/components/commons/modals/pdf-page-size-modal/pdf-page-size-modal';
 import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
-import { TourCalculationCancelLogSnapshotData } from '@/interfaces/tour-calculation-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { SignatureResponse } from '@/interfaces/signature-interfaces';
 import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
@@ -78,35 +78,10 @@ export default function TourCalculationCancelLogDetail() {
     fetchOrganization();
   }, [tourCalculationCancelLogId, fetchCancelLog, fetchOrganization]);
 
-  const parsedSnapshot = (() => {
-    const rawSnapshot =
-      (cancelLog?.snapshotData as
-        | TourCalculationCancelLogSnapshotData
-        | Record<string, unknown>
-        | undefined) || {};
-
-    const tourCalculationRaw =
-      typeof rawSnapshot === 'object' &&
-      rawSnapshot !== null &&
-      'tourCalculation' in rawSnapshot &&
-      typeof rawSnapshot.tourCalculation === 'object' &&
-      rawSnapshot.tourCalculation !== null
-        ? rawSnapshot.tourCalculation
-        : {};
-
-    const signaturesRaw =
-      typeof rawSnapshot === 'object' &&
-      rawSnapshot !== null &&
-      'signatures' in rawSnapshot &&
-      Array.isArray(rawSnapshot.signatures)
-        ? rawSnapshot.signatures
-        : [];
-
-    return {
-      tourCalculation: tourCalculationRaw,
-      signatures: signaturesRaw as SignatureResponse[],
-    };
-  })();
+  const parsedSnapshot = {
+    tourCalculation: cancelLog?.snapshotData?.tourCalculation ?? {},
+    signatures: (cancelLog?.snapshotData?.signatures ?? []) as SignatureResponse[],
+  };
 
   const snapshotTour =
     (parsedSnapshot.tourCalculation as {
@@ -146,7 +121,7 @@ export default function TourCalculationCancelLogDetail() {
     // Create transaction date label groups (day/month)
     receiptPayments.forEach((item) => {
       const groupLabel = dayjs(item.transactionDate).isValid()
-        ? dayjs(item.transactionDate).format('DD/MM')
+        ? dayjs(item.transactionDate).format(DATE_FORMAT_SHORT)
         : '-';
 
       const current = groups.get(groupLabel) || [];

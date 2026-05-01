@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
-import dayjs from 'dayjs';
 import { COLORS } from '@/constants/style-constant';
 import { TourResponse } from '@/interfaces/tour-interfaces';
 import { TourStatusDisplay } from '@/constants/tour-constants';
+import { formatDateRange } from '@/utils/generator-helpers';
 
 interface TourCardProps {
   tour?: TourResponse;
@@ -12,19 +12,6 @@ export function TourCard({ tour }: TourCardProps) {
   const getTourInfoText = () => {
     if (!tour) return '';
     return `${tour.externalOrganizationName || tour.organization?.name || ''}`;
-  };
-
-  const getTourDateRangeText = () => {
-    if (!tour) return '';
-    if (
-      dayjs(tour.startDate).format('DD/MM') ===
-      dayjs(tour.endDate).format('DD/MM')
-    ) {
-      return dayjs(tour.startDate).format('DD/MM');
-    }
-    return `${dayjs(tour.startDate).format('DD/MM')} - ${dayjs(
-      tour.endDate
-    ).format('DD/MM')}`;
   };
 
   if (!tour) {
@@ -41,7 +28,7 @@ export function TourCard({ tour }: TourCardProps) {
     <View style={styles.container}>
       <View style={styles.innerHeader}>
         <View style={styles.left}>
-          <Text style={styles.tourDateRangeText}>{getTourDateRangeText()}</Text>
+          <Text style={styles.tourDateRangeText}>{formatDateRange(tour.startDate, tour.endDate)}</Text>
         </View>
         <View style={styles.right}>
           <Text style={styles.tourStatusText}>
@@ -51,10 +38,10 @@ export function TourCard({ tour }: TourCardProps) {
       </View>
       <View style={styles.content}>
         <View style={styles.topRow}>
-          <View style={styles.descriptionContainer}>
+          <View>
             <Text style={styles.descriptionText}>{tour.description}</Text>
           </View>
-          <View style={styles.code}>
+          <View>
             {tour.code && (
               <Text style={styles.codeText}>{tour.code}</Text>
             )}
@@ -115,16 +102,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.vinaupDarkGray,
   },
-  descriptionContainer: {},
   descriptionText: {
     fontSize: 16,
     fontWeight: '600',
     color: COLORS.vinaupTeal,
   },
-  code: {},
   codeText: {
     fontSize: 14,
     color: COLORS.vinaupDarkGray,
   },
 });
-
