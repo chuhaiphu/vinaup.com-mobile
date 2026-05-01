@@ -72,7 +72,7 @@ const { tour, handleUpdateTour } = useTourDetailContext();
 | Touch / interaction handling | Component event handlers |
 | Local toggle state | `useState` inside component |
 | Data fetching | Provider or parent container — never inside a card/list-item component |
-| Business calculations | `src/utils/calculator-helpers.ts` |
+| Business calculations | `src/utils/calculator/` |
 | Navigation on user action | Component calls `router.push`, sets `isNavigating` |
 
 #### Provider concerns

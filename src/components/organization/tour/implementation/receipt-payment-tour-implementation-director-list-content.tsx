@@ -5,7 +5,7 @@ import Loader from '@/components/primitives/loader';
 import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { generateDayJsDateRange } from '@/utils/generator-helpers';
+import { generateDayJsDateRange } from '@/utils/generator/string-generator/generate-day-js-date-range';
 import dayjs from 'dayjs';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 

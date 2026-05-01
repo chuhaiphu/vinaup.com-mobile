@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { TourResponse } from '@/interfaces/tour-interfaces';
 import { TourStatusDisplay } from '@/constants/tour-constants';
-import { formatDateRange } from '@/utils/generator-helpers';
+import { generateDateRange } from '@/utils/generator/string-generator/generate-date-range';
 
 interface TourCardProps {
   tour?: TourResponse;
@@ -28,7 +28,7 @@ export function TourCard({ tour }: TourCardProps) {
     <View style={styles.container}>
       <View style={styles.innerHeader}>
         <View style={styles.left}>
-          <Text style={styles.tourDateRangeText}>{formatDateRange(tour.startDate, tour.endDate)}</Text>
+          <Text style={styles.tourDateRangeText}>{generateDateRange(tour.startDate, tour.endDate)}</Text>
         </View>
         <View style={styles.right}>
           <Text style={styles.tourStatusText}>

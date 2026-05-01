@@ -6,7 +6,7 @@ import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createBookingApi, getBookingByIdApi } from '@/apis/booking-apis';
-import { generateDateCode } from '@/utils/generator-helpers';
+import { generateDateCode } from '@/utils/generator/string-generator/generate-date-code';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationBookingHeaderBottom = () => {

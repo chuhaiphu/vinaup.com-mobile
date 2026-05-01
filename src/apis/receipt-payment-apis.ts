@@ -5,7 +5,7 @@ import {
   ReceiptPaymentResponse,
   UpdateReceiptPaymentRequest,
 } from '@/interfaces/receipt-payment-interfaces';
-import { buildFilterQueryString } from '@/utils/api-helpers';
+import { generateFilterQueryString } from '@/utils/generator/string-generator/generate-filter-query-string';
 
 export async function createReceiptPaymentApi(data: CreateReceiptPaymentRequest) {
   return wireApi<ReceiptPaymentResponse>('/receipt-payment', {
@@ -17,7 +17,7 @@ export async function createReceiptPaymentApi(data: CreateReceiptPaymentRequest)
 export async function getReceiptPaymentsByCurrentUserApi(
   filter?: ReceiptPaymentFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, { type: filter?.type });
+  const filterQueryString = generateFilterQueryString(filter, { type: filter?.type });
   return wireApi<ReceiptPaymentResponse[]>(`/receipt-payment${filterQueryString}`, {
     method: 'GET',
   });
@@ -123,7 +123,7 @@ export async function getReceiptPaymentsByOrganizationIdApi(
   organizationId: string,
   filter?: ReceiptPaymentFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, { type: filter?.type });
+  const filterQueryString = generateFilterQueryString(filter, { type: filter?.type });
   return wireApi<ReceiptPaymentResponse[]>(
     `/receipt-payment/organization/${organizationId}${filterQueryString}`,
     {

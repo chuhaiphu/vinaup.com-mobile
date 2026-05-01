@@ -5,7 +5,7 @@ import {
   BookingMeta,
 } from '@/interfaces/booking-interfaces';
 import { BookingFilterParam } from '@/interfaces/_query-param.interfaces';
-import { buildFilterQueryString } from '@/utils/api-helpers';
+import { generateFilterQueryString } from '@/utils/generator/string-generator/generate-filter-query-string';
 import { wireApi } from 'fetchwire';
 import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 
@@ -20,7 +20,7 @@ export async function getBookingsByOrganizationIdApi(
   organizationId: string,
   filter?: BookingFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, {
+  const filterQueryString = generateFilterQueryString(filter, {
     status: filter?.status,
   });
   return wireApi<ResponseWithMeta<BookingResponse, BookingMeta>[]>(
@@ -33,7 +33,7 @@ export async function getBookingsByOrganizationCustomerOrganizationIdApi(
   organizationId: string,
   filter?: BookingFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, {
+  const filterQueryString = generateFilterQueryString(filter, {
     status: filter?.status,
   });
   return wireApi<ResponseWithMeta<BookingResponse, BookingMeta>[]>(
@@ -65,7 +65,7 @@ export async function getBookingsByTourImplementationIdApi(
   tourImplementationId: string,
   filter?: BookingFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, {
+  const filterQueryString = generateFilterQueryString(filter, {
     status: filter?.status,
   });
   return wireApi<BookingResponse[]>(

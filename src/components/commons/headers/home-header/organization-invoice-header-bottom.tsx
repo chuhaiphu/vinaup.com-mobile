@@ -8,7 +8,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createInvoiceApi, getInvoiceByIdApi } from '@/apis/invoice-apis';
-import { generateDateCode } from '@/utils/generator-helpers';
+import { generateDateCode } from '@/utils/generator/string-generator/generate-date-code';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 

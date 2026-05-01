@@ -10,7 +10,7 @@ import {
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { useFetchFn } from 'fetchwire';
 import { getProjectsOfCurrentUserApi } from '@/apis/project-apis';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-receipt-payments-summary';
 import { MultiSelect } from '@/components/primitives/multiple-select';
 import { usePersonalUtilitiesStore } from '@/hooks/use-personal-utility-store';
 import {

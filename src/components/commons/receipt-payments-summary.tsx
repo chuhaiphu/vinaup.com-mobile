@@ -3,8 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import VinaupExpand from '@/components/icons/vinaup-expand.native';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-receipt-payments-summary';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 
 interface ReceiptPaymentsSummaryProps {
   receiptPayments?: ReceiptPaymentResponse[] | null;

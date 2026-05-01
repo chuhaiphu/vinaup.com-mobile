@@ -18,7 +18,12 @@ src/
 ├── hooks/            # Zustand stores (use-*-store.ts)
 ├── interfaces/       # TypeScript types and interfaces (*-interfaces.ts)
 ├── providers/        # React Context providers (*-provider.tsx)
-└── utils/            # Pure helper functions (*-helpers.ts)
+└── utils/
+    ├── calculator/        # Pure calculation functions
+    └── generator/
+        ├── string-generator/   # String & value generators
+        └── file-generator/
+            └── pdf/            # PDF document generators
 ```
 
 No barrel files (`index.ts`). Always import by full path:
@@ -98,7 +103,7 @@ Detail providers (TourDetailProvider, BookingDetailProvider, etc.) are co-locate
 
 ### API errors
 ```ts
-import { generateErrorMessage } from '@/utils/generator-helpers'
+import { generateErrorMessage } from '@/utils/generator/string-generator/generate-error-message'
 
 // In providers and screens:
 Alert.alert('Lỗi', generateErrorMessage(error))
@@ -170,4 +175,4 @@ export async function updateTourApi(id: string, data: UpdateTourRequest) { ... }
 export async function deleteTourApi(id: string) { ... }
 ```
 
-Use `buildFilterQueryString(filter, extra)` from `@/utils/api-helpers` for query param building.
+Use `generateFilterQueryString(filter, extra)` from `@/utils/generator/string-generator/generate-filter-query-string` for query param building.

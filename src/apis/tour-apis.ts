@@ -26,7 +26,7 @@ import {
   UpdateTourImplementationAdditionalDataRequest,
 } from '@/interfaces/tour-implementation-interfaces';
 import { wireApi } from 'fetchwire';
-import { buildFilterQueryString } from '@/utils/api-helpers';
+import { generateFilterQueryString } from '@/utils/generator/string-generator/generate-filter-query-string';
 
 export async function createTourApi(data: CreateTourRequest) {
   return wireApi<TourResponse>('/tour', {
@@ -39,7 +39,7 @@ export async function getToursByOrganizationIdApi(
   organizationId: string,
   filter?: TourFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, {
+  const filterQueryString = generateFilterQueryString(filter, {
     status: filter?.status,
   });
   return wireApi<TourResponse[]>(

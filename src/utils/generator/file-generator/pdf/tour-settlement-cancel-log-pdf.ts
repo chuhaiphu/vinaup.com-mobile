@@ -1,7 +1,7 @@
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 import { SignatureResponse } from '@/interfaces/signature-interfaces';
-import { TourCalculationCancelLogResponse } from '@/interfaces/tour-calculation-interfaces';
-import { generateBase64FromUrl } from './generator-helpers';
+import { TourSettlementCancelLogResponse } from '@/interfaces/tour-settlement-interfaces';
+import { generateBase64FromUrl } from '@/utils/generator/string-generator/generate-base64-from-url';
 import {
   buildHtml,
   sharePdf,
@@ -9,10 +9,12 @@ import {
   type PdfPageSize,
   type SnapshotTour,
   type TicketSummarySnapshot,
-} from './tour-pdf-helpers';
+} from './generate-tour-cancel-log-pdf';
 
-interface TourCalculationCancelLogPdfInput {
-  cancelLog: TourCalculationCancelLogResponse;
+export type { PdfPageSize } from './generate-tour-cancel-log-pdf';
+
+interface TourSettlementCancelLogPdfInput {
+  cancelLog: TourSettlementCancelLogResponse;
   organization?: OrganizationResponse;
   snapshotTour: SnapshotTour;
   ticketSummary: TicketSummarySnapshot;
@@ -24,8 +26,8 @@ interface TourCalculationCancelLogPdfInput {
   pageSize?: PdfPageSize;
 }
 
-export async function createAndShareTourCalculationCancelLogPdf(
-  input: TourCalculationCancelLogPdfInput
+export async function createAndShareTourSettlementCancelLogPdf(
+  input: TourSettlementCancelLogPdfInput
 ): Promise<void> {
   const avatarBase64 = await generateBase64FromUrl(input.organization?.avatarUrl);
   const html = buildHtml(
@@ -41,8 +43,8 @@ export async function createAndShareTourCalculationCancelLogPdf(
       customerName: input.customerName,
       totalExpectedCount: input.totalExpectedCount,
       pageSize: input.pageSize,
-      mainTitle: 'Tính giá',
-      summaryHeaderLabel: 'Dự kiến',
+      mainTitle: 'Quyết toán',
+      summaryHeaderLabel: 'Thực tế',
     },
     avatarBase64
   );

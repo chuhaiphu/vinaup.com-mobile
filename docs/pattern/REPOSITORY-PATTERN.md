@@ -35,7 +35,7 @@ export async function createTourApi(data: CreateTourRequest) {
 }
 
 export async function getToursByOrganizationIdApi(organizationId: string, filter?: TourFilterParam) {
-  const qs = buildFilterQueryString(filter, { status: filter?.status });
+  const qs = generateFilterQueryString(filter, { status: filter?.status });
   return wireApi<TourResponse[]>(`/tour/organization/${organizationId}${qs}`, { method: 'GET' });
 }
 
@@ -54,15 +54,15 @@ export async function deleteTourApi(id: string) {
 
 ### Filter query string utility
 
-All list endpoints that accept filter parameters use `buildFilterQueryString` from `src/utils/api-helpers.ts`. This function handles date range params and any additional key-value pairs, returning a correctly encoded query string.
+All list endpoints that accept filter parameters use `generateFilterQueryString` from `src/utils/generator/string-generator/generate-filter-query-string.ts`. This function handles date range params and any additional key-value pairs, returning a correctly encoded query string.
 
 ```ts
-// src/utils/api-helpers.ts
-export function buildFilterQueryString(
+// src/utils/generator/string-generator/generate-filter-query-string.ts
+export function generateFilterQueryString(
   filter?: DateFilterParam,
   additionalParams?: Record<string, string | undefined>
 ): string {
-  const params = buildDateFilterParams(filter);
+  const params = generateDateFilterParams(filter);
   if (additionalParams) {
     Object.entries(additionalParams).forEach(([key, value]) => {
       if (value) params.append(key, value);
@@ -127,13 +127,13 @@ export async function deleteTourApi(id: string) {
 return wireApi<null>(`/tour/${id}`, { method: 'DELETE' });
 ```
 
-### Rule 3 — All filter list endpoints use `buildFilterQueryString`
+### Rule 3 — All filter list endpoints use `generateFilterQueryString`
 
 Never build `URLSearchParams` manually inside an API function.
 
 ```ts
 // ✅
-const qs = buildFilterQueryString(filter, { status: filter?.status });
+const qs = generateFilterQueryString(filter, { status: filter?.status });
 return wireApi<TourResponse[]>(`/tour/organization/${orgId}${qs}`, { method: 'GET' });
 
 // ❌
@@ -173,14 +173,14 @@ Booking functions go in `booking-apis.ts`. Do not add a booking API function to 
 import { XxxResponse, CreateXxxRequest, UpdateXxxRequest } from '@/interfaces/xxx-interfaces';
 import { XxxFilterParam } from '@/interfaces/_query-param.interfaces';
 import { wireApi } from 'fetchwire';
-import { buildFilterQueryString } from '@/utils/api-helpers';
+import { generateFilterQueryString } from '@/utils/generator/string-generator/generate-filter-query-string';
 
 export async function createXxxApi(data: CreateXxxRequest) {
   return wireApi<XxxResponse>('/xxx', { method: 'POST', body: JSON.stringify(data) });
 }
 
 export async function getXxxsApi(filter?: XxxFilterParam) {
-  const qs = buildFilterQueryString(filter, { status: filter?.status });
+  const qs = generateFilterQueryString(filter, { status: filter?.status });
   return wireApi<XxxResponse[]>(`/xxx${qs}`, { method: 'GET' });
 }
 

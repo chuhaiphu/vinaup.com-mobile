@@ -7,7 +7,7 @@ import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createTourApi, getTourByIdApi } from '@/apis/tour-apis';
 import dayjs from 'dayjs';
-import { generateDateCode } from '@/utils/generator-helpers';
+import { generateDateCode } from '@/utils/generator/string-generator/generate-date-code';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationTourHeaderBottom = () => {

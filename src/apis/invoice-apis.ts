@@ -6,7 +6,7 @@ import {
 import { InvoiceFilterParam } from '@/interfaces/_query-param.interfaces';
 import { wireApi } from 'fetchwire';
 import { InvoiceTypeResponse } from '@/interfaces/invoice-type-interfaces';
-import { buildFilterQueryString } from '@/utils/api-helpers';
+import { generateFilterQueryString } from '@/utils/generator/string-generator/generate-filter-query-string';
 
 export async function createInvoiceApi(data: CreateInvoiceRequest) {
   return wireApi<InvoiceResponse>(`/invoice`, {
@@ -38,7 +38,7 @@ export async function getInvoicesByOrganizationIdApi(
   organizationId: string,
   filter?: InvoiceFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, {
+  const filterQueryString = generateFilterQueryString(filter, {
     invoiceTypeId: filter?.invoiceTypeId,
     status: filter?.status,
   });

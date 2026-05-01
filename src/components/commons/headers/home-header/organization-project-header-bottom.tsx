@@ -6,7 +6,7 @@ import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
 import { createProjectApi, getProjectByIdApi } from '@/apis/project-apis';
-import { generateDateCode } from '@/utils/generator-helpers';
+import { generateDateCode } from '@/utils/generator/string-generator/generate-date-code';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 
 const OrganizationProjectHeaderBottom = () => {

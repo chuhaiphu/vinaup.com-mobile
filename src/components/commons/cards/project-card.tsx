@@ -2,7 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { ProjectStatusDisplay } from '@/constants/project-constants';
-import { formatDateRange, generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { generateDateRange } from '@/utils/generator/string-generator/generate-date-range';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { useState } from 'react';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 
@@ -41,7 +42,7 @@ export function ProjectCard({ project, onPress, totalRemaining }: ProjectCardPro
       <View style={styles.innerHeader}>
         <View style={styles.left}>
           <Text style={styles.projectDateRangeText}>
-            {formatDateRange(project.startDate, project.endDate)}
+            {generateDateRange(project.startDate, project.endDate)}
           </Text>
           <PressableOpacity onPress={togglePrice}>
             <Text

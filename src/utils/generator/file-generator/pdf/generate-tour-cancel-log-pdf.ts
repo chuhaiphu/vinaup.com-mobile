@@ -1,11 +1,11 @@
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { SignatureResponse } from '@/interfaces/signature-interfaces';
-import dayjs from 'dayjs';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { File } from 'expo-file-system';
-import { generateLocalePriceFormat } from './generator-helpers';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
+import { generateFormatDateTime } from '@/utils/generator/string-generator/generate-format-date-time';
 
 export interface SnapshotTour {
   tour?: {
@@ -53,6 +53,11 @@ export interface TourCancelLogPdfHtmlInput {
   summaryHeaderLabel: string;
 }
 
+/**
+ * Sanitize dữ liệu người dùng trước khi nhúng vào HTML template.
+ * Chuyển các ký tự đặc biệt HTML (&, <, >, ", ') thành HTML entities tương ứng,
+ * ngăn chặn dữ liệu bị trình duyệt hiểu nhầm thành HTML tag và làm vỡ layout PDF.
+ */
 export function escapeHtml(value: unknown): string {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -60,13 +65,6 @@ export function escapeHtml(value: unknown): string {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
-}
-
-export function formatDateTime(value?: string | Date | null): string {
-  if (!value) return '-';
-  const formatted = dayjs(value);
-  if (!formatted.isValid()) return '-';
-  return formatted.format('DD/MM HH:mm');
 }
 
 export function buildReceiptPaymentRows(items: ReceiptPaymentResponse[]): string {
@@ -136,7 +134,7 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
       <div class="sig-block">
         <div class="sig-row-space">
           <div class="sig-role-wrap">↗ <span class="sig-role-italic">Tạo:</span></div>
-          <div class="sig-date-text-italic">${escapeHtml(formatDateTime(senderSignature.signedAt || null))}</div>
+          <div class="sig-date-text-italic">${escapeHtml(generateFormatDateTime(senderSignature.signedAt || null))}</div>
         </div>
         <div class="sig-row-space">
           <div class="sig-name">${escapeHtml(senderSignature.targetUser?.name || senderSignature.targetName || '-')}</div>
@@ -152,7 +150,7 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
       <div class="sig-block">
         <div class="sig-row-space">
           <div class="sig-role-wrap">✓ <span class="sig-role-italic">Nhận:</span></div>
-          <div class="sig-date-text-italic">${escapeHtml(formatDateTime(receiver.signedAt || null))}</div>
+          <div class="sig-date-text-italic">${escapeHtml(generateFormatDateTime(receiver.signedAt || null))}</div>
         </div>
         <div class="sig-row-space">
           <div class="sig-name">${escapeHtml(receiver.targetUser?.name || receiver.targetName || '-')}</div>
@@ -522,7 +520,7 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
 
           <div class="sub-header-row">
             <div class="org-name">${escapeHtml(organization?.name || '-')}</div>
-            <div class="date-text">${escapeHtml(formatDateTime(canceledAt))}</div>
+            <div class="date-text">${escapeHtml(generateFormatDateTime(canceledAt))}</div>
           </div>
 
           <div class="thick-divider"></div>
@@ -530,7 +528,7 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
           <div class="section-block">
             <div class="tour-name">Tên: ${escapeHtml(snapshotTour.tour?.description || '-')}</div>
             <div class="tour-sub-info-row">
-              <div class="tour-time">Từ ${escapeHtml(formatDateTime(snapshotTour.tour?.startDate))} đến ${escapeHtml(formatDateTime(snapshotTour.tour?.endDate))}</div>
+              <div class="tour-time">Từ ${escapeHtml(generateFormatDateTime(snapshotTour.tour?.startDate ?? null))} đến ${escapeHtml(generateFormatDateTime(snapshotTour.tour?.endDate ?? null))}</div>
               <div class="tour-no">No.${escapeHtml(snapshotTour.tour?.code || '-')}</div>
             </div>
           </div>
@@ -608,7 +606,7 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
 
             <div class="sig-row-space">
               <div class="cancel-text">Hủy bởi: ${escapeHtml(canceledByUserName || '-')}</div>
-              <div class="sig-date-text-italic">${escapeHtml(formatDateTime(canceledAt))}</div>
+              <div class="sig-date-text-italic">${escapeHtml(generateFormatDateTime(canceledAt))}</div>
             </div>
 
             <div class="thin-divider"></div>

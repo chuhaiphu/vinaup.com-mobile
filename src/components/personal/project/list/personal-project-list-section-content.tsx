@@ -11,7 +11,7 @@ import { ProjectCard } from '@/components/commons/cards/project-card';
 import { ReceiptPaymentsSummary } from '@/components/commons/receipt-payments-summary';
 import { ProjectResponse } from '@/interfaces/project-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-receipt-payments-summary';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 

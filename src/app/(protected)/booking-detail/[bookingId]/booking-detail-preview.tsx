@@ -9,7 +9,8 @@ import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
 import { RECEIPT_PAYMENT_TYPES } from '@/constants/receipt-payment-constants';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { generateFormatDateTime } from '@/utils/generator/string-generator/generate-format-date-time';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useFetchFn } from 'fetchwire';
@@ -24,12 +25,6 @@ import {
   View,
 } from 'react-native';
 
-function formatDateTime(value?: string | Date | null): string {
-  if (!value) return '-';
-  const d = dayjs(value);
-  if (!d.isValid()) return '-';
-  return d.format('DD/MM HH:mm');
-}
 
 export default function BookingDetailPreview() {
   const router = useRouter();
@@ -164,8 +159,8 @@ export default function BookingDetailPreview() {
             <Text style={styles.bookingName}>{booking.description || '-'}</Text>
             <View style={styles.headerSubRow}>
               <Text style={styles.headerMeta} numberOfLines={1}>
-                Từ: {formatDateTime(booking.startDate)}
-                {'  '}Đến: {formatDateTime(booking.endDate)}
+                Từ: {generateFormatDateTime(booking.startDate ?? null)}
+                {'  '}Đến: {generateFormatDateTime(booking.endDate ?? null)}
               </Text>
               <Text style={styles.bookingCode}>No.{booking.code || '-'}</Text>
             </View>
@@ -310,7 +305,7 @@ export default function BookingDetailPreview() {
                         '-'}
                     </Text>
                     <Text style={styles.sigDate}>
-                      {formatDateTime(senderSignature.signedAt ?? null)}
+                      {generateFormatDateTime(senderSignature.signedAt ?? null)}
                     </Text>
                   </>
                 )}
@@ -348,7 +343,7 @@ export default function BookingDetailPreview() {
                         '-'}
                     </Text>
                     <Text style={[styles.sigDate, { textAlign: 'right' }]}>
-                      {formatDateTime(receiverSignature.signedAt ?? null)}
+                      {generateFormatDateTime(receiverSignature.signedAt ?? null)}
                     </Text>
                   </>
                 )}

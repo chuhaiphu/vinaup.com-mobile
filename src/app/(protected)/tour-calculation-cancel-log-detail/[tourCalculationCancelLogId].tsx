@@ -8,12 +8,13 @@ import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { SignatureResponse } from '@/interfaces/signature-interfaces';
-import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { calculateTourTicketSummaries } from '@/utils/calculator/calculate-tour-ticket-summaries';
+import { generateFormatDateTime } from '@/utils/generator/string-generator/generate-format-date-time';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import {
   createAndShareTourCalculationCancelLogPdf,
   type PdfPageSize,
-} from '@/utils/tour-calculation-cancel-log-pdf';
+} from '@/utils/generator/file-generator/pdf/tour-calculation-cancel-log-pdf';
 import { Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useFetchFn } from 'fetchwire';
@@ -31,18 +32,6 @@ import {
 import { getOrganizationByIdApi } from '@/apis/organization-apis';
 import { Avatar } from '@/components/primitives/avatar';
 
-function formatDateTime(value?: string | Date | null): string {
-  if (!value) {
-    return '-';
-  }
-
-  const formatted = dayjs(value);
-  if (!formatted.isValid()) {
-    return '-';
-  }
-
-  return formatted.format('DD/MM HH:mm');
-}
 
 export default function TourCalculationCancelLogDetail() {
   const router = useRouter();
@@ -330,7 +319,7 @@ export default function TourCalculationCancelLogDetail() {
           <View style={styles.subHeaderRow}>
             <Text style={styles.orgName}>{organization?.name || '-'}</Text>
             <Text style={styles.dateText}>
-              {formatDateTime(cancelLog.createdAt)}
+              {generateFormatDateTime(cancelLog.createdAt)}
             </Text>
           </View>
 
@@ -342,8 +331,8 @@ export default function TourCalculationCancelLogDetail() {
             </Text>
             <View style={styles.tourSubInfoRow}>
               <Text style={styles.tourTime}>
-                Từ {formatDateTime(snapshotTour.tour?.startDate)} đến{' '}
-                {formatDateTime(snapshotTour.tour?.endDate)}
+                Từ {generateFormatDateTime(snapshotTour.tour?.startDate ?? null)} đến{' '}
+                {generateFormatDateTime(snapshotTour.tour?.endDate ?? null)}
               </Text>
               <Text style={styles.tourNo}>No.{snapshotTour.tour?.code || '-'}</Text>
             </View>
@@ -496,7 +485,7 @@ export default function TourCalculationCancelLogDetail() {
                 Hủy bởi: {cancelLog.canceledByUser?.name || '-'}
               </Text>
               <Text style={styles.sigDateTextItalic}>
-                {formatDateTime(cancelLog.createdAt)}
+                {generateFormatDateTime(cancelLog.createdAt)}
               </Text>
             </View>
 
@@ -510,7 +499,7 @@ export default function TourCalculationCancelLogDetail() {
                     <Text style={styles.sigRoleItalic}> Tạo:</Text>
                   </View>
                   <Text style={styles.sigDateTextItalic}>
-                    {formatDateTime(senderSignature.signedAt || null)}
+                    {generateFormatDateTime(senderSignature.signedAt || null)}
                   </Text>
                 </View>
                 <View style={styles.sigRowSpace}>
@@ -534,7 +523,7 @@ export default function TourCalculationCancelLogDetail() {
                     <Text style={styles.sigRoleItalic}> Nhận:</Text>
                   </View>
                   <Text style={styles.sigDateTextItalic}>
-                    {formatDateTime(receiver.signedAt || null)}
+                    {generateFormatDateTime(receiver.signedAt || null)}
                   </Text>
                 </View>
                 <View style={styles.sigRowSpace}>

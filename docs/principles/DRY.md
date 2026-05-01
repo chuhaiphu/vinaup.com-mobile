@@ -23,15 +23,15 @@ displayFormat={DATE_FORMAT_SHORT}        // DateTimePicker usages
 Logic that recurs in two or more call sites is extracted into `src/utils/`. A fix or spec change in the utility propagates to every caller automatically.
 
 ```ts
-// src/utils/generator-helpers.ts
-export function formatDateRange(start: string, end: string, format = DATE_FORMAT_SHORT): string {
+// src/utils/generator/string-generator/generate-date-range.ts
+export function generateDateRange(start: string, end: string, format = DATE_FORMAT_SHORT): string {
   // single definition — used in project-card, invoice-card, tour-card
 }
 ```
 
 ```ts
-// src/utils/api-helpers.ts
-export function buildFilterQueryString(dateRange: DateRange, extra?: Record<string, string>): string {
+// src/utils/generator/string-generator/generate-filter-query-string.ts
+export function generateFilterQueryString(filter?: DateFilterParam, extra?: Record<string, string | undefined>): string {
   // single definition — called from every paginated list API function
 }
 ```
@@ -49,7 +49,7 @@ Request and response types are defined once in `src/interfaces/*-interfaces.ts` 
 When two modules share the same structure but differ in a few values, a single template function accepts those values as parameters.
 
 ```ts
-// src/utils/tour-pdf-helpers.ts — one definition
+// src/utils/generator/file-generator/pdf/tour-pdf-helpers.ts — one definition
 export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: string): string { ... }
 
 // two callers supply only what differs

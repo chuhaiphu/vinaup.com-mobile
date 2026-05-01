@@ -2,8 +2,8 @@ import { getReceiptPaymentsByTourSettlementIdApi } from '@/apis/receipt-payment-
 import { getTourSettlementByTourIdApi } from '@/apis/tour-apis';
 import { ReceiptPaymentTourSettlementListContent } from '@/components/organization/tour/settlement/receipt-payment-tour-settlement-list-content';
 import { TourSettlementTicketSummary } from '@/components/organization/tour/settlement/tour-settlement-ticket-summary';
-import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { calculateTourTicketSummaries } from '@/utils/calculator/calculate-tour-ticket-summaries';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { useFetch } from 'fetchwire';
 import { useImperativeHandle } from 'react';
 

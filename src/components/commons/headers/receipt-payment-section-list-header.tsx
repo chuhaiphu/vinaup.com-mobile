@@ -4,8 +4,8 @@ import { COLORS } from '@/constants/style-constant';
 import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-receipt-payments-summary';
 
 interface ReceiptPaymentSectionListHeaderProps {
   title: string;

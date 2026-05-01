@@ -4,8 +4,8 @@ import { COLORS } from '@/constants/style-constant';
 import { Feather } from '@expo/vector-icons';
 import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-receipt-payments-summary';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { useRouter } from 'expo-router';
 

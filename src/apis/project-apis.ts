@@ -5,7 +5,7 @@ import {
 } from '@/interfaces/project-interfaces';
 import { ProjectFilterParam } from '@/interfaces/_query-param.interfaces';
 import { wireApi } from 'fetchwire';
-import { buildFilterQueryString } from '@/utils/api-helpers';
+import { generateFilterQueryString } from '@/utils/generator/string-generator/generate-filter-query-string';
 
 export async function createProjectApi(data: CreateProjectRequest) {
   return wireApi<ProjectResponse>('/project', {
@@ -15,7 +15,7 @@ export async function createProjectApi(data: CreateProjectRequest) {
 }
 
 export async function getProjectsOfCurrentUserApi(filter?: ProjectFilterParam) {
-  const filterQueryString = buildFilterQueryString(filter, {
+  const filterQueryString = generateFilterQueryString(filter, {
     type: filter?.type,
     status: filter?.status,
   });
@@ -28,7 +28,7 @@ export async function getProjectsOfByOrganizationIdApi(
   organizationId: string,
   filter?: ProjectFilterParam
 ) {
-  const filterQueryString = buildFilterQueryString(filter, {
+  const filterQueryString = generateFilterQueryString(filter, {
     type: filter?.type,
     status: filter?.status,
   });

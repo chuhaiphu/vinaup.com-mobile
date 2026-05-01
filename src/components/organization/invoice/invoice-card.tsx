@@ -5,7 +5,8 @@ import { InvoiceStatusDisplay } from '@/constants/invoice-constants';
 import { prefetch } from 'fetchwire';
 import { useState } from 'react';
 import { getInvoiceByIdApi } from '@/apis/invoice-apis';
-import { generateLocalePriceFormat, formatDateRange } from '@/utils/generator-helpers';
+import { generateDateRange } from '@/utils/generator/string-generator/generate-date-range';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { useRouter } from 'expo-router';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
@@ -62,7 +63,7 @@ export function InvoiceCard({ invoice, totalRemaining }: InvoiceCardProps) {
     <View style={styles.container}>
       <View style={styles.innerHeader}>
         <View style={styles.left}>
-          <Text style={styles.dateRangeText}>{formatDateRange(invoice.startDate, invoice.endDate)}</Text>
+          <Text style={styles.dateRangeText}>{generateDateRange(invoice.startDate, invoice.endDate)}</Text>
           <PressableOpacity onPress={togglePrice}>
             <Text
               style={[

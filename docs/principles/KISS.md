@@ -66,4 +66,4 @@ Every line of code that is not required to solve the problem is a line that must
 
 4. **Avoid reading the same value twice** — pass it as a prop instead of calling the same hook in parent and child.
 
-5. **Use project utilities** (`generateErrorMessage`, `buildFilterQueryString`, `formatDateRange`) instead of re-implementing inline.
+5. **Use project utilities** (`generateErrorMessage`, `generateFilterQueryString`, `generateDateRange`) instead of re-implementing inline.

@@ -2,8 +2,8 @@ import { getReceiptPaymentsByTourCalculationIdApi } from '@/apis/receipt-payment
 import { getTourCalculationByTourIdApi } from '@/apis/tour-apis';
 import { ReceiptPaymentTourCalculationListContent } from '@/components/organization/tour/calculation/receipt-payment-tour-calculation-list-content';
 import { TourCalculationTicketSummary } from '@/components/organization/tour/calculation/tour-calculation-ticket-summary';
-import { calculateTourTicketSummaries } from '@/utils/calculator-helpers';
-import { generateLocalePriceFormat } from '@/utils/generator-helpers';
+import { calculateTourTicketSummaries } from '@/utils/calculator/calculate-tour-ticket-summaries';
+import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { useFetch } from 'fetchwire';
 import { useImperativeHandle } from 'react';
 

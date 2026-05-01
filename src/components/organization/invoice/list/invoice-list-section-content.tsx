@@ -8,7 +8,7 @@ import { InvoiceCard } from '@/components/organization/invoice/invoice-card';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
-import { calculateReceiptPaymentsSummary } from '@/utils/calculator-helpers';
+import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-receipt-payments-summary';
 
 export interface InvoiceListSectionContentProps {
   organizationId: string;

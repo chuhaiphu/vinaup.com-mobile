@@ -11,7 +11,7 @@ import {
 import dayjs from 'dayjs';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { ReceiptPaymentCard } from '@/components/commons/cards/receipt-payment-card';
-import { generateDayJsDateRange } from '@/utils/generator-helpers';
+import { generateDayJsDateRange } from '@/utils/generator/string-generator/generate-day-js-date-range';
 import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
