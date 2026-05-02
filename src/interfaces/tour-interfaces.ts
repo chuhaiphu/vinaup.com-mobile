@@ -48,3 +48,17 @@ export type UpdateTourRequest = Partial<CreateTourRequest> & {
   adultTicketPrice?: number;
   childTicketPrice?: number;
 };
+
+export interface TourCancelLogtourCancelLogSnapshot {
+  id?: string;
+  code?: string | null;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  note?: string | null;
+  organizationId?: string;
+  organizationCustomerId?: string | null;
+  externalOrganizationName?: string | null;
+  externalCustomerName?: string | null;
+}

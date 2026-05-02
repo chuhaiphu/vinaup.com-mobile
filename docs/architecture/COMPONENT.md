@@ -92,6 +92,10 @@ graph TD
 | `src/hooks/` | Zustand stores for client state |
 | `src/interfaces/` | TypeScript type definitions per domain |
 | `src/constants/` | App-wide enums, colors, and configuration |
-| `src/utils/` | Calculation helpers and PDF generators |
+| `src/utils/calculator/` | Business calculation helpers — pure functions |
+| `src/utils/generator/string-generator/` | String formatting utilities — pure functions |
+| `src/utils/generator/file-generator/html/` | HTML template generators — pure functions |
+| `src/utils/generator/file-generator/pdf/` | PDF creation and sharing — uses Expo file system |
+| `src/utils/generator/file-generator/excel/` | Excel export — placeholder |
 
 ---

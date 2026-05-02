@@ -1,5 +1,5 @@
 import { UserResponse } from './user-interfaces';
-import { TourResponse } from './tour-interfaces';
+import { TourResponse, TourCancelLogtourCancelLogSnapshot } from './tour-interfaces';
 import { ReceiptPaymentResponse } from './receipt-payment-interfaces';
 import { SignatureResponse } from './signature-interfaces';
 
@@ -25,20 +25,22 @@ export interface UpdateTourSettlementRequest {
   taxRate?: number;
 }
 
+export interface TourSettlementCancelLogSnapshot {
+  id?: string;
+  adultTicketCount?: number;
+  childTicketCount?: number;
+  adultTicketPrice?: number;
+  childTicketPrice?: number;
+  taxRate?: number;
+  createdByUserId?: string | null;
+  tourId?: string;
+  createdBy?: UserResponse | null;
+  tour?: TourCancelLogtourCancelLogSnapshot;
+  receiptPayments?: ReceiptPaymentResponse[];
+}
+
 export interface TourSettlementCancelLogSnapshotData {
-  tourSettlement: {
-    id?: string;
-    adultTicketCount?: number;
-    childTicketCount?: number;
-    adultTicketPrice?: number;
-    childTicketPrice?: number;
-    taxRate?: number;
-    createdByUserId?: string;
-    tourId?: string;
-    createdBy?: UserResponse;
-    tour?: TourResponse;
-    receiptPayments?: ReceiptPaymentResponse[];
-  };
+  tourSettlement: TourSettlementCancelLogSnapshot;
   signatures: SignatureResponse[];
 }
 

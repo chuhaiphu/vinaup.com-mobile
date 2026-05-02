@@ -41,7 +41,7 @@ export function InvoiceOrgCustomerSelectModal({
     useInvoiceDetailContext();
   const { organizationCustomers, refreshOrganizationCustomers } =
     useOrganizationCustomerContext();
-  const { allOrganizations: organizations } = useAllOrganizationsContext();
+  const { allOrganizations } = useAllOrganizationsContext();
 
   const organizationId = invoice?.organization?.id;
   const currentCustomerId = invoice?.organizationCustomer?.id ?? '';
@@ -89,15 +89,15 @@ export function InvoiceOrgCustomerSelectModal({
   const filteredInternalOrgCustomers = !q
     ? internalOrganizationCustomers
     : internalOrganizationCustomers.filter((customer) => {
-        const searchableValue = [customer.name, customer.phone, customer.email]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        return searchableValue.includes(q);
-      });
+      const searchableValue = [customer.name, customer.phone, customer.email]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return searchableValue.includes(q);
+    });
 
-  const realOrganizations = (() => {
-    const organizationsExceptOwner = organizations.filter(
+  const organizations = (() => {
+    const organizationsExceptOwner = allOrganizations.filter(
       (org) => org.id !== organizationId
     );
     if (!q) return organizationsExceptOwner;
@@ -276,7 +276,7 @@ export function InvoiceOrgCustomerSelectModal({
 
         {currentTab === 'real' ? (
           <OrgCustomerRealList
-            realOrganizations={realOrganizations}
+            organizations={organizations}
             selectedKey={pendingSelectedKey}
             isBusy={isBusy}
             onChooseReal={handleChooseReal}

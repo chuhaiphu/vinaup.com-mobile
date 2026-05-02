@@ -14,7 +14,7 @@ import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-re
 import { MultiSelect } from '@/components/primitives/multiple-select';
 import { usePersonalUtilitiesStore } from '@/hooks/use-personal-utility-store';
 import {
-  DATE_FORMAT_SHORT,
+  DD_MM_DATE_FORMAT_SHORT,
   PERSONAL_UTILITY_KEYS,
   type PersonalUtilityKey,
 } from '@/constants/app-constant';
@@ -174,7 +174,7 @@ export default function PersonalIndexScreen() {
           }
           value={selectedDate}
           onChange={setSelectedDate}
-          displayFormat={DATE_FORMAT_SHORT}
+          displayFormat={DD_MM_DATE_FORMAT_SHORT}
           style={{
             dateText: styles.dateText,
           }}

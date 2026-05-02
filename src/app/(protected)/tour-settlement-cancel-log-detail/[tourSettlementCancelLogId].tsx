@@ -1,4 +1,4 @@
-import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
+import { DD_MM_DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { getTourSettlementCancelLogByIdApi } from '@/apis/tour-apis';
 import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-layers.native';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
@@ -6,15 +6,14 @@ import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
 import { Button } from '@/components/primitives/button';
 import { PdfPageSizeModal } from '@/components/commons/modals/pdf-page-size-modal/pdf-page-size-modal';
 import { COLORS } from '@/constants/style-constant';
+import { TourSettlementCancelLogSnapshot } from '@/interfaces/tour-settlement-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { SignatureResponse } from '@/interfaces/signature-interfaces';
 import { calculateTourTicketSummaries } from '@/utils/calculator/calculate-tour-ticket-summaries';
 import { generateFormatDateTime } from '@/utils/generator/string-generator/generate-format-date-time';
 import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
-import {
-  createAndShareTourSettlementCancelLogPdf,
-  type PdfPageSize,
-} from '@/utils/generator/file-generator/pdf/tour-settlement-cancel-log-pdf';
+import { createAndShareTourSettlementCancelLogPdf } from '@/utils/generator/file-generator/pdf/create-and-share-tour-settlement-cancel-log-pdf';
+import type { PdfPageSize } from '@/utils/generator/file-generator/html/generate-tour-cancel-log-html';
 import { Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useFetchFn } from 'fetchwire';
@@ -67,41 +66,19 @@ export default function TourSettlementCancelLogDetail() {
     fetchOrganization();
   }, [tourSettlementCancelLogId, fetchCancelLog, fetchOrganization]);
 
-  const parsedSnapshot = {
-    tourSettlement: cancelLog?.snapshotData?.tourSettlement ?? {},
-    signatures: (cancelLog?.snapshotData?.signatures ?? []) as SignatureResponse[],
-  };
+  const snapshotSettlement: TourSettlementCancelLogSnapshot =
+    cancelLog?.snapshotData?.tourSettlement ?? {};
+  const snapshotSignatures: SignatureResponse[] =
+    cancelLog?.snapshotData?.signatures ?? [];
 
-  const snapshotTour =
-    (parsedSnapshot.tourSettlement as {
-      tour?: {
-        description?: string;
-        startDate?: string | Date;
-        endDate?: string | Date;
-        code?: string;
-        note?: string | null;
-        organization?: { name?: string | null } | null;
-        organizationCustomer?: { name?: string | null } | null;
-        externalOrganizationName?: string | null;
-        externalCustomerName?: string | null;
-      };
-      receiptPayments?: ReceiptPaymentResponse[];
-      adultTicketCount?: number;
-      childTicketCount?: number;
-      adultTicketPrice?: number;
-      childTicketPrice?: number;
-      taxRate?: number;
-    }) || {};
-
-  const receiptPayments =
-    (snapshotTour.receiptPayments as ReceiptPaymentResponse[] | undefined) || [];
+  const receiptPayments = snapshotSettlement.receiptPayments ?? [];
 
   const ticketSummary = calculateTourTicketSummaries(receiptPayments, {
-    adultTicketCount: Number(snapshotTour.adultTicketCount),
-    childTicketCount: Number(snapshotTour.childTicketCount),
-    adultTicketPrice: Number(snapshotTour.adultTicketPrice),
-    childTicketPrice: Number(snapshotTour.childTicketPrice),
-    taxRate: Number(snapshotTour.taxRate),
+    adultTicketCount: Number(snapshotSettlement.adultTicketCount),
+    childTicketCount: Number(snapshotSettlement.childTicketCount),
+    adultTicketPrice: Number(snapshotSettlement.adultTicketPrice),
+    childTicketPrice: Number(snapshotSettlement.childTicketPrice),
+    taxRate: Number(snapshotSettlement.taxRate),
   });
 
   const groupedReceiptPayments = (() => {
@@ -109,7 +86,7 @@ export default function TourSettlementCancelLogDetail() {
 
     receiptPayments.forEach((item) => {
       const groupLabel = dayjs(item.transactionDate).isValid()
-        ? dayjs(item.transactionDate).format(DATE_FORMAT_SHORT)
+        ? dayjs(item.transactionDate).format(DD_MM_DATE_FORMAT_SHORT)
         : '-';
 
       const current = groups.get(groupLabel) || [];
@@ -125,21 +102,18 @@ export default function TourSettlementCancelLogDetail() {
       .sort((a, b) => b.sortTimestamp - a.sortTimestamp);
   })();
 
-  const senderSignature = parsedSnapshot.signatures.find(
+  const senderSignature = snapshotSignatures.find(
     (signature) => signature.signatureRole === 'SENDER'
   );
 
-  const receiverSignatures = parsedSnapshot.signatures.filter(
+  const receiverSignatures = snapshotSignatures.filter(
     (signature) => signature.signatureRole === 'RECEIVER'
   );
 
-  const customerName =
-    snapshotTour.tour?.organizationCustomer?.name ||
-    snapshotTour.tour?.externalCustomerName ||
-    '-';
+  const customerName = snapshotSettlement.tour?.externalCustomerName || '-';
 
   const totalExpectedCount =
-    Number(snapshotTour.adultTicketCount) + Number(snapshotTour.childTicketCount);
+    Number(snapshotSettlement.adultTicketCount) + Number(snapshotSettlement.childTicketCount);
 
   const handleRetry = () => {
     if (!tourSettlementCancelLogId) {
@@ -159,7 +133,7 @@ export default function TourSettlementCancelLogDetail() {
       await createAndShareTourSettlementCancelLogPdf({
         cancelLog,
         organization: organization || undefined,
-        snapshotTour,
+        tourCancelLogSnapshot: snapshotSettlement,
         ticketSummary,
         groupedReceiptPayments,
         senderSignature,
@@ -303,14 +277,14 @@ export default function TourSettlementCancelLogDetail() {
 
           <View style={styles.section}>
             <Text style={styles.tourName}>
-              Tên: {snapshotTour.tour?.description || '-'}
+              Tên: {snapshotSettlement.tour?.description || '-'}
             </Text>
             <View style={styles.tourSubInfoRow}>
               <Text style={styles.tourTime}>
-                Từ {generateFormatDateTime(snapshotTour.tour?.startDate ?? null)} đến{' '}
-                {generateFormatDateTime(snapshotTour.tour?.endDate ?? null)}
+                Từ {generateFormatDateTime(snapshotSettlement.tour?.startDate ?? null)} đến{' '}
+                {generateFormatDateTime(snapshotSettlement.tour?.endDate ?? null)}
               </Text>
-              <Text style={styles.tourNo}>No.{snapshotTour.tour?.code || '-'}</Text>
+              <Text style={styles.tourNo}>No.{snapshotSettlement.tour?.code || '-'}</Text>
             </View>
           </View>
 
@@ -327,19 +301,19 @@ export default function TourSettlementCancelLogDetail() {
             <View style={styles.tableRow}>
               <Text style={styles.summaryBodyCol1}>Người lớn</Text>
               <Text style={styles.summaryBodyCol2}>
-                {Number(snapshotTour.adultTicketCount)}
+                {Number(snapshotSettlement.adultTicketCount)}
               </Text>
               <Text style={styles.summaryBodyCol3}>
-                {generateLocalePriceFormat(Number(snapshotTour.adultTicketPrice))}
+                {generateLocalePriceFormat(Number(snapshotSettlement.adultTicketPrice))}
               </Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={styles.summaryBodyCol1}>Trẻ em</Text>
               <Text style={styles.summaryBodyCol2}>
-                {Number(snapshotTour.childTicketCount)}
+                {Number(snapshotSettlement.childTicketCount)}
               </Text>
               <Text style={styles.summaryBodyCol3}>
-                {generateLocalePriceFormat(Number(snapshotTour.childTicketPrice))}
+                {generateLocalePriceFormat(Number(snapshotSettlement.childTicketPrice))}
               </Text>
             </View>
           </View>
@@ -361,7 +335,7 @@ export default function TourSettlementCancelLogDetail() {
             </View>
             <View style={styles.finRow}>
               <Text style={styles.finLabel}>
-                Thuế phải nộp {Number(snapshotTour.taxRate)} %
+                Thuế phải nộp {Number(snapshotSettlement.taxRate)} %
               </Text>
               <Text style={styles.finValue}>
                 {generateLocalePriceFormat(ticketSummary.totalTaxPay)}
@@ -436,7 +410,7 @@ export default function TourSettlementCancelLogDetail() {
               size={18}
               color={COLORS.vinaupDarkGray}
             />
-            <Text style={styles.noteText}>{snapshotTour.tour?.note || '-'}</Text>
+            <Text style={styles.noteText}>{snapshotSettlement.tour?.note || '-'}</Text>
           </View>
 
           <View style={styles.thinDivider} />

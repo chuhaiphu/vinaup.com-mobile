@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
-import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
+import { DD_MM_DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { BookingMeta, BookingResponse } from '@/interfaces/booking-interfaces';
 import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
@@ -22,7 +22,7 @@ export function BookingCard({ booking, isReceiver }: BookingCardProps) {
   const { setIsNavigating } = useNavigationStore();
 
   const startDate = booking?.startDate
-    ? dayjs(booking.startDate).format(DATE_FORMAT_SHORT)
+    ? dayjs(booking.startDate).format(DD_MM_DATE_FORMAT_SHORT)
     : '--';
   const endDate = booking?.endDate
     ? dayjs(booking.endDate).format('DD/MM/YY')

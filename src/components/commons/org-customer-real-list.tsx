@@ -5,21 +5,21 @@ import { COLORS } from '@/constants/style-constant';
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 
 interface OrgCustomerRealListProps {
-  realOrganizations: OrganizationResponse[];
+  organizations: OrganizationResponse[];
   selectedKey: string;
   isBusy: boolean;
   onChooseReal: (organizationId: string) => void;
 }
 
 export function OrgCustomerRealList({
-  realOrganizations,
+  organizations,
   selectedKey,
   isBusy,
   onChooseReal,
 }: OrgCustomerRealListProps) {
   return (
     <ScrollView contentContainerStyle={styles.listContent}>
-      {realOrganizations.map((organization) => {
+      {organizations.map((organization) => {
         const key = `real:${organization.id}`;
         const isSelected = key === selectedKey;
 
@@ -59,7 +59,7 @@ export function OrgCustomerRealList({
         );
       })}
 
-      {realOrganizations.length === 0 ? (
+      {organizations.length === 0 ? (
         <Text style={styles.emptyText}>Không có tổ chức phù hợp.</Text>
       ) : null}
     </ScrollView>

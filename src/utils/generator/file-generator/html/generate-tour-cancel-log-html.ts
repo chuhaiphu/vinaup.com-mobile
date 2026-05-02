@@ -1,18 +1,17 @@
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 import { ReceiptPaymentResponse } from '@/interfaces/receipt-payment-interfaces';
 import { SignatureResponse } from '@/interfaces/signature-interfaces';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
-import { File } from 'expo-file-system';
 import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { generateFormatDateTime } from '@/utils/generator/string-generator/generate-format-date-time';
 
-export interface SnapshotTour {
+export type PdfPageSize = 'A4' | 'A5';
+
+export interface TourCancelLogSnapshot {
   tour?: {
     description?: string;
     startDate?: string | Date;
     endDate?: string | Date;
-    code?: string;
+    code?: string | null;
     note?: string | null;
   };
   adultTicketCount?: number;
@@ -35,13 +34,11 @@ export interface TicketSummarySnapshot {
   profitMarginAfterTaxPay: number;
 }
 
-export type PdfPageSize = 'A4' | 'A5';
-
 export interface TourCancelLogPdfHtmlInput {
   canceledAt: string;
   canceledByUserName: string | null;
   organization?: OrganizationResponse;
-  snapshotTour: SnapshotTour;
+  tourCancelLogSnapshot: TourCancelLogSnapshot;
   ticketSummary: TicketSummarySnapshot;
   groupedReceiptPayments: GroupedReceiptPayment[];
   senderSignature?: SignatureResponse;
@@ -84,12 +81,12 @@ export function buildReceiptPaymentRows(items: ReceiptPaymentResponse[]): string
     .join('');
 }
 
-export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: string): string {
+export function generateTourCancelLogHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: string): string {
   const {
     canceledAt,
     canceledByUserName,
     organization,
-    snapshotTour,
+    tourCancelLogSnapshot,
     ticketSummary,
     groupedReceiptPayments,
     senderSignature,
@@ -108,8 +105,8 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
   const receiptGroupsBlock =
     groupedReceiptPayments.length > 0
       ? groupedReceiptPayments
-          .map(
-            (group) => `
+        .map(
+          (group) => `
           <div class="section-block">
             <div class="date-group-title">${escapeHtml(group.label)}</div>
             <div class="thin-divider"></div>
@@ -125,8 +122,8 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
           </div>
           <div class="thin-divider"></div>
         `
-          )
-          .join('')
+        )
+        .join('')
       : '<div class="empty-text">Chưa có dữ liệu thu chi.</div>';
 
   const senderBlock = senderSignature
@@ -526,10 +523,10 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
           <div class="thick-divider"></div>
 
           <div class="section-block">
-            <div class="tour-name">Tên: ${escapeHtml(snapshotTour.tour?.description || '-')}</div>
+            <div class="tour-name">Tên: ${escapeHtml(tourCancelLogSnapshot.tour?.description || '-')}</div>
             <div class="tour-sub-info-row">
-              <div class="tour-time">Từ ${escapeHtml(generateFormatDateTime(snapshotTour.tour?.startDate ?? null))} đến ${escapeHtml(generateFormatDateTime(snapshotTour.tour?.endDate ?? null))}</div>
-              <div class="tour-no">No.${escapeHtml(snapshotTour.tour?.code || '-')}</div>
+              <div class="tour-time">Từ ${escapeHtml(generateFormatDateTime(tourCancelLogSnapshot.tour?.startDate ?? null))} đến ${escapeHtml(generateFormatDateTime(tourCancelLogSnapshot.tour?.endDate ?? null))}</div>
+              <div class="tour-no">No.${escapeHtml(tourCancelLogSnapshot.tour?.code || '-')}</div>
             </div>
           </div>
 
@@ -543,13 +540,13 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
             </div>
             <div class="table-row">
               <div class="summary-col-1">Người lớn</div>
-              <div class="summary-col-2">${snapshotTour.adultTicketCount ?? 0}</div>
-              <div class="summary-col-3">${generateLocalePriceFormat(Number(snapshotTour.adultTicketPrice))}</div>
+              <div class="summary-col-2">${tourCancelLogSnapshot.adultTicketCount ?? 0}</div>
+              <div class="summary-col-3">${generateLocalePriceFormat(Number(tourCancelLogSnapshot.adultTicketPrice))}</div>
             </div>
             <div class="table-row">
               <div class="summary-col-1">Trẻ em</div>
-              <div class="summary-col-2">${snapshotTour.childTicketCount ?? 0}</div>
-              <div class="summary-col-3">${generateLocalePriceFormat(Number(snapshotTour.childTicketPrice))}</div>
+              <div class="summary-col-2">${tourCancelLogSnapshot.childTicketCount ?? 0}</div>
+              <div class="summary-col-3">${generateLocalePriceFormat(Number(tourCancelLogSnapshot.childTicketPrice))}</div>
             </div>
           </div>
 
@@ -565,7 +562,7 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
               <div class="fin-value-bold">${generateLocalePriceFormat(ticketSummary.totalPayment)}</div>
             </div>
             <div class="fin-row">
-              <div class="fin-label">Thuế phải nộp ${snapshotTour.taxRate ?? 0} %</div>
+              <div class="fin-label">Thuế phải nộp ${tourCancelLogSnapshot.taxRate ?? 0} %</div>
               <div class="fin-value">${generateLocalePriceFormat(ticketSummary.totalTaxPay)}</div>
             </div>
             <div class="fin-row">
@@ -584,7 +581,7 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
 
           <div class="notes-section page-break-avoid">
             <div>💬</div>
-            <div class="note-text">${escapeHtml(snapshotTour.tour?.note || '-')}</div>
+            <div class="note-text">${escapeHtml(tourCancelLogSnapshot.tour?.note || '-')}</div>
           </div>
 
           <div class="thin-divider"></div>
@@ -623,26 +620,4 @@ export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: strin
       </body>
     </html>
   `;
-}
-
-export async function sharePdf(html: string): Promise<void> {
-  const { uri } = await Print.printToFileAsync({ html });
-  try {
-    const canShare = await Sharing.isAvailableAsync();
-    if (!canShare) {
-      throw new Error('Sharing not available');
-    }
-    await Sharing.shareAsync(uri, {
-      mimeType: 'application/pdf',
-      dialogTitle: 'Lưu hoặc chia sẻ file PDF',
-      UTI: 'com.adobe.pdf',
-    });
-  } catch (error) {
-    throw error instanceof Error ? error : new Error('Lỗi không xác định');
-  } finally {
-    const pdfFile = new File(uri);
-    if (pdfFile.exists) {
-      pdfFile.delete();
-    }
-  }
 }

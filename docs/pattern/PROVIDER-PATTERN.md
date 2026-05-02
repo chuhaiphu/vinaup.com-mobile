@@ -23,7 +23,7 @@ interface TourDetailContextType {
 
 ### Context with `null` default
 
-The context is created with `null`, not a fake default. This ensures that calling `useTourDetailContext()` outside the provider throws a clear error immediately, instead of silently returning stale or empty data.
+The context is created with `null`, not a fake default. This ensures that calling outside the provider throws a clear error immediately, instead of silently returning stale or empty data.
 
 ```ts
 const TourDetailContext = createContext<TourDetailContextType | null>(null);

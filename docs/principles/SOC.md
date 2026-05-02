@@ -26,7 +26,19 @@ The codebase is organized into four layers. Dependencies only point **inward** �
 ```
 
 #### Core Layer — zero external dependencies
-`src/interfaces/`, `src/constants/`, `src/utils/` contain only TypeScript types, enums, and pure functions. No React, no Expo, no `fetchwire`. These files may import from each other but from nothing above.
+`src/interfaces/`, `src/constants/` contain only TypeScript types, enums, and string/number constants. No React, no Expo, no `fetchwire`.
+
+`src/utils/` is split by concern:
+
+| Subdirectory | Concern | External deps |
+|---|---|---|
+| `calculator/` | Business calculations | none |
+| `generator/string-generator/` | String formatting | none |
+| `generator/file-generator/html/` | HTML template generation | none |
+| `generator/file-generator/pdf/` | PDF creation & sharing | Expo (`expo-print`, `expo-sharing`, `expo-file-system`) |
+| `generator/file-generator/excel/` | Excel export | — (placeholder) |
+
+The `calculator/`, `string-generator/`, and `file-generator/html/` subdirectories are pure functions. `file-generator/pdf/` uses Expo platform APIs as a necessary part of its concern (create a temp file, invoke the OS share sheet, delete the temp file) and is the only subdirectory in `src/utils/` with platform dependencies.
 
 #### API Layer — HTTP adapters only
 `src/apis/` translates typed Core objects into HTTP calls and back. Functions take Core types as input, return Core types as output. They never import from providers, hooks, or components.

@@ -30,7 +30,7 @@ export default function ProtectedLayout() {
           <Stack>
             <Stack.Screen name="personal/(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
-              name="organization/[organizationId]/(tabs)"
+              name="organization/[organizationId]"
               options={{ headerShown: false }}
             />
           </Stack>

@@ -3,20 +3,18 @@ import { SignatureResponse } from '@/interfaces/signature-interfaces';
 import { TourCalculationCancelLogResponse } from '@/interfaces/tour-calculation-interfaces';
 import { generateBase64FromUrl } from '@/utils/generator/string-generator/generate-base64-from-url';
 import {
-  buildHtml,
-  sharePdf,
+  generateTourCancelLogHtml,
   type GroupedReceiptPayment,
   type PdfPageSize,
-  type SnapshotTour,
+  type TourCancelLogSnapshot,
   type TicketSummarySnapshot,
-} from './generate-tour-cancel-log-pdf';
-
-export type { PdfPageSize } from './generate-tour-cancel-log-pdf';
+} from '../html/generate-tour-cancel-log-html';
+import { createAndSharePdf } from './create-and-share-pdf';
 
 interface TourCalculationCancelLogPdfInput {
   cancelLog: TourCalculationCancelLogResponse;
   organization?: OrganizationResponse;
-  snapshotTour: SnapshotTour;
+  tourCancelLogSnapshot: TourCancelLogSnapshot;
   ticketSummary: TicketSummarySnapshot;
   groupedReceiptPayments: GroupedReceiptPayment[];
   senderSignature?: SignatureResponse;
@@ -30,12 +28,12 @@ export async function createAndShareTourCalculationCancelLogPdf(
   input: TourCalculationCancelLogPdfInput
 ): Promise<void> {
   const avatarBase64 = await generateBase64FromUrl(input.organization?.avatarUrl);
-  const html = buildHtml(
+  const html = generateTourCancelLogHtml(
     {
       canceledAt: input.cancelLog.createdAt,
       canceledByUserName: input.cancelLog.canceledByUser?.name ?? null,
       organization: input.organization,
-      snapshotTour: input.snapshotTour,
+      tourCancelLogSnapshot: input.tourCancelLogSnapshot,
       ticketSummary: input.ticketSummary,
       groupedReceiptPayments: input.groupedReceiptPayments,
       senderSignature: input.senderSignature,
@@ -48,5 +46,5 @@ export async function createAndShareTourCalculationCancelLogPdf(
     },
     avatarBase64
   );
-  await sharePdf(html);
+  await createAndSharePdf(html);
 }

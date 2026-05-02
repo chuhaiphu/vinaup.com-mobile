@@ -10,12 +10,12 @@ Format strings, magic numbers, and color codes are defined once in `src/constant
 
 ```ts
 // src/constants/app-constant.ts
-export const DATE_FORMAT_SHORT = 'DD/MM';
+export const DD_MM_DATE_FORMAT_SHORT = 'DD/MM';
 
 // every consumer imports the same constant
-d.format(DATE_FORMAT_SHORT)              // receipt-payment-booking-list-content.tsx
-start.format(DATE_FORMAT_SHORT)          // tour-detail-header-content.tsx
-displayFormat={DATE_FORMAT_SHORT}        // DateTimePicker usages
+d.format(DD_MM_DATE_FORMAT_SHORT)              // receipt-payment-booking-list-content.tsx
+start.format(DD_MM_DATE_FORMAT_SHORT)          // tour-detail-header-content.tsx
+displayFormat={DD_MM_DATE_FORMAT_SHORT}        // DateTimePicker usages
 ```
 
 ### Shared utility functions
@@ -24,7 +24,7 @@ Logic that recurs in two or more call sites is extracted into `src/utils/`. A fi
 
 ```ts
 // src/utils/generator/string-generator/generate-date-range.ts
-export function generateDateRange(start: string, end: string, format = DATE_FORMAT_SHORT): string {
+export function generateDateRange(start: string, end: string, format = DD_MM_DATE_FORMAT_SHORT): string {
   // single definition — used in project-card, invoice-card, tour-card
 }
 ```
@@ -49,12 +49,12 @@ Request and response types are defined once in `src/interfaces/*-interfaces.ts` 
 When two modules share the same structure but differ in a few values, a single template function accepts those values as parameters.
 
 ```ts
-// src/utils/generator/file-generator/pdf/tour-pdf-helpers.ts — one definition
-export function buildHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: string): string { ... }
+// src/utils/generator/file-generator/html/generate-tour-cancel-log-html.ts — one definition
+export function generateTourCancelLogHtml(input: TourCancelLogPdfHtmlInput, avatarBase64?: string): string { ... }
 
 // two callers supply only what differs
-buildHtml({ ..., mainTitle: 'Tính giá',   summaryHeaderLabel: 'Dự kiến' }, b64)  // calculation
-buildHtml({ ..., mainTitle: 'Quyết toán', summaryHeaderLabel: 'Thực tế' }, b64)  // settlement
+generateTourCancelLogHtml({ ..., mainTitle: 'Tính giá',   summaryHeaderLabel: 'Dự kiến' }, b64)  // calculation
+generateTourCancelLogHtml({ ..., mainTitle: 'Quyết toán', summaryHeaderLabel: 'Thực tế' }, b64)  // settlement
 ```
 
 ## Current Violations

@@ -1,4 +1,4 @@
-import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
+import { DD_MM_DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '@/constants/style-constant';
 import dayjs from 'dayjs';
@@ -38,7 +38,7 @@ export function BookingDetailHeaderContent() {
     if (start.isSame(end, 'day')) {
       return (
         <>
-          <Text style={styles.dateText}>Ngày {start.format(DATE_FORMAT_SHORT)} </Text>
+          <Text style={styles.dateText}>Ngày {start.format(DD_MM_DATE_FORMAT_SHORT)} </Text>
           <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
         </>
       );
@@ -46,9 +46,9 @@ export function BookingDetailHeaderContent() {
 
     return (
       <>
-        <Text style={styles.dateText}>Từ {start.format(DATE_FORMAT_SHORT)} </Text>
+        <Text style={styles.dateText}>Từ {start.format(DD_MM_DATE_FORMAT_SHORT)} </Text>
         <Text style={styles.hourText}>({start.format('HH:mm')})</Text>
-        <Text style={styles.dateText}> đến {end.format(DATE_FORMAT_SHORT)}</Text>
+        <Text style={styles.dateText}> đến {end.format(DD_MM_DATE_FORMAT_SHORT)}</Text>
         <Text style={styles.hourText}> ({end.format('HH:mm')})</Text>
       </>
     );

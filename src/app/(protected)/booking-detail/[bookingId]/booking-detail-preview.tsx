@@ -1,4 +1,4 @@
-import { DATE_FORMAT_SHORT } from '@/constants/app-constant';
+import { DD_MM_DATE_FORMAT_SHORT } from '@/constants/app-constant';
 import { getBookingByIdApi } from '@/apis/booking-apis';
 import { getSignaturesByDocumentIdApi } from '@/apis/signature-apis';
 import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-layers.native';
@@ -61,7 +61,7 @@ export default function BookingDetailPreview() {
     const groups = new Map<string, ReceiptPaymentResponse[]>();
     receiptPayments.forEach((item) => {
       const label = dayjs(item.transactionDate).isValid()
-        ? dayjs(item.transactionDate).format(DATE_FORMAT_SHORT)
+        ? dayjs(item.transactionDate).format(DD_MM_DATE_FORMAT_SHORT)
         : '-';
       const current = groups.get(label) || [];
       groups.set(label, [...current, item]);
