@@ -1,6 +1,9 @@
 import { UserResponse } from './user-interfaces';
 import { TourResponse } from './tour-interfaces';
 import { OrganizationMemberResponse } from './organization-member-interfaces';
+import { BaseMeta } from './_meta.interfaces';
+
+export interface TourImplementationMeta extends BaseMeta {}
 
 export interface UpdateTourImplementationRequest {
   description?: string;

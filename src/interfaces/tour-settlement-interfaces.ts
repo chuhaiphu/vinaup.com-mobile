@@ -2,6 +2,9 @@ import { UserResponse } from './user-interfaces';
 import { TourResponse, TourCancelLogtourCancelLogSnapshot } from './tour-interfaces';
 import { ReceiptPaymentResponse } from './receipt-payment-interfaces';
 import { SignatureResponse } from './signature-interfaces';
+import { BaseMeta } from './_meta.interfaces';
+
+export interface TourSettlementMeta extends BaseMeta {}
 
 export interface TourSettlementResponse {
   id: string;

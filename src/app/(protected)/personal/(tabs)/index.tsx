@@ -21,12 +21,12 @@ import {
 import { DateTimePicker } from '@/components/primitives/date-time-picker';
 import dayjs from 'dayjs';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
-import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { PersonalHomeIndexSummary } from '@/components/personal/home/personal-home-index-summary';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import { useRouter } from 'expo-router';
 import { IndexUtilityGrid } from '@/components/commons/grids/index-utility-grid';
+import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 
 export default function PersonalIndexScreen() {
   const router = useRouter();
@@ -44,11 +44,11 @@ export default function PersonalIndexScreen() {
       ),
     },
     {
-      label: 'Thu chi Dự án',
+      label: 'Lịch tiền công',
       value: PERSONAL_UTILITY_KEYS.projectCompany,
       leftSection: (
         <View style={styles.utilityOptionIcon}>
-          <VinaupPlusMinusMultiplyEqual
+          <VinaupCalendarIcon
             width={22}
             height={22}
             color={COLORS.vinaupTeal}
@@ -139,10 +139,10 @@ export default function PersonalIndexScreen() {
     },
     {
       key: PERSONAL_UTILITY_KEYS.projectCompany,
-      label: 'Thu chi Dự án',
+      label: 'Lịch tiền công',
       value: `(${projects?.length || 0})`,
       icon: (
-        <VinaupPlusMinusMultiplyEqual
+        <VinaupCalendarIcon
           width={26}
           height={26}
           color={COLORS.vinaupTeal}

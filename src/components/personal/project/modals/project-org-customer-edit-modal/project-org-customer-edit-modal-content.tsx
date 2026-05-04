@@ -64,7 +64,7 @@ export function ProjectOrgCustomerEditModalContent({
       </View>
 
       <View style={styles.inputGroup}>
-        <Text style={styles.inputLabel}>Tên khách</Text>
+        <Text style={styles.inputLabel}>Khách hàng</Text>
         <TextInput
           ref={customerInputRef}
           style={styles.input}

@@ -100,7 +100,7 @@ export function InvoiceInfoModalContent({
               <Text
                 style={[styles.insideLabel, inputErrors.code && styles.labelError]}
               >
-                No.
+                Mã số
               </Text>
             </View>
             <View style={styles.separator} />

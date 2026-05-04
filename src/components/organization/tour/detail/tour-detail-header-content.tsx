@@ -17,6 +17,7 @@ interface TourDetailHeaderContentProps {
       description: string;
       startDate: string;
       endDate: string;
+      code?: string;
     },
     onSuccessCallback?: () => void
   ) => void;
@@ -66,13 +67,15 @@ export function TourDetailHeaderContent({
       >
         <View style={styles.leftInfo}>
           <Text style={styles.entityName}>Tên: {tour?.description}</Text>
+          {tour?.code ? (
+            <Text style={styles.codeText}>Mã: {tour.code}</Text>
+          ) : null}
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
           <View style={styles.editButton}>
             <VinaupPenLineVariant width={14} height={14} />
           </View>
-          <Text style={styles.entityCode}>No. {tour?.code}</Text>
         </View>
       </PressableCard>
       {tour && (
@@ -125,8 +128,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: COLORS.vinaupYellow,
   },
-  entityCode: {
-    fontSize: 15,
+  codeText: {
+    fontSize: 16,
     color: COLORS.vinaupMediumDarkGray,
   },
 });

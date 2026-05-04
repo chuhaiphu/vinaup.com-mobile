@@ -1,10 +1,10 @@
 import { HomeHeader } from '@/components/commons/headers/home-header/home-header';
 import VinaupHome from '@/components/icons/vinaup-home.native';
 import VinaupPlusMinus from '@/components/icons/vinaup-plus-minus.native';
-import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 import { COLORS } from '@/constants/style-constant';
 import { Octicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
 
 export default function PersonalTabsLayout() {
   return (
@@ -41,7 +41,7 @@ export default function PersonalTabsLayout() {
         name="project"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <VinaupPlusMinusMultiplyEqual
+            <VinaupCalendarIcon
               width={size}
               height={size}
               color={color}

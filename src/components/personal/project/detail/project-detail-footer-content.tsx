@@ -60,7 +60,7 @@ export function ProjectDetailFooterContent({
             </Text>
           </View>
           <View style={styles.customerCol}>
-            <Text style={styles.label}>Tên khách:</Text>
+            <Text style={styles.label}>Khách hàng:</Text>
             <Text
               numberOfLines={2}
               ellipsizeMode="tail"

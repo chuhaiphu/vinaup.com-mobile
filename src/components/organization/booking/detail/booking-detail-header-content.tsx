@@ -65,6 +65,9 @@ export function BookingDetailHeaderContent() {
       >
         <View style={styles.leftInfo}>
           <Text style={styles.entityName}>Tên: {booking.description}</Text>
+          {booking.code ? (
+            <Text style={styles.codeText}>Mã: {booking.code}</Text>
+          ) : null}
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
@@ -73,7 +76,6 @@ export function BookingDetailHeaderContent() {
               <VinaupPenLineVariant width={16} height={16} />
             </View>
           )}
-          <Text style={styles.entityCode}>No. {booking.code}</Text>
         </View>
       </PressableCard>
       <BookingInfoModal
@@ -124,8 +126,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: COLORS.vinaupYellow,
   },
-  entityCode: {
-    fontSize: 14,
+  codeText: {
+    fontSize: 16,
     color: COLORS.vinaupMediumDarkGray,
   },
 });

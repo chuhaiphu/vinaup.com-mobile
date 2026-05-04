@@ -16,7 +16,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
   const createProjectFn = () =>
     createProjectApi({
       code: generateDateCode(),
-      description: 'Dự án',
+      description: 'Tiền công',
       endDate: new Date().toISOString(),
       startDate: new Date().toISOString(),
     });
@@ -44,7 +44,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
         });
       },
       onError: (error) =>
-        Alert.alert('Lỗi', error.message || 'Không thể tạo dự án mới'),
+        Alert.alert('Lỗi', error.message),
     });
   };
 
@@ -52,7 +52,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
     <View style={styles.bottomContainer}>
       <View style={styles.titleWrapper}>
         <Text style={styles.titleLeft}>Thu chi</Text>
-        <Text style={styles.titleRight}> Dự án</Text>
+        <Text style={styles.titleRight}> Tiền công</Text>
       </View>
       <Button
         onPress={handleAddNew}

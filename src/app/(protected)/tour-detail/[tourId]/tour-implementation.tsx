@@ -66,9 +66,7 @@ export default function TourImplementationScreen() {
     )
   );
 
-  const isMemberInCharge = (tourImplementation?.membersInCharge ?? []).some(
-    (m) => m.organizationMember?.userId === currentUser?.id
-  );
+  const isMemberInCharge = tourImplementation?.meta?.canEdit ?? false;
 
   const currentUserInvitedPermissions = (tourImplementation?.additionalData ?? [])
     .flatMap((ad) => ad.usersInvited)

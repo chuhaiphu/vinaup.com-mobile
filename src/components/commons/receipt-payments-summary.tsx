@@ -24,26 +24,21 @@ export function ReceiptPaymentsSummary({
     {
       leftLabel: 'Bank in',
       leftValue: generateLocalePriceFormat(summary.bankIn),
-      rightLabel: 'Hoa hồng',
-      rightValue: '0',
-    },
-    {
-      leftLabel: 'Bank out',
-      leftValue: generateLocalePriceFormat(summary.bankOut),
-      rightLabel: 'Tổng thu',
-      rightValue: generateLocalePriceFormat(summary.totalReceipt),
+      rightLabel: 'Bank out',
+      rightValue: generateLocalePriceFormat(summary.bankOut),
     },
     {
       leftLabel: 'Cash in',
       leftValue: generateLocalePriceFormat(summary.cashIn),
-      rightLabel: 'Tổng chi',
-      rightValue: generateLocalePriceFormat(summary.totalPayment),
+      rightLabel: 'Cash out',
+      rightValue: generateLocalePriceFormat(summary.cashOut)
+
     },
     {
-      leftLabel: 'Cash out',
-      leftValue: generateLocalePriceFormat(summary.cashOut),
-      rightLabel: 'Tổng dư',
-      rightValue: generateLocalePriceFormat(summary.totalRemaining),
+      leftLabel: 'Tổng thu',
+      leftValue: generateLocalePriceFormat(summary.totalReceipt),
+      rightLabel: 'Tổng chi',
+      rightValue: generateLocalePriceFormat(summary.totalPayment),
     },
   ];
 

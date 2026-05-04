@@ -59,13 +59,15 @@ export function InvoiceDetailHeaderContent() {
       >
         <View style={styles.leftInfo}>
           <Text style={styles.entityName}>Tên: {invoice.description}</Text>
+          {invoice.code ? (
+            <Text style={styles.codeText}>Mã: {invoice.code}</Text>
+          ) : null}
           <View style={styles.dateRow}>{getDateRangeText()}</View>
         </View>
         <View style={styles.rightInfo}>
           <View style={styles.editButton}>
             <VinaupPenLineVariant width={16} height={16} />
           </View>
-          <Text style={styles.entityCode}>No. {invoice.code}</Text>
         </View>
       </PressableCard>
       <InvoiceInfoModal
@@ -116,8 +118,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: COLORS.vinaupYellow,
   },
-  entityCode: {
-    fontSize: 14,
+  codeText: {
+    fontSize: 16,
     color: COLORS.vinaupMediumDarkGray,
   },
 });

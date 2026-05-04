@@ -5,16 +5,20 @@ import {
 } from '@/interfaces/tour-interfaces';
 import {
   TourCalculationCancelLogResponse,
+  TourCalculationMeta,
   TourCalculationResponse,
   UpdateTourCalculationRequest,
 } from '@/interfaces/tour-calculation-interfaces';
 import {
   TourSettlementCancelLogResponse,
+  TourSettlementMeta,
   TourSettlementResponse,
   UpdateTourSettlementRequest,
 } from '@/interfaces/tour-settlement-interfaces';
+import { ResponseWithMeta } from '@/interfaces/_meta.interfaces';
 import { TourFilterParam } from '@/interfaces/_query-param.interfaces';
 import {
+  TourImplementationMeta,
   TourImplementationResponse,
   UpdateTourImplementationRequest,
   ManageMembersInChargeRequest,
@@ -70,7 +74,7 @@ export async function deleteTourApi(id: string) {
 }
 
 export async function getTourCalculationByTourIdApi(tourId: string) {
-  return wireApi<TourCalculationResponse>(`/tour-calculation/by-tour/${tourId}`, {
+  return wireApi<ResponseWithMeta<TourCalculationResponse, TourCalculationMeta>>(`/tour-calculation/by-tour/${tourId}`, {
     method: 'GET',
   });
 }
@@ -96,7 +100,7 @@ export async function getTourCalculationCancelLogByIdApi(id: string) {
 }
 
 export async function getTourImplementationByTourIdApi(tourId: string) {
-  return wireApi<TourImplementationResponse>(
+  return wireApi<ResponseWithMeta<TourImplementationResponse, TourImplementationMeta>>(
     `/tour-implementation/by-tour/${tourId}`,
     {
       method: 'GET',
@@ -105,7 +109,7 @@ export async function getTourImplementationByTourIdApi(tourId: string) {
 }
 
 export async function getTourSettlementByTourIdApi(tourId: string) {
-  return wireApi<TourSettlementResponse>(`/tour-settlement/by-tour/${tourId}`, {
+  return wireApi<ResponseWithMeta<TourSettlementResponse, TourSettlementMeta>>(`/tour-settlement/by-tour/${tourId}`, {
     method: 'GET',
   });
 }
@@ -173,7 +177,7 @@ export async function getTourSettlementCancelLogByIdApi(id: string) {
 export async function getMembersInChargeByTourImplementationIdApi(
   tourImplementationId: string
 ) {
-  return wireApi<MemberInChargeTourImplementationResponse[]>(
+  return wireApi<ResponseWithMeta<MemberInChargeTourImplementationResponse, TourImplementationMeta>[]>(
     `/tour-implementation/${tourImplementationId}/members-in-charge`,
     {
       method: 'GET',
@@ -222,7 +226,7 @@ export async function updateUserInvitedApi(
 export async function getAdditionalDataByTourImplementationIdApi(
   tourImplementationId: string
 ) {
-  return wireApi<TourImplementationAdditionalDataResponse[]>(
+  return wireApi<ResponseWithMeta<TourImplementationAdditionalDataResponse, TourImplementationMeta>[]>(
     `/tour-implementation/${tourImplementationId}/additional-data`,
     {
       method: 'GET',

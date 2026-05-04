@@ -20,13 +20,16 @@ import {
 } from '@/providers/invoice-detail-provider';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
+import { InvoiceTypeProvider } from '@/providers/invoice-type-provider';
 
 export default function InvoiceDetailScreen() {
   const { invoiceId } = useLocalSearchParams<{ invoiceId: string }>();
 
   return (
     <InvoiceDetailProvider invoiceId={invoiceId}>
-      <InvoiceDetailScreenContent />
+      <InvoiceTypeProvider>
+        <InvoiceDetailScreenContent />
+      </InvoiceTypeProvider>
     </InvoiceDetailProvider>
   );
 }
