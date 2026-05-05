@@ -5,7 +5,7 @@ import {
   deleteProjectApi,
   getProjectByIdApi,
   updateProjectApi,
-} from '@/apis/project-apis';
+} from '@/apis/project/project';
 import {
   ProjectResponse,
   UpdateProjectRequest,

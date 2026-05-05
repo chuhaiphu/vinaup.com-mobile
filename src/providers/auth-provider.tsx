@@ -10,7 +10,7 @@ import {
   updateWireConfig,
   useMutationFn,
 } from 'fetchwire';
-import { loginApi } from '@/apis/auth-apis';
+import { loginApi } from '@/apis/auth/auth';
 import { LoginRequest } from '@/interfaces/auth-interfaces';
 
 interface AuthContextType {
@@ -31,8 +31,8 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: false,
   currentUser: null,
   performLogin: async () => false,
-  performLogout: async () => {},
-  performSync: async () => {},
+  performLogout: async () => { },
+  performSync: async () => { },
 });
 
 export function useAuthContext() {

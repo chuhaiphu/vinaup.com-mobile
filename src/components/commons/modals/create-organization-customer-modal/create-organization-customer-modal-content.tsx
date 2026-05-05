@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 import { useMutationFn } from 'fetchwire';
-import { createOrganizationCustomerApi } from '@/apis/organization-apis';
+import { createOrganizationCustomerApi } from '@/apis/organization/organization-customer';
 import { COLORS } from '@/constants/style-constant';
 
 interface CreateOrganizationCustomerModalContentProps {

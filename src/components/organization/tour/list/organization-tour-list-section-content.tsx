@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { getTourByIdApi, getToursByOrganizationIdApi } from '@/apis/tour-apis';
+import { getTourByIdApi, getToursByOrganizationIdApi } from '@/apis/tour/tour';
 import { TourCard } from '@/components/organization/tour/tour-card';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 

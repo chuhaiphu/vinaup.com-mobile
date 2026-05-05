@@ -10,8 +10,8 @@ import { ReceiptPaymentTourImplementationDirectorListContent } from '@/component
 import { ReceiptPaymentTourImplementationTourGuideListContent } from '@/components/organization/tour/implementation/receipt-payment-tour-implementation-tour-guide-list-content';
 import { OrganizationCustomerProvider } from '@/providers/organization-customer-provider';
 import { useFetchFn } from 'fetchwire';
-import { getTourImplementationByTourIdApi } from '@/apis/tour-apis';
-import { getReceiptPaymentsByTourImplementationIdApi } from '@/apis/receipt-payment-apis';
+import { getTourImplementationByTourIdApi } from '@/apis/tour/tour-implementation';
+import { getReceiptPaymentsByTourImplementationIdApi } from '@/apis/receipt-payment/receipt-payment';
 import TourImplementationAdditionalContent from '@/components/organization/tour/implementation/tour-implementation-additional-content';
 import { BookingTourImplementationTabPanelContent } from '@/components/organization/tour/implementation/booking-tour-implementation-tab-panel-content';
 

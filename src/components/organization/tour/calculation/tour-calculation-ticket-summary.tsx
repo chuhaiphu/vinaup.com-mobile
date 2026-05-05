@@ -2,7 +2,7 @@ import { COLORS } from '@/constants/style-constant';
 import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useMutationFn, type ApiError } from 'fetchwire';
-import { updateTourCalculationApi } from '@/apis/tour-apis';
+import { updateTourCalculationApi } from '@/apis/tour/tour-calculation';
 import { UpdateTourCalculationRequest } from '@/interfaces/tour-calculation-interfaces';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { VinaupPenLine } from '@/components/icons/vinaup-pen-line.native';

@@ -1,5 +1,5 @@
-import { getReceiptPaymentsByTourSettlementIdApi } from '@/apis/receipt-payment-apis';
-import { getTourSettlementByTourIdApi } from '@/apis/tour-apis';
+import { getReceiptPaymentsByTourSettlementIdApi } from '@/apis/receipt-payment/receipt-payment';
+import { getTourSettlementByTourIdApi } from '@/apis/tour/tour-settlement';
 import { ReceiptPaymentTourSettlementListContent } from '@/components/organization/tour/settlement/receipt-payment-tour-settlement-list-content';
 import { TourSettlementTicketSummary } from '@/components/organization/tour/settlement/tour-settlement-ticket-summary';
 import { calculateTourTicketSummaries } from '@/utils/calculator/calculate-tour-ticket-summaries';

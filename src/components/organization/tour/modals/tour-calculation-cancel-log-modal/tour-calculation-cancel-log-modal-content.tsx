@@ -1,4 +1,4 @@
-import { getTourCalculationLogsByTourCalculationIdApi } from '@/apis/tour-apis';
+import { getTourCalculationLogsByTourCalculationIdApi } from '@/apis/tour/tour-calculation';
 import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
 import { TourCalculationCancelLogResponse } from '@/interfaces/tour-calculation-interfaces';

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { useFetchFn } from 'fetchwire';
-import { getInvoiceTypesApi } from '@/apis/invoice-apis';
+import { getInvoiceTypesApi } from '@/apis/invoice/invoice';
 import { InvoiceTypeResponse } from '@/interfaces/invoice-type-interfaces';
 
 interface InvoiceTypeContextType {

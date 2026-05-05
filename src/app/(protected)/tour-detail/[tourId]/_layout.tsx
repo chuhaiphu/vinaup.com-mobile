@@ -3,7 +3,7 @@ import { Slot, useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { StackWithHeader } from '@/components/commons/headers/stack-with-header';
 import { useMutationFn, type ApiError } from 'fetchwire';
 import { COLORS } from '@/constants/style-constant';
-import { deleteTourApi } from '@/apis/tour-apis';
+import { deleteTourApi } from '@/apis/tour/tour';
 import { Entypo, FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import VinaupSaveAndExit from '@/components/icons/vinaup-save-and-exit.native';
 import { OrganizationTourDetailTabListContent } from '@/components/organization/tour/detail/organization-tour-detail-tab-list-content';

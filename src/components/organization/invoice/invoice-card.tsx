@@ -4,7 +4,7 @@ import { InvoiceResponse } from '@/interfaces/invoice-interfaces';
 import { InvoiceStatusDisplay } from '@/constants/invoice-constants';
 import { prefetch } from 'fetchwire';
 import { useState } from 'react';
-import { getInvoiceByIdApi } from '@/apis/invoice-apis';
+import { getInvoiceByIdApi } from '@/apis/invoice/invoice';
 import { generateDateRange } from '@/utils/generator/string-generator/generate-date-range';
 import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { useRouter } from 'expo-router';

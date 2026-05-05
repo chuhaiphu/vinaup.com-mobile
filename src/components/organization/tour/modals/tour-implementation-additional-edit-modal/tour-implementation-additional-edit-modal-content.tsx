@@ -18,9 +18,9 @@ import { AntDesign, Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { TourImplementationAdditionalDataResponse } from '@/interfaces/tour-implementation-interfaces';
 import { UserResponse } from '@/interfaces/user-interfaces';
 import { AdditionalEditFormData } from './tour-implementation-additional-edit-modal';
-import { searchUsersApi } from '@/apis/user-apis';
+import { searchUsersApi } from '@/apis/user/user';
 import { ApiError, useFetchFn, useMutationFn } from 'fetchwire';
-import { deleteAdditionalDataApi } from '@/apis/tour-apis';
+import { deleteAdditionalDataApi } from '@/apis/tour/tour-implementation';
 import VinaupDoubleCheck from '@/components/icons/vinaup-double-check.native';
 
 interface Props {

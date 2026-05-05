@@ -5,7 +5,7 @@ import {
   deleteBookingApi,
   getBookingByIdApi,
   updateBookingApi,
-} from '@/apis/booking-apis';
+} from '@/apis/booking/booking';
 import {
   BookingMeta,
   BookingResponse,

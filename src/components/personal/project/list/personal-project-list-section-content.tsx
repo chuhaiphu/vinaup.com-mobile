@@ -5,8 +5,8 @@ import dayjs from 'dayjs';
 import {
   getProjectByIdApi,
   getProjectsOfCurrentUserApi,
-} from '@/apis/project-apis';
-import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment-apis';
+} from '@/apis/project/project';
+import { getReceiptPaymentsByProjectIdsApi } from '@/apis/receipt-payment/receipt-payment';
 import { ProjectCard } from '@/components/commons/cards/project-card';
 import { ReceiptPaymentsSummary } from '@/components/commons/receipt-payments-summary';
 import { ProjectResponse } from '@/interfaces/project-interfaces';

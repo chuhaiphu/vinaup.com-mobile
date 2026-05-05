@@ -13,7 +13,7 @@ import {
   createReceiptPaymentApi,
   deleteReceiptPaymentApi,
   updateReceiptPaymentApi,
-} from '@/apis/receipt-payment-apis';
+} from '@/apis/receipt-payment/receipt-payment';
 import { useMutationFn } from 'fetchwire';
 import { useReceiptPaymentFormStore } from '@/hooks/use-receipt-payment-form-store';
 import { useNavigationStore } from '@/hooks/use-navigation-store';

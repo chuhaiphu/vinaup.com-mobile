@@ -16,7 +16,7 @@ import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
 import { ReceiptPaymentSectionListHeader } from '@/components/commons/headers/receipt-payment-section-list-header';
 import { useFetch } from 'fetchwire';
-import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment-apis';
+import { getReceiptPaymentsByProjectIdApi } from '@/apis/receipt-payment/receipt-payment';
 
 interface ReceiptPaymentProjectListContentProps {
   projectId: string;

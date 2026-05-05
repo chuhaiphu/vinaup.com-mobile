@@ -1,4 +1,4 @@
-import { registerApi } from '@/apis/user-apis';
+import { registerApi } from '@/apis/user/user';
 import { COLORS } from '@/constants/style-constant';
 import { ApiError } from 'fetchwire';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';

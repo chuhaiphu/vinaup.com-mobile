@@ -22,7 +22,6 @@ This project uses **Expo Development Build** (`expo-dev-client`). Expo Go is **n
 
 ```bash
 git clone <repo-url>
-cd vinaup.com-mobile
 npm install
 ```
 

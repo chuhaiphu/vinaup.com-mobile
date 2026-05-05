@@ -1,6 +1,6 @@
 import { DD_MM_DATE_FORMAT_SHORT } from '@/constants/app-constant';
-import { getBookingByIdApi } from '@/apis/booking-apis';
-import { getSignaturesByDocumentIdApi } from '@/apis/signature-apis';
+import { getBookingByIdApi } from '@/apis/booking/booking';
+import { getSignaturesByDocumentIdApi } from '@/apis/signature/signature';
 import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-layers.native';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';

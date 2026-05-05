@@ -5,7 +5,7 @@ import { Button } from '@/components/primitives/button';
 import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
 import { COLORS } from '@/constants/style-constant';
 import { prefetch, useMutationFn } from 'fetchwire';
-import { createProjectApi, getProjectByIdApi } from '@/apis/project-apis';
+import { createProjectApi, getProjectByIdApi } from '@/apis/project/project';
 import { generateDateCode } from '@/utils/generator/string-generator/generate-date-code';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 

@@ -16,7 +16,7 @@ import { COLORS } from '@/constants/style-constant';
 import { useRouter } from 'expo-router';
 import { ReceiptPaymentSectionListHeader } from '@/components/commons/headers/receipt-payment-section-list-header';
 import { useFetch } from 'fetchwire';
-import { getReceiptPaymentsByBookingIdApi } from '@/apis/receipt-payment-apis';
+import { getReceiptPaymentsByBookingIdApi } from '@/apis/receipt-payment/receipt-payment';
 
 interface ReceiptPaymentBookingListContentProps {
   startDate: string;

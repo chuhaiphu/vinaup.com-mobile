@@ -3,7 +3,7 @@ import {
   getSignaturesByDocumentIdApi,
   manageReceiverSignaturesApi,
   signSignatureApi,
-} from '@/apis/signature-apis';
+} from '@/apis/signature/signature';
 import { useFetchFn, useMutationFn } from 'fetchwire';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -16,7 +16,7 @@ import VinaupExpand from '@/components/icons/vinaup-expand.native';
 import { SignerSelectModal } from '@/components/commons/modals/signer-select-modal/signer-select-modal';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
-import { getOrganizationMembersByOrganizationIdApi } from '@/apis/organization-apis';
+import { getOrganizationMembersByOrganizationIdApi } from '@/apis/organization/organization-member';
 import { ConfirmModal } from '@/components/commons/modals/confirm-modal/confirm-modal';
 import { Button } from '@/components/primitives/button';
 import { TourCalculationCancelLogModal } from '@/components/organization/tour/modals/tour-calculation-cancel-log-modal/tour-calculation-cancel-log-modal';

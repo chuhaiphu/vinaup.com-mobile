@@ -1,4 +1,4 @@
-import { getTourSettlementLogsByTourSettlementIdApi } from '@/apis/tour-apis';
+import { getTourSettlementLogsByTourSettlementIdApi } from '@/apis/tour/tour-settlement';
 import { Button } from '@/components/primitives/button';
 import { COLORS } from '@/constants/style-constant';
 import { TourSettlementCancelLogResponse } from '@/interfaces/tour-settlement-interfaces';

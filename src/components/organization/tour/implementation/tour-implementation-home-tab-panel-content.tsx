@@ -7,12 +7,12 @@ import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { OrgMemSelectModal } from '@/components/commons/modals/organization-member-select-modal/org-mem-select-modal';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
-import { getOrganizationMembersByOrganizationIdApi } from '@/apis/organization-apis';
+import { getOrganizationMembersByOrganizationIdApi } from '@/apis/organization/organization-member';
 import {
   manageMembersInChargeApi,
   getTourImplementationByTourIdApi,
   updateTourImplementationApi,
-} from '@/apis/tour-apis';
+} from '@/apis/tour/tour-implementation';
 import { UpdateTourImplementationRequest } from '@/interfaces/tour-implementation-interfaces';
 import { useTourDetailContext } from '@/providers/tour-detail-provider';
 import { TourDetailHeaderContent } from '@/components/organization/tour/detail/tour-detail-header-content';

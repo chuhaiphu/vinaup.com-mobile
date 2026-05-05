@@ -5,7 +5,7 @@ import {
   createAdditionalDataApi,
   updateAdditionalDataApi,
   updateUserInvitedApi,
-} from '@/apis/tour-apis';
+} from '@/apis/tour/tour-implementation';
 import {
   TourImplementationAdditionalDataResponse,
   UserInvitedTourImplementationResponse,

@@ -17,7 +17,7 @@ import { useRouter } from 'expo-router';
 import { useInvoiceTypeContext } from '@/providers/invoice-type-provider';
 import { ReceiptPaymentSectionListHeader } from '@/components/commons/headers/receipt-payment-section-list-header';
 import { useFetch } from 'fetchwire';
-import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment-apis';
+import { getReceiptPaymentsByInvoiceIdApi } from '@/apis/receipt-payment/receipt-payment';
 
 interface ReceiptPaymentInvoiceListContentProps {
   invoiceId: string;

@@ -7,7 +7,7 @@ import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-righ
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
 import dayjs from 'dayjs';
 import { prefetch } from 'fetchwire';
-import { getBookingByIdApi } from '@/apis/booking-apis';
+import { getBookingByIdApi } from '@/apis/booking/booking';
 import { useRouter } from 'expo-router';
 import { useNavigationStore } from '@/hooks/use-navigation-store';
 import Feather from '@expo/vector-icons/Feather';

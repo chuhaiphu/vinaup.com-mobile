@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 import { useFetchFn } from 'fetchwire';
-import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization-apis';
+import { getOrganizationCustomersByOrganizationIdApi } from '@/apis/organization/organization-customer';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 
 interface OrganizationCustomerContextType {

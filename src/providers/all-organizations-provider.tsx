@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { useFetchFn } from 'fetchwire';
 import { useAuthContext } from './auth-provider';
-import { getAllOrganizationsApi } from '@/apis/organization-apis';
+import { getAllOrganizationsApi } from '@/apis/organization/organization';
 import { OrganizationResponse } from '@/interfaces/organization-interfaces';
 
 interface AllOrganizationsContextType {

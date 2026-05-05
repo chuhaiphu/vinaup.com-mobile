@@ -6,7 +6,7 @@ import {
   getBookingsByOrganizationIdApi,
   getBookingsByOrganizationCustomerOrganizationIdApi,
   getBookingsByTourImplementationIdApi,
-} from '@/apis/booking-apis';
+} from '@/apis/booking/booking';
 import { BookingCard } from '@/components/organization/booking/booking-card';
 
 export interface BookingListSectionContentProps {

@@ -1,4 +1,4 @@
-import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment-apis';
+import { getReceiptPaymentsByCurrentUserApi } from '@/apis/receipt-payment/receipt-payment';
 import { ReceiptPaymentCard } from '@/components/commons/cards/receipt-payment-card';
 import { COLORS } from '@/constants/style-constant';
 import {

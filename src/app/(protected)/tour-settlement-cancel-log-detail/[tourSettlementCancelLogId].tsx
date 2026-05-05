@@ -1,5 +1,5 @@
 import { DD_MM_DATE_FORMAT_SHORT } from '@/constants/app-constant';
-import { getTourSettlementCancelLogByIdApi } from '@/apis/tour-apis';
+import { getTourSettlementCancelLogByIdApi } from '@/apis/tour/tour-settlement';
 import VinaupLeftArrowTwoLayers from '@/components/icons/vinaup-left-arrow-two-layers.native';
 import VinaupUserArrowUpRight from '@/components/icons/vinaup-user-arrow-up-right.native';
 import VinaupUserChecked from '@/components/icons/vinaup-user-checked.native';
@@ -28,7 +28,7 @@ import {
   View,
   Pressable,
 } from 'react-native';
-import { getOrganizationByIdApi } from '@/apis/organization-apis';
+import { getOrganizationByIdApi } from '@/apis/organization/organization';
 import { Avatar } from '@/components/primitives/avatar';
 
 

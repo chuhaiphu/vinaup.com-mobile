@@ -5,7 +5,7 @@ import {
   deleteInvoiceApi,
   getInvoiceByIdApi,
   updateInvoiceApi,
-} from '@/apis/invoice-apis';
+} from '@/apis/invoice/invoice';
 import {
   InvoiceResponse,
   UpdateInvoiceRequest,

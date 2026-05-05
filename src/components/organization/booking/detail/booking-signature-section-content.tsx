@@ -2,7 +2,7 @@ import {
   cancelSignatureApi,
   getSignaturesByDocumentIdApi,
   signSignatureApi,
-} from '@/apis/signature-apis';
+} from '@/apis/signature/signature';
 import { useFetchFn, useMutationFn } from 'fetchwire';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -56,8 +56,8 @@ export default function BookingSignatureSectionContent({
     `organization-booking-${bookingData.id}`,
     ...(bookingData.tourImplementationId
       ? [
-          `organization-booking-list-in-tour-implementation-${bookingData.tourImplementationId}`,
-        ]
+        `organization-booking-list-in-tour-implementation-${bookingData.tourImplementationId}`,
+      ]
       : []),
   ];
 

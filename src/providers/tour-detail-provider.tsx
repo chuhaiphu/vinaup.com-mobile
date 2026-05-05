@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { useFetchFn, useMutationFn, type ApiError } from 'fetchwire';
-import { getTourByIdApi, updateTourApi } from '@/apis/tour-apis';
+import { getTourByIdApi, updateTourApi } from '@/apis/tour/tour';
 import { TourResponse, UpdateTourRequest } from '@/interfaces/tour-interfaces';
 
 interface TourDetailContextType {

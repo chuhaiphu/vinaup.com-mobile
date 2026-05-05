@@ -11,7 +11,7 @@ import { useMutationFn } from 'fetchwire';
 import Tabs from '@/components/primitives/tabs';
 import { SlideSheet, SlideSheetRef } from '@/components/primitives/slide-sheet';
 import { CreateOrganizationCustomerModal } from '@/components/commons/modals/create-organization-customer-modal/create-organization-customer-modal';
-import { createOrganizationCustomerApi } from '@/apis/organization-apis';
+import { createOrganizationCustomerApi } from '@/apis/organization/organization-customer';
 import { OrgCustomerRealList } from '@/components/commons/org-customer-real-list';
 import { InvoiceOrgCustomerInternalList } from '@/components/organization/invoice/modals/invoice-org-customer-select-modal/invoice-org-customer-internal-list';
 import { COLORS } from '@/constants/style-constant';

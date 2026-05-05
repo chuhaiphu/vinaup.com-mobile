@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { prefetch, useMutationFn } from 'fetchwire';
 import dayjs from 'dayjs';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
-import { createBookingApi, getBookingByIdApi } from '@/apis/booking-apis';
+import { createBookingApi, getBookingByIdApi } from '@/apis/booking/booking';
 import { generateDateCode } from '@/utils/generator/string-generator/generate-date-code';
 import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import VinaupAddNew from '@/components/icons/vinaup-add-new.native';
