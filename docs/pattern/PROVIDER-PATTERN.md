@@ -126,9 +126,6 @@ src/app/(protected)/project-detail/[projectId].tsx
 Without providers, screens must each individually fetch and manage the same data, handle loading states, wire mutation callbacks, and pass results down through props across multiple levels. This produces duplicated fetch logic, inconsistent loading/error handling, and screens tightly coupled to the API layer.
 
 Providers centralise fetch ownership. A screen that needs a tour only calls `useTourDetailContext()` — it does not know how the tour is fetched, cached, or invalidated. When the fetch strategy changes (e.g., adding a new cache tag), it changes in one place.
-
-Co-locating providers with routes (rather than hoisting everything to root) ensures that data is only fetched when the screens that need it are actually mounted.
-
 ---
 
 ## How

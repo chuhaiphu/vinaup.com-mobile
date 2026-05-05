@@ -110,7 +110,7 @@ useOrganizationUtilitiesStore.persist.clearStorage();
 
 ## Why
 
-Modal open/close state, navigation loading, form fields, and user preferences all need to be accessible by components that are far apart in the tree, sometimes completely unrelated screens. Lifting this state and passing it down via props would produce chains of props through components that do not use them.
+Modal open/close state, navigation loading, form fields, and user preferences all need to be accessible by components that are far apart in the tree, sometimes completely unrelated screens. Lifting this state and passing it down via props would introduce chains of props (prop drilling) through components that do not use them.
 
 React Context solves the same problem but is better suited for server data with a fetch lifecycle (see Provider Pattern). For pure UI state that does not fetch anything and changes frequently, Zustand is lighter: it does not require a Provider wrapper, and persists to AsyncStorage with a single middleware line.
 

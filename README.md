@@ -50,7 +50,7 @@ For system context, component structure, and how the app is organized internally
 
 Design patterns used consistently throughout the codebase.
 
-**[docs/pattern/REPOSITORY-PATTERN.md](docs/pattern/REPOSITORY-PATTERN.md)** — API layer: one file per domain, `wireApi` abstraction, naming convention for API functions.
+**[docs/pattern/REPOSITORY-PATTERN.md](docs/pattern/REPOSITORY-PATTERN.md)** — API layer: one file per domain, api fetching abstraction, naming convention for API functions.
 
 **[docs/pattern/PROVIDER-PATTERN.md](docs/pattern/PROVIDER-PATTERN.md)** — React Context providers: server-state fetch/mutation lifecycle, typed consumer hooks, provider co-location.
 

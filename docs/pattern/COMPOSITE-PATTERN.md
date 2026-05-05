@@ -84,9 +84,9 @@ components/organization/{domain}/modals/
 
 ## Why
 
-A single-file modal that owns its container, renders its form, manages selection state, fetches data, and calls callbacks quickly grows three or four unrelated concerns tangled together. A change to the container type (e.g., `SlideSheet` → `BottomSheet`) forces reading through the entire form logic to find the two lines that need to change.
+A single-file modal should not handle too much unrelated concerns together (e.g. owns its container, renders its form, manages selection state, fetches data, and calls callbacks...).
 
-Splitting into shell and content makes both files smaller and independently comprehensible. The shell is changed when the container type changes. The content is changed when the form or list logic changes. Neither file needs to understand the other's internals — only the props interface between them matters.
+Splitting into shell and content makes both files smaller and independently comprehensible. Neither file needs to understand the other's internals — only the props interface between them matters.
 
 The same reasoning applies to primitive extension. A raw `Pressable` that also manages loading state and opacity feedback in the same component grows multiple concerns.
 
