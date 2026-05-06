@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   StyleProp,
-  TextStyle,
-  TextInput,
+  TextStyle
 } from 'react-native';
 
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
@@ -39,7 +38,6 @@ interface SelectProps {
     onSelect: () => void
   ) => React.ReactNode;
   renderTrigger?: (option: SelectOption) => React.ReactNode;
-  searchable?: boolean;
   style?: {
     triggerText?: StyleProp<TextStyle>;
   };
@@ -58,17 +56,9 @@ export function Select({
   renderHeader,
   renderFooter,
   renderTrigger,
-  searchable = false,
   style,
 }: SelectProps) {
   const sheetRef = useRef<SlideSheetRef | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const filteredOptions = searchable
-    ? options.filter((opt) =>
-        opt.label?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : options;
 
   const selectedOption = options.find((opt) => opt.value === value);
   const selectedLabel = selectedOption?.label || placeholder;
@@ -109,7 +99,6 @@ export function Select({
       )}
       <SlideSheet
         ref={sheetRef}
-        onClose={() => setSearchQuery('')}
         enableAnimation={enableAnimation}
         heightPercentage={heightPercentage}
       >
@@ -120,21 +109,8 @@ export function Select({
             <Text style={styles.headerTitle}>{placeholder}</Text>
           </View>
         )}
-        {searchable && (
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color={COLORS.vinaupTeal} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Tìm kiếm..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholderTextColor={COLORS.vinaupMediumGray}
-              autoFocus
-            />
-          </View>
-        )}
         <ScrollView bounces={false} contentContainerStyle={styles.listPadding}>
-          {filteredOptions.map((item) => {
+          {options.map((item) => {
             const isSelected = item.value === value;
             if (renderOption) {
               return (

@@ -4,19 +4,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import { OrganizationCustomerResponse } from '@/interfaces/organization-customer-interfaces';
 
-interface TourOrgCustomerInternalListProps {
+interface OrgCustomerInternalListProps {
   customers: OrganizationCustomerResponse[];
   selectedKey: string;
   isBusy: boolean;
-  onChooseInternal: (customerId: string) => void;
+  onSelect: (customerId: string) => void;
 }
 
-export function TourOrgCustomerInternalList({
+export function OrgCustomerInternalList({
   customers,
   selectedKey,
   isBusy,
-  onChooseInternal,
-}: TourOrgCustomerInternalListProps) {
+  onSelect,
+}: OrgCustomerInternalListProps) {
   return (
     <ScrollView contentContainerStyle={styles.listContent}>
       {customers.map((customer) => {
@@ -30,7 +30,7 @@ export function TourOrgCustomerInternalList({
               styles.optionRow,
               (pressed || isSelected) && styles.optionRowActive,
             ]}
-            onPress={() => onChooseInternal(customer.id)}
+            onPress={() => onSelect(customer.id)}
             disabled={isBusy}
           >
             <View style={styles.leadingAvatar}>
@@ -55,11 +55,8 @@ export function TourOrgCustomerInternalList({
       })}
 
       {customers.length === 0 ? (
-        <Text style={styles.emptyText}>Không có tổ chức nội bộ phù hợp.</Text>
+        <Text style={styles.emptyText}>Không có dữ liệu.</Text>
       ) : null}
-      <Text style={styles.helperText}>
-        *Kho dữ liệu của bạn để tái sử dụng khi cần
-      </Text>
     </ScrollView>
   );
 }
@@ -70,11 +67,11 @@ const styles = StyleSheet.create({
   },
   optionRow: {
     borderRadius: 12,
-    paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 2,
+    minHeight: 60,
   },
   optionRowActive: {
     backgroundColor: '#F2FBFA',
@@ -109,11 +106,5 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
     color: COLORS.vinaupMediumGray,
-  },
-  helperText: {
-    fontSize: 15,
-    color: COLORS.vinaupMediumGray,
-    fontStyle: 'italic',
-    marginTop: 4,
-  },
+  }
 });

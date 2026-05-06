@@ -18,7 +18,7 @@ export default function PersonalNavigatorSelector() {
   const navItems: SelectOption[] = [
     {
       value: '/personal/project',
-      label: 'Lịch tiền công',
+      label: 'Thu chi giai đoạn',
       leftSection: (
         <VinaupPlusMinusMultiplyEqual
           width={26}

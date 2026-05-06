@@ -5,6 +5,7 @@ import { COLORS } from '@/constants/style-constant';
 import { Octicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import VinaupCalendarIcon from '@/components/icons/vinaup-calendar-icon';
+import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 
 export default function PersonalTabsLayout() {
   return (
@@ -29,20 +30,19 @@ export default function PersonalTabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="receipt-payment"
         options={{
           tabBarIcon: ({ color, size }) => (
             <VinaupPlusMinus width={size} height={size} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="project"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <VinaupCalendarIcon
-              width={size}
+            <VinaupPlusMinusMultiplyEqual              width={size}
               height={size}
               color={color}
             />

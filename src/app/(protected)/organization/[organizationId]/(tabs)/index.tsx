@@ -2,10 +2,9 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { COLORS } from '@/constants/style-constant';
 import VinaupCog from '@/components/icons/vinaup-cog.native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getReceiptPaymentsByInvoiceIdsApi } from '@/apis/receipt-payment/receipt-payment';
 import { useFetchFn } from 'fetchwire';
-import { MultiSelect } from '@/components/primitives/multiple-select';
 import { useOrganizationUtilitiesStore } from '@/hooks/use-organization-utility-store';
 import { ORG_UTILITY_KEYS, type OrgUtilityKey } from '@/constants/app-constant';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -19,6 +18,8 @@ import { MonthYearPicker } from '@/components/primitives/month-year-picker';
 import { VinaupLogoPrimary } from '@/components/icons/vinaup-logo-primary.native';
 import VinaupSigningPenWithFrame from '@/components/icons/vinaup-signing-pen-with-frame.native';
 import { IndexUtilityGrid } from '@/components/commons/grids/index-utility-grid';
+import { SlideSheetRef } from '@/components/primitives/slide-sheet';
+import { UtilitySelectModal } from '@/components/commons/modals/utility-select-modal/utility-select-modal';
 
 export default function OrganizationIndexScreen() {
   const router = useRouter();
@@ -155,69 +156,77 @@ export default function OrganizationIndexScreen() {
     selectedUtilities.includes(item.key)
   );
 
+  const utilitySelectRef = useRef<SlideSheetRef | null>(null);
+
+  const handleOpen = () => {
+    utilitySelectRef.current?.open();
+  };
+
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={() => {
-            refreshInvoices();
-            refreshReceiptPaymentsByInvoiceIds();
-          }}
-          colors={[COLORS.vinaupTeal]}
-          tintColor={COLORS.vinaupTeal}
-        />
-      }
-    >
-      <View style={styles.topRow}>
-        <MonthYearPicker
-          leftSection={
-            <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
-          }
-          value={selectedDate}
-          onChange={setSelectedDate}
-          displayFormat="MM/YYYY"
-          style={{
-            dateText: styles.dateText,
-          }}
-        />
-        <PressableOpacity
-          style={styles.iconButton}
-          onPress={() => handlePress('settings')}
-        >
-          <VinaupCog width={24} height={24} />
-        </PressableOpacity>
-      </View>
-
-      <OrganizationHomeIndexSummary
-        receiptPayments={receiptPayments}
-        organizationId={organizationId}
-      />
-
-      <View style={styles.utilitiesRow}>
-        <View style={styles.utilitiesLeft}>
-          <VinaupLogoPrimary
-            width={20}
-            height={20}
-            color={COLORS.vinaupMediumGray}
+    <>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              refreshInvoices();
+              refreshReceiptPaymentsByInvoiceIds();
+            }}
+            colors={[COLORS.vinaupTeal]}
+            tintColor={COLORS.vinaupTeal}
           />
-          <Text style={styles.utilitiesText}>Nổi bật</Text>
+        }
+      >
+        <View style={styles.topRow}>
+          <MonthYearPicker
+            leftSection={
+              <FontAwesome5 name="calendar-alt" size={18} color={COLORS.vinaupTeal} />
+            }
+            value={selectedDate}
+            onChange={setSelectedDate}
+            displayFormat="MM/YYYY"
+            style={{
+              dateText: styles.dateText,
+            }}
+          />
+          <PressableOpacity
+            style={styles.iconButton}
+            onPress={() => handlePress('settings')}
+          >
+            <VinaupCog width={24} height={24} />
+          </PressableOpacity>
         </View>
-        <MultiSelect
-          options={utilityOptions}
-          values={selectedUtilities}
-          onChange={(vals) => setUtilities(organizationId, vals as OrgUtilityKey[])}
-          placeholder="Tiện ích"
-          heightPercentage={0.3}
-          renderTrigger={
-            <Feather name="edit" size={20} color={COLORS.vinaupTeal} />
-          }
-        />
-      </View>
 
-      <IndexUtilityGrid items={visibleUtilities} onItemPress={handlePress} />
-    </ScrollView>
+        <OrganizationHomeIndexSummary
+          receiptPayments={receiptPayments}
+          organizationId={organizationId}
+        />
+
+        <View style={styles.utilitiesRow}>
+          <View style={styles.utilitiesLeft}>
+            <VinaupLogoPrimary
+              width={20}
+              height={20}
+              color={COLORS.vinaupMediumGray}
+            />
+            <Text style={styles.utilitiesText}>Tiện ích</Text>
+          </View>
+          <PressableOpacity onPress={handleOpen}>
+            <Feather name="edit" size={20} color={COLORS.vinaupTeal} />
+          </PressableOpacity>
+        </View>
+
+        <IndexUtilityGrid items={visibleUtilities} onItemPress={handlePress} />
+      </ScrollView>
+
+      <UtilitySelectModal
+        options={utilityOptions}
+        values={selectedUtilities}
+        onChange={(vals) => setUtilities(organizationId, vals as OrgUtilityKey[])}
+        utilitySelectRef={utilitySelectRef}
+      />
+    </>
   );
 }
 

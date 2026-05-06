@@ -8,6 +8,7 @@ import { calculateReceiptPaymentsSummary } from '@/utils/calculator/calculate-re
 import { generateLocalePriceFormat } from '@/utils/generator/string-generator/generate-locale-price-format';
 import { PressableOpacity } from '@/components/primitives/pressable-opacity';
 import { useRouter } from 'expo-router';
+import VinaupPlusMinusMultiplyEqual from '@/components/icons/vinaup-plus-minus-multiply-equal.native';
 
 interface PersonalHomeIndexSummaryProps {
   receiptPayments?: ReceiptPaymentResponse[] | null;
@@ -26,7 +27,7 @@ export function PersonalHomeIndexSummary({
   return (
     <View style={styles.card}>
       <View style={styles.mainRow}>
-        <Text style={styles.label}>Tiền công</Text>
+        <Text style={styles.label}>Giai đoạn</Text>
         <Text style={styles.value}>
           {generateLocalePriceFormat(summary.totalRemaining)}
         </Text>
@@ -34,8 +35,8 @@ export function PersonalHomeIndexSummary({
 
       <PressableOpacity style={styles.banner} onPress={handlePressSchedule}>
         <View style={styles.bannerLeft}>
-          <VinaupCalendarIcon width={22} height={22} color={COLORS.vinaupTeal} />
-          <Text style={styles.bannerText}>Lịch tiền công tháng này của bạn</Text>
+          <VinaupPlusMinusMultiplyEqual width={22} height={22} color={COLORS.vinaupTeal} />
+          <Text style={styles.bannerText}>Thu chi giai đoạn tháng này của bạn</Text>
         </View>
         <Feather name="chevron-right" size={22} color={COLORS.vinaupTeal} />
       </PressableOpacity>

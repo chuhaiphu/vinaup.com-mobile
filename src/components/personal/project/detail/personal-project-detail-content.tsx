@@ -40,7 +40,7 @@ export function PersonalProjectDetailContent() {
   return (
     <>
       <StackWithHeader
-        title="Chi tiết Tiền công"
+        title="Chi tiết Thu chi giai đoạn"
         onDelete={handleDeleteProject}
         isDeleting={isDeletingProject}
         onSave={handleSaveAndExit}

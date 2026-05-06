@@ -52,7 +52,7 @@ const PersonalProjectCompanyHeaderBottom = () => {
     <View style={styles.bottomContainer}>
       <View style={styles.titleWrapper}>
         <Text style={styles.titleLeft}>Thu chi</Text>
-        <Text style={styles.titleRight}> Tiền công</Text>
+        <Text style={styles.titleRight}> Giai đoạn</Text>
       </View>
       <Button
         onPress={handleAddNew}

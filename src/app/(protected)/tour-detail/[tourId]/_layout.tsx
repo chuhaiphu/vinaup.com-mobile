@@ -76,21 +76,6 @@ function TourDetailLayoutContent() {
     router.back();
   };
 
-  // const getHeaderTitle = () => {
-  //   if (isLoadingProject || !project) {
-  //     return '';
-  //   }
-  //   return project.type === 'SELF' ? 'Chi tiết Tiền công' : 'Chi tiết Dự án';
-  // };
-
-  // if (isLoadingProject) {
-  //   return (
-  //     <View>
-  //       <Loader size={64} />
-  //     </View>
-  //   );
-  // }
-
   return (
     <>
       <StackWithHeader
