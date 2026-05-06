@@ -23,7 +23,7 @@ interface MultiSelectProps {
   values: string[];
   onChange: (value: string[]) => void;
   renderOption?: (
-    item: MultiSelectOption,
+    value: string,
     ctx: {
       index: number;
       isSelected: boolean;
@@ -57,7 +57,7 @@ export function MultiSelect({
         {options.map((item, index) => {
           const isSelected = values.includes(item.value);
           if (renderOption) {
-            const option = renderOption(item, {
+            const option = renderOption(item.value, {
               index,
               isSelected,
               toggle: () => handleToggle(item.value),

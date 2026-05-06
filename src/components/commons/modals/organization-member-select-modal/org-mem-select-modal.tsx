@@ -8,7 +8,10 @@ interface OrgMemSelectModalProps {
   membersInCharge?: MemberInChargeTourImplementationResponse[] | null;
   isLoading?: boolean;
   modalRef: React.RefObject<SlideSheetRef | null>;
-  onConfirm?: (selectedOrgMemberIds: string[]) => void;
+  onConfirm?: (
+    selectedOrgMemberIds: string[], 
+    onSuccessCallback?: () => void
+  ) => void;
 }
 
 export function OrgMemSelectModal({

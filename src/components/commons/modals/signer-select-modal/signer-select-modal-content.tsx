@@ -1,6 +1,7 @@
 import VinaupDoubleCheck from '@/components/icons/vinaup-double-check.native';
 import { Avatar } from '@/components/primitives/avatar';
 import { Button } from '@/components/primitives/button';
+import { MultiSelect } from '@/components/primitives/multi-select';
 
 import { COLORS } from '@/constants/style-constant';
 import { OrganizationMemberResponse } from '@/interfaces/organization-member-interfaces';
@@ -9,7 +10,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   Pressable,
   StyleSheet,
   Text,
@@ -48,27 +48,16 @@ export function SignerSelectModalContent({
       member.phone?.includes(searchQuery)
   );
 
-  const renderMember = ({ member }: { member: OrganizationMemberResponse }) => {
+  const renderOption = (optionValue: string, ctx: { index: number; isSelected: boolean; toggle: () => void }) => {
+    const member = organizationMembers?.find((m) => m.user?.id === optionValue);
+    if (!member) return null;
     if (!member.user) return null;
-    const isSelected = selectedOrganizationMemberUserIds.includes(member.user.id);
+    const isSelected = ctx.isSelected;
 
     return (
       <Pressable
         style={styles.memberItem}
-        onPress={() => {
-          if (isSelected) {
-            setSelectedOrganizationMemberUserIds(
-              selectedOrganizationMemberUserIds.filter(
-                (id) => id !== member?.user?.id
-              )
-            );
-          } else {
-            setSelectedOrganizationMemberUserIds([
-              ...selectedOrganizationMemberUserIds,
-              member?.user?.id || '',
-            ]);
-          }
-        }}
+        onPress={ctx.toggle}
       >
         <Avatar imgSrc={member?.avatarUrl} size={48} />
         <View style={styles.memberInfo}>
@@ -81,8 +70,8 @@ export function SignerSelectModalContent({
           {isSelected && <VinaupDoubleCheck color={COLORS.vinaupTeal} />}
         </View>
       </Pressable>
-    );
-  };
+    );;
+  }
 
   const handleConfirm = () => {
     onConfirm?.(selectedOrganizationMemberUserIds);
@@ -99,22 +88,17 @@ export function SignerSelectModalContent({
           placeholder="Nhập tên hoặc số điện thoại..."
           placeholderTextColor={COLORS.vinaupMediumGray}
           style={styles.searchInput}
-          // editable={!isLoading}
         />
         {isLoading && <ActivityIndicator size="small" color={COLORS.vinaupTeal} />}
       </View>
-      <FlatList
-        data={filteredMembers}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => renderMember({ member: item })}
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          !isLoading ? (
-            <Text style={styles.emptyText}>Không tìm thấy thành viên</Text>
-          ) : null
-        }
+      <MultiSelect
+        options={filteredMembers?.map((member) => ({
+          value: member.user?.id || '',
+          label: member.name,
+        })) || []}
+        values={selectedOrganizationMemberUserIds}
+        onChange={setSelectedOrganizationMemberUserIds}
+        renderOption={renderOption}
       />
       <View style={styles.buttonGroup}>
         <Button
@@ -167,12 +151,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.vinaupBlack,
     paddingVertical: 0,
-  },
-  list: {
-    maxHeight: 240,
-  },
-  listContent: {
-    paddingBottom: 8,
   },
   memberItem: {
     flexDirection: 'row',

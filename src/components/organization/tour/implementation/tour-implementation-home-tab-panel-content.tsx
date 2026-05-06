@@ -108,9 +108,13 @@ export function TourImplementationHomeTabPanelContent({ tour }: Props) {
     );
   };
 
-  const handleConfirmMembers = (selectedOrgMemberIds: string[]) => {
+  const handleConfirmMembers = (selectedOrgMemberIds: string[], onSuccessCallback?: () => void) => {
     manageMembersInCharge(selectedOrgMemberIds, {
-      onError: () => Alert.alert('Lỗi', 'Có lỗi xảy ra khi cập nhật nhân sự.'),
+      onError: () => Alert.alert('Lỗi', 'Có lỗi xảy ra khi cập nhật điều hành.'),
+      onSuccess: () => {
+        onSuccessCallback?.();
+        memModalRef.current?.close();
+      }
     });
   };
 

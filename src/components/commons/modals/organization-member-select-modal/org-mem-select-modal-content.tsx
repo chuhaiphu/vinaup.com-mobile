@@ -8,7 +8,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   Pressable,
   StyleSheet,
   Text,
@@ -16,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MultiSelect } from '@/components/primitives/multi-select';
 
 interface OrgMemSelectModalContentProps {
   isLoading?: boolean;
@@ -54,29 +54,24 @@ export function OrgMemSelectModalContent({
         member.phone?.includes(searchQuery))
   );
 
-  const handleToggle = (memberId: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(memberId)
-        ? prev.filter((id) => id !== memberId)
-        : [...prev, memberId]
-    );
-  };
-
   const handleConfirm = () => {
     onConfirm?.(selectedIds);
-    onClose?.();
   };
 
-  const renderMember = ({ item }: { item: OrganizationMemberResponse }) => {
-    const isSelected = selectedIds.includes(item.id);
+  const renderOption = (optionValue: string, ctx: { index: number; isSelected: boolean; toggle: () => void }) => {
+    const member = organizationMembers?.find((m) => m?.id === optionValue);
+    if (!member) return null;
+    if (!member.user) return null;
+    const isSelected = ctx.isSelected;
+
     return (
-      <Pressable style={styles.memberItem} onPress={() => handleToggle(item.id)}>
-        <Avatar imgSrc={item.avatarUrl} size={40} />
+      <Pressable style={styles.memberItem} onPress={ctx.toggle}>
+        <Avatar imgSrc={member.avatarUrl} size={40} />
         <View style={styles.memberInfo}>
-          <Text style={styles.memberName}>{item.name}</Text>
+          <Text style={styles.memberName}>{member.name}</Text>
           <Text style={styles.memberDetail}>
-            {item.phone}
-            {item.address ? ` - ${item.address}` : ''}
+            {member.phone}
+            {member.address ? ` - ${member.address}` : ''}
           </Text>
         </View>
         <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
@@ -84,7 +79,7 @@ export function OrgMemSelectModalContent({
         </View>
       </Pressable>
     );
-  };
+  }
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -100,16 +95,14 @@ export function OrgMemSelectModalContent({
         />
         {isLoading && <ActivityIndicator size="small" color={COLORS.vinaupTeal} />}
       </View>
-      <FlatList
-        data={filteredMembers}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMember}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          !isLoading ? (
-            <Text style={styles.emptyText}>Không tìm thấy thành viên</Text>
-          ) : null
-        }
+      <MultiSelect
+        options={filteredMembers?.map((member) => ({
+          value: member?.id || '',
+          label: member.name,
+        })) || []}
+        values={selectedIds}
+        onChange={setSelectedIds}
+        renderOption={renderOption}
       />
       <View style={styles.buttonGroup}>
         <Button style={styles.cancelButton} onPress={onClose} disabled={isLoading}>
